@@ -1,0 +1,27 @@
+{
+  "name": "dragon-liquid-design-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "overrides": {
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "build": "npm run build --workspace @dragon-liquid/vue",
+    "build:showcase": "npm run build --workspace @dragon-liquid/showcase",
+    "typecheck": "npm run typecheck --workspace @dragon-liquid/vue",
+    "test": "npm run test --workspace @dragon-liquid/vue",
+    "publish:local": "npm run build && npm pack --workspace @dragon-liquid/vue --pack-destination registry"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}
