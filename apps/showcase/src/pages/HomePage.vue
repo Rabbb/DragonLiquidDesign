@@ -141,7 +141,7 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
       <div class="quick-start-grid">
         <DlCard padding="lg" class="code-panel">
           <div class="code-head"><span><i /> PowerShell</span><DlBadge tone="accent">INSTALL</DlBadge></div>
-          <pre><code><b>npm install</b> O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.1.tgz</code></pre>
+          <pre><code><b>npm install</b> O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.7.tgz</code></pre>
         </DlCard>
         <DlCard padding="lg" class="code-panel">
           <div class="code-head"><span><i /> main.ts</span><DlBadge tone="success">IMPORT</DlBadge></div>

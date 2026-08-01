@@ -48,7 +48,7 @@ const classes = computed(() => field({ size: props.size, status: props.status, d
 </script>
 
 <template>
-  <label data-dl data-slot="input" :class="classes">
+  <div data-dl data-slot="input" :class="classes">
     <span v-if="$slots.leading" class="text-[var(--dl-text-faint)]"><slot name="leading" /></span>
     <input
       v-bind="attrs"
@@ -59,5 +59,5 @@ const classes = computed(() => field({ size: props.size, status: props.status, d
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     >
     <span v-if="$slots.trailing" class="text-[var(--dl-text-faint)]"><slot name="trailing" /></span>
-  </label>
+  </div>
 </template>

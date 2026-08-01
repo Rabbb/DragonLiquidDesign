@@ -31,6 +31,32 @@ describe('Dragon Liquid Reka primitives', () => {
     expect(wrapper.text()).toContain('故事简介')
   })
 
+  it('opens and closes an uncontrolled collapsible accordion item', async () => {
+    const wrapper = mount(DlAccordion, {
+      props: { items: [{ value: 'story', title: '故事简介', content: '内容' }] },
+    })
+    const trigger = wrapper.get('button')
+
+    await trigger.trigger('click')
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+
+    await trigger.trigger('click')
+    expect(trigger.attributes('aria-expanded')).toBe('false')
+  })
+
+  it('emits the collapsed state for a controlled accordion', async () => {
+    const wrapper = mount(DlAccordion, {
+      props: {
+        modelValue: 'story',
+        items: [{ value: 'story', title: '故事简介', content: '内容' }],
+      },
+    })
+
+    await wrapper.get('button').trigger('click')
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([undefined])
+  })
+
   it('renders the selected tab panel', () => {
     const wrapper = mount(DlTabs, {
       props: {
@@ -51,5 +77,15 @@ describe('Dragon Liquid Reka primitives', () => {
 
     expect(wrapper.text()).toContain('100%')
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('120')
+  })
+
+  it('applies migrated progress tone, status and helper styles', () => {
+    const wrapper = mount(DlProgress, {
+      props: { modelValue: 68, tone: 'muted', status: 'success', helper: '正在同步作品信息' },
+    })
+
+    expect(wrapper.get('[data-slot="progress"]').classes()).toContain('dl-progress-tone-muted')
+    expect(wrapper.get('[data-slot="progress"]').classes()).toContain('dl-progress-status-success')
+    expect(wrapper.text()).toContain('正在同步作品信息')
   })
 })

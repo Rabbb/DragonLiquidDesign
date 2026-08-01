@@ -5,18 +5,16 @@ import { tv } from 'tailwind-variants'
 import type { DlAccordionItem } from './primitive.types'
 
 const props = withDefaults(defineProps<{
-  modelValue?: string | string[]
   items: DlAccordionItem[]
   type?: 'single' | 'multiple'
   collapsible?: boolean
   disabled?: boolean
 }>(), {
-  modelValue: undefined,
   type: 'single',
   collapsible: true,
   disabled: false,
 })
-const emit = defineEmits<{ 'update:modelValue': [value: string | string[] | undefined] }>()
+const modelValue = defineModel<string | string[] | undefined>()
 const styles = tv({
   slots: {
     root: 'overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border)] bg-[var(--dl-surface)] shadow-[var(--dl-shadow)] backdrop-blur-xl',
@@ -33,12 +31,11 @@ const classes = computed(() => styles())
   <AccordionRoot
     data-dl
     data-slot="accordion"
-    :model-value="modelValue"
+    v-model="modelValue"
     :type="type"
     :collapsible="type === 'single' ? collapsible : undefined"
     :disabled="disabled"
     :class="classes.root()"
-    @update:model-value="emit('update:modelValue', $event as string | string[] | undefined)"
   >
     <AccordionItem v-for="item in items" :key="item.value" :value="item.value" :disabled="item.disabled" :class="classes.item()">
       <AccordionHeader>

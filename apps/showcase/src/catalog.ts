@@ -339,6 +339,24 @@ const scenarioBlueprints: Record<Exclude<ComponentCategoryId, 'foundation'>, Sce
   ],
 }
 
+const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> = {
+  drawer: [
+    { id: 'basic', label: '通用案例', summary: '方向、尺寸与关闭行为' },
+    { id: 'edit-record', label: '编辑收藏', summary: '侧边任务表单与固定操作区' },
+    { id: 'collection-filter', label: '移动端筛选', summary: '底部抽屉承载筛选条件' },
+  ],
+  'hover-card': [
+    { id: 'basic', label: '通用案例', summary: '悬停延迟、定位与内容结构' },
+    { id: 'creator-profile', label: '创作者资料', summary: '预览监督与制作人员信息' },
+    { id: 'episode-progress', label: '剧集进度', summary: '预览单集状态与观看进度' },
+  ],
+  toast: [
+    { id: 'basic', label: '通用案例', summary: '成功反馈、动作与自动关闭' },
+    { id: 'upload-progress', label: '上传进度', summary: '展示封面上传与处理进度' },
+    { id: 'error-recovery', label: '错误恢复', summary: '失败说明与重试操作' },
+  ],
+}
+
 const readyById = new Map(readyComponents.map(component => [component.id, component]))
 const stableReadyIds = new Set([
   'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'tags-input', 'toggle', 'toggle-group',
@@ -351,7 +369,7 @@ const alphaReadyIds = new Set([
   'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree',
 ])
 const singleExampleIds = new Set([
-  'checkbox', 'radio-group', 'slider', 'switch', 'accordion', 'avatar', 'collapsible', 'popover', 'progress', 'separator', 'tabs', 'tooltip',
+  'checkbox', 'radio-group', 'slider', 'switch', 'accordion', 'avatar', 'collapsible', 'separator', 'tabs',
 ])
 
 function sourceUrl(id: string) {
@@ -377,7 +395,7 @@ function fromRekaSeed(seed: RekaSeed): ComponentDefinition {
       implementation: 'ready',
       maturity: 'stable',
       sourceUrl: sourceUrl(seed.id),
-      scenarios: scenarioBlueprints[seed.category].map(scenario => ({ ...scenario })),
+      scenarios: (componentScenarioOverrides[seed.id] ?? scenarioBlueprints[seed.category]).map(scenario => ({ ...scenario })),
     }
   }
 
@@ -388,7 +406,7 @@ function fromRekaSeed(seed: RekaSeed): ComponentDefinition {
       implementation: 'ready',
       maturity: 'alpha',
       sourceUrl: sourceUrl(seed.id),
-      scenarios: scenarioBlueprints[seed.category].map(scenario => ({ ...scenario })),
+      scenarios: (componentScenarioOverrides[seed.id] ?? scenarioBlueprints[seed.category]).map(scenario => ({ ...scenario })),
     }
   }
 

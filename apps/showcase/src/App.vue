@@ -54,7 +54,7 @@ onBeforeUnmount(() => window.removeEventListener('hashchange', syncHash))
         <a href="http://localhost:8020/" target="_blank" rel="noreferrer">示例应用 ↗</a>
       </nav>
       <DlBadge tone="success" variant="outline" size="md">
-        <span class="live-dot" /> v0.4.0-alpha.1 · LOCAL
+        <span class="live-dot" /> v0.4.0-alpha.7 · LOCAL
       </DlBadge>
     </header>
 
@@ -65,7 +65,7 @@ onBeforeUnmount(() => window.removeEventListener('hashchange', syncHash))
       :scenario-id="route.scenarioId!"
     />
 
-    <footer v-if="route.page === 'home'">
+    <footer v-if="route.page === 'home'" class="site-footer">
       <div class="brand compact">
         <span class="brand-glyph">D</span>
         <span><strong>Dragon Liquid</strong><small>DESIGN SYSTEM</small></span>

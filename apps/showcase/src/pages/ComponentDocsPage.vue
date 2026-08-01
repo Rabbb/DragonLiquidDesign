@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch, type Component } from 'vue'
 import { DlBadge, DlButton } from '@dragon-liquid/vue'
+import { componentsMissingApi } from '../api/componentApi'
 import {
   componentCatalog,
   componentCategories,
@@ -22,6 +23,10 @@ const selectedCategory = computed(() => componentCategories.find(category => cat
 const expandedCategories = ref<Set<ComponentCategoryId>>(new Set([selectedComponent.value.category]))
 const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
 const plannedCount = computed(() => componentCatalog.length - readyCount.value)
+const missingApiComponents = componentsMissingApi(componentCatalog.map(component => component.id))
+if (missingApiComponents.length) {
+  throw new Error(`以下组件缺少属性 API：${missingApiComponents.join(', ')}`)
+}
 
 const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   button: () => import('../docs/ButtonDocs.vue'),
@@ -102,6 +107,7 @@ const activeDoc = computed(() => defineAsyncComponent({
   delay: 120,
   timeout: 15000,
 }))
+const ComponentApiTable = defineAsyncComponent(() => import('../components/ComponentApiTable.vue'))
 
 watch(() => [props.componentId, props.scenarioId], () => {
   expandedCategories.value = new Set([...expandedCategories.value, selectedComponent.value.category])
@@ -197,7 +203,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
         <h1>{{ selectedComponent.name }}</h1>
         <p>{{ selectedComponent.summary }}</p>
       </div>
-      <a href="/packages/dragon-liquid-vue-0.4.0-alpha.1.tgz" download>
+      <a href="/packages/dragon-liquid-vue-0.4.0-alpha.7.tgz" download>
         <DlButton variant="secondary" size="sm">下载 npm 包 ↓</DlButton>
       </a>
     </header>
@@ -222,6 +228,8 @@ function toggleCategory(category: typeof componentCategories[number]) {
         <div class="doc-loading"><i /><span>正在按需加载 {{ selectedComponent.name }} 案例…</span></div>
       </template>
     </Suspense>
+
+    <ComponentApiTable :component-id="selectedComponent.id" :component-name="selectedComponent.name" />
 
     <nav class="docs-pagination" aria-label="组件翻页">
       <template v-for="(item, index) in componentCatalog" :key="item.id">

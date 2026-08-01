@@ -28,7 +28,7 @@ const content = computed(() => ({
   'delete-confirm': {
     title: '删除确认',
     description: '明确指出将被删除的对象、不可逆后果以及安全的取消路径。',
-    code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nfunction remove() {\n  console.log('removed')\n  open.value = false\n}`, template: `  <DlButton variant="danger" @click="open = true">移出收藏</DlButton>\n  <DlDialog v-model:open="open" title="移出收藏">\n    <p>确定移除《来自深渊》吗？该操作无法撤销。</p>\n    <template #footer>\n      <DlButton variant="secondary" @click="open = false">保留作品</DlButton>\n      <DlButton variant="danger" @click="remove">确认移除</DlButton>\n    </template>\n  </DlDialog>` }),
+    code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nfunction remove() {\n  console.log('removed')\n  open.value = false\n}`, template: `  <DlButton variant="danger" @click="open = true">移出收藏</DlButton>\n  <DlDialog\n    v-model:open="open"\n    title="移出收藏"\n    description="这个操作无法撤销。"\n    tone="danger"\n    size="sm"\n  >\n    <p>确定移除《来自深渊》吗？</p>\n    <template #footer>\n      <DlButton variant="secondary" @click="open = false">保留作品</DlButton>\n      <DlButton variant="danger" @click="remove">确认移除</DlButton>\n    </template>\n  </DlDialog>` }),
     tips: ['默认焦点优先放在安全操作上。', '危险按钮文案应描述动作，不使用模糊的“确定”。'],
   },
 }[props.scenario] ?? {} as { title: string; description: string; code: string; tips: string[] }))
@@ -46,7 +46,7 @@ const content = computed(() => ({
     </div>
 
     <div v-else class="center-trigger"><DlButton variant="danger" size="lg" @click="deleteOpen = true">移出收藏</DlButton>
-      <DlDialog v-model:open="deleteOpen" title="移出收藏" description="这个操作无法撤销。" size="sm"><div class="delete-dialog-content"><span>!</span><h3>确定移除《来自深渊》吗？</h3><p>作品资料、观看进度和个人标签都将被永久删除。</p></div><template #footer><DlButton variant="secondary" @click="deleteOpen = false">保留作品</DlButton><DlButton variant="danger" @click="deleteOpen = false">确认移除</DlButton></template></DlDialog>
+      <DlDialog v-model:open="deleteOpen" title="移出收藏" description="这个操作无法撤销。" size="sm" tone="danger"><div class="delete-dialog-content"><span>!</span><h3>确定移除《来自深渊》吗？</h3><p>作品资料、观看进度和个人标签都将被永久删除。</p></div><template #footer><DlButton variant="secondary" @click="deleteOpen = false">保留作品</DlButton><DlButton variant="danger" @click="deleteOpen = false">确认移除</DlButton></template></DlDialog>
     </div>
   </DocExampleShell>
 </template>

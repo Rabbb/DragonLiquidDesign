@@ -67,6 +67,18 @@
 
 `0.4.0-alpha.1` 落地 21 个先行组件，包括自动补全、评分、完整颜色控件、日期时间控件、Drawer 与 Tree。它们保持 `REKA ALPHA` 标记和预发布版本语义，但提供真实公共 API、样式、类型与案例，不使用不可操作的占位实现。
 
+`0.4.0-alpha.2` 以 `O:\DEV\Todo.Moe\fd` 为只读来源迁移浮层视觉：`Toast.module.scss` 对应 `DlToast`，`Modal.module.scss` 对应 `DlDialog`，`Tooltip.module.scss` 对应 `DlTooltip`；TodoMoe 没有同名 Popover，因此 `DlPopover` 只提取 `Popconfirm.module.scss` 的近源玻璃面、能量线和箭头语言，不复制确认语义。交互、Portal、焦点管理与层级仍由 Reka UI 和 `useDlLayer` 负责。
+
+`0.4.0-alpha.3` 继续从 `Drawer.module.scss` 与 `Progress.module.scss` 提取样式：Drawer 保留四方向、滑动关闭和 Reka 焦点管理，Progress 保留线性 Reka Progress 语义，并补齐尺寸、语义色、状态覆盖与辅助文案。
+
+`0.4.0-alpha.4` 修复 Portal 根节点无法命中 scoped CSS 的问题，恢复 Dialog、Drawer、Popover、Toast、Tooltip 的迁移样式；同时修复 Accordion 的非受控折叠状态，并移除 Drawer 标题区多余的组件名与 tone 徽标。
+
+`0.4.0-alpha.5` 为 Hover Card 迁移 TodoMoe 的大型浮层玻璃语言：以 Popconfirm 的卡片表面、柔光与箭头为近源，以 Tooltip 的随方位能量边为定位反馈，仍由 Reka UI 管理悬停、焦点、延迟和 Portal。
+
+`0.4.0-alpha.6` 修正 Popover 炫彩条的方位逻辑：根据 Reka UI 碰撞定位后的 `data-side` 将能量边放到箭头对侧，并为左右弹出使用纵向渐变。
+
+`0.4.0-alpha.7` 为 Dialog、Drawer、Popover、Tooltip、Toast、Hover Card 与 Progress 补充按用途拆分的常用案例；同时将 Input 外壳改为中性容器，消除业务 label 与组件 label 嵌套造成的布局和语义问题。
+
 复杂交互必须基于 Reka UI；所有有视觉变体的组件使用 Tailwind Variants。公共 API 保持高层、业务无关，不能直接透传整套 Nuxt UI 依赖。
 
 ## 4. 包结构与公共 API
@@ -97,7 +109,7 @@ O:\DragonLiquidDesign
 
 1. 在 `packages/vue` 执行构建和测试。
 2. 使用 `npm pack --pack-destination O:\DragonLiquidDesign\registry` 生成版本化 `.tgz`。
-3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.1.tgz` 安装，引用的是发布产物而非源码。
+3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.7.tgz` 安装，引用的是发布产物而非源码。
 4. 修改组件后必须提升包版本、重新打包并在消费方重新安装。
 
 若以后部署 Verdaccio，可保持包名和版本不变，执行：
@@ -183,7 +195,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.4.0-alpha.1.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.4.0-alpha.7.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -220,6 +232,15 @@ npm run build:showcase
 可用组件必须在 `ComponentDocsPage.vue` 的异步 loader 映射中注册文档组件；Alpha 组件同时
 保留成熟度徽标和预发布版本信息。
 
+每个组件页必须在案例之后展示一到多张 API 表。第一张为组件 Props，列为“属性 / 说明 / 类型 / 默认值”；
+当 Props 引用 `DlMenuItem[]`、`DlSelectOption[]` 等公开结构化类型时，必须继续展示对应数据结构表，
+列为“属性 / 说明 / 类型 / 是否必填”，并递归补充嵌套类型。元数据由
+`apps/showcase/scripts/generate-component-api.mjs` 从 `packages/vue/src/components/Dl*.vue`、
+`primitive.types.ts` 和 `select.types.ts` 自动生成，构建前会校验目录中的 63 个组件均有 Props 数据，
+并确保 Toolbar 含有 `DlMenuItem[]` 表。表格使用
+`vxe-table`，视觉沿用 TodoMoe API 卡片的半透明表面、金色代码标签和分隔线；VXE 资源仅在
+组件页按需加载，不能进入介绍首页的首屏资源。
+
 ### 9.2 性能边界
 
 63 个可用组件文档位于 `apps/showcase/src/docs`，均通过动态
@@ -230,5 +251,5 @@ npm run build:showcase
 发布包同时复制到 `public/packages`，IIS 下载地址为：
 
 ```text
-http://localhost:8030/packages/dragon-liquid-vue-0.4.0-alpha.1.tgz
+http://localhost:8030/packages/dragon-liquid-vue-0.4.0-alpha.7.tgz
 ```

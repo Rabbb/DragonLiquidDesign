@@ -4,12 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "generate:api": "node scripts/generate-component-api.mjs",
+    "prebuild": "npm run generate:api",
     "build": "vue-tsc --noEmit && vite build",
+    "predev": "npm run generate:api",
     "dev": "vite"
   },
   "dependencies": {
-    "@dragon-liquid/vue": "file:../../registry/dragon-liquid-vue-0.4.0-alpha.1.tgz",
-    "vue": "^3.5.40"
+    "@dragon-liquid/vue": "file:../../registry/dragon-liquid-vue-0.4.0-alpha.7.tgz",
+    "vue": "^3.5.40",
+    "vxe-pc-ui": "~4.16.24",
+    "vxe-table": "~4.20.9"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",

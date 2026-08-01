@@ -33,4 +33,10 @@ import '@dragon-liquid/vue/style.css'
 
 - 42 个稳定组件覆盖基础、表单、内容、导航、菜单、浮层和反馈。
 - 21 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer 与 Tree；它们可正常导入，但在 `0.4.0-alpha.1` 中保留 Alpha API 语义。
+- `0.4.0-alpha.2` 从 TodoMoe 只读提取 Toast、Modal/Dialog、Tooltip 与近源 Popover 的玻璃面、语义色、能量线和反馈动效，并继续由 Reka UI 管理交互。
+- `0.4.0-alpha.3` 继续迁移 Drawer 与线性 Progress 的样式，同时保留 Reka UI 的抽屉手势、焦点和进度语义。
+- `0.4.0-alpha.4` 修复 Portal 浮层样式作用域与 Accordion 收起行为，并精简 Drawer 标题区。
+- `0.4.0-alpha.5` 从 TodoMoe 的 Popconfirm 与 Tooltip 提取 Hover Card 玻璃面、方位能量边和反馈动效。
+- `0.4.0-alpha.6` 修正 Popover 炫彩条随实际弹出方位定位，并补齐左右侧纵向渐变。
+- `0.4.0-alpha.7` 调整 Input 字段外壳，允许业务 label 合法包裹控件，并扩展组件展厅常用案例。
 - 日期对象 `CalendarDate`、`Time` 及相关类型从包入口统一导出。

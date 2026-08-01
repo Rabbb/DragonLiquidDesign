@@ -33,13 +33,14 @@ http://localhost:8030/
 顺序和 Alpha 标记；当前 42 个稳定组件与 21 个先行组件全部可用。先行组件继续显示
 `ALPHA`，表达 API 仍可能演进，但不再使用 ROADMAP 占位页。
 组件文档按组件族生成异步 chunk；每个组件先展示一个完整基础案例，仅在确有独立业务场景时增加子菜单。
+每个组件页都包含由源码自动生成的 Props API 表；遇到公开结构化类型时追加字段表，并以按需加载的 `vxe-table` 渲染。
 
 消费方通过固定 tarball 引用本地构建产物，避免依赖源码目录或 TodoMoe：
 
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.1.tgz"
+    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.7.tgz"
   }
 }
 ```
