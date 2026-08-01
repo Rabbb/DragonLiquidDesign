@@ -54,7 +54,7 @@ onBeforeUnmount(() => window.removeEventListener('hashchange', syncHash))
         <a href="http://localhost:8020/" target="_blank" rel="noreferrer">示例应用 ↗</a>
       </nav>
       <DlBadge tone="success" variant="outline" size="md">
-        <span class="live-dot" /> v0.1.2 · LOCAL
+        <span class="live-dot" /> v0.4.0-alpha.1 · LOCAL
       </DlBadge>
     </header>
 

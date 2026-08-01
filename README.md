@@ -28,15 +28,18 @@ http://localhost:8030/
 ```
 
 展厅首页用于介绍设计系统；点击顶部“组件”进入文档工作台。组件文档使用
-`#/components/{component}/{scenario}` 深链，左侧大纲按组件展开三个场景，右侧只渲染
-当前场景。每个组件文档会生成独立的异步 chunk。
+`#/components/{component}/{scenario}` 深链；额外场景按 `0..n` 声明，左侧只在确有场景时
+展开子菜单，右侧只渲染当前案例。目录按 Foundation、Form、Color、Dates、General 分组，对齐 Reka UI 的组件
+顺序和 Alpha 标记；当前 42 个稳定组件与 21 个先行组件全部可用。先行组件继续显示
+`ALPHA`，表达 API 仍可能演进，但不再使用 ROADMAP 占位页。
+组件文档按组件族生成异步 chunk；每个组件先展示一个完整基础案例，仅在确有独立业务场景时增加子菜单。
 
 消费方通过固定 tarball 引用本地构建产物，避免依赖源码目录或 TodoMoe：
 
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.1.2.tgz"
+    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.1.tgz"
   }
 }
 ```

@@ -43,9 +43,9 @@
 - 玻璃拟态不代替信息层级，正文与表单对比度优先。
 - 移动端组件保持至少 40px 的主要点击区域。
 
-### 3.3 首期组件
+### 3.3 组件批次
 
-首期只提取动漫网站实际需要、同时具有通用价值的组件：
+`0.1.x` 首期只提取动漫网站实际需要、同时具有通用价值的组件：
 
 - `DlButton`
 - `DlIconButton`
@@ -56,7 +56,18 @@
 - `DlCard`
 - `DlDialog`
 
-其中 Select 和 Dialog 必须基于 Reka UI；所有有视觉变体的组件使用 Tailwind Variants。
+`0.2.0` 参考 Nuxt UI 的架构方式扩展以下 Reka UI 封装：
+
+- 表单：`DlCheckbox`、`DlSwitch`、`DlRadioGroup`、`DlSlider`
+- 内容与导航：`DlAccordion`、`DlTabs`、`DlCollapsible`、`DlSeparator`
+- 浮层与反馈：`DlTooltip`、`DlPopover`、`DlProgress`
+- 媒体：`DlAvatar`
+
+`0.3.0` 继续完成目录中全部稳定 Reka UI 原语：组合框、可编辑文本、列表框、数字与验证码输入、标签输入、切换组，以及菜单、导航、分页、滚动区、分割面板、步骤条、通知和工具栏。
+
+`0.4.0-alpha.1` 落地 21 个先行组件，包括自动补全、评分、完整颜色控件、日期时间控件、Drawer 与 Tree。它们保持 `REKA ALPHA` 标记和预发布版本语义，但提供真实公共 API、样式、类型与案例，不使用不可操作的占位实现。
+
+复杂交互必须基于 Reka UI；所有有视觉变体的组件使用 Tailwind Variants。公共 API 保持高层、业务无关，不能直接透传整套 Nuxt UI 依赖。
 
 ## 4. 包结构与公共 API
 
@@ -86,7 +97,7 @@ O:\DragonLiquidDesign
 
 1. 在 `packages/vue` 执行构建和测试。
 2. 使用 `npm pack --pack-destination O:\DragonLiquidDesign\registry` 生成版本化 `.tgz`。
-3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.1.2.tgz` 安装，引用的是发布产物而非源码。
+3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.1.tgz` 安装，引用的是发布产物而非源码。
 4. 修改组件后必须提升包版本、重新打包并在消费方重新安装。
 
 若以后部署 Verdaccio，可保持包名和版本不变，执行：
@@ -172,7 +183,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.1.2.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.4.0-alpha.1.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -198,21 +209,26 @@ npm run build:showcase
 
 - `#/`：设计系统介绍首页，只呈现定位、技术分层、组件目录和接入方式。
 - `#/components/{component}/{scenario}`：组件查询与案例页。
-- 左侧大纲按“通用 / 表单 / 反馈”分组，只展开当前组件的场景子菜单。
-- 每个组件固定包含“通用案例”和两个按实际用途命名的情景案例。
+- 左侧大纲按“基础 Foundation / 表单 Form / 色彩 Color / 日期 Dates / 通用 General”分组，分组可折叠，只展开当前组件的场景子菜单。
+- 目录对齐 Reka UI 的 Form、Color、Dates、General 组件顺序并保留 Alpha 标记；Dragon Liquid 自有基础组件单列 Foundation。
+- 每个组件先提供一个不进入子菜单的基础示例；额外场景数量为 `0..n`，只有存在不同业务流程、不同组合结构或不同交互边界时才增加场景子菜单。
+- 禁止用轻微参数变化凑场景数量；相同演示不得重复出现在多个场景中。
+- 代码面板必须给出完整 Vue SFC，包括 `<script setup>`、依赖导入、响应式状态、完整 `<template>` 以及案例所需样式，不能使用省略号或只展示单个控件片段。
 - 右侧内容域只挂载当前场景；切换子菜单不会同时保留其他案例 DOM。
 
-组件和场景元数据集中在 `apps/showcase/src/catalog.ts`。新增组件时必须同时补齐三个
-场景定义，并在 `ComponentDocsPage.vue` 的异步 loader 映射中注册文档组件。
+组件和场景元数据集中在 `apps/showcase/src/catalog.ts`。新增组件按需声明场景，不设固定数量。
+可用组件必须在 `ComponentDocsPage.vue` 的异步 loader 映射中注册文档组件；Alpha 组件同时
+保留成熟度徽标和预发布版本信息。
 
 ### 9.2 性能边界
 
-8 个组件文档位于 `apps/showcase/src/docs`，均通过动态 `import()` 加载。Vite production
-build 必须为每个组件生成独立 chunk；禁止把全部案例重新合并到首页或一个同步导入的
-组件中。场景可以共用当前组件的 chunk，但模板必须使用互斥条件，只渲染被选中的场景。
+63 个可用组件文档位于 `apps/showcase/src/docs`，均通过动态
+`import()` 加载。基础组件使用独立文档 chunk；同族 Reka 封装可以共享表单或通用原语
+文档 chunk，但模板必须用互斥条件只渲染当前组件和当前场景。禁止把全部案例重新合并到
+首页或同步导入的单个组件中。
 
 发布包同时复制到 `public/packages`，IIS 下载地址为：
 
 ```text
-http://localhost:8030/packages/dragon-liquid-vue-0.1.2.tgz
+http://localhost:8030/packages/dragon-liquid-vue-0.4.0-alpha.1.tgz
 ```

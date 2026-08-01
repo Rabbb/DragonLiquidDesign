@@ -1046,6 +1046,14 @@ footer > [data-slot="badge"] {
   font-weight: 800;
 }
 
+.home-category-card header > span small {
+  display: block;
+  margin-top: 4px;
+  color: var(--dl-text-faint);
+  font: 0.55rem "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.12em;
+}
+
 .home-category-card > a {
   position: relative;
   display: grid;
@@ -1070,6 +1078,22 @@ footer > [data-slot="badge"] {
   font: 0.75rem "Cascadia Code", Consolas, monospace;
 }
 
+.home-category-card > a b em {
+  display: inline-flex;
+  margin-left: 5px;
+  padding: 2px 5px;
+  border: 1px solid rgba(108, 225, 154, 0.2);
+  border-radius: 999px;
+  color: #82dba5;
+  font: 0.47rem/1 "Cascadia Code", Consolas, monospace;
+  vertical-align: 2px;
+}
+
+.home-category-card > a b em.alpha {
+  border-color: rgba(255, 202, 73, 0.24);
+  color: #f2ca62;
+}
+
 .home-category-card > a small {
   grid-column: 1;
   color: var(--dl-text-faint);
@@ -1083,6 +1107,12 @@ footer > [data-slot="badge"] {
   align-self: center;
   color: #eec64f;
   font-style: normal;
+}
+
+.home-category-card > a.home-category-more {
+  margin-top: 8px;
+  border: 1px dashed rgba(255, 209, 75, 0.15);
+  background: rgba(255, 211, 80, 0.025);
 }
 
 .quick-start-grid {
@@ -1196,11 +1226,56 @@ footer > [data-slot="badge"] {
   scrollbar-width: thin;
 }
 
-.sidebar-group h2 {
-  margin: 18px 10px 7px;
+.sidebar-group {
+  margin-top: 7px;
+}
+
+.sidebar-group-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 10px 9px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
   color: var(--dl-text-faint);
-  font-size: 0.62rem;
-  letter-spacing: 0.13em;
+  text-align: left;
+  transition: 0.18s ease;
+}
+
+.sidebar-group-trigger:hover,
+.sidebar-group.open > .sidebar-group-trigger {
+  background: rgba(255, 255, 255, 0.035);
+  color: #f3d778;
+}
+
+.sidebar-group-trigger span,
+.sidebar-group-trigger b,
+.sidebar-group-trigger small {
+  display: block;
+}
+
+.sidebar-group-trigger b {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+.sidebar-group-trigger small {
+  margin-top: 3px;
+  font: 0.5rem "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+}
+
+.sidebar-group-trigger > i {
+  color: #dfba4c;
+  font-size: 0.82rem;
+  font-style: normal;
+}
+
+.sidebar-group-content {
+  padding-top: 3px;
 }
 
 .sidebar-component > a {
@@ -1226,6 +1301,43 @@ footer > [data-slot="badge"] {
   border-color: rgba(255, 211, 80, 0.2);
   background: linear-gradient(90deg, rgba(255, 194, 44, 0.12), rgba(62, 170, 104, 0.05));
   color: #fff2bd;
+}
+
+.sidebar-component > a.planned:not(.active) {
+  color: rgba(226, 232, 240, 0.54);
+}
+
+.sidebar-component-copy {
+  min-width: 0;
+}
+
+.sidebar-component-copy > span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-component-copy > small {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.sidebar-component-copy em {
+  display: inline-flex;
+  padding: 2px 5px;
+  border: 1px solid rgba(111, 218, 151, 0.17);
+  border-radius: 999px;
+  color: #70c992;
+  font: 0.46rem/1 "Cascadia Code", Consolas, monospace;
+  font-style: normal;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-component-copy em.alpha {
+  border-color: rgba(255, 202, 73, 0.22);
+  color: #edc65d;
 }
 
 .sidebar-component > a i {
@@ -1336,6 +1448,136 @@ footer > [data-slot="badge"] {
   margin: 0;
   color: var(--dl-text-muted);
   line-height: 1.75;
+}
+
+.component-kicker,
+.roadmap-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roadmap-doc {
+  display: grid;
+  gap: 18px;
+}
+
+.roadmap-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(26px, 5vw, 48px);
+  border: 1px solid rgba(255, 209, 75, 0.18);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 92% 4%, rgba(255, 194, 47, 0.12), transparent 34%),
+    radial-gradient(circle at 6% 95%, rgba(60, 185, 107, 0.1), transparent 40%),
+    rgba(7, 28, 17, 0.74);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.roadmap-index {
+  display: block;
+  margin-top: 28px;
+  color: #e9c252;
+  font: 0.62rem "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.13em;
+}
+
+.roadmap-hero h2 {
+  margin: 12px 0 11px;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  letter-spacing: -0.045em;
+}
+
+.roadmap-hero p {
+  max-width: 720px;
+  margin: 0 0 24px;
+  color: var(--dl-text-muted);
+  line-height: 1.8;
+}
+
+.roadmap-hero code {
+  color: #ffe18a;
+  font-family: "Cascadia Code", Consolas, monospace;
+}
+
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.roadmap-card > small {
+  color: #e5bb49;
+  font: 0.56rem "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.13em;
+}
+
+.roadmap-card h3 {
+  margin: 12px 0 9px;
+}
+
+.roadmap-card p,
+.roadmap-card li,
+.roadmap-notice p {
+  color: var(--dl-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+
+.roadmap-card ul {
+  display: grid;
+  gap: 9px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roadmap-card li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.roadmap-card li i {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #e6bd4c;
+  box-shadow: 0 0 10px rgba(255, 209, 75, 0.32);
+}
+
+.roadmap-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid rgba(119, 213, 153, 0.14);
+  border-radius: 16px;
+  background: rgba(35, 100, 61, 0.12);
+}
+
+.roadmap-notice > span {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(112, 218, 151, 0.15);
+  color: #91deb0;
+  font-weight: 900;
+}
+
+.roadmap-notice b,
+.roadmap-notice p {
+  display: block;
+  margin: 0;
+}
+
+.roadmap-notice p {
+  margin-top: 4px;
 }
 
 .scenario-tabs {
@@ -1833,6 +2075,7 @@ footer > [data-slot="badge"] {
   .home-main .hero { padding-top: 58px; }
   .architecture-card,
   .quick-start-grid,
+  .roadmap-grid,
   .card-variant-grid,
   .status-list,
   .input-size-stack,

@@ -13,12 +13,12 @@
 | `--dl-layer-message` | 2010 | Message |
 | `--dl-layer-notification` | 2050 | Toast、全局通知 |
 
-层级上下文参考 Ant Design：顶层 Dialog 使用 `1000`，容器上下文递增 `100`，Select 等消费型浮层再递增 `50`。因此顶层 Select 默认是 `1050`，Dialog 内通过 Portal 渲染的 Select 自动提升到 `1150`；嵌套 Dialog 也会继续递增。业务主题可以覆盖变量，单个 `DlDialog`/`DlSelect` 也可以用 `z-index` 属性覆盖。
+层级上下文参考 Ant Design：顶层 Dialog 使用 `1000`，容器上下文递增 `100`，Select 等消费型浮层再递增 `50`。因此顶层 Select 默认是 `1050`，Dialog 内通过 Portal 渲染的 Select 自动提升到 `1150`；嵌套 Dialog、Popover 和 Tooltip 也会继续递增。业务主题可以覆盖变量，浮层组件也可以用 `z-index` 属性覆盖。
 
 Dragon Liquid Design 的 Vue 3 组件包，使用 Reka UI、Tailwind CSS 与 Tailwind Variants 构建。
 
 ```ts
-import { DlButton, DlCard, DlDialog, DlInput } from '@dragon-liquid/vue'
+import { DlButton, DlCard, DlCheckbox, DlDialog, DlInput, DlTabs } from '@dragon-liquid/vue'
 import '@dragon-liquid/vue/style.css'
 ```
 
@@ -29,4 +29,8 @@ import '@dragon-liquid/vue/style.css'
 </DlCard>
 ```
 
-当前公共组件：`DlBadge`、`DlButton`、`DlCard`、`DlDialog`、`DlIconButton`、`DlInput`、`DlSelect`、`DlTextarea`。
+当前公共组件共 63 个：
+
+- 42 个稳定组件覆盖基础、表单、内容、导航、菜单、浮层和反馈。
+- 21 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer 与 Tree；它们可正常导入，但在 `0.4.0-alpha.1` 中保留 Alpha API 语义。
+- 日期对象 `CalendarDate`、`Time` 及相关类型从包入口统一导出。

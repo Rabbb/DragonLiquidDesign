@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { DlBadge, DlButton, DlDialog, DlInput, DlSelect, type DlSelectOption } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
+import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const basicOpen = ref(false)
@@ -15,19 +16,19 @@ const content = computed(() => ({
   basic: {
     title: '模态浮层基础行为',
     description: 'Dialog 管理焦点锁定、Esc 关闭、遮罩交互和标题描述语义。',
-    code: `<DlDialog v-model:open="open" title="对话框标题" description="补充说明">\n  对话框内容\n  <template #footer>...</template>\n</DlDialog>`,
+    code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">打开对话框</DlButton>\n  <DlDialog\n    v-model:open="open"\n    title="对话框标题"\n    description="补充说明"\n  >\n    <p>这里是需要用户聚焦处理的内容。</p>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton @click="open = false">完成</DlButton>\n    </template>\n  </DlDialog>` }),
     tips: ['打开后焦点应进入对话框，关闭后返回触发元素。', '不要用 Dialog 承载长篇阅读内容或复杂多步流程。'],
   },
   'create-record': {
     title: '创建收藏记录',
     description: '适合字段较少、上下文明确的小型创建流程。',
-    code: `<DlDialog v-model:open="open" title="收录新作品" size="md">\n  <DlInput v-model="title" />\n  <DlSelect v-model="status" :options="statusOptions" />\n</DlDialog>`,
+    code: vueSfc({ imports: ['DlButton', 'DlDialog', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('')\nconst status = ref('planned')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n]`, template: `  <DlButton @click="open = true">收录新作品</DlButton>\n  <DlDialog v-model:open="open" title="收录新作品" size="md">\n    <div class="form">\n      <DlInput v-model="title" placeholder="作品标题" />\n      <DlSelect v-model="status" :options="statusOptions" />\n    </div>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton @click="open = false">确认收录</DlButton>\n    </template>\n  </DlDialog>`, style: `.form { display: grid; gap: 12px; }` }),
     tips: ['表单内容超过一个屏幕时优先使用独立页面。', '提交成功后关闭浮层，并在原页面提供结果反馈。'],
   },
   'delete-confirm': {
     title: '删除确认',
     description: '明确指出将被删除的对象、不可逆后果以及安全的取消路径。',
-    code: `<DlDialog v-model:open="open" title="移出收藏">\n  <p>确定移除《来自深渊》吗？</p>\n  <DlButton variant="danger">确认移除</DlButton>\n</DlDialog>`,
+    code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nfunction remove() {\n  console.log('removed')\n  open.value = false\n}`, template: `  <DlButton variant="danger" @click="open = true">移出收藏</DlButton>\n  <DlDialog v-model:open="open" title="移出收藏">\n    <p>确定移除《来自深渊》吗？该操作无法撤销。</p>\n    <template #footer>\n      <DlButton variant="secondary" @click="open = false">保留作品</DlButton>\n      <DlButton variant="danger" @click="remove">确认移除</DlButton>\n    </template>\n  </DlDialog>` }),
     tips: ['默认焦点优先放在安全操作上。', '危险按钮文案应描述动作，不使用模糊的“确定”。'],
   },
 }[props.scenario] ?? {} as { title: string; description: string; code: string; tips: string[] }))

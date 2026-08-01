@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { DlBadge, DlButton, DlCard, DlSelect, DlTextarea, type DlSelectOption } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
+import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const basic = ref('液态玻璃、深林绿与龙焰金，共同构成 Dragon Liquid Design 的视觉基因。')
@@ -14,19 +15,19 @@ const content = computed(() => ({
   basic: {
     title: '多行文本与状态',
     description: 'Textarea 支持尺寸、校验状态和原生属性透传，默认允许垂直调整高度。',
-    code: `<DlTextarea v-model="description" :rows="5" placeholder="输入说明..." />`,
+    code: vueSfc({ imports: ['DlTextarea'], script: `import { ref } from 'vue'\n\nconst description = ref('')`, template: `  <DlTextarea\n    v-model="description"\n    :rows="5"\n    placeholder="输入说明"\n  />` }),
     tips: ['为预期内容量提供合适的初始高度。', '限制字数时同时显示剩余数量，不要等提交后才报错。'],
   },
   'content-editor': {
     title: '内容简介编辑',
     description: '在编辑场景中同时展示内容要求、字符计数与保存动作。',
-    code: `<DlTextarea v-model="synopsis" :rows="7" />\n<small>{{ synopsis.length }} / 500</small>`,
+    code: vueSfc({ imports: ['DlTextarea'], script: `import { ref } from 'vue'\n\nconst synopsis = ref('异世界冒险从一封没有署名的委托开始。')`, template: `  <label class="editor">\n    <span>作品简介</span>\n    <DlTextarea v-model="synopsis" :rows="7" maxlength="500" />\n    <small>{{ synopsis.length }} / 500</small>\n  </label>`, style: `.editor { display: grid; gap: 8px; }\n.editor small { justify-self: end; }` }),
     tips: ['长内容编辑应考虑自动保存或草稿恢复。', '字符统计是辅助信息，不应抢占正文视觉层级。'],
   },
   'feedback-message': {
     title: '问题反馈表单',
     description: '先明确问题类别，再引导用户提供复现步骤、预期行为和实际结果。',
-    code: `<DlSelect v-model="category" :options="categories" />\n<DlTextarea v-model="message" placeholder="请描述复现步骤..." />`,
+    code: vueSfc({ imports: ['DlSelect', 'DlTextarea', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst category = ref('bug')\nconst message = ref('')\nconst categories: DlSelectOption[] = [\n  { value: 'bug', label: '功能异常' },\n  { value: 'style', label: '样式问题' },\n]`, template: `  <form class="feedback">\n    <DlSelect v-model="category" :options="categories" />\n    <DlTextarea v-model="message" placeholder="请描述复现步骤" />\n  </form>`, style: `.feedback { display: grid; gap: 12px; }` }),
     tips: ['placeholder 提供内容结构提示，但字段仍需要可见标签。', '反馈成功后明确说明后续处理方式。'],
   },
 }[props.scenario] ?? {} as { title: string; description: string; code: string; tips: string[] }))

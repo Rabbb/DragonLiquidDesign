@@ -2,25 +2,26 @@
 import { computed } from 'vue'
 import { DlBadge, DlButton, DlCard } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
+import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const content = computed(() => ({
   basic: {
     title: '容器与交互状态',
     description: 'Card 只负责组织关联内容；interactive 用于整个卡片确实可点击的情况。',
-    code: `<DlCard padding="md">静态内容</DlCard>\n<DlCard padding="lg" interactive>可交互内容</DlCard>`,
+    code: vueSfc({ imports: ['DlCard'], template: `  <div class="cards">\n    <DlCard padding="md">静态内容</DlCard>\n    <DlCard padding="lg" interactive>可交互内容</DlCard>\n  </div>`, style: `.cards { display: grid; gap: 16px; }` }),
     tips: ['卡片内边距由 padding 统一控制。', '若卡片内含多个独立按钮，不要把整个卡片标记为 interactive。'],
   },
   'data-overview': {
     title: '仪表盘数据概览',
     description: '使用一致的卡片结构承载指标、趋势和补充信息。',
-    code: `<DlCard padding="md" class="metric-card">\n  <strong>1,284</strong>\n  <span>本月访问</span>\n</DlCard>`,
+    code: vueSfc({ imports: ['DlCard'], template: `  <DlCard padding="md" class="metric-card">\n    <strong>1,284</strong>\n    <span>本月访问</span>\n  </DlCard>`, style: `.metric-card { display: grid; gap: 4px; }\n.metric-card strong { font-size: 2rem; }` }),
     tips: ['同一组指标卡保持相同高度和信息顺序。', '趋势色彩需要配合正负号或箭头，不能只靠颜色。'],
   },
   'media-collection': {
     title: '媒体收藏卡片',
     description: '组合封面、状态、标题、简介和操作，形成可扫描的内容单元。',
-    code: `<DlCard padding="none" interactive>\n  <img :src="cover" alt="作品封面" />\n  <div class="content">...</div>\n</DlCard>`,
+    code: vueSfc({ imports: ['DlCard'], script: `const cover = '/covers/made-in-abyss.webp'`, template: `  <DlCard padding="none" interactive class="media-card">\n    <img :src="cover" alt="《来自深渊》作品封面" />\n    <div class="content">\n      <h2>来自深渊</h2>\n      <p>奇幻冒险 · 正在观看</p>\n    </div>\n  </DlCard>`, style: `.media-card { display: grid; grid-template-columns: 120px 1fr; }\n.media-card img { width: 100%; height: 100%; object-fit: cover; }\n.content { padding: 16px; }` }),
     tips: ['封面必须提供替代文本或明确标记为装饰。', '简介限制行数，详情放到独立页面或 Dialog。'],
   },
 }[props.scenario] ?? {} as { title: string; description: string; code: string; tips: string[] }))

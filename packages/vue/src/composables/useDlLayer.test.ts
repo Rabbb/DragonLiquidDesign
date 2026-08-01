@@ -1,7 +1,7 @@
 import { defineComponent, h } from 'vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import { useDlModalLayer, useDlSelectLayer } from './useDlLayer'
+import { useDlModalLayer, useDlPopoverLayer, useDlSelectLayer, useDlTooltipLayer } from './useDlLayer'
 
 const LayerConsumer = defineComponent({
   props: { zIndex: Number },
@@ -46,5 +46,29 @@ describe('Dragon Liquid layer context', () => {
 
     const wrapper = mount(ModalHost)
     expect(wrapper.attributes('data-consumer-z')).toBe('calc(3000 + var(--dl-layer-consumer-offset))')
+  })
+
+  it('raises nested popovers and tooltips through the same container context', () => {
+    const FloatingHost = defineComponent({
+      setup() {
+        const popover = useDlPopoverLayer(() => undefined)
+        const tooltip = useDlTooltipLayer(() => undefined)
+        return () => h('div', {
+          'data-popover-z': popover.value,
+          'data-tooltip-z': tooltip.value,
+        })
+      },
+    })
+    const ModalHost = defineComponent({
+      setup() {
+        useDlModalLayer(() => undefined)
+        return () => h(FloatingHost)
+      },
+    })
+
+    const wrapper = mount(ModalHost)
+    expect(wrapper.attributes('data-popover-z')).toContain('var(--dl-layer-container-offset)')
+    expect(wrapper.attributes('data-tooltip-z')).toContain('var(--dl-layer-container-offset)')
+    expect(wrapper.attributes('data-tooltip-z')).not.toBe('var(--dl-layer-tooltip)')
   })
 })

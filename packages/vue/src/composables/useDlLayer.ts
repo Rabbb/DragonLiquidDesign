@@ -52,3 +52,27 @@ export function useDlSelectLayer(customZIndex: CustomZIndex) {
     return 'var(--dl-layer-select)'
   })
 }
+
+function useDlContainerLayer(customZIndex: CustomZIndex, fallback: string) {
+  const parentLayer = inject(dlLayerContextKey, undefined)
+
+  const layer = computed(() => {
+    const customValue = customZIndex()
+    if (customValue !== undefined) return String(customValue)
+    if (parentLayer) {
+      return addLayerOffset(parentLayer.value, 'var(--dl-layer-container-offset)')
+    }
+    return fallback
+  })
+
+  provide(dlLayerContextKey, layer)
+  return layer
+}
+
+export function useDlPopoverLayer(customZIndex: CustomZIndex) {
+  return useDlContainerLayer(customZIndex, 'var(--dl-layer-popover)')
+}
+
+export function useDlTooltipLayer(customZIndex: CustomZIndex) {
+  return useDlContainerLayer(customZIndex, 'var(--dl-layer-tooltip)')
+}

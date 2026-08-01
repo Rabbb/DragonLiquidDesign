@@ -1,6 +1,23 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { DlBadge, DlButton, DlCard } from '@dragon-liquid/vue'
 import { componentCatalog, componentCategories, componentRoute } from '../catalog'
+
+const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
+const roadmapCount = computed(() => componentCatalog.length - readyCount.value)
+const readyScenarioCount = computed(() => componentCatalog
+  .filter(component => component.implementation === 'ready')
+  .reduce((total, component) => total + component.scenarios.length, 0))
+
+function componentsFor(categoryId: typeof componentCategories[number]['id']) {
+  return componentCatalog.filter(component => component.category === categoryId)
+}
+
+function previewFor(categoryId: typeof componentCategories[number]['id']) {
+  return [...componentsFor(categoryId)]
+    .sort((left, right) => Number(right.implementation === 'ready') - Number(left.implementation === 'ready'))
+    .slice(0, 4)
+}
 </script>
 
 <template>
@@ -48,10 +65,10 @@ import { componentCatalog, componentCategories, componentRoute } from '../catalo
 
     <section class="metrics" aria-label="组件库指标">
       <DlCard v-for="metric in [
-        ['08', '核心组件', '按需浏览'],
-        ['24', '案例场景', '分段加载'],
+        [String(componentCatalog.length).padStart(2, '0'), '组件目录', `${readyCount} READY`],
+        [String(readyScenarioCount).padStart(2, '0'), '完成案例', '按需加载'],
+        [String(roadmapCount).padStart(2, '0'), '规划组件', 'REKA ROADMAP'],
         ['06', '语义色调', '状态完整'],
-        ['100%', 'TypeScript', '类型导出'],
       ]" :key="metric[1]" padding="md" class="metric-card">
         <strong>{{ metric[0] }}</strong>
         <div><b>{{ metric[1] }}</b><small>{{ metric[2] }}</small></div>
@@ -99,14 +116,18 @@ import { componentCatalog, componentCategories, componentRoute } from '../catalo
         <div><h2>从组件目录开始查询</h2><p>组件文档按类别、组件和实际场景分层，只加载正在阅读的内容。</p></div>
       </div>
       <div class="home-catalog-grid">
-        <DlCard v-for="category in componentCategories" :key="category" padding="lg" class="home-category-card">
-          <header><span>{{ category }}</span><DlBadge tone="muted">{{ componentCatalog.filter(item => item.category === category).length }} ITEMS</DlBadge></header>
+        <DlCard v-for="category in componentCategories" :key="category.id" padding="lg" class="home-category-card">
+          <header><span>{{ category.label }} <small>{{ category.english }}</small></span><DlBadge tone="muted">{{ componentsFor(category.id).length }} ITEMS</DlBadge></header>
           <a
-            v-for="item in componentCatalog.filter(component => component.category === category)"
+            v-for="item in previewFor(category.id)"
             :key="item.id"
             :href="componentRoute(item.id)"
           >
-            <b>{{ item.name }}</b><small>{{ item.summary }}</small><i>→</i>
+            <b>{{ item.name }} <em :class="{ alpha: item.maturity === 'alpha' }">{{ item.maturity === 'alpha' ? 'ALPHA' : item.implementation === 'ready' ? 'READY' : 'ROADMAP' }}</em></b>
+            <small>{{ item.summary }}</small><i>→</i>
+          </a>
+          <a class="home-category-more" :href="componentRoute(componentsFor(category.id)[0].id)">
+            <b>浏览 {{ category.label }}完整目录</b><small>{{ category.summary }}</small><i>＋{{ Math.max(componentsFor(category.id).length - 4, 0) }}</i>
           </a>
         </DlCard>
       </div>
@@ -120,7 +141,7 @@ import { componentCatalog, componentCategories, componentRoute } from '../catalo
       <div class="quick-start-grid">
         <DlCard padding="lg" class="code-panel">
           <div class="code-head"><span><i /> PowerShell</span><DlBadge tone="accent">INSTALL</DlBadge></div>
-          <pre><code><b>npm install</b> O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.1.2.tgz</code></pre>
+          <pre><code><b>npm install</b> O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.1.tgz</code></pre>
         </DlCard>
         <DlCard padding="lg" class="code-panel">
           <div class="code-head"><span><i /> main.ts</span><DlBadge tone="success">IMPORT</DlBadge></div>

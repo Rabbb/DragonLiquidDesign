@@ -2,25 +2,26 @@
 import { computed } from 'vue'
 import { DlBadge, DlCard, DlIconButton } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
+import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const content = computed(() => ({
   basic: {
     title: '紧凑操作与无障碍标签',
     description: 'IconButton 始终要求 label，即使图标在视觉上看起来足够直观。',
-    code: `<DlIconButton label="收藏">☆</DlIconButton>\n<DlIconButton label="编辑" variant="ghost">✎</DlIconButton>`,
+    code: vueSfc({ imports: ['DlIconButton'], template: `  <div class="actions">\n    <DlIconButton label="收藏">☆</DlIconButton>\n    <DlIconButton label="编辑" variant="ghost">✎</DlIconButton>\n  </div>`, style: `.actions { display: flex; gap: 8px; }` }),
     tips: ['图标按钮必须传入可理解的 label。', '不要在同一工具栏混用意义相同但图形不同的图标。'],
   },
   'editor-toolbar': {
     title: '编辑器格式工具栏',
     description: '将同类操作成组排列，并通过 aria-label 保持键盘与读屏体验。',
-    code: `<div role="toolbar" aria-label="文字格式">\n  <DlIconButton label="加粗">B</DlIconButton>\n  <DlIconButton label="斜体">I</DlIconButton>\n</div>`,
+    code: vueSfc({ imports: ['DlIconButton'], template: `  <div class="toolbar" role="toolbar" aria-label="文字格式">\n    <DlIconButton label="加粗">B</DlIconButton>\n    <DlIconButton label="斜体">I</DlIconButton>\n  </div>`, style: `.toolbar { display: flex; gap: 4px; }` }),
     tips: ['工具栏本身应提供可读名称。', '选中状态需要额外的 pressed 语义；当前版本可由消费方补充。'],
   },
   'card-actions': {
     title: '卡片快捷操作',
     description: '在内容卡片上提供收藏、编辑和移除操作，危险动作保持清晰区分。',
-    code: `<DlIconButton label="收藏作品">☆</DlIconButton>\n<DlIconButton label="编辑资料" variant="ghost">✎</DlIconButton>\n<DlIconButton label="移出收藏" variant="danger">×</DlIconButton>`,
+    code: vueSfc({ imports: ['DlIconButton'], template: `  <div class="actions">\n    <DlIconButton label="收藏作品">☆</DlIconButton>\n    <DlIconButton label="编辑资料" variant="ghost">✎</DlIconButton>\n    <DlIconButton label="移出收藏" variant="danger">×</DlIconButton>\n  </div>`, style: `.actions { display: flex; gap: 8px; }` }),
     tips: ['label 应包含操作对象，例如“删除项目”而非仅“删除”。', '危险操作通常仍需 Dialog 二次确认。'],
   },
 }[props.scenario] ?? {} as { title: string; description: string; code: string; tips: string[] }))
