@@ -39,4 +39,9 @@ import '@dragon-liquid/vue/style.css'
 - `0.4.0-alpha.5` 从 TodoMoe 的 Popconfirm 与 Tooltip 提取 Hover Card 玻璃面、方位能量边和反馈动效。
 - `0.4.0-alpha.6` 修正 Popover 炫彩条随实际弹出方位定位，并补齐左右侧纵向渐变。
 - `0.4.0-alpha.7` 调整 Input 字段外壳，允许业务 label 合法包裹控件，并扩展组件展厅常用案例。
+- `0.4.0-alpha.8` 让 Tooltip Accent 继承 Button Primary 的明亮金色视觉，与 Warning 的深橙警示面明确区分。
+- `0.4.0-alpha.9` 将 Tooltip Warning 优化为琥珀熔岩视觉，以金黄熔融核心和深褐岩层区别于红色 Danger。
+- `0.4.0-alpha.10` 将 Tooltip Accent 从实体金色改为浅金玻璃、乳白高光与青绿折射的光魔法视觉。
+- `0.4.0-alpha.11` 统一 Tooltip Accent 与 Warning 的深色玻璃基底，以克制的金白魔法微光和琥珀熔光表达语义。
+- `0.4.0-alpha.12` 将 Tooltip 全部六种 tone 统一为分层深色玻璃，并升级 Default、Success、Danger 与 Muted 的语义光色。
 - 日期对象 `CalendarDate`、`Time` 及相关类型从包入口统一导出。

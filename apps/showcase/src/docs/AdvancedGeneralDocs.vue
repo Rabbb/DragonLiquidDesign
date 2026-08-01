@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import {
   DlAlertDialog, DlAspectRatio, DlButton, DlContextMenu, DlDropdownMenu, DlHoverCard, DlMenubar, DlNavigationMenu,
   DlPagination, DlProgress, DlScrollArea, DlSplitter, DlStepper, DlToast, DlToolbar,
-  type DlMenuGroup, type DlMenuItem, type DlNavigationItem, type DlSplitterPanel, type DlStepItem,
+  type DlMenuGroup, type DlMenuItem, type DlNavigationItem, type DlSplitterPanel, type DlStepItem, type DlTone,
 } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
 import DocExampleShell from '../components/DocExampleShell.vue'
@@ -14,6 +14,16 @@ const alertOpen = ref(false)
 const page = ref(4)
 const step = ref(2)
 const toastOpen = ref(false)
+const toastTone = ref<DlTone>('default')
+const toneOptions: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]
+const toastToneInfo = computed(() => toneOptions.find(item => item.value === toastTone.value) ?? toneOptions[0])
 const lastAction = ref('尚未执行操作')
 const menuItems: DlMenuItem[] = [
   { value: 'edit', label: '编辑作品', shortcut: 'E' }, { value: 'favorite', label: '加入收藏', shortcut: 'F' },
@@ -91,6 +101,35 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
   toast: {
     basic: vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">保存作品资料</DlButton>
   <DlToast v-model:open="open" title="保存成功" description="作品资料已经更新。" tone="success" action-label="查看" />` }),
+    'tone-gallery': vueSfc({ imports: ['DlButton', 'DlToast', 'type DlTone'], script: `import { ref } from 'vue'
+
+const open = ref(false)
+const activeTone = ref<DlTone>('default')
+const tones: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]
+
+function showTone(tone: DlTone) {
+  activeTone.value = tone
+  open.value = true
+}`, template: `  <div class="tone-grid">
+    <DlButton v-for="item in tones" :key="item.value" variant="secondary" @click="showTone(item.value)">
+      {{ item.label }}
+    </DlButton>
+  </div>
+  <DlToast
+    v-model:open="open"
+    :title="activeTone + ' 色调通知'"
+    :description="tones.find(item => item.value === activeTone)?.description"
+    :tone="activeTone"
+    :duration="8000"
+    closable
+  />`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
     'upload-progress': vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst progress = ref(68)`, template: `  <DlButton @click="open = true">上传新封面</DlButton>
   <DlToast
     v-model:open="open"
@@ -177,6 +216,7 @@ function selectAction(value: string) { lastAction.value = value }
 
       <template v-else-if="componentDefinition.id === 'toast'">
         <template v-if="scenario === 'basic'"><DlButton @click="toastOpen = true">保存作品资料</DlButton><DlToast v-model:open="toastOpen" title="保存成功" description="作品资料已经更新。" tone="success" action-label="查看" /></template>
+        <template v-else-if="scenario === 'tone-gallery'"><div class="toast-tone-grid"><DlButton v-for="item in toneOptions" :key="item.value" variant="secondary" @click="toastTone = item.value; toastOpen = true">{{ item.label }}</DlButton></div><DlToast v-model:open="toastOpen" :title="toastTone + ' 色调通知'" :description="toastToneInfo.description" :tone="toastTone" :duration="8000" closable /></template>
         <template v-else-if="scenario === 'upload-progress'"><DlButton @click="toastOpen = true">上传新封面</DlButton><DlToast v-model:open="toastOpen" title="正在处理封面" description="已上传 3.4 MB / 5 MB" tone="accent" :duration="12000" show-progress :progress="68" /></template>
         <template v-else-if="scenario === 'background-notice'"><DlButton variant="secondary" @click="toastOpen = true">运行后台同步</DlButton><DlToast v-model:open="toastOpen" title="后台同步完成" description="新增 12 部作品到本地索引。" tone="default" action-label="查看记录" :duration="6000" /></template>
         <template v-else-if="scenario === 'network-warning'"><DlButton variant="secondary" @click="toastOpen = true">模拟网络波动</DlButton><DlToast v-model:open="toastOpen" title="网络连接不稳定" description="自动重试会在后台继续，当前修改已保存到本地。" tone="warning" action-label="查看状态" :duration="9000" /></template>
@@ -193,6 +233,7 @@ function selectAction(value: string) { lastAction.value = value }
 <style scoped>
 .advanced-general-demo { display: grid; gap: 1.2rem; width: min(100%, 760px); margin: 0 auto; padding: 1rem; justify-items: start; }
 .advanced-general-demo output { color: var(--dl-text-faint); font-size: .76rem; }
+.toast-tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
 .ratio-art { display: grid; width: 100%; height: 100%; place-content: center; justify-items: center; gap: .4rem; background: radial-gradient(circle at 30% 20%, rgba(255,215,0,.22), transparent 40%), linear-gradient(145deg, #1a472a, #07130d); color: var(--dl-text); }
 .ratio-art b { font-size: 2rem; }.ratio-art span { color: var(--dl-text-muted); }
 .context-target { width: 100%; min-height: 180px; display: grid; place-content: center; text-align: center; border: 1px dashed var(--dl-border-strong); border-radius: var(--dl-radius-md); color: var(--dl-text-muted); }.context-target small { margin-top: .4rem; color: var(--dl-text-faint); }
@@ -202,4 +243,5 @@ function selectAction(value: string) { lastAction.value = value }
 .episode-preview { display: grid; gap: 12px; }.episode-preview header { display: flex; justify-content: space-between; }.episode-preview p { margin: 0; }
 .scroll-demo { width: 100%; height: 260px; }.scroll-row { display: flex; gap: 1rem; padding: .75rem 1rem; border-bottom: 1px solid var(--dl-border); color: var(--dl-text-muted); }.scroll-row b { color: #fde68a; }
 .splitter-demo { width: 100%; height: 260px; }.split-panel { display: flex; height: 100%; flex-direction: column; gap: .7rem; padding: 1rem; color: var(--dl-text-muted); }.split-panel b { color: var(--dl-text); }
+@media (max-width: 560px) { .toast-tone-grid { grid-template-columns: 1fr; } }
 </style>

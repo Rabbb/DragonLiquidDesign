@@ -105,4 +105,42 @@ describe('ported overlay presentation', () => {
     expect(source).toContain(".dl-popover[data-side='right']::after")
     expect(source).toContain('--dl-popover-rail-vertical')
   })
+
+  it('keeps accent tooltips light and magical without collapsing into warning', () => {
+    const filename = 'DlTooltip.vue'
+    const source = readFileSync(new URL(filename, import.meta.url), 'utf8')
+    const accentRule = source.match(/\.dl-tone-accent \{([^}]+)\}/)?.[1]
+    const warningRule = source.match(/\.dl-tone-warning \{([^}]+)\}/)?.[1]
+
+    expect(accentRule).toContain('radial-gradient')
+    expect(accentRule).toContain('rgba(104, 225, 255, 0.12)')
+    expect(accentRule).toContain('rgba(255, 230, 150, 0.18)')
+    expect(accentRule).not.toContain('var(--dl-button-primary-bg)')
+    expect(warningRule).not.toContain('var(--dl-button-primary-bg)')
+  })
+
+  it('keeps warning tooltips in the amber lava range instead of danger red', () => {
+    const filename = 'DlTooltip.vue'
+    const source = readFileSync(new URL(filename, import.meta.url), 'utf8')
+    const warningRule = source.match(/\.dl-tone-warning \{([^}]+)\}/)?.[1]
+    const dangerRule = source.match(/\.dl-tone-danger \{([^}]+)\}/)?.[1]
+
+    expect(warningRule).toContain('radial-gradient')
+    expect(warningRule).toContain('rgba(255, 193, 92, 0.3)')
+    expect(warningRule).not.toContain('255, 112, 112')
+    expect(dangerRule).toContain('rgba(76, 28, 38, 0.98)')
+  })
+
+  it('gives every tooltip tone the same layered glass structure', () => {
+    const filename = 'DlTooltip.vue'
+    const source = readFileSync(new URL(filename, import.meta.url), 'utf8')
+
+    for (const tone of ['default', 'accent', 'success', 'warning', 'danger', 'muted']) {
+      const rule = source.match(new RegExp(`\\.dl-tone-${tone} \\{([^}]+)\\}`))?.[1]
+      expect(rule).toContain('radial-gradient')
+      expect(rule).toContain('--dl-tooltip-border:')
+      expect(rule).toContain('--dl-tooltip-shadow:')
+      expect(rule).toContain('--dl-tooltip-rail:')
+    }
+  })
 })

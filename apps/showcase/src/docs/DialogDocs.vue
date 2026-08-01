@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlBadge, DlButton, DlDialog, DlInput, DlSelect, type DlSelectOption } from '@dragon-liquid/vue'
+import { DlBadge, DlButton, DlDialog, DlInput, DlSelect, type DlSelectOption, type DlTone } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const basicOpen = ref(false)
+const toneGalleryOpen = ref(false)
+const activeTone = ref<DlTone>('default')
 const createOpen = ref(false)
 const featuredOpen = ref(false)
 const successOpen = ref(false)
@@ -15,6 +17,15 @@ const archiveOpen = ref(false)
 const title = ref('来自深渊')
 const status = ref('planned')
 const statusOptions: DlSelectOption[] = [{ value: 'planned', label: '等待观看' }, { value: 'watching', label: '正在观看' }, { value: 'completed', label: '已经看完' }]
+const toneOptions: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]
+const activeToneInfo = computed(() => toneOptions.find(item => item.value === activeTone.value) ?? toneOptions[0])
 
 const content = computed(() => ({
   basic: {
@@ -22,6 +33,47 @@ const content = computed(() => ({
     description: 'Dialog 管理焦点锁定、Esc 关闭、遮罩交互和标题描述语义。',
     code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">打开对话框</DlButton>\n  <DlDialog\n    v-model:open="open"\n    title="对话框标题"\n    description="补充说明"\n  >\n    <p>这里是需要用户聚焦处理的内容。</p>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton @click="open = false">完成</DlButton>\n    </template>\n  </DlDialog>` }),
     tips: ['打开后焦点应进入对话框，关闭后返回触发元素。', '不要用 Dialog 承载长篇阅读内容或复杂多步流程。'],
+  },
+  'tone-gallery': {
+    title: 'Dialog 全部语义色调',
+    description: '逐一打开六种 DlTone，比较边框、顶部炫彩条与环境光的语义变化。',
+    code: vueSfc({ imports: ['DlButton', 'DlDialog', 'type DlTone'], script: `import { ref } from 'vue'
+
+const open = ref(false)
+const activeTone = ref<DlTone>('default')
+const tones: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]
+
+function showTone(tone: DlTone) {
+  activeTone.value = tone
+  open.value = true
+}`, template: `  <div class="tone-grid">
+    <button v-for="item in tones" :key="item.value" type="button" @click="showTone(item.value)">
+      <b>{{ item.label }}</b>
+      <span>{{ item.description }}</span>
+    </button>
+  </div>
+  <DlDialog
+    v-model:open="open"
+    :title="activeTone + ' 色调对话框'"
+    :description="tones.find(item => item.value === activeTone)?.description"
+    :tone="activeTone"
+    size="sm"
+  >
+    <p>当前 Dialog 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p>
+    <template #footer>
+      <DlButton @click="open = false">关闭预览</DlButton>
+    </template>
+  </DlDialog>`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tone-grid button { display: grid; gap: 5px; padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: rgba(255,255,255,.06); color: #fff; text-align: left; cursor: pointer; }
+.tone-grid span { color: #a9b9b0; font-size: .78rem; }` }),
+    tips: ['Tone 只改变语义视觉，不改变 Dialog 的焦点锁定与关闭行为。', '业务场景应选择一个固定 tone；此页用于设计对照与验收。'],
   },
   'create-record': {
     title: '创建收藏记录',
@@ -134,6 +186,11 @@ const content = computed(() => ({
       <DlDialog v-model:open="basicOpen" title="Dragon Liquid Dialog" description="这是一个具备完整无障碍语义的基础对话框。" size="sm"><div class="dialog-inline-demo"><span>龍</span><p>按下 Esc、点击遮罩或关闭按钮都可以离开。</p></div><template #footer><DlButton variant="ghost" @click="basicOpen = false">取消</DlButton><DlButton @click="basicOpen = false">完成</DlButton></template></DlDialog>
     </div>
 
+    <div v-else-if="scenario === 'tone-gallery'" class="tone-gallery-grid">
+      <button v-for="item in toneOptions" :key="item.value" type="button" class="tone-gallery-item" @click="activeTone = item.value; toneGalleryOpen = true"><b>{{ item.label }}</b><span>{{ item.description }}</span></button>
+      <DlDialog v-model:open="toneGalleryOpen" :title="`${activeTone} 色调对话框`" :description="activeToneInfo.description" :tone="activeTone" size="sm"><p>当前 Dialog 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p><template #footer><DlButton @click="toneGalleryOpen = false">关闭预览</DlButton></template></DlDialog>
+    </div>
+
     <div v-else-if="scenario === 'create-record'" class="center-trigger"><DlButton size="lg" @click="createOpen = true"><template #leading>＋</template>收录新作品</DlButton>
       <DlDialog v-model:open="createOpen" title="收录新作品" description="填写最基本的信息，之后可以继续完善资料。" size="md"><div class="dialog-form"><label class="scenario-field"><span>作品标题</span><DlInput v-model="title" /></label><label class="scenario-field"><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></div><template #footer><DlButton variant="ghost" @click="createOpen = false">取消</DlButton><DlButton @click="createOpen = false">确认收录</DlButton></template></DlDialog>
     </div>
@@ -164,4 +221,9 @@ const content = computed(() => ({
 .dialog-message { display: grid; gap: 12px; }
 .dialog-message h3, .dialog-message p { margin: 0; }
 .dialog-message p { color: var(--dl-text-muted); line-height: 1.7; }
+.tone-gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(100%, 660px); margin: 0 auto; }
+.tone-gallery-item { display: grid; gap: 5px; padding: 14px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); background: rgba(255,255,255,.06); color: var(--dl-text); text-align: left; cursor: pointer; }
+.tone-gallery-item:hover { border-color: var(--dl-border-strong); background: rgba(255,255,255,.1); }
+.tone-gallery-item span { color: var(--dl-text-muted); font-size: .78rem; }
+@media (max-width: 560px) { .tone-gallery-grid { grid-template-columns: 1fr; } }
 </style>

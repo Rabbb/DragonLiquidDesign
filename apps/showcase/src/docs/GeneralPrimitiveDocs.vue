@@ -16,6 +16,7 @@ import {
   DlTooltip,
   type DlAccordionItem,
   type DlTabItem,
+  type DlTone,
 } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
 import DocExampleShell from '../components/DocExampleShell.vue'
@@ -28,6 +29,14 @@ const collapsibleOpen = ref(false)
 const popoverOpen = ref(false)
 const dialogOpen = ref(false)
 const note = ref('适合周末继续观看')
+const toneOptions: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]
 
 const accordionItems: DlAccordionItem[] = [
   { value: 'story', title: '故事简介', description: '展开查看无剧透梗概', content: '异世界冒险从一封没有署名的委托开始，主角需要在城市与迷宫之间寻找线索。' },
@@ -71,6 +80,19 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     </template>
     当前浮层会根据可用空间自动调整位置，炫彩条始终位于箭头对侧。
   </DlPopover>` }),
+    'tone-gallery': vueSfc({ imports: ['DlButton', 'DlPopover', 'type DlTone'], script: `const tones: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]`, template: `  <div class="tone-grid">
+    <DlPopover v-for="item in tones" :key="item.value" :title="item.label" :tone="item.value">
+      <template #trigger><DlButton variant="secondary">{{ item.label }}</DlButton></template>
+      {{ item.description }}。当前展示 <code>{{ item.value }}</code> 的完整视觉。
+    </DlPopover>
+  </div>`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
     'application-flow': vueSfc({ imports: ['DlButton', 'DlInput', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst note = ref('适合周末继续观看')`, template: `  <DlPopover v-model:open="open" title="快捷编辑笔记" tone="accent" align="start">
     <template #trigger>
       <DlButton>编辑个人笔记</DlButton>
@@ -151,6 +173,23 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     <DlProgress :model-value="64" label="Medium" tone="accent" show-value />
     <DlProgress :model-value="100" label="Large" size="lg" tone="success" status="success" show-value />
   </div>`, style: `.progress-list { display: grid; gap: 24px; }` }),
+    'tone-gallery': vueSfc({ imports: ['DlProgress', 'type DlTone'], script: `const tones: { value: DlTone; label: string; valueNow: number }[] = [
+  { value: 'default', label: 'Default 默认', valueNow: 18 },
+  { value: 'accent', label: 'Accent 强调', valueNow: 34 },
+  { value: 'success', label: 'Success 成功', valueNow: 100 },
+  { value: 'warning', label: 'Warning 警告', valueNow: 62 },
+  { value: 'danger', label: 'Danger 危险', valueNow: 43 },
+  { value: 'muted', label: 'Muted 弱化', valueNow: 76 },
+]`, template: `  <div class="progress-tones">
+    <DlProgress
+      v-for="item in tones"
+      :key="item.value"
+      :model-value="item.valueNow"
+      :label="item.label"
+      :tone="item.value"
+      show-value
+    />
+  </div>`, style: `.progress-tones { display: grid; gap: 22px; }` }),
     'application-flow': vueSfc({ imports: ['DlProgress'], template: `  <section class="import-task">
     <DlProgress :model-value="100" label="读取媒体信息" helper="已完成" tone="success" status="success" show-value />
     <DlProgress :model-value="68" label="同步分类标签" helper="正在合并本地与远程标签" tone="accent" show-value />
@@ -193,6 +232,25 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     <DlTooltip text="显示在下方" side="bottom" tone="success"><DlButton variant="secondary">Bottom</DlButton></DlTooltip>
     <DlTooltip text="显示在左侧" side="left" tone="warning"><DlButton variant="secondary">Left</DlButton></DlTooltip>
   </div>`, style: `.tooltip-grid { display: flex; flex-wrap: wrap; gap: 12px; }` }),
+    'tone-gallery': vueSfc({ imports: ['DlButton', 'DlTooltip', 'type DlTone'], script: `const tones: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]`, template: `  <div class="tone-grid">
+    <DlTooltip
+      v-for="item in tones"
+      :key="item.value"
+      :title="item.label"
+      :text="item.description"
+      :tone="item.value"
+      side="bottom"
+    >
+      <DlButton variant="secondary">{{ item.label }}</DlButton>
+    </DlTooltip>
+  </div>`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
     'application-flow': vueSfc({ imports: ['DlIconButton', 'DlTooltip'], template: `  <div class="toolbar">
     <DlTooltip text="加入收藏"><DlIconButton label="加入收藏">☆</DlIconButton></DlTooltip>
     <DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip>
@@ -250,6 +308,9 @@ const content = computed(() => ({
           <template #trigger><DlButton variant="secondary">打开气泡卡片</DlButton></template>
           当前浮层会根据可用空间自动调整位置，炫彩条始终位于箭头对侧。
         </DlPopover>
+        <div v-else-if="scenario === 'tone-gallery'" class="tone-control-grid">
+          <DlPopover v-for="item in toneOptions" :key="item.value" :title="item.label" :tone="item.value"><template #trigger><DlButton variant="secondary">{{ item.label }}</DlButton></template>{{ item.description }}。当前展示 <code>{{ item.value }}</code> 的完整视觉。</DlPopover>
+        </div>
         <DlPopover v-else-if="scenario === 'application-flow'" v-model:open="popoverOpen" title="快捷编辑笔记" tone="accent" align="start">
           <template #trigger><DlButton>编辑个人笔记</DlButton></template>
           <form class="popover-quick-edit" @submit.prevent="popoverOpen = false"><label><span>收藏笔记</span><DlInput v-model="note" /></label><footer><DlButton type="button" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton type="submit">保存</DlButton></footer></form>
@@ -278,6 +339,7 @@ const content = computed(() => ({
 
       <div v-else-if="componentDefinition.id === 'progress'" class="progress-stack">
         <template v-if="scenario === 'basic'"><DlProgress :model-value="28" label="Small" size="sm" show-value /><DlProgress :model-value="64" label="Medium" tone="accent" show-value /><DlProgress :model-value="100" label="Large" size="lg" tone="success" status="success" show-value /></template>
+        <template v-else-if="scenario === 'tone-gallery'"><DlProgress v-for="(item, index) in toneOptions" :key="item.value" :model-value="[18, 34, 100, 62, 43, 76][index]" :label="item.label" :tone="item.value" show-value /></template>
         <template v-else-if="scenario === 'application-flow'"><DlProgress :model-value="100" label="读取媒体信息" helper="已完成" tone="success" status="success" show-value /><DlProgress :model-value="68" label="同步分类标签" helper="正在合并本地与远程标签" tone="accent" show-value /><DlProgress :model-value="16" label="生成封面缩略图" helper="剩余 5 张" tone="warning" show-value /></template>
         <div v-else-if="scenario === 'nested-composition'" class="waiting-card"><b>正在分析媒体文件</b><p>任务耗时暂时无法估算，请保持页面开启。</p><DlProgress :model-value="null" tone="accent" label="分析中" show-value /></div>
         <div v-else-if="scenario === 'failure-state'" class="progress-action"><DlProgress :model-value="43" label="上传原始封面" helper="连接已中断，文件没有完成上传" tone="danger" status="danger" show-value /><DlButton variant="danger" size="sm">重新上传</DlButton></div>
@@ -290,6 +352,7 @@ const content = computed(() => ({
 
       <template v-else-if="componentDefinition.id === 'tooltip'">
         <div v-if="scenario === 'basic'" class="tooltip-row"><DlTooltip text="显示在上方" side="top"><DlButton variant="secondary">Top</DlButton></DlTooltip><DlTooltip text="显示在右侧" side="right" tone="accent"><DlButton variant="secondary">Right</DlButton></DlTooltip><DlTooltip text="显示在下方" side="bottom" tone="success"><DlButton variant="secondary">Bottom</DlButton></DlTooltip><DlTooltip text="显示在左侧" side="left" tone="warning"><DlButton variant="secondary">Left</DlButton></DlTooltip></div>
+        <div v-else-if="scenario === 'tone-gallery'" class="tone-control-grid"><DlTooltip v-for="item in toneOptions" :key="item.value" :title="item.label" :text="item.description" :tone="item.value" side="bottom"><DlButton variant="secondary">{{ item.label }}</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'application-flow'" class="tooltip-row"><DlTooltip text="加入收藏"><DlIconButton label="加入收藏">☆</DlIconButton></DlTooltip><DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip><DlTooltip text="移除收藏" tone="danger"><DlIconButton label="移除收藏" variant="danger">×</DlIconButton></DlTooltip></div>
         <template v-else-if="scenario === 'nested-composition'"><DlButton @click="dialogOpen = true">打开详情对话框</DlButton><DlDialog v-model:open="dialogOpen" title="作品详情"><p>对话框中的紧凑操作仍可使用 Tooltip。</p><DlTooltip title="键盘可用" text="悬停或按 Tab 聚焦都会显示提示。" tone="accent"><DlButton variant="secondary">聚焦或悬停</DlButton></DlTooltip></DlDialog></template>
         <div v-else class="secondary-hint"><span>列表视图</span><DlTooltip title="键盘快捷键" text="按 G，然后按 L，可从任意页面返回收藏列表。" tone="muted" side="bottom" :delay-duration="500"><DlButton variant="ghost" size="sm" aria-label="查看列表视图快捷键">G L</DlButton></DlTooltip></div>
@@ -301,6 +364,7 @@ const content = computed(() => ({
 <style scoped>
 .general-demo { width: min(100%, 720px); margin: 0 auto; padding: 1rem; }
 .avatar-row, .tooltip-row { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.tone-control-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
 .progress-stack, .separator-demo { display: grid; gap: 1.5rem; width: 100%; }
 .separator-demo p, .waiting-card p { color: var(--dl-text-muted); }
 .popover-quick-edit, .popover-quick-edit label { display: grid; gap: 12px; }
@@ -316,6 +380,7 @@ const content = computed(() => ({
 .background-task { display: grid; gap: 12px; padding: 18px; border: 1px solid rgba(148, 163, 184, .16); border-radius: var(--dl-radius-md); }
 .background-task > span { color: #94a3b8; font-size: .78rem; }
 .secondary-hint { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px; border: 1px solid rgba(148, 163, 184, .16); border-radius: var(--dl-radius-md); color: var(--dl-text-muted); }
+@media (max-width: 560px) { .tone-control-grid { grid-template-columns: 1fr; } }
 .waiting-card { display: grid; gap: 14px; padding: 20px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); background: rgba(3, 14, 8, .32); }
 .waiting-card p { margin: 0; }
 </style>

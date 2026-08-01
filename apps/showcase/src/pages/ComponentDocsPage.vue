@@ -203,7 +203,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
         <h1>{{ selectedComponent.name }}</h1>
         <p>{{ selectedComponent.summary }}</p>
       </div>
-      <a href="/packages/dragon-liquid-vue-0.4.0-alpha.7.tgz" download>
+      <a href="/packages/dragon-liquid-vue-0.4.0-alpha.12.tgz" download>
         <DlButton variant="secondary" size="sm">下载 npm 包 ↓</DlButton>
       </a>
     </header>

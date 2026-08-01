@@ -79,6 +79,16 @@
 
 `0.4.0-alpha.7` 为 Dialog、Drawer、Popover、Tooltip、Toast、Hover Card 与 Progress 补充按用途拆分的常用案例；同时将 Input 外壳改为中性容器，消除业务 label 与组件 label 嵌套造成的布局和语义问题。
 
+`0.4.0-alpha.8` 为全部 `DlTone` 组件提供集中色调展厅，并让 Tooltip Accent 继承 Button Primary 的明亮金色表面与深色文字，使其和深橙色 Warning 保持清晰区分。
+
+`0.4.0-alpha.9` 将 Tooltip Warning 调整为只使用琥珀、橙金与深褐色域的熔岩表面，以高亮熔融核心表达“需要留意”，同时避开 Danger 的红色失败语义。
+
+`0.4.0-alpha.10` 降低 Tooltip Accent 的实体感：不再直接复用 Button Primary 的厚重橙金表面，而以浅金透明玻璃、乳白高光和青绿折射表达短暂浮现的光魔法。
+
+`0.4.0-alpha.11` 将 Tooltip Accent 与 Warning 收敛回组件统一的深色玻璃材质：Accent 仅保留克制的金白魔法微光和少量青色折射，Warning 仅保留暗褐玻璃中的低强度琥珀熔光，避免高亮渐变造成样式断层。
+
+`0.4.0-alpha.12` 将 Tooltip 的 Default、Success、Danger 与 Muted 同步升级为分层深色玻璃；六种 tone 统一背景深度、透明度、边框和阴影结构，仅通过奥术中性光、翡翠生命光、红宝石危险光与月灰弱化光表达语义。
+
 复杂交互必须基于 Reka UI；所有有视觉变体的组件使用 Tailwind Variants。公共 API 保持高层、业务无关，不能直接透传整套 Nuxt UI 依赖。
 
 ## 4. 包结构与公共 API
@@ -109,7 +119,7 @@ O:\DragonLiquidDesign
 
 1. 在 `packages/vue` 执行构建和测试。
 2. 使用 `npm pack --pack-destination O:\DragonLiquidDesign\registry` 生成版本化 `.tgz`。
-3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.7.tgz` 安装，引用的是发布产物而非源码。
+3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.12.tgz` 安装，引用的是发布产物而非源码。
 4. 修改组件后必须提升包版本、重新打包并在消费方重新安装。
 
 若以后部署 Verdaccio，可保持包名和版本不变，执行：
@@ -195,7 +205,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.4.0-alpha.7.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.4.0-alpha.12.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -251,5 +261,5 @@ npm run build:showcase
 发布包同时复制到 `public/packages`，IIS 下载地址为：
 
 ```text
-http://localhost:8030/packages/dragon-liquid-vue-0.4.0-alpha.7.tgz
+http://localhost:8030/packages/dragon-liquid-vue-0.4.0-alpha.12.tgz
 ```

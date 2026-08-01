@@ -40,7 +40,7 @@ http://localhost:8030/
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.7.tgz"
+    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.4.0-alpha.12.tgz"
   }
 }
 ```

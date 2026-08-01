@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlButton, DlDrawer, DlInput, DlSelect, DlSwitch, DlTree, type DlSelectOption, type DlTreeNode } from '@dragon-liquid/vue'
+import { DlButton, DlDrawer, DlInput, DlSelect, DlSwitch, DlTree, type DlSelectOption, type DlTone, type DlTreeNode } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
@@ -8,6 +8,7 @@ import { vueSfc } from './exampleCode'
 const props = defineProps<{ scenario: string; componentDefinition: ComponentDefinition }>()
 const drawerOpen = ref(false)
 const placement = ref<'right' | 'bottom' | 'left'>('right')
+const drawerTone = ref<DlTone>('default')
 const title = ref('来自深渊')
 const status = ref('watching')
 const filterStatus = ref('all')
@@ -18,6 +19,14 @@ const statusOptions: DlSelectOption[] = [
   { value: 'completed', label: '已经看完' },
 ]
 const filterOptions: DlSelectOption[] = [{ value: 'all', label: '全部状态' }, ...statusOptions]
+const toneOptions: { value: DlTone; label: string; description: string }[] = [
+  { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
+  { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
+  { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
+  { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
+  { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
+  { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]
 const expanded = ref(['library'])
 const selected = ref<DlTreeNode | DlTreeNode[]>()
 const nodes: DlTreeNode[] = [{ id: 'library', label: '动漫收藏', children: [{ id: 'watching', label: '正在观看', description: '12 部作品' }, { id: 'completed', label: '已经看完', description: '86 部作品' }] }, { id: 'settings', label: '系统设置' }]
@@ -32,6 +41,37 @@ const drawerCodes: Record<string, string> = {
     <p>当前方向：{{ placement }}</p>
     <template #footer><DlButton @click="open = false">完成</DlButton></template>
   </DlDrawer>`, style: `.actions { display: flex; flex-wrap: wrap; gap: 10px; }` }),
+  'tone-gallery': vueSfc({ imports: ['DlButton', 'DlDrawer', 'type DlTone'], script: `import { ref } from 'vue'
+
+const open = ref(false)
+const activeTone = ref<DlTone>('default')
+const tones: { value: DlTone; label: string }[] = [
+  { value: 'default', label: 'Default 默认' },
+  { value: 'accent', label: 'Accent 强调' },
+  { value: 'success', label: 'Success 成功' },
+  { value: 'warning', label: 'Warning 警告' },
+  { value: 'danger', label: 'Danger 危险' },
+  { value: 'muted', label: 'Muted 弱化' },
+]
+
+function showTone(tone: DlTone) {
+  activeTone.value = tone
+  open.value = true
+}`, template: `  <div class="tone-actions">
+    <DlButton v-for="item in tones" :key="item.value" variant="secondary" @click="showTone(item.value)">
+      {{ item.label }}
+    </DlButton>
+  </div>
+  <DlDrawer
+    v-model:open="open"
+    :title="activeTone + ' 色调抽屉'"
+    description="比较边框、侧边炫彩条与环境光。"
+    :tone="activeTone"
+    placement="right"
+  >
+    <p>当前 Drawer 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p>
+    <template #footer><DlButton @click="open = false">关闭预览</DlButton></template>
+  </DlDrawer>`, style: `.tone-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
   'edit-record': vueSfc({ imports: ['DlButton', 'DlDrawer', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('来自深渊')\nconst status = ref('watching')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n  { value: 'completed', label: '已经看完' },\n]`, template: `  <DlButton @click="open = true">编辑收藏</DlButton>
   <DlDrawer v-model:open="open" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent">
     <form class="drawer-form" @submit.prevent="open = false">
@@ -137,6 +177,10 @@ function showDrawer(next: 'right' | 'bottom' | 'left') {
         <div class="drawer-actions"><DlButton variant="secondary" @click="showDrawer('left')">从左侧打开</DlButton><DlButton variant="secondary" @click="showDrawer('right')">从右侧打开</DlButton><DlButton variant="secondary" @click="showDrawer('bottom')">从底部打开</DlButton></div>
         <DlDrawer v-model:open="drawerOpen" title="抽屉预览" description="支持方向、尺寸与滑动关闭" :placement="placement" size="sm"><p>当前方向：{{ placement }}</p><template #footer><DlButton @click="drawerOpen = false">完成</DlButton></template></DlDrawer>
       </template>
+      <template v-else-if="scenario === 'tone-gallery'">
+        <div class="drawer-tone-grid"><button v-for="item in toneOptions" :key="item.value" type="button" @click="drawerTone = item.value; drawerOpen = true"><b>{{ item.label }}</b><span>{{ item.description }}</span></button></div>
+        <DlDrawer v-model:open="drawerOpen" :title="drawerTone + ' 色调抽屉'" description="比较边框、侧边炫彩条与环境光。" :tone="drawerTone" placement="right"><p>当前 Drawer 正在展示 <code>{{ drawerTone }}</code> 的完整视觉。</p><template #footer><DlButton @click="drawerOpen = false">关闭预览</DlButton></template></DlDrawer>
+      </template>
       <template v-else-if="scenario === 'edit-record'">
         <DlButton @click="drawerOpen = true">编辑收藏</DlButton>
         <DlDrawer v-model:open="drawerOpen" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent"><form class="drawer-form" @submit.prevent="drawerOpen = false"><label><span>作品标题</span><DlInput v-model="title" /></label><label><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></form><template #footer><DlButton variant="ghost" @click="drawerOpen = false">取消</DlButton><DlButton @click="drawerOpen = false">保存修改</DlButton></template></DlDrawer>
@@ -165,9 +209,14 @@ function showDrawer(next: 'right' | 'bottom' | 'left') {
 <style scoped>
 .alpha-general-demo { width: min(100%, 680px); margin: 0 auto; padding: 1rem; color: var(--dl-text-muted); }
 .drawer-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.drawer-tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+.drawer-tone-grid button { display: grid; gap: 5px; padding: 14px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); background: rgba(255,255,255,.06); color: var(--dl-text); text-align: left; cursor: pointer; }
+.drawer-tone-grid button:hover { border-color: var(--dl-border-strong); background: rgba(255,255,255,.1); }
+.drawer-tone-grid span { color: var(--dl-text-muted); font-size: .78rem; }
 .drawer-form, .drawer-form label, .filter-form, .filter-form label { display: grid; gap: 12px; }
 .drawer-state-card { display: grid; gap: 10px; padding: 16px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); }
 .drawer-state-card p { margin: 0; color: var(--dl-text-muted); line-height: 1.7; }
 .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .switch-row b, .switch-row small { display: block; }.switch-row small { margin-top: 5px; color: var(--dl-text-faint); }
+@media (max-width: 560px) { .drawer-tone-grid { grid-template-columns: 1fr; } }
 </style>
