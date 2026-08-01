@@ -58,7 +58,7 @@ export default {
           },
           {
             "prop": "content",
-            "description": "设置 content 字段。",
+            "description": "从指定内容属性解析出的默认插槽文本。",
             "type": "string",
             "defaultValue": "可选"
           },
@@ -380,7 +380,7 @@ export default {
         "prop": "variant",
         "description": "设置控件的视觉变体。",
         "type": "'primary' | 'secondary' | 'ghost' | 'danger'",
-        "defaultValue": "'primary'"
+        "defaultValue": "'secondary'"
       },
       {
         "prop": "size",
@@ -1799,6 +1799,618 @@ export default {
         ],
         "kind": "structure",
         "title": "DlChoiceOption[]"
+      }
+    ]
+  },
+  "mdx": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "mode",
+        "description": "编辑器当前视图模式；使用 v-model:mode 进行双向绑定。",
+        "type": "DlMdxMode",
+        "defaultValue": "'split'"
+      },
+      {
+        "prop": "toolbar",
+        "description": "格式工具栏中启用的动作及排列顺序；不传时显示全部内置动作。",
+        "type": "DlMdxToolbarAction[]",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "linkPolicy",
+        "description": "链接、外部页面与图片资源的安全渲染策略。",
+        "type": "DlMdxLinkPolicy",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'开始书写 Markdown…'"
+      },
+      {
+        "prop": "emptyText",
+        "description": "文档没有可渲染内容时显示的占位说明。",
+        "type": "string",
+        "defaultValue": "'还没有可预览的内容。'"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "lineWrapping",
+        "description": "是否在编辑器中启用长行自动换行。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showToolbar",
+        "description": "是否显示格式操作和视图模式工具栏。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showStatus",
+        "description": "是否显示行数、字符数、阅读时间和解析状态。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "taskInteractive",
+        "description": "是否允许在预览区直接切换任务列表状态。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "debounce",
+        "description": "源文本变化后等待多少毫秒再刷新预览；设为 0 时同步解析。",
+        "type": "number",
+        "defaultValue": "120"
+      },
+      {
+        "prop": "minHeight",
+        "description": "编辑器工作区的最小高度，接受任意合法 CSS 长度。",
+        "type": "string",
+        "defaultValue": "'28rem'"
+      },
+      {
+        "prop": "maxPreviewHeight",
+        "description": "预览区域的最大高度，超过后在区域内滚动。",
+        "type": "string",
+        "defaultValue": "'none'"
+      },
+      {
+        "prop": "ariaLabel",
+        "description": "提供给辅助技术读取的控件名称。",
+        "type": "string",
+        "defaultValue": "'MarkdownX 文档'"
+      },
+      {
+        "prop": "registry",
+        "description": "覆盖 main.ts 注入的全局 MarkdownX 组件注册表；通常无需逐实例传入。",
+        "type": "DlMdxRegistry",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlMdxMode",
+        "title": "DlMdxMode",
+        "description": "MarkdownX 的编辑、预览和分栏工作模式。",
+        "rows": [
+          {
+            "prop": "edit",
+            "description": "只显示 CodeMirror 编辑器，适合集中书写。",
+            "type": "'edit'",
+            "defaultValue": "编辑"
+          },
+          {
+            "prop": "preview",
+            "description": "只显示结构化安全预览，适合发布和阅读。",
+            "type": "'preview'",
+            "defaultValue": "预览"
+          },
+          {
+            "prop": "split",
+            "description": "并排显示编辑器与实时预览，小屏时自动上下排列。",
+            "type": "'split'",
+            "defaultValue": "分栏"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlMdxToolbarAction",
+        "title": "DlMdxToolbarAction[]",
+        "description": "MarkdownX 内置格式工具栏支持的动作。",
+        "rows": [
+          {
+            "prop": "bold",
+            "description": "切换当前选区的粗体标记。",
+            "type": "'bold'",
+            "defaultValue": "粗体"
+          },
+          {
+            "prop": "italic",
+            "description": "切换当前选区的斜体标记。",
+            "type": "'italic'",
+            "defaultValue": "斜体"
+          },
+          {
+            "prop": "strike",
+            "description": "切换当前选区的删除线标记。",
+            "type": "'strike'",
+            "defaultValue": "删除线"
+          },
+          {
+            "prop": "inline-code",
+            "description": "切换当前选区的行内代码标记。",
+            "type": "'inline-code'",
+            "defaultValue": "行内代码"
+          },
+          {
+            "prop": "link",
+            "description": "把当前选区转换为 Markdown 链接。",
+            "type": "'link'",
+            "defaultValue": "链接"
+          },
+          {
+            "prop": "heading",
+            "description": "把当前行切换为二级标题。",
+            "type": "'heading'",
+            "defaultValue": "标题"
+          },
+          {
+            "prop": "blockquote",
+            "description": "切换当前行或所选行的引用前缀。",
+            "type": "'blockquote'",
+            "defaultValue": "引用"
+          },
+          {
+            "prop": "unordered-list",
+            "description": "切换当前行或所选行的无序列表前缀。",
+            "type": "'unordered-list'",
+            "defaultValue": "无序列表"
+          },
+          {
+            "prop": "task-list",
+            "description": "切换当前行或所选行的任务列表前缀。",
+            "type": "'task-list'",
+            "defaultValue": "任务列表"
+          },
+          {
+            "prop": "code-block",
+            "description": "把选区插入 TypeScript 围栏代码块。",
+            "type": "'code-block'",
+            "defaultValue": "代码块"
+          },
+          {
+            "prop": "component",
+            "description": "插入显式插槽渲染的安全组件块。",
+            "type": "'component'",
+            "defaultValue": "组件块"
+          }
+        ]
+      },
+      {
+        "name": "DlMdxLinkPolicy",
+        "description": "MarkdownX 对外部链接、打开方式和图片资源的安全策略。",
+        "rows": [
+          {
+            "prop": "allowExternal",
+            "description": "是否允许 http 与 https 外部链接；关闭后相对路径仍然可用。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "openExternal",
+            "description": "是否在新标签页打开外部链接；外部链接始终带有 noopener noreferrer。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowImages",
+            "description": "是否允许渲染 Markdown 图片。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowDataImages",
+            "description": "是否额外允许受限的 base64 图片 Data URL；默认关闭。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxLinkPolicy"
+      },
+      {
+        "name": "DlMdxRegistry",
+        "description": "可通过 app.use 安装，并支持注册、覆盖、查询和移除组件定义的全局注册表。",
+        "rows": [
+          {
+            "prop": "install",
+            "description": "把当前工具注入 Vue 应用；通常由 app.use 自动调用。",
+            "type": "(app: App) => void",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "register",
+            "description": "注册或按规范化名称覆盖一个组件定义。",
+            "type": "(definition: DlMdxComponentDefinition) => DlMdxRegistry",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "registerAll",
+            "description": "按顺序注册一组组件定义，后注册的同名定义优先。",
+            "type": "(definitions: DlMdxComponentDefinition[]) => DlMdxRegistry",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "unregister",
+            "description": "按名称或别名移除一个注册定义。",
+            "type": "(name: string) => boolean",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "resolve",
+            "description": "按组件名或别名查询当前生效的注册定义。",
+            "type": "(name: string) => DlMdxComponentDefinition | undefined",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "entries",
+            "description": "按注册顺序返回去重后的组件定义快照。",
+            "type": "() => DlMdxComponentDefinition[]",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxRegistry"
+      },
+      {
+        "name": "DlMdxComponentDefinition",
+        "description": "一个允许 MarkdownX 安全渲染的组件或自定义渲染器定义。",
+        "rows": [
+          {
+            "prop": "name",
+            "description": "参与表单提交时使用的字段名称。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "aliases",
+            "description": "组件块可使用的附加名称；同时自动支持 Dl 前缀别名。",
+            "type": "string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "component",
+            "description": "官方或业务注册定义实际渲染的 Vue 组件。",
+            "type": "Component",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "render",
+            "description": "不直接使用 Vue 组件时，由业务提供的受信任渲染函数。",
+            "type": "DlMdxComponentRenderer",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "defaultProps",
+            "description": "组件块未覆盖时使用的安全默认属性。",
+            "type": "Record<string, DlMdxValue>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowedProps",
+            "description": "允许文档传入的属性白名单；不传时读取组件公开 Props。",
+            "type": "string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "contentProp",
+            "description": "指定哪个组件块属性用作默认插槽文本。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "defaultContent",
+            "description": "组件块没有提供内容属性时使用的默认插槽文本。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "triggerLabel",
+            "description": "需要触发器插槽的浮层组件所显示的默认按钮文字。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "category",
+            "description": "官方组件定义所属的文档与功能类别。",
+            "type": "DlMdxComponentCategory",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "maturity",
+            "description": "组件定义的稳定版、Alpha 或业务自定义标记。",
+            "type": "DlMdxComponentMaturity",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxComponentDefinition[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlMdxComponentCategory",
+        "title": "DlMdxComponentCategory",
+        "description": "官方注册定义使用的组件类别。",
+        "rows": [
+          {
+            "prop": "foundation",
+            "description": "DlMdxComponentCategory 的 foundation 选项。",
+            "type": "'foundation'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "form",
+            "description": "DlMdxComponentCategory 的 form 选项。",
+            "type": "'form'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "color",
+            "description": "DlMdxComponentCategory 的 color 选项。",
+            "type": "'color'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "dates",
+            "description": "DlMdxComponentCategory 的 dates 选项。",
+            "type": "'dates'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "general",
+            "description": "DlMdxComponentCategory 的 general 选项。",
+            "type": "'general'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlMdxComponentMaturity",
+        "title": "DlMdxComponentMaturity",
+        "description": "官方注册定义的稳定度或自定义来源标记。",
+        "rows": [
+          {
+            "prop": "custom",
+            "description": "DlMdxComponentMaturity 的 custom 选项。",
+            "type": "'custom'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "stable",
+            "description": "DlMdxComponentMaturity 的 stable 选项。",
+            "type": "'stable'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "alpha",
+            "description": "DlMdxComponentMaturity 的 alpha 选项。",
+            "type": "'alpha'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
+      {
+        "name": "DlMdxSecurityPolicy",
+        "description": "由 app.use 安装的全局 MarkdownX URL 安全守卫，负责验证、完整性检查和状态报告。",
+        "rows": [
+          {
+            "prop": "install",
+            "description": "把当前工具注入 Vue 应用；通常由 app.use 自动调用。",
+            "type": "(app: App) => void",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "validate",
+            "description": "使用冻结白名单和 WASM 完整性守卫验证 URL；失败时返回 undefined。",
+            "type": "(value: string, kind: Exclude<DlMdxUrlKind, 'file'>) => string | undefined",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "verifyIntegrity",
+            "description": "重新计算并核对白名单的 WASM 完整性指纹。",
+            "type": "() => boolean",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "status",
+            "description": "设置业务状态及对应视觉反馈。",
+            "type": "() => DlMdxSecurityStatus",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxSecurityPolicy"
+      },
+      {
+        "name": "DlMdxSecurityOptions",
+        "description": "创建 MarkdownX 域名、协议、文件类型及特殊 URL 白名单时使用的配置。",
+        "rows": [
+          {
+            "prop": "domains",
+            "description": "按普通链接、图片和文件分别设置的域名白名单。",
+            "type": "DlMdxDomainAllowlist",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "fileExtensions",
+            "description": "允许下载或引用的文件扩展名白名单；可填写 pdf 或 tar.gz。",
+            "type": "readonly string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowedProtocols",
+            "description": "外部白名单资源允许使用的网络协议；默认仅 https。",
+            "type": "readonly ('https' | 'http')[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowRelative",
+            "description": "是否允许站内相对链接、图片和符合扩展名规则的文件；默认开启。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowMailto",
+            "description": "是否允许 mailto 邮件链接；默认关闭。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowTel",
+            "description": "是否允许 tel 电话链接；默认关闭。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowDataImages",
+            "description": "是否额外允许受限的 base64 图片 Data URL；默认关闭。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "allowBlobImages",
+            "description": "是否允许浏览器运行时创建的 blob 图片 URL；默认关闭。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxSecurityOptions"
+      },
+      {
+        "name": "DlMdxDomainAllowlist",
+        "description": "分别约束普通链接、图片、文件以及共享来源的域名规则集合。",
+        "rows": [
+          {
+            "prop": "all",
+            "description": "对普通链接、图片和文件同时生效的共享域名规则。",
+            "type": "readonly string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "links",
+            "description": "允许作为普通页面链接使用的域名规则。",
+            "type": "readonly string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "images",
+            "description": "允许加载 Markdown 图片资源的域名规则。",
+            "type": "readonly string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "files",
+            "description": "允许下载文件的域名规则；仍需同时通过扩展名校验。",
+            "type": "readonly string[]",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxDomainAllowlist"
+      },
+      {
+        "name": "DlMdxSecurityStatus",
+        "description": "WASM 完整性模块的当前状态、指纹和规则数量快照。",
+        "rows": [
+          {
+            "prop": "wasm",
+            "description": "安全策略是否已经启用内嵌 WASM 完整性模块。",
+            "type": "true",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "integrity",
+            "description": "当前白名单规范化快照是否通过完整性校验。",
+            "type": "boolean",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "fingerprint",
+            "description": "由 WASM 计算的只读白名单完整性指纹。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "domainRuleCount",
+            "description": "当前策略包含的域名规则总数。",
+            "type": "number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "fileExtensionCount",
+            "description": "当前策略包含的文件扩展名数量。",
+            "type": "number",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxSecurityStatus"
+      },
+      {
+        "kind": "enum",
+        "name": "DlMdxUrlKind",
+        "title": "DlMdxUrlKind",
+        "description": "MarkdownX URL 守卫区分的普通链接、图片和文件资源类型。",
+        "rows": [
+          {
+            "prop": "link",
+            "description": "普通页面、路由或协议链接。",
+            "type": "'link'",
+            "defaultValue": "链接"
+          },
+          {
+            "prop": "image",
+            "description": "由 Markdown 图片语法引用的资源。",
+            "type": "'image'",
+            "defaultValue": "图片"
+          },
+          {
+            "prop": "file",
+            "description": "带有非页面扩展名并受扩展名白名单约束的下载资源。",
+            "type": "'file'",
+            "defaultValue": "文件"
+          }
+        ]
       }
     ]
   },

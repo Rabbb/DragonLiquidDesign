@@ -34,6 +34,8 @@ export { default as DlInput } from './components/DlInput.vue'
 export { default as DlLabel } from './components/DlLabel.vue'
 export { default as DlListbox } from './components/DlListbox.vue'
 export { default as DlMenubar } from './components/DlMenubar.vue'
+export { default as DlMdx } from './components/DlMdx.vue'
+export { default as DlMarkdownX } from './components/DlMdx.vue'
 export { default as DlMonthPicker } from './components/DlMonthPicker.vue'
 export { default as DlMonthRangePicker } from './components/DlMonthRangePicker.vue'
 export { default as DlNavigationMenu } from './components/DlNavigationMenu.vue'
@@ -79,5 +81,48 @@ export type {
   DlTreeNode,
 } from './components/primitive.types'
 export type { DlSelectOption } from './components/select.types'
+export type {
+  DlMdxBlock,
+  DlMdxComponentContext,
+  DlMdxDocument,
+  DlMdxInlineToken,
+  DlMdxLinkPolicy,
+  DlMdxListItem,
+  DlMdxMode,
+  DlMdxParseResult,
+  DlMdxScalar,
+  DlMdxToolbarAction,
+  DlMdxValue,
+} from './components/dl-mdx.types'
+export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
+export { applyDlMdxCommand } from './components/dl-mdx.commands'
+export type { DlMdxCommandContext, DlMdxCommandResult, DlMdxSelection } from './components/dl-mdx.commands'
+export {
+  createDlMdxRegistry,
+  defineDlMdxComponent,
+  dlMdxRegistryKey,
+  useDlMdxRegistry,
+} from './components/dl-mdx.registry'
+export type {
+  DlMdxComponentCategory,
+  DlMdxComponentDefinition,
+  DlMdxComponentMaturity,
+  DlMdxComponentRenderer,
+  DlMdxRegistry,
+  DlMdxRenderContext,
+} from './components/dl-mdx.registry'
+export { createDlMdxOfficialRegistry, dlMdxOfficialComponents } from './components/dl-mdx.official'
+export {
+  createDlMdxSecurityPolicy,
+  dlMdxSecurityKey,
+  useDlMdxSecurityPolicy,
+} from './components/dl-mdx.security'
+export type {
+  DlMdxDomainAllowlist,
+  DlMdxSecurityOptions,
+  DlMdxSecurityPolicy,
+  DlMdxSecurityStatus,
+  DlMdxUrlKind,
+} from './components/dl-mdx.security'
 export type { DlSize, DlTone } from './types'
 export type { ColorChannel, ColorSpace, DateRange, DateValue, TimeValue } from 'reka-ui'

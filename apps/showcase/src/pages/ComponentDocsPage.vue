@@ -64,6 +64,7 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   'dropdown-menu': () => import('../docs/AdvancedGeneralDocs.vue'),
   'hover-card': () => import('../docs/AdvancedGeneralDocs.vue'),
   menubar: () => import('../docs/AdvancedGeneralDocs.vue'),
+  mdx: () => import('../docs/MdxDocs.vue'),
   'navigation-menu': () => import('../docs/AdvancedGeneralDocs.vue'),
   pagination: () => import('../docs/AdvancedGeneralDocs.vue'),
   'scroll-area': () => import('../docs/AdvancedGeneralDocs.vue'),
@@ -198,12 +199,12 @@ function toggleCategory(category: typeof componentCategories[number]) {
           <DlBadge :tone="selectedComponent.implementation === 'ready' ? 'muted' : 'accent'" variant="outline">
             {{ selectedCategory.label }} · {{ selectedComponent.implementation === 'ready' ? `SINCE ${selectedComponent.since}` : 'ROADMAP' }}
           </DlBadge>
-          <DlBadge v-if="selectedComponent.maturity === 'alpha'" tone="warning" variant="outline">REKA ALPHA</DlBadge>
+          <DlBadge v-if="selectedComponent.maturity === 'alpha'" tone="warning" variant="outline">{{ selectedComponent.sourceUrl ? 'REKA ALPHA' : 'ALPHA' }}</DlBadge>
         </div>
         <h1>{{ selectedComponent.name }}</h1>
         <p>{{ selectedComponent.summary }}</p>
       </div>
-      <a href="/packages/dragon-liquid-vue-0.4.0-alpha.12.tgz" download>
+      <a href="/packages/dragon-liquid-vue-0.5.0-alpha.9.tgz" download>
         <DlButton variant="secondary" size="sm">下载 npm 包 ↓</DlButton>
       </a>
     </header>
