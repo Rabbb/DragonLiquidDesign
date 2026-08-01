@@ -9,7 +9,7 @@
 - 左侧大纲选择组件与场景，右侧按需加载案例和代码。
 
 组件目录维护在 `src/catalog.ts`，8 个异步文档组件位于 `src/docs`。展厅通过
-`registry/dragon-liquid-vue-0.1.1.tgz` 安装依赖，不直接引用 UI 包源码。
+`registry/dragon-liquid-vue-0.1.2.tgz` 安装依赖，不直接引用 UI 包源码。
 
 ## 构建
 

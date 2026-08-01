@@ -12,6 +12,7 @@ import {
   SelectViewport,
 } from 'reka-ui'
 import { tv } from 'tailwind-variants'
+import { useDlSelectLayer } from '../composables/useDlLayer'
 import type { DlSize } from '../types'
 import type { DlSelectOption } from './select.types'
 
@@ -22,12 +23,14 @@ const props = withDefaults(defineProps<{
   size?: DlSize
   disabled?: boolean
   name?: string
+  zIndex?: number
 }>(), {
   modelValue: undefined,
   placeholder: '请选择',
   size: 'md',
   disabled: false,
   name: undefined,
+  zIndex: undefined,
 })
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -44,6 +47,7 @@ const trigger = tv({
   },
 })
 const triggerClasses = computed(() => trigger({ size: props.size }))
+const contentZIndex = useDlSelectLayer(() => props.zIndex)
 </script>
 
 <template>
@@ -61,9 +65,11 @@ const triggerClasses = computed(() => trigger({ size: props.size }))
       <SelectContent
         data-dl
         data-slot="select-content"
+        data-dl-layer="select"
+        :style="{ zIndex: contentZIndex }"
         position="popper"
         :side-offset="8"
-        class="z-[100] min-w-[var(--reka-select-trigger-width)] overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-1.5 text-[var(--dl-text)] shadow-[0_24px_70px_rgba(0,0,0,.42),inset_0_1px_0_rgba(255,255,255,.12)] backdrop-blur-2xl data-[state=open]:animate-in data-[state=closed]:animate-out"
+        class="min-w-[var(--reka-select-trigger-width)] overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-1.5 text-[var(--dl-text)] shadow-[0_24px_70px_rgba(0,0,0,.42),inset_0_1px_0_rgba(255,255,255,.12)] backdrop-blur-2xl data-[state=open]:animate-in data-[state=closed]:animate-out"
       >
         <SelectViewport class="dl-scrollbar max-h-72">
           <SelectItem

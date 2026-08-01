@@ -94,7 +94,7 @@ function componentsFor(category: typeof componentCategories[number]) {
         <h1>{{ selectedComponent.name }}</h1>
         <p>{{ selectedComponent.summary }}</p>
       </div>
-      <a href="/packages/dragon-liquid-vue-0.1.1.tgz" download>
+      <a href="/packages/dragon-liquid-vue-0.1.2.tgz" download>
         <DlButton variant="secondary" size="sm">下载 npm 包 ↓</DlButton>
       </a>
     </header>

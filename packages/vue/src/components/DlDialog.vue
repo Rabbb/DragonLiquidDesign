@@ -9,18 +9,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from 'reka-ui'
+import { useDlModalLayer } from '../composables/useDlLayer'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   open?: boolean
   title: string
   description?: string
   size?: 'sm' | 'md' | 'lg'
   closable?: boolean
+  zIndex?: number
 }>(), {
   open: false,
   description: undefined,
   size: 'md',
   closable: true,
+  zIndex: undefined,
 })
 
 const emit = defineEmits<{
@@ -32,6 +35,8 @@ const sizeClasses: Record<'sm' | 'md' | 'lg', string> = {
   md: 'max-w-2xl',
   lg: 'max-w-4xl',
 }
+
+const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
 </script>
 
 <template>
@@ -40,13 +45,17 @@ const sizeClasses: Record<'sm' | 'md' | 'lg', string> = {
     <DialogPortal>
       <DialogOverlay
         data-dl
-        class="fixed inset-0 z-[110] bg-[#020805]/75 backdrop-blur-md data-[state=open]:animate-in data-[state=closed]:animate-out"
+        data-dl-layer="overlay"
+        :style="{ zIndex: overlayZIndex }"
+        class="fixed inset-0 bg-[#020805]/75 backdrop-blur-md data-[state=open]:animate-in data-[state=closed]:animate-out"
       />
       <DialogContent
         data-dl
         data-slot="dialog"
+        data-dl-layer="modal"
+        :style="{ zIndex: contentZIndex }"
         :class="[
-          'fixed left-1/2 top-1/2 z-[111] max-h-[90vh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--dl-radius-lg)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-6 text-[var(--dl-text)] shadow-[0_34px_100px_rgba(0,0,0,.55),0_0_50px_rgba(255,215,0,.06),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out',
+          'fixed left-1/2 top-1/2 max-h-[90vh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[var(--dl-radius-lg)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-6 text-[var(--dl-text)] shadow-[0_34px_100px_rgba(0,0,0,.55),0_0_50px_rgba(255,215,0,.06),inset_0_1px_0_rgba(255,255,255,.18)] backdrop-blur-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out',
           sizeClasses[size],
         ]"
       >

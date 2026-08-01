@@ -50,6 +50,17 @@
   --dl-radius-sm: 12px;
   --dl-radius-md: 16px;
   --dl-radius-lg: 24px;
+
+  /* Ant Design inspired Portal layer contract and context offsets. */
+  --dl-layer-popup-base: 1000;
+  --dl-layer-container-offset: 100;
+  --dl-layer-consumer-offset: 50;
+  --dl-layer-modal: 1000;
+  --dl-layer-popover: 1030;
+  --dl-layer-select: 1050;
+  --dl-layer-tooltip: 1070;
+  --dl-layer-message: 2010;
+  --dl-layer-notification: 2050;
 }
 
 [data-dl] {
@@ -60,6 +71,34 @@
 [data-dl] *::before,
 [data-dl] *::after {
   box-sizing: inherit;
+}
+
+:where([data-dl-layer="overlay"]) {
+  z-index: var(--dl-layer-modal);
+}
+
+:where([data-dl-layer="modal"]) {
+  z-index: calc(var(--dl-layer-modal) + 1);
+}
+
+:where([data-dl-layer="popover"]) {
+  z-index: var(--dl-layer-popover);
+}
+
+:where([data-dl-layer="select"]) {
+  z-index: var(--dl-layer-select);
+}
+
+:where([data-dl-layer="tooltip"]) {
+  z-index: var(--dl-layer-tooltip);
+}
+
+:where([data-dl-layer="message"]) {
+  z-index: var(--dl-layer-message);
+}
+
+:where([data-dl-layer="notification"]) {
+  z-index: var(--dl-layer-notification);
 }
 
 .dl-scrollbar {
