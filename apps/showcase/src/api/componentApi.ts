@@ -1,4 +1,5 @@
 import componentApi from '../generated/component-api.generated'
+import { getDlComponentBehavior } from '@dragon-liquid/vue'
 
 export type ComponentApiRow = {
   prop: string
@@ -38,6 +39,8 @@ export function componentApiTables(componentId: string, componentName: string): 
   const definition = apiByComponent[componentId]
   if (!definition) throw new Error(`组件 ${componentId} 缺少属性 API 元数据。`)
 
+  const behavior = getDlComponentBehavior(componentName)
+
   return [
     {
       key: `${componentId}-props`,
@@ -61,6 +64,40 @@ export function componentApiTables(componentId: string, componentName: string): 
       lastColumnTitle: type.kind === 'enum' ? '语义' : '是否必填',
       rows: type.rows,
     })),
+    ...(behavior ? [
+      {
+        key: `${componentId}-events`,
+        eyebrow: 'EVENTS',
+        title: '事件',
+        description: `${componentName} 的声明式事件与实例订阅事件；两种监听方式共享相同触发源。`,
+        badge: `${behavior.events.length} EVENTS`,
+        firstColumnTitle: '事件名',
+        thirdColumnTitle: '参数',
+        lastColumnTitle: '取消能力',
+        rows: behavior.events.map(event => ({
+          prop: event.name,
+          description: event.description,
+          type: event.payload,
+          defaultValue: event.name.startsWith('before') ? 'preventDefault()' : '—',
+        })),
+      },
+      {
+        key: `${componentId}-methods`,
+        eyebrow: 'INSTANCE API',
+        title: '实例属性与方法',
+        description: `通过模板 ref 获取 ${componentName} 实例；属性覆盖可随时 reset，重新跟随外部 props。`,
+        badge: `${behavior.methods.length} METHODS`,
+        firstColumnTitle: '方法',
+        thirdColumnTitle: '签名',
+        lastColumnTitle: '返回值',
+        rows: behavior.methods.map(method => ({
+          prop: method.name,
+          description: method.description,
+          type: method.signature,
+          defaultValue: method.returns,
+        })),
+      },
+    ] : []),
   ]
 }
 

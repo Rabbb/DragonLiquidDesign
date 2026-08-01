@@ -17,6 +17,7 @@ import type { DlSize } from '../types'
 import type { DlSelectOption } from './select.types'
 
 const props = withDefaults(defineProps<{
+  open?: boolean
   modelValue?: string
   options: DlSelectOption[]
   placeholder?: string
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<{
   name?: string
   zIndex?: number
 }>(), {
+  open: undefined,
   modelValue: undefined,
   placeholder: '请选择',
   size: 'md',
@@ -33,6 +35,7 @@ const props = withDefaults(defineProps<{
   zIndex: undefined,
 })
 const emit = defineEmits<{
+  'update:open': [value: boolean]
   'update:modelValue': [value: string]
 }>()
 
@@ -52,9 +55,11 @@ const contentZIndex = useDlSelectLayer(() => props.zIndex)
 
 <template>
   <SelectRoot
+    :open="open"
     :model-value="modelValue"
     :disabled="disabled"
     :name="name"
+    @update:open="emit('update:open', $event)"
     @update:model-value="value => value && emit('update:modelValue', value as string)"
   >
     <SelectTrigger data-dl data-slot="select-trigger" :class="triggerClasses">

@@ -3,17 +3,19 @@ import { HoverCardArrow, HoverCardContent, HoverCardPortal, HoverCardRoot, Hover
 import { useDlPopoverLayer } from '../composables/useDlLayer'
 
 const props = withDefaults(defineProps<{
+  open?: boolean
   openDelay?: number
   closeDelay?: number
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
   zIndex?: number
-}>(), { openDelay: 500, closeDelay: 250, side: 'bottom', align: 'center', zIndex: undefined })
+}>(), { open: undefined, openDelay: 500, closeDelay: 250, side: 'bottom', align: 'center', zIndex: undefined })
+const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const layer = useDlPopoverLayer(() => props.zIndex)
 </script>
 
 <template>
-  <HoverCardRoot :open-delay="openDelay" :close-delay="closeDelay">
+  <HoverCardRoot :open="open" :open-delay="openDelay" :close-delay="closeDelay" @update:open="emit('update:open', $event)">
     <HoverCardTrigger as-child><slot name="trigger" /></HoverCardTrigger>
     <HoverCardPortal>
       <HoverCardContent

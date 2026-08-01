@@ -1,6 +1,6 @@
 {
   "name": "@dragon-liquid/vue",
-  "version": "0.5.0-alpha.9",
+  "version": "0.6.0-alpha.2",
   "description": "Dragon Liquid themed Vue 3 components built with Reka UI, Tailwind CSS and Tailwind Variants.",
   "type": "module",
   "sideEffects": [
@@ -22,7 +22,8 @@
   "scripts": {
     "build": "vite build",
     "typecheck": "vue-tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.3",
@@ -54,6 +55,8 @@
   },
   "license": "UNLICENSED",
   "publishConfig": {
-    "access": "restricted"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "tag": "alpha"
   }
 }

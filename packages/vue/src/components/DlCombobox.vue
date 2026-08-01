@@ -6,6 +6,7 @@ import type { DlSize } from '../types'
 import type { DlChoiceOption } from './primitive.types'
 
 const props = withDefaults(defineProps<{
+  open?: boolean
   modelValue?: string
   options: DlChoiceOption[]
   placeholder?: string
@@ -13,8 +14,8 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   name?: string
   zIndex?: number
-}>(), { modelValue: undefined, placeholder: '搜索或选择', size: 'md', disabled: false, name: undefined, zIndex: undefined })
-const emit = defineEmits<{ 'update:modelValue': [value: string]; 'update:searchTerm': [value: string] }>()
+}>(), { open: undefined, modelValue: undefined, placeholder: '搜索或选择', size: 'md', disabled: false, name: undefined, zIndex: undefined })
+const emit = defineEmits<{ 'update:open': [value: boolean]; 'update:modelValue': [value: string]; 'update:searchTerm': [value: string] }>()
 const searchTerm = ref('')
 const layer = useDlSelectLayer(() => props.zIndex)
 const selectedLabel = computed(() => props.options.find(item => item.value === props.modelValue)?.label ?? '')
@@ -23,7 +24,8 @@ const heightClass = computed(() => ({ sm: 'min-h-9 text-xs', md: 'min-h-11 text-
 
 <template>
   <ComboboxRoot
-    :model-value="modelValue" :disabled="disabled" :name="name" open-on-click open-on-focus
+    :open="open" :model-value="modelValue" :disabled="disabled" :name="name" open-on-click open-on-focus
+    @update:open="emit('update:open', $event)"
     @update:model-value="$event !== undefined && emit('update:modelValue', $event as string)"
   >
     <ComboboxAnchor data-dl data-slot="combobox" :class="['flex w-full items-center rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-[var(--dl-surface)] px-3 shadow-[inset_0_1px_0_rgba(255,255,255,.06)] transition focus-within:border-[var(--dl-border-focus)] focus-within:[box-shadow:var(--dl-focus)]', heightClass]">

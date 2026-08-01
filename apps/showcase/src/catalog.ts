@@ -41,6 +41,7 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'basic', label: '通用案例', summary: '变体、尺寸和状态' },
       { id: 'form-submit', label: '表单提交', summary: '保存流程与加载反馈' },
       { id: 'danger-zone', label: '危险操作', summary: '不可逆动作的层级控制' },
+      { id: 'instance-api', label: '实例控制', summary: '运行时属性、方法与事件订阅' },
     ],
   },
   {

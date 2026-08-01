@@ -29,6 +29,49 @@ import '@dragon-liquid/vue/style.css'
 </DlCard>
 ```
 
+## 组件实例、运行时属性与事件
+
+包入口导出的 64 个组件都带有统一的 `DlComponentRef`。声明式 props 和 `v-model` 仍然是常规数据流；需要桌面应用式控制时，可通过模板 `ref` 建立响应式实例覆盖：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  DlButton,
+  type DlComponentRef,
+  type DlPropertyChangeEvent,
+} from '@dragon-liquid/vue'
+
+const button = ref<DlComponentRef | null>(null)
+
+function connect(instance: DlComponentRef) {
+  instance.on('propertyChange', (event: DlPropertyChangeEvent) => {
+    console.log(event.name, event.previousValue, event.value)
+  })
+}
+
+function save() {
+  button.value?.setProperties({ variant: 'primary', loading: true })
+}
+</script>
+
+<template>
+  <DlButton ref="button" @ready="connect">保存</DlButton>
+</template>
+```
+
+所有组件统一提供以下行为：
+
+- 属性：`getProperty`、`getProperties`、`setProperty`、`setProperties`、`resetProperty`、`resetProperties`。
+- 状态：`getValue`、`setValue`、`clear`、`open`、`close`、`toggle`、`enable`、`disable`、`show`、`hide`。
+- DOM：`focus`、`blur`、`click`、`select`、`scrollIntoView`。
+- 事件：`on`、`once`、`off`、`offAll`、`dispatch`；也可继续使用模板 `@事件名`。
+- 反射：`getPropertyNames`、`getMethodNames`、`getEventNames`、`invoke`。
+
+`beforePropertyChange` 与 `beforeMethodCall` 支持 `preventDefault()`。实例设置 `modelValue`、`open`、`page` 等受控属性时，会同步调用对应的 `update:*` 监听器；`resetProperty()` 删除实例覆盖后，组件会重新跟随父组件 props。Accordion、NumberField、Pagination、Stepper、Tabs、TagsInput、Tree 与 Mdx 还提供面板、步进、导航和文档模式等专有方法。
+
+如果业务组件也要获得同一能力，可以使用 `createDlManagedComponent(rawComponent, options)` 包装，并在 `options.methods` 中注册专有行为。
+
 ## MarkdownX 域名白名单
 
 安全策略在应用入口一次安装，随后约束应用内全部 `DlMdx` 实例。域名支持精确匹配、`*.example.com` 子域通配、显式协议和端口；普通链接、图片与文件可分别配置。
@@ -74,6 +117,8 @@ createApp(App).use(mdxSecurity).mount('#app')
 - `0.5.0-alpha.7` 拒绝反斜杠伪装的协议相对 URL，并验证创建策略后修改原始配置数组不会改变已生效白名单。
 - `0.5.0-alpha.8` 参考 Ant Design 重写 Button 的默认层级、三档尺寸与完整交互状态；默认 `variant` 改为 `secondary`，既有属性名和值保持不变。
 - `0.5.0-alpha.9` 将 Button 的 Loading 与 Disabled 视觉分离：Loading 保留当前 variant，仅降低透明度并阻止重复点击。
+- `0.6.0-alpha.1` 为 64 个正式导出组件增加统一实例控制器、运行时属性覆盖、可取消事件、反射 API 与组件专有行为。
+- `0.6.0-alpha.2` 补齐 Tooltip、HoverCard、Select、Combobox、Autocomplete 与日期选择器的受控打开事件，并增强按钮、编辑、分页、标签、树与反馈组件的专有方法。
 - `0.5.0-alpha.3` 收紧协议相对链接与图片策略，支持引用和有序列表内的任务回写，并修复编辑器异步加载前触发工具栏时的命令丢失。
 - `0.5.0-alpha.2` 将 CodeMirror 改为编辑区挂载时异步加载，预览模式和其他组件不再承担编辑器运行时体积。
 - `0.5.0-alpha.1` 从 TodoMoe 迁移并升级 `DlMdx`：提供 CodeMirror 6 编辑器、结构化安全预览、任务回写、资源策略与显式组件插槽，同时保留 `DlMarkdownX` 兼容别名。

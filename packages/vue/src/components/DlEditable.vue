@@ -20,8 +20,8 @@ const emit = defineEmits<{ 'update:modelValue': [value: string]; submit: [value:
       <EditablePreview class="block min-h-6 w-full truncate text-[var(--dl-text)] data-[placeholder-shown]:text-[var(--dl-text-faint)]" />
       <EditableInput class="min-h-6 w-full border-0 bg-transparent text-[var(--dl-text)] outline-none" />
     </EditableArea>
-    <EditableEditTrigger class="rounded-lg px-2 py-1 text-xs text-[var(--dl-text-faint)] hover:bg-white/[0.08] hover:text-amber-200">编辑</EditableEditTrigger>
-    <EditableSubmitTrigger class="rounded-lg px-2 py-1 text-xs text-emerald-200 hover:bg-emerald-300/10">保存</EditableSubmitTrigger>
-    <EditableCancelTrigger class="rounded-lg px-2 py-1 text-xs text-[var(--dl-text-faint)] hover:bg-white/[0.08]">取消</EditableCancelTrigger>
+    <EditableEditTrigger data-slot="editable-edit" class="rounded-lg px-2 py-1 text-xs text-[var(--dl-text-faint)] hover:bg-white/[0.08] hover:text-amber-200">编辑</EditableEditTrigger>
+    <EditableSubmitTrigger data-slot="editable-submit" class="rounded-lg px-2 py-1 text-xs text-emerald-200 hover:bg-emerald-300/10">保存</EditableSubmitTrigger>
+    <EditableCancelTrigger data-slot="editable-cancel" class="rounded-lg px-2 py-1 text-xs text-[var(--dl-text-faint)] hover:bg-white/[0.08]">取消</EditableCancelTrigger>
   </EditableRoot>
 </template>

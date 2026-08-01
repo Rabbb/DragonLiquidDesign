@@ -135,6 +135,12 @@ export default {
   "autocomplete": {
     "props": [
       {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
         "type": "string",
@@ -838,6 +844,12 @@ export default {
   "combobox": {
     "props": [
       {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
         "type": "string",
@@ -1065,6 +1077,12 @@ export default {
   "date-picker": {
     "props": [
       {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
         "type": "DateValue | null",
@@ -1146,6 +1164,12 @@ export default {
   },
   "date-range-picker": {
     "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
       {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
@@ -1548,6 +1572,12 @@ export default {
   },
   "hover-card": {
     "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
       {
         "prop": "openDelay",
         "description": "触发后打开浮层的延迟时间，单位毫秒。",
@@ -3366,6 +3396,12 @@ export default {
   "select": {
     "props": [
       {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
         "type": "string",
@@ -4459,6 +4495,12 @@ export default {
   },
   "tooltip": {
     "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
       {
         "prop": "text",
         "description": "控件显示的主要文字内容。",

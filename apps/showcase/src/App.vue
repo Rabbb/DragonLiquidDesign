@@ -3,10 +3,11 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { DlBadge } from '@dragon-liquid/vue'
 import HomePage from './pages/HomePage.vue'
 import ComponentDocsPage from './pages/ComponentDocsPage.vue'
+import InstanceArchitecturePage from './pages/InstanceArchitecturePage.vue'
 import { resolveComponent } from './catalog'
 
 type ShowcaseRoute = {
-  page: 'home' | 'components'
+  page: 'home' | 'components' | 'instance-api'
   componentId?: string
   scenarioId?: string
 }
@@ -15,6 +16,7 @@ const currentHash = ref(window.location.hash || '#/')
 
 const route = computed<ShowcaseRoute>(() => {
   const parts = currentHash.value.replace(/^#\/?/, '').split('/').filter(Boolean)
+  if (parts[0] === 'instance-api') return { page: 'instance-api' }
   if (parts[0] !== 'components') return { page: 'home' }
 
   const resolved = resolveComponent(parts[1], parts[2])
@@ -51,19 +53,21 @@ onBeforeUnmount(() => window.removeEventListener('hashchange', syncHash))
       <nav aria-label="主导航">
         <a href="#/" :class="{ active: route.page === 'home' }">首页</a>
         <a href="#/components/button/basic" :class="{ active: route.page === 'components' }">组件</a>
+        <a href="#/instance-api" :class="{ active: route.page === 'instance-api' }">实例体系</a>
         <a href="http://localhost:8020/" target="_blank" rel="noreferrer">示例应用 ↗</a>
       </nav>
       <DlBadge tone="success" variant="outline" size="md">
-        <span class="live-dot" /> v0.5.0-alpha.9 · LOCAL
+        <span class="live-dot" /> v0.6.0-alpha.2 · LOCAL
       </DlBadge>
     </header>
 
     <HomePage v-if="route.page === 'home'" />
     <ComponentDocsPage
-      v-else
+      v-else-if="route.page === 'components'"
       :component-id="route.componentId!"
       :scenario-id="route.scenarioId!"
     />
+    <InstanceArchitecturePage v-else />
 
     <footer v-if="route.page === 'home'" class="site-footer">
       <div class="brand compact">

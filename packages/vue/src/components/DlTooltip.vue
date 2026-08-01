@@ -6,6 +6,7 @@ import type { DlTone } from '../types'
 import { tooltipStyles } from './overlay.styles'
 
 const props = withDefaults(defineProps<{
+  open?: boolean
   text?: string
   title?: string
   tone?: DlTone
@@ -17,6 +18,7 @@ const props = withDefaults(defineProps<{
   maxWidth?: number | string
   zIndex?: number
 }>(), {
+  open: undefined,
   text: '',
   title: undefined,
   tone: 'default',
@@ -28,6 +30,7 @@ const props = withDefaults(defineProps<{
   maxWidth: 280,
   zIndex: undefined,
 })
+const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const contentZIndex = useDlTooltipLayer(() => props.zIndex)
 const tooltipText = computed(() => props.text)
 const resolvedMaxWidth = computed(() => typeof props.maxWidth === 'number' ? `${props.maxWidth}px` : props.maxWidth)
@@ -35,7 +38,7 @@ const resolvedMaxWidth = computed(() => typeof props.maxWidth === 'number' ? `${
 
 <template>
   <TooltipProvider :delay-duration="delayDuration" :skip-delay-duration="skipDelayDuration">
-    <TooltipRoot :disabled="disabled">
+    <TooltipRoot :open="open" :disabled="disabled" @update:open="emit('update:open', $event)">
       <TooltipTrigger as-child><slot /></TooltipTrigger>
       <TooltipPortal>
         <TooltipContent

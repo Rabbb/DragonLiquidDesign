@@ -2,71 +2,38 @@ import './styles/index.css'
 
 export { CalendarDate, Time } from '@internationalized/date'
 
-export { default as DlAccordion } from './components/DlAccordion.vue'
-export { default as DlAlertDialog } from './components/DlAlertDialog.vue'
-export { default as DlAspectRatio } from './components/DlAspectRatio.vue'
-export { default as DlAutocomplete } from './components/DlAutocomplete.vue'
-export { default as DlAvatar } from './components/DlAvatar.vue'
-export { default as DlBadge } from './components/DlBadge.vue'
-export { default as DlButton } from './components/DlButton.vue'
-export { default as DlCard } from './components/DlCard.vue'
-export { default as DlCalendar } from './components/DlCalendar.vue'
-export { default as DlCheckbox } from './components/DlCheckbox.vue'
-export { default as DlCollapsible } from './components/DlCollapsible.vue'
-export { default as DlCombobox } from './components/DlCombobox.vue'
-export { default as DlColorArea } from './components/DlColorArea.vue'
-export { default as DlColorField } from './components/DlColorField.vue'
-export { default as DlColorSlider } from './components/DlColorSlider.vue'
-export { default as DlColorSwatch } from './components/DlColorSwatch.vue'
-export { default as DlColorSwatchPicker } from './components/DlColorSwatchPicker.vue'
-export { default as DlContextMenu } from './components/DlContextMenu.vue'
-export { default as DlDialog } from './components/DlDialog.vue'
-export { default as DlDateField } from './components/DlDateField.vue'
-export { default as DlDatePicker } from './components/DlDatePicker.vue'
-export { default as DlDateRangeField } from './components/DlDateRangeField.vue'
-export { default as DlDateRangePicker } from './components/DlDateRangePicker.vue'
-export { default as DlDrawer } from './components/DlDrawer.vue'
-export { default as DlDropdownMenu } from './components/DlDropdownMenu.vue'
-export { default as DlEditable } from './components/DlEditable.vue'
-export { default as DlHoverCard } from './components/DlHoverCard.vue'
-export { default as DlIconButton } from './components/DlIconButton.vue'
-export { default as DlInput } from './components/DlInput.vue'
-export { default as DlLabel } from './components/DlLabel.vue'
-export { default as DlListbox } from './components/DlListbox.vue'
-export { default as DlMenubar } from './components/DlMenubar.vue'
-export { default as DlMdx } from './components/DlMdx.vue'
-export { default as DlMarkdownX } from './components/DlMdx.vue'
-export { default as DlMonthPicker } from './components/DlMonthPicker.vue'
-export { default as DlMonthRangePicker } from './components/DlMonthRangePicker.vue'
-export { default as DlNavigationMenu } from './components/DlNavigationMenu.vue'
-export { default as DlNumberField } from './components/DlNumberField.vue'
-export { default as DlPagination } from './components/DlPagination.vue'
-export { default as DlPinInput } from './components/DlPinInput.vue'
-export { default as DlPopover } from './components/DlPopover.vue'
-export { default as DlProgress } from './components/DlProgress.vue'
-export { default as DlRangeCalendar } from './components/DlRangeCalendar.vue'
-export { default as DlRadioGroup } from './components/DlRadioGroup.vue'
-export { default as DlRating } from './components/DlRating.vue'
-export { default as DlScrollArea } from './components/DlScrollArea.vue'
-export { default as DlSelect } from './components/DlSelect.vue'
-export { default as DlSeparator } from './components/DlSeparator.vue'
-export { default as DlSlider } from './components/DlSlider.vue'
-export { default as DlSplitter } from './components/DlSplitter.vue'
-export { default as DlStepper } from './components/DlStepper.vue'
-export { default as DlSwitch } from './components/DlSwitch.vue'
-export { default as DlTabs } from './components/DlTabs.vue'
-export { default as DlTagsInput } from './components/DlTagsInput.vue'
-export { default as DlTextarea } from './components/DlTextarea.vue'
-export { default as DlTimeField } from './components/DlTimeField.vue'
-export { default as DlTimeRangeField } from './components/DlTimeRangeField.vue'
-export { default as DlToast } from './components/DlToast.vue'
-export { default as DlToggle } from './components/DlToggle.vue'
-export { default as DlToggleGroup } from './components/DlToggleGroup.vue'
-export { default as DlToolbar } from './components/DlToolbar.vue'
-export { default as DlTooltip } from './components/DlTooltip.vue'
-export { default as DlTree } from './components/DlTree.vue'
-export { default as DlYearPicker } from './components/DlYearPicker.vue'
-export { default as DlYearRangePicker } from './components/DlYearRangePicker.vue'
+export {
+  DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlButton,
+  DlCalendar, DlCard, DlCheckbox, DlCollapsible, DlColorArea, DlColorField, DlColorSlider,
+  DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContextMenu, DlDateField, DlDatePicker,
+  DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
+  DlHoverCard, DlIconButton, DlInput, DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
+  DlMonthPicker, DlMonthRangePicker, DlNavigationMenu, DlNumberField, DlPagination, DlPinInput,
+  DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSelect,
+  DlSeparator, DlSlider, DlSplitter, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
+  DlTimeField, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
+  DlTree, DlYearPicker, DlYearRangePicker,
+} from './managed-components'
+
+export { createDlManagedComponent, getDlComponentBehavior, getDlComponentBehaviors } from './component-behavior'
+export type {
+  DlCancelableEvent,
+  DlComponentBehaviorContext,
+  DlComponentBehaviorMetadata,
+  DlComponentEventDefinition,
+  DlComponentEventHandler,
+  DlComponentEventSubscription,
+  DlComponentMethodDefinition,
+  DlComponentRef,
+  DlComponentTemplateRef,
+  DlManagedComponent,
+  DlManagedComponentOptions,
+  DlMethodCallEvent,
+  DlMethodCalledEvent,
+  DlPropertyChangeEvent,
+  DlPropertyChangeOrigin,
+  DlPropertyUpdateResult,
+} from './control.types'
 
 export type {
   DlAccordionItem,
