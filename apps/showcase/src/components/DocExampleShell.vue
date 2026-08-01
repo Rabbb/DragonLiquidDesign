@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { DlBadge, DlButton, DlCard } from '@dragon-liquid/vue'
 
 const props = withDefaults(defineProps<{
@@ -14,6 +14,13 @@ const props = withDefaults(defineProps<{
 })
 
 const copied = ref(false)
+
+watchEffect(() => {
+  const code = props.code.trim()
+  if (!code.includes('<script setup') || !code.includes('<template>') || !code.includes('</template>')) {
+    throw new Error(`${props.title} 缺少完整 Vue SFC 案例代码。`)
+  }
+})
 
 async function copyCode() {
   await navigator.clipboard.writeText(props.code)

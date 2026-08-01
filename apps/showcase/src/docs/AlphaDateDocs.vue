@@ -2,6 +2,7 @@
 import { computed, shallowRef } from 'vue'
 import { CalendarDate, Time, DlCalendar, DlDateField, DlDatePicker, DlDateRangeField, DlDateRangePicker, DlMonthPicker, DlMonthRangePicker, DlRangeCalendar, DlTimeField, DlTimeRangeField, DlYearPicker, DlYearRangePicker } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
+import { componentGuidanceFor } from '../componentGuidance'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc, type VueExampleSource } from './exampleCode'
 
@@ -19,13 +20,14 @@ const rangeIds = new Set(['date-range-field', 'date-range-picker', 'range-calend
 const timeIds = new Set(['time-field', 'time-range-field'])
 function sourceFor(id: string): VueExampleSource {
   const component = componentById[id]
-  if (id === 'time-range-field') return { imports: [component, 'Time'], script: `import { shallowRef } from 'vue'\n\nconst range = shallowRef({ start: new Time(18, 0), end: new Time(22, 30) })`, template: `  <${component} v-model="range" />` }
-  if (id === 'time-field') return { imports: [component, 'Time'], script: `import { shallowRef } from 'vue'\n\nconst time = shallowRef(new Time(20, 30))`, template: `  <${component} v-model="time" />` }
-  if (rangeIds.has(id)) return { imports: [component, 'CalendarDate'], script: `import { shallowRef } from 'vue'\n\nconst range = shallowRef({\n  start: new CalendarDate(2026, 8, 1),\n  end: new CalendarDate(2026, 8, 12),\n})`, template: `  <${component} v-model="range" locale="zh-CN" />` }
-  return { imports: [component, 'CalendarDate'], script: `import { shallowRef } from 'vue'\n\nconst date = shallowRef(new CalendarDate(2026, 8, 1))`, template: `  <${component} v-model="date" locale="zh-CN" />` }
+  const style = `.example { display: grid; justify-items: start; gap: 12px; }\noutput { color: #a9b9b0; }`
+  if (id === 'time-range-field') return { imports: [component, 'Time'], script: `import { shallowRef } from 'vue'\n\nconst range = shallowRef({ start: new Time(18, 0), end: new Time(22, 30) })`, template: `  <section class="example">\n    <${component} v-model="range" aria-label="播放时段" />\n    <output>当前范围：{{ range.start.toString() }} — {{ range.end.toString() }}</output>\n  </section>`, style }
+  if (id === 'time-field') return { imports: [component, 'Time'], script: `import { shallowRef } from 'vue'\n\nconst time = shallowRef(new Time(20, 30))`, template: `  <section class="example">\n    <${component} v-model="time" aria-label="播放时间" />\n    <output>当前时间：{{ time.toString() }}</output>\n  </section>`, style }
+  if (rangeIds.has(id)) return { imports: [component, 'CalendarDate'], script: `import { shallowRef } from 'vue'\n\nconst range = shallowRef({\n  start: new CalendarDate(2026, 8, 1),\n  end: new CalendarDate(2026, 8, 12),\n})`, template: `  <section class="example">\n    <${component} v-model="range" locale="zh-CN" aria-label="日期范围" />\n    <output>当前范围：{{ range.start.toString() }} — {{ range.end.toString() }}</output>\n  </section>`, style }
+  return { imports: [component, 'CalendarDate'], script: `import { shallowRef } from 'vue'\n\nconst date = shallowRef(new CalendarDate(2026, 8, 1))`, template: `  <section class="example">\n    <${component} v-model="date" locale="zh-CN" aria-label="日期" />\n    <output>当前日期：{{ date.toString() }}</output>\n  </section>`, style }
 }
 const content = computed(() => ({
-  title: `${props.componentDefinition.name} · Alpha 先行体验`, description: props.componentDefinition.summary,
+  title: `${props.componentDefinition.name} · Alpha 先行体验`, description: componentGuidanceFor(props.componentDefinition.id).example,
   code: vueSfc(sourceFor(props.componentDefinition.id)),
   tips: ['日期值使用 @internationalized/date 的时区安全对象，并由组件包统一导出。', 'Alpha API 已具备键盘操作和本地化能力，升级时仍需关注变更记录。'],
 }))
@@ -34,18 +36,18 @@ const content = computed(() => ({
 <template>
   <DocExampleShell v-bind="content">
     <div class="alpha-date-demo">
-      <DlCalendar v-if="componentDefinition.id === 'calendar'" v-model="date" />
-      <DlDateField v-else-if="componentDefinition.id === 'date-field'" v-model="date" />
-      <DlDatePicker v-else-if="componentDefinition.id === 'date-picker'" v-model="date" />
-      <DlDateRangeField v-else-if="componentDefinition.id === 'date-range-field'" v-model="dateRange" />
-      <DlDateRangePicker v-else-if="componentDefinition.id === 'date-range-picker'" v-model="dateRange" />
-      <DlRangeCalendar v-else-if="componentDefinition.id === 'range-calendar'" v-model="dateRange" />
-      <DlTimeField v-else-if="componentDefinition.id === 'time-field'" v-model="time" />
-      <DlTimeRangeField v-else-if="componentDefinition.id === 'time-range-field'" v-model="timeRange" />
-      <DlMonthPicker v-else-if="componentDefinition.id === 'month-picker'" v-model="date" />
-      <DlMonthRangePicker v-else-if="componentDefinition.id === 'month-range-picker'" v-model="dateRange" />
-      <DlYearPicker v-else-if="componentDefinition.id === 'year-picker'" v-model="date" />
-      <DlYearRangePicker v-else v-model="dateRange" />
+      <DlCalendar v-if="componentDefinition.id === 'calendar'" v-model="date" locale="zh-CN" aria-label="日期" />
+      <DlDateField v-else-if="componentDefinition.id === 'date-field'" v-model="date" locale="zh-CN" aria-label="日期" />
+      <DlDatePicker v-else-if="componentDefinition.id === 'date-picker'" v-model="date" locale="zh-CN" aria-label="日期" />
+      <DlDateRangeField v-else-if="componentDefinition.id === 'date-range-field'" v-model="dateRange" locale="zh-CN" aria-label="日期范围" />
+      <DlDateRangePicker v-else-if="componentDefinition.id === 'date-range-picker'" v-model="dateRange" locale="zh-CN" aria-label="日期范围" />
+      <DlRangeCalendar v-else-if="componentDefinition.id === 'range-calendar'" v-model="dateRange" locale="zh-CN" aria-label="日期范围" />
+      <DlTimeField v-else-if="componentDefinition.id === 'time-field'" v-model="time" aria-label="播放时间" />
+      <DlTimeRangeField v-else-if="componentDefinition.id === 'time-range-field'" v-model="timeRange" aria-label="播放时段" />
+      <DlMonthPicker v-else-if="componentDefinition.id === 'month-picker'" v-model="date" locale="zh-CN" aria-label="月份" />
+      <DlMonthRangePicker v-else-if="componentDefinition.id === 'month-range-picker'" v-model="dateRange" locale="zh-CN" aria-label="月份范围" />
+      <DlYearPicker v-else-if="componentDefinition.id === 'year-picker'" v-model="date" locale="zh-CN" aria-label="年份" />
+      <DlYearRangePicker v-else v-model="dateRange" locale="zh-CN" aria-label="年份范围" />
       <output>当前值：{{ timeIds.has(componentDefinition.id) ? componentDefinition.id === 'time-field' ? time.toString() : `${timeRange.start} — ${timeRange.end}` : rangeIds.has(componentDefinition.id) ? `${dateRange.start} — ${dateRange.end}` : date.toString() }}</output>
     </div>
   </DocExampleShell>

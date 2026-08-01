@@ -2,6 +2,7 @@
 import { computed, defineAsyncComponent, ref, watch, type Component } from 'vue'
 import { DlBadge, DlButton } from '@dragon-liquid/vue'
 import { componentsMissingApi } from '../api/componentApi'
+import { componentGuidanceFor, componentsMissingGuidance } from '../componentGuidance'
 import {
   componentCatalog,
   componentCategories,
@@ -19,6 +20,7 @@ const sidebarOpen = ref(false)
 const resolved = computed(() => resolveComponent(props.componentId, props.scenarioId))
 const selectedComponent = computed(() => resolved.value.component)
 const selectedScenario = computed(() => resolved.value.scenario)
+const selectedGuidance = computed(() => componentGuidanceFor(selectedComponent.value.id))
 const selectedCategory = computed(() => componentCategories.find(category => category.id === selectedComponent.value.category)!)
 const expandedCategories = ref<Set<ComponentCategoryId>>(new Set([selectedComponent.value.category]))
 const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
@@ -26,6 +28,10 @@ const plannedCount = computed(() => componentCatalog.length - readyCount.value)
 const missingApiComponents = componentsMissingApi(componentCatalog.map(component => component.id))
 if (missingApiComponents.length) {
   throw new Error(`以下组件缺少属性 API：${missingApiComponents.join(', ')}`)
+}
+const missingGuidanceComponents = componentsMissingGuidance(componentCatalog.map(component => component.id))
+if (missingGuidanceComponents.length) {
+  throw new Error(`以下组件缺少使用决策说明：${missingGuidanceComponents.join(', ')}`)
 }
 
 const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
@@ -208,6 +214,26 @@ function toggleCategory(category: typeof componentCategories[number]) {
         <DlButton variant="secondary" size="sm">下载 npm 包 ↓</DlButton>
       </a>
     </header>
+
+    <section class="component-guidance" aria-label="组件使用决策">
+      <article>
+        <span>WHEN TO USE</span>
+        <h2>适合使用</h2>
+        <ul>
+          <li v-for="item in selectedGuidance.useWhen" :key="item">{{ item }}</li>
+        </ul>
+      </article>
+      <article>
+        <span>AVOID MISUSE</span>
+        <h2>避免误用</h2>
+        <p>{{ selectedGuidance.avoidWhen }}</p>
+      </article>
+      <article>
+        <span>ACCESSIBILITY</span>
+        <h2>无障碍要求</h2>
+        <p>{{ selectedGuidance.accessibility }}</p>
+      </article>
+    </section>
 
     <div v-if="selectedComponent.scenarios.length > 1" class="scenario-tabs" role="navigation" aria-label="案例场景">
       <a

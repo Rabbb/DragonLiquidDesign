@@ -19,6 +19,7 @@ import {
   type DlTone,
 } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
+import { componentGuidanceFor } from '../componentGuidance'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
@@ -50,20 +51,58 @@ const tabItems: DlTabItem[] = [
 ]
 
 const baseCodeById: Record<string, string> = {
-  accordion: vueSfc({ imports: ['DlAccordion', 'type DlAccordionItem'], script: `import { ref } from 'vue'\n\nconst openItem = ref('story')\nconst items: DlAccordionItem[] = [\n  { value: 'story', title: '故事简介', content: '无剧透梗概' },\n  { value: 'staff', title: '制作信息', content: '制作团队资料' },\n]`, template: `  <DlAccordion v-model="openItem" :items="items" />` }),
-  avatar: vueSfc({ imports: ['DlAvatar'], template: `  <DlAvatar fallback="DL" size="lg" />` }),
-  collapsible: vueSfc({ imports: ['DlCollapsible'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlCollapsible v-model:open="open" title="高级筛选">
-    按制作公司、季度和观看状态筛选。
-  </DlCollapsible>` }),
+  accordion: vueSfc({ imports: ['DlAccordion', 'type DlAccordionItem'], script: `import { ref } from 'vue'
+
+const openItem = ref<string | string[]>('story')
+const items: DlAccordionItem[] = [
+  { value: 'story', title: '故事简介', description: '展开查看无剧透梗概', content: '异世界冒险从一封没有署名的委托开始。' },
+  { value: 'staff', title: '制作信息', content: '动画制作：Dragon Studio；系列构成：Liquid Team。' },
+  { value: 'spoiler', title: '剧透章节', content: '该章节不可用。', disabled: true },
+]`, template: `  <section class="example">
+    <DlAccordion v-model="openItem" :items="items" collapsible />
+    <output>当前展开：{{ openItem || '无' }}</output>
+  </section>`, style: `.example { display: grid; gap: 12px; max-width: 640px; }
+output { color: #a9b9b0; }` }),
+  avatar: vueSfc({ imports: ['DlAvatar'], template: `  <div class="avatars" aria-label="头像尺寸与形状">
+    <DlAvatar fallback="DL" size="sm" />
+    <DlAvatar fallback="龙" size="md" />
+    <DlAvatar fallback="MOE" shape="rounded" size="lg" />
+  </div>`, style: `.avatars { display: flex; align-items: center; gap: 16px; }` }),
+  collapsible: vueSfc({ imports: ['DlCollapsible'], script: `import { ref } from 'vue'
+
+const open = ref(false)`, template: `  <section class="example">
+    <DlCollapsible
+      v-model:open="open"
+      title="高级筛选"
+      description="按需展开低频筛选条件"
+    >
+      按制作公司、季度和观看状态筛选。
+    </DlCollapsible>
+    <output>面板：{{ open ? '已展开' : '已收起' }}</output>
+  </section>`, style: `.example { display: grid; gap: 12px; max-width: 640px; }
+output { color: #a9b9b0; }` }),
   separator: vueSfc({ imports: ['DlSeparator'], template: `  <section>
     <p>作品简介与主要资料</p>
     <DlSeparator label="更多信息" />
     <p>制作人员、别名和外部链接</p>
   </section>` }),
-  tabs: vueSfc({ imports: ['DlTabs', 'type DlTabItem'], script: `import { ref } from 'vue'\n\nconst tab = ref('summary')\nconst items: DlTabItem[] = [\n  { value: 'summary', label: '简介' },\n  { value: 'episodes', label: '剧集' },\n]`, template: `  <DlTabs v-model="tab" :items="items">
-    <template #tab-summary>作品简介</template>
-    <template #tab-episodes>剧集列表</template>
-  </DlTabs>` }),
+  tabs: vueSfc({ imports: ['DlTabs', 'type DlTabItem'], script: `import { ref } from 'vue'
+
+const tab = ref('summary')
+const items: DlTabItem[] = [
+  { value: 'summary', label: '简介', description: '作品简介、别名与播出信息。' },
+  { value: 'episodes', label: '剧集', description: '剧集列表和个人观看进度。' },
+  { value: 'notes', label: '笔记', description: '只对当前用户可见的收藏笔记。' },
+]`, template: `  <section class="example">
+    <DlTabs v-model="tab" :items="items" aria-label="作品资料">
+      <template #default="{ item }">
+        <strong>{{ item.label }}</strong>
+        <p>{{ item.description }}</p>
+      </template>
+    </DlTabs>
+    <output>当前面板：{{ tab }}</output>
+  </section>`, style: `.example { display: grid; gap: 12px; }
+output { color: #a9b9b0; }` }),
 }
 
 const scenarioCodeById: Record<string, Record<string, string>> = {
@@ -284,7 +323,7 @@ const exampleCode = computed(() => scenarioCodeById[props.componentDefinition.id
 
 const content = computed(() => ({
   title: `${props.componentDefinition.name} · ${props.componentDefinition.scenarios.find(item => item.id === props.scenario)?.label ?? '案例'}`,
-  description: props.componentDefinition.summary,
+  description: componentGuidanceFor(props.componentDefinition.id).example,
   code: exampleCode.value,
   tips: ['键盘导航、焦点移动和 ARIA 状态由 Reka UI 原语提供。', '每个场景独立加载，并给出可以直接复制的完整 Vue SFC 代码。'],
 }))

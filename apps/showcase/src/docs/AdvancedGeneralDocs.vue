@@ -6,6 +6,7 @@ import {
   type DlMenuGroup, type DlMenuItem, type DlNavigationItem, type DlSplitterPanel, type DlStepItem, type DlTone,
 } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
+import { componentGuidanceFor } from '../componentGuidance'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
@@ -43,18 +44,136 @@ const steps: DlStepItem[] = [{ step: 1, title: '基础资料', description: '标
 const toolbarItems: DlMenuItem[] = [{ value: 'bold', label: '粗体', shortcut: 'B' }, { value: 'italic', label: '斜体', shortcut: 'I' }, { value: 'divider', label: '', separator: true }, { value: 'link', label: '链接' }]
 
 const baseCodeById: Record<string, string> = {
-  'alert-dialog': vueSfc({ imports: ['DlAlertDialog', 'DlButton'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="danger" @click="open = true">移除收藏</DlButton>
-  <DlAlertDialog v-model:open="open" title="移除收藏？" description="观看进度也会一起移除。" />` }),
-  'aspect-ratio': vueSfc({ imports: ['DlAspectRatio'], template: `  <DlAspectRatio :ratio="16 / 9"><img src="/cover.webp" alt="作品封面" /></DlAspectRatio>` }),
-  'context-menu': vueSfc({ imports: ['DlContextMenu', 'type DlMenuItem'], script: `const items: DlMenuItem[] = [\n  { value: 'edit', label: '编辑作品' },\n  { value: 'favorite', label: '加入收藏' },\n]`, template: `  <DlContextMenu :items="items" @select="console.log"><div class="target">在这里单击右键</div></DlContextMenu>`, style: `.target { min-height: 160px; display: grid; place-content: center; }` }),
-  'dropdown-menu': vueSfc({ imports: ['DlButton', 'DlDropdownMenu', 'type DlMenuItem'], script: `const items: DlMenuItem[] = [\n  { value: 'edit', label: '编辑作品' },\n  { value: 'favorite', label: '加入收藏' },\n]`, template: `  <DlDropdownMenu :items="items"><template #trigger><DlButton variant="secondary">打开菜单</DlButton></template></DlDropdownMenu>` }),
-  menubar: vueSfc({ imports: ['DlMenubar', 'type DlMenuGroup'], script: `const menus: DlMenuGroup[] = [\n  { value: 'file', label: '文件', items: [{ value: 'save', label: '保存' }] },\n  { value: 'view', label: '视图', items: [{ value: 'grid', label: '网格' }] },\n]`, template: `  <DlMenubar :menus="menus" />` }),
-  'navigation-menu': vueSfc({ imports: ['DlNavigationMenu', 'type DlNavigationItem'], script: `const items: DlNavigationItem[] = [\n  { value: 'home', label: '首页', href: '/' },\n  { value: 'library', label: '收藏库', href: '/library' },\n]`, template: `  <DlNavigationMenu :items="items" />` }),
-  pagination: vueSfc({ imports: ['DlPagination'], script: `import { ref } from 'vue'\n\nconst page = ref(4)`, template: `  <DlPagination v-model:page="page" :total="240" :items-per-page="12" />` }),
-  'scroll-area': vueSfc({ imports: ['DlScrollArea'], template: `  <DlScrollArea class="episode-list"><div v-for="episode in 24" :key="episode">第 {{ episode }} 集</div></DlScrollArea>`, style: `.episode-list { height: 260px; }\n.episode-list div { padding: 12px; }` }),
-  splitter: vueSfc({ imports: ['DlSplitter', 'type DlSplitterPanel'], script: `const panels: DlSplitterPanel[] = [\n  { id: 'outline', defaultSize: 35 },\n  { id: 'content', defaultSize: 65 },\n]`, template: `  <DlSplitter :panels="panels" class="workspace"><template #panel-outline>目录</template><template #panel-content>内容</template></DlSplitter>`, style: `.workspace { height: 260px; }` }),
-  stepper: vueSfc({ imports: ['DlStepper', 'type DlStepItem'], script: `import { ref } from 'vue'\n\nconst step = ref(2)\nconst steps: DlStepItem[] = [\n  { step: 1, title: '基础资料' },\n  { step: 2, title: '分类标签' },\n  { step: 3, title: '确认发布' },\n]`, template: `  <DlStepper v-model="step" :items="steps" />` }),
-  toolbar: vueSfc({ imports: ['DlToolbar', 'type DlMenuItem'], script: `const items: DlMenuItem[] = [\n  { value: 'bold', label: '粗体', shortcut: 'B' },\n  { value: 'italic', label: '斜体', shortcut: 'I' },\n]`, template: `  <DlToolbar :items="items" @action="console.log" />` }),
+  'alert-dialog': vueSfc({ imports: ['DlAlertDialog', 'DlButton'], script: `import { ref } from 'vue'
+
+const open = ref(false)
+const result = ref('尚未执行操作')
+
+function confirmRemoval() {
+  result.value = '收藏记录已移除'
+}`, template: `  <section class="example">
+    <DlButton variant="danger" @click="open = true">移除收藏</DlButton>
+    <DlAlertDialog
+      v-model:open="open"
+      title="移除收藏？"
+      description="观看进度和个人评分也会一起移除，此操作无法撤销。"
+      confirm-label="确认移除"
+      cancel-label="保留记录"
+      @confirm="confirmRemoval"
+    />
+    <output aria-live="polite">{{ result }}</output>
+  </section>`, style: `.example { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+output { color: #a9b9b0; }` }),
+  'aspect-ratio': vueSfc({ imports: ['DlAspectRatio'], template: `  <DlAspectRatio :ratio="16 / 9" class="media-frame">
+    <div role="img" aria-label="Dragon Liquid 动漫封面占位图" class="cover-art">
+      <b>16 : 9</b>
+      <span>媒体封面安全区域</span>
+    </div>
+  </DlAspectRatio>`, style: `.media-frame { width: min(100%, 680px); overflow: hidden; border-radius: 18px; }
+.cover-art { height: 100%; display: grid; place-content: center; gap: 8px; text-align: center; background: radial-gradient(circle at 50% 30%, #2f7354, #0a2115 68%); color: #ffe69a; }
+.cover-art span { color: #b8c7bf; }` }),
+  'context-menu': vueSfc({ imports: ['DlContextMenu', 'type DlMenuItem'], script: `import { ref } from 'vue'
+
+const selected = ref('尚未执行操作')
+const items: DlMenuItem[] = [
+  { value: 'edit', label: '编辑作品', shortcut: 'E' },
+  { value: 'favorite', label: '加入收藏', shortcut: 'F' },
+  { value: 'separator', label: '', separator: true },
+  { value: 'delete', label: '移除记录' },
+  { value: 'locked', label: '管理员选项', disabled: true },
+]`, template: `  <section class="example">
+    <DlContextMenu :items="items" label="作品操作" @select="selected = $event">
+      <div class="target">在这里单击右键</div>
+    </DlContextMenu>
+    <output>最后动作：{{ selected }}</output>
+  </section>`, style: `.example { display: grid; gap: 12px; }
+.target { min-height: 160px; display: grid; place-content: center; border: 1px dashed rgba(255,255,255,.2); border-radius: 16px; }
+output { color: #a9b9b0; }` }),
+  'dropdown-menu': vueSfc({ imports: ['DlButton', 'DlDropdownMenu', 'type DlMenuItem'], script: `import { ref } from 'vue'
+
+const selected = ref('尚未执行操作')
+const items: DlMenuItem[] = [
+  { value: 'edit', label: '编辑作品', shortcut: 'E' },
+  { value: 'favorite', label: '加入收藏', shortcut: 'F' },
+  { value: 'separator', label: '', separator: true },
+  { value: 'delete', label: '移除记录' },
+]`, template: `  <section class="example">
+    <DlDropdownMenu :items="items" label="作品操作" @select="selected = $event">
+      <template #trigger><DlButton variant="secondary">打开操作菜单 ▾</DlButton></template>
+    </DlDropdownMenu>
+    <output>最后动作：{{ selected }}</output>
+  </section>`, style: `.example { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+output { color: #a9b9b0; }` }),
+  menubar: vueSfc({ imports: ['DlMenubar', 'type DlMenuGroup'], script: `import { ref } from 'vue'
+
+const selected = ref('尚未执行命令')
+const menus: DlMenuGroup[] = [
+  { value: 'file', label: '文件', items: [{ value: 'save', label: '保存', shortcut: 'Ctrl+S' }, { value: 'export', label: '导出' }] },
+  { value: 'view', label: '视图', items: [{ value: 'grid', label: '网格视图' }, { value: 'list', label: '列表视图' }] },
+]`, template: `  <section class="example">
+    <DlMenubar :menus="menus" @select="selected = $event" />
+    <output>最后命令：{{ selected }}</output>
+  </section>`, style: `.example { display: grid; gap: 12px; }
+output { color: #a9b9b0; }` }),
+  'navigation-menu': vueSfc({ imports: ['DlNavigationMenu', 'type DlNavigationItem'], script: `const items: DlNavigationItem[] = [
+  { value: 'home', label: '首页', href: '#/' },
+  {
+    value: 'library',
+    label: '组件',
+    children: [
+      { value: 'form', label: '表单组件', description: '输入、选择与校验', href: '#/components/input/basic' },
+      { value: 'overlay', label: '浮层组件', description: '对话框、菜单和提示', href: '#/components/dialog/basic' },
+    ],
+  },
+  { value: 'architecture', label: '实例体系', href: '#/instance-api' },
+]`, template: `  <DlNavigationMenu :items="items" aria-label="主导航" />` }),
+  pagination: vueSfc({ imports: ['DlPagination'], script: `import { ref } from 'vue'
+
+const page = ref(4)`, template: `  <section class="example">
+    <DlPagination v-model:page="page" :total="240" :items-per-page="12" />
+    <output aria-live="polite">当前第 {{ page }} 页，共 20 页</output>
+  </section>`, style: `.example { display: grid; gap: 12px; }
+output { color: #a9b9b0; }` }),
+  'scroll-area': vueSfc({ imports: ['DlScrollArea'], script: `const episodes = Array.from({ length: 24 }, (_, index) => ({ number: index + 1, title: '收藏条目说明' }))`, template: `  <DlScrollArea class="episode-list" aria-label="剧集列表">
+    <article v-for="episode in episodes" :key="episode.number">
+      <b>{{ String(episode.number).padStart(2, '0') }}</b>
+      <span>第 {{ episode.number }} 集 · {{ episode.title }}</span>
+    </article>
+  </DlScrollArea>`, style: `.episode-list { height: 260px; }
+.episode-list article { display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid rgba(255,255,255,.08); }` }),
+  splitter: vueSfc({ imports: ['DlSplitter', 'type DlSplitterPanel'], script: `const panels: DlSplitterPanel[] = [
+  { id: 'outline', defaultSize: 35, minSize: 20 },
+  { id: 'content', defaultSize: 65, minSize: 30 },
+]`, template: `  <DlSplitter :panels="panels" class="workspace">
+    <template #panel-outline><aside class="panel"><b>目录</b><span v-for="item in 5" :key="item">章节 {{ item }}</span></aside></template>
+    <template #panel-content><article class="panel"><b>内容</b><p>拖动把手或聚焦后使用方向键调整宽度。</p></article></template>
+  </DlSplitter>`, style: `.workspace { height: 260px; }
+.panel { display: grid; align-content: start; gap: 10px; height: 100%; padding: 16px; }` }),
+  stepper: vueSfc({ imports: ['DlStepper', 'type DlStepItem'], script: `import { ref } from 'vue'
+
+const step = ref(2)
+const steps: DlStepItem[] = [
+  { step: 1, title: '基础资料', description: '标题与封面' },
+  { step: 2, title: '分类标签', description: '题材与状态' },
+  { step: 3, title: '确认发布', description: '检查并保存' },
+]`, template: `  <section class="example">
+    <DlStepper v-model="step" :items="steps" />
+    <output>当前步骤：{{ step }} / {{ steps.length }}</output>
+  </section>`, style: `.example { display: grid; gap: 12px; }
+output { color: #a9b9b0; }` }),
+  toolbar: vueSfc({ imports: ['DlToolbar', 'type DlMenuItem'], script: `import { ref } from 'vue'
+
+const selected = ref('尚未执行命令')
+const items: DlMenuItem[] = [
+  { value: 'bold', label: '粗体', shortcut: 'B' },
+  { value: 'italic', label: '斜体', shortcut: 'I' },
+  { value: 'divider', label: '', separator: true },
+  { value: 'link', label: '链接' },
+]`, template: `  <section class="example">
+    <DlToolbar :items="items" aria-label="文本格式" @action="selected = $event" />
+    <output>最后命令：{{ selected }}</output>
+  </section>`, style: `.example { display: grid; gap: 12px; }
+output { color: #a9b9b0; }` }),
 }
 
 const scenarioCodeById: Record<string, Record<string, string>> = {
@@ -186,7 +305,7 @@ const exampleCode = computed(() => scenarioCodeById[props.componentDefinition.id
   ?? '')
 const content = computed(() => ({
   title: `${props.componentDefinition.name} · ${props.componentDefinition.scenarios.find(item => item.id === props.scenario)?.label ?? '案例'}`,
-  description: props.componentDefinition.summary,
+  description: componentGuidanceFor(props.componentDefinition.id).example,
   code: exampleCode.value,
   tips: ['每个场景只渲染当前案例，避免大量 Portal 与交互控件同时挂载。', '案例代码包含完整的状态、模板和必要样式，可直接作为 Vue SFC 使用。'],
 }))

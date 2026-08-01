@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { DlButton, DlDrawer, DlInput, DlSelect, DlSwitch, DlTree, type DlSelectOption, type DlTone, type DlTreeNode } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
+import { componentGuidanceFor } from '../componentGuidance'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
@@ -159,7 +160,7 @@ const treeCode = vueSfc({ imports: ['DlTree', 'type DlTreeNode'], script: `impor
 const code = computed(() => props.componentDefinition.id === 'drawer' ? drawerCodes[props.scenario] ?? drawerCodes.basic : treeCode)
 const content = computed(() => ({
   title: `${props.componentDefinition.name} · ${props.componentDefinition.scenarios.find(item => item.id === props.scenario)?.label ?? 'Alpha 先行体验'}`,
-  description: props.componentDefinition.summary,
+  description: componentGuidanceFor(props.componentDefinition.id).example,
   code: code.value,
   tips: ['先行组件保留清晰的 Alpha 标记，但每个案例都是可运行实现。', 'Drawer 的页脚固定在独立全宽区域，长内容只在主体区域滚动。'],
 }))

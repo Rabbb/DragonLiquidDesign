@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { DlAutocomplete, DlColorArea, DlColorField, DlColorSlider, DlColorSwatch, DlColorSwatchPicker, DlRating } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
+import { componentGuidanceFor } from '../componentGuidance'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc, type VueExampleSource } from './exampleCode'
 
@@ -11,18 +12,24 @@ const rating = ref(4)
 const color = ref('#ff8c00')
 const swatches = ['#ff8c00', '#ffd700', '#32cd32', '#00ced1', '#4169e1', '#9370db', '#ff69b4']
 const suggestions = ['异世界冒险', '异世界日常', '异世界转生', '异世界魔法']
+const currentValue = computed(() => {
+  if (props.componentDefinition.id === 'autocomplete') return query.value || '等待输入'
+  if (props.componentDefinition.id === 'rating') return `${rating.value} / 5`
+  if (props.componentDefinition.id === 'color-swatch') return '只读色板，无选择值'
+  return color.value
+})
 
 const sources: Record<string, VueExampleSource> = {
-  autocomplete: { imports: ['DlAutocomplete'], script: `import { ref } from 'vue'\n\nconst keyword = ref('')\nconst suggestions = ['异世界冒险', '异世界日常', '异世界转生']`, template: `  <DlAutocomplete\n    v-model="keyword"\n    :suggestions="suggestions"\n    placeholder="搜索动漫题材"\n  />` },
-  rating: { imports: ['DlRating'], script: `import { ref } from 'vue'\n\nconst score = ref(4)`, template: `  <DlRating v-model="score" :length="5" hoverable clearable />` },
-  'color-area': { imports: ['DlColorArea'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <DlColorArea v-model="color" color-space="hsl" />` },
-  'color-field': { imports: ['DlColorField'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <DlColorField v-model="color" placeholder="#RRGGBB" />` },
-  'color-slider': { imports: ['DlColorSlider'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <DlColorSlider v-model="color" channel="hue" color-space="hsl" />` },
+  autocomplete: { imports: ['DlAutocomplete'], script: `import { ref } from 'vue'\n\nconst keyword = ref('')\nconst suggestions = ['异世界冒险', '异世界日常', '异世界转生']`, template: `  <section class="example">\n    <DlAutocomplete\n      v-model="keyword"\n      :suggestions="suggestions"\n      placeholder="搜索动漫题材"\n      aria-label="动漫题材"\n    />\n    <output>当前文本：{{ keyword || '等待输入' }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; max-width: 480px; }\noutput { color: #a9b9b0; }` },
+  rating: { imports: ['DlRating'], script: `import { ref } from 'vue'\n\nconst score = ref(4)`, template: `  <section class="example">\n    <DlRating v-model="score" :length="5" hoverable clearable aria-label="作品评分" />\n    <output aria-live="polite">当前评分：{{ score }} / 5</output>\n  </section>`, style: `.example { display: grid; gap: 12px; }\noutput { color: #a9b9b0; }` },
+  'color-area': { imports: ['DlColorArea'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <section class="example">\n    <DlColorArea v-model="color" color-space="hsl" aria-label="主题色饱和度和亮度" />\n    <output>当前颜色：{{ color }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; }\noutput { color: #a9b9b0; }` },
+  'color-field': { imports: ['DlColorField'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <section class="example">\n    <DlColorField v-model="color" placeholder="#RRGGBB" aria-label="主题色十六进制值" />\n    <output>当前颜色：{{ color }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; max-width: 360px; }\noutput { color: #a9b9b0; }` },
+  'color-slider': { imports: ['DlColorSlider'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <section class="example">\n    <DlColorSlider v-model="color" channel="hue" color-space="hsl" aria-label="主题色色相" />\n    <output>当前颜色：{{ color }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; }\noutput { color: #a9b9b0; }` },
   'color-swatch': { imports: ['DlColorSwatch'], template: `  <div class="swatches">\n    <DlColorSwatch color="#ff8c00" label="Dragon Orange" size="lg" />\n    <DlColorSwatch color="#32cd32" label="Dragon Green" size="lg" />\n  </div>`, style: `.swatches { display: flex; gap: 12px; }` },
-  'color-swatch-picker': { imports: ['DlColorSwatchPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')\nconst colors = ['#ff8c00', '#ffd700', '#32cd32', '#00ced1', '#4169e1']`, template: `  <DlColorSwatchPicker v-model="color" :colors="colors" />` },
+  'color-swatch-picker': { imports: ['DlColorSwatchPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')\nconst colors = ['#ff8c00', '#ffd700', '#32cd32', '#00ced1', '#4169e1']`, template: `  <section class="example">\n    <DlColorSwatchPicker v-model="color" :colors="colors" aria-label="主题色" />\n    <output>已选择：{{ color }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; }\noutput { color: #a9b9b0; }` },
 }
 const content = computed(() => ({
-  title: `${props.componentDefinition.name} · Alpha 先行体验`, description: props.componentDefinition.summary,
+  title: `${props.componentDefinition.name} · Alpha 先行体验`, description: componentGuidanceFor(props.componentDefinition.id).example,
   code: vueSfc(sources[props.componentDefinition.id]),
   tips: ['Alpha 表示公共 API 仍可能随 Reka UI 演进，但当前组件已可导入和使用。', '示例代码是完整 Vue SFC，可直接复制后运行。'],
 }))
@@ -38,7 +45,7 @@ const content = computed(() => ({
       <DlColorSlider v-else-if="componentDefinition.id === 'color-slider'" v-model="color" channel="hue" />
       <div v-else-if="componentDefinition.id === 'color-swatch'" class="swatch-row"><DlColorSwatch v-for="item in swatches" :key="item" :color="item" :label="item" size="lg" /></div>
       <DlColorSwatchPicker v-else v-model="color" :colors="swatches" />
-      <output>当前值：{{ componentDefinition.id === 'rating' ? rating : componentDefinition.id === 'autocomplete' ? query : color }}</output>
+      <output>当前值：{{ currentValue }}</output>
     </div>
   </DocExampleShell>
 </template>
