@@ -33,7 +33,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlAccordionItem",
         "description": "Accordion 的单个折叠面板配置。",
@@ -69,6 +69,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlAccordionItem[]"
       }
     ]
@@ -118,7 +119,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "aspect-ratio": {
     "props": [
@@ -129,7 +130,7 @@ export default {
         "defaultValue": "16 / 9"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "autocomplete": {
     "props": [
@@ -182,7 +183,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "avatar": {
     "props": [
@@ -223,7 +251,34 @@ export default {
         "defaultValue": "0"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "badge": {
     "props": [
@@ -246,7 +301,78 @@ export default {
         "defaultValue": "'soft'"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlTone",
+        "title": "DlTone",
+        "description": "Dragon Liquid 组件共享的语义色调。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "默认中性色调，适合普通信息与基础状态。",
+            "type": "'default'",
+            "defaultValue": "中性"
+          },
+          {
+            "prop": "accent",
+            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "type": "'accent'",
+            "defaultValue": "强调"
+          },
+          {
+            "prop": "success",
+            "description": "成功色调，表示任务已经正确完成。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "警告色调，提示可恢复且需要留意的问题。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "danger",
+            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          },
+          {
+            "prop": "muted",
+            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "type": "'muted'",
+            "defaultValue": "弱化"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "button": {
     "props": [
@@ -287,7 +413,34 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "calendar": {
     "props": [
@@ -340,7 +493,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "card": {
     "props": [
@@ -357,7 +510,7 @@ export default {
         "defaultValue": "'md'"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "checkbox": {
     "props": [
@@ -410,7 +563,34 @@ export default {
         "defaultValue": "'on'"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "collapsible": {
     "props": [
@@ -439,7 +619,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "color-area": {
     "props": [
@@ -474,7 +654,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "color-field": {
     "props": [
@@ -521,7 +701,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "color-slider": {
     "props": [
@@ -562,7 +742,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "color-swatch": {
     "props": [
@@ -591,7 +771,34 @@ export default {
         "defaultValue": "'rounded'"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "color-swatch-picker": {
     "props": [
@@ -626,7 +833,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "combobox": {
     "props": [
@@ -673,7 +880,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlChoiceOption",
         "description": "列表、组合框或切换组使用的通用选择项。",
@@ -703,7 +910,34 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlChoiceOption[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
       }
     ]
   },
@@ -734,7 +968,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlMenuItem",
         "description": "菜单、下拉菜单、上下文菜单与工具栏使用的命令项。",
@@ -770,6 +1004,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlMenuItem[]"
       }
     ]
@@ -825,7 +1060,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "date-picker": {
     "props": [
@@ -860,7 +1095,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "date-range-field": {
     "props": [
@@ -907,7 +1142,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "date-range-picker": {
     "props": [
@@ -948,7 +1183,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "dialog": {
     "props": [
@@ -995,7 +1230,52 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlTone",
+        "title": "DlTone",
+        "description": "Dragon Liquid 组件共享的语义色调。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "默认中性色调，适合普通信息与基础状态。",
+            "type": "'default'",
+            "defaultValue": "中性"
+          },
+          {
+            "prop": "accent",
+            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "type": "'accent'",
+            "defaultValue": "强调"
+          },
+          {
+            "prop": "success",
+            "description": "成功色调，表示任务已经正确完成。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "警告色调，提示可恢复且需要留意的问题。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "danger",
+            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          },
+          {
+            "prop": "muted",
+            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "type": "'muted'",
+            "defaultValue": "弱化"
+          }
+        ]
+      }
+    ]
   },
   "drawer": {
     "props": [
@@ -1054,7 +1334,78 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlTone",
+        "title": "DlTone",
+        "description": "Dragon Liquid 组件共享的语义色调。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "默认中性色调，适合普通信息与基础状态。",
+            "type": "'default'",
+            "defaultValue": "中性"
+          },
+          {
+            "prop": "accent",
+            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "type": "'accent'",
+            "defaultValue": "强调"
+          },
+          {
+            "prop": "success",
+            "description": "成功色调，表示任务已经正确完成。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "警告色调，提示可恢复且需要留意的问题。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "danger",
+            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          },
+          {
+            "prop": "muted",
+            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "type": "'muted'",
+            "defaultValue": "弱化"
+          }
+        ]
+      }
+    ]
   },
   "dropdown-menu": {
     "props": [
@@ -1101,7 +1452,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlMenuItem",
         "description": "菜单、下拉菜单、上下文菜单与工具栏使用的命令项。",
@@ -1137,6 +1488,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlMenuItem[]"
       }
     ]
@@ -1192,7 +1544,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "hover-card": {
     "props": [
@@ -1227,7 +1579,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "icon-button": {
     "props": [
@@ -1262,7 +1614,34 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "input": {
     "props": [
@@ -1297,7 +1676,34 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "label": {
     "props": [
@@ -1320,7 +1726,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "listbox": {
     "props": [
@@ -1361,7 +1767,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlChoiceOption",
         "description": "列表、组合框或切换组使用的通用选择项。",
@@ -1391,6 +1797,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlChoiceOption[]"
       }
     ]
@@ -1416,7 +1823,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlMenuGroup",
         "description": "Menubar 的一级菜单分组，内部通过 items 提供命令。",
@@ -1440,6 +1847,7 @@ export default {
             "defaultValue": "必填"
           }
         ],
+        "kind": "structure",
         "title": "DlMenuGroup[]"
       },
       {
@@ -1477,6 +1885,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlMenuItem[]"
       }
     ]
@@ -1514,7 +1923,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "month-range-picker": {
     "props": [
@@ -1543,7 +1952,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "navigation-menu": {
     "props": [
@@ -1566,7 +1975,7 @@ export default {
         "defaultValue": "200"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlNavigationItem",
         "description": "Navigation Menu 使用的可递归导航节点。",
@@ -1608,6 +2017,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlNavigationItem[]"
       }
     ]
@@ -1675,7 +2085,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "pagination": {
     "props": [
@@ -1716,7 +2153,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "pin-input": {
     "props": [
@@ -1769,7 +2206,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "popover": {
     "props": [
@@ -1822,7 +2286,52 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlTone",
+        "title": "DlTone",
+        "description": "Dragon Liquid 组件共享的语义色调。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "默认中性色调，适合普通信息与基础状态。",
+            "type": "'default'",
+            "defaultValue": "中性"
+          },
+          {
+            "prop": "accent",
+            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "type": "'accent'",
+            "defaultValue": "强调"
+          },
+          {
+            "prop": "success",
+            "description": "成功色调，表示任务已经正确完成。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "警告色调，提示可恢复且需要留意的问题。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "danger",
+            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          },
+          {
+            "prop": "muted",
+            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "type": "'muted'",
+            "defaultValue": "弱化"
+          }
+        ]
+      }
+    ]
   },
   "progress": {
     "props": [
@@ -1875,7 +2384,116 @@ export default {
         "defaultValue": "'default'"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlTone",
+        "title": "DlTone",
+        "description": "Dragon Liquid 组件共享的语义色调。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "默认中性色调，适合普通信息与基础状态。",
+            "type": "'default'",
+            "defaultValue": "中性"
+          },
+          {
+            "prop": "accent",
+            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "type": "'accent'",
+            "defaultValue": "强调"
+          },
+          {
+            "prop": "success",
+            "description": "成功色调，表示任务已经正确完成。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "警告色调，提示可恢复且需要留意的问题。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "danger",
+            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          },
+          {
+            "prop": "muted",
+            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "type": "'muted'",
+            "defaultValue": "弱化"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlProgressStatus",
+        "title": "DlProgressStatus",
+        "description": "Progress 用于表达任务结果的业务状态。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "未指定额外业务状态，视觉由 tone 决定。",
+            "type": "'default'",
+            "defaultValue": "常规"
+          },
+          {
+            "prop": "success",
+            "description": "任务已经完成，并覆盖为成功视觉。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "任务仍可继续，但需要用户留意。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "error",
+            "description": "任务执行失败；与 danger 使用相同的危险视觉。",
+            "type": "'error'",
+            "defaultValue": "错误"
+          },
+          {
+            "prop": "danger",
+            "description": "任务失败或已经中断，并覆盖为危险视觉。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          }
+        ]
+      }
+    ]
   },
   "radio-group": {
     "props": [
@@ -1922,7 +2540,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlRadioOption",
         "description": "Radio Group 中一个互斥选项的配置。",
@@ -1952,7 +2570,34 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlRadioOption[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
       }
     ]
   },
@@ -2001,7 +2646,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "rating": {
     "props": [
@@ -2054,7 +2699,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "scroll-area": {
     "props": [
@@ -2077,7 +2749,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "select": {
     "props": [
@@ -2124,7 +2796,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlSelectOption",
         "description": "Select 下拉列表中的一个可选项目。",
@@ -2154,7 +2826,34 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlSelectOption[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
       }
     ]
   },
@@ -2179,7 +2878,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "slider": {
     "props": [
@@ -2244,7 +2943,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "splitter": {
     "props": [
@@ -2267,7 +2993,7 @@ export default {
         "defaultValue": "10"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlSplitterPanel",
         "description": "Splitter 中一个可调整面板的尺寸与折叠约束。",
@@ -2303,6 +3029,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlSplitterPanel[]"
       }
     ]
@@ -2334,7 +3061,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlStepItem",
         "description": "Stepper 中一个流程步骤的标题与状态。",
@@ -2370,6 +3097,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlStepItem[]"
       }
     ]
@@ -2419,7 +3147,34 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "tabs": {
     "props": [
@@ -2454,7 +3209,7 @@ export default {
         "defaultValue": "'md'"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlTabItem",
         "description": "Tabs 中一个标签及对应内容入口的配置。",
@@ -2484,7 +3239,34 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlTabItem[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
       }
     ]
   },
@@ -2533,7 +3315,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "textarea": {
     "props": [
@@ -2562,7 +3344,34 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "time-field": {
     "props": [
@@ -2615,7 +3424,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "time-range-field": {
     "props": [
@@ -2662,7 +3471,7 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "toast": {
     "props": [
@@ -2745,7 +3554,78 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlTone",
+        "title": "DlTone",
+        "description": "Dragon Liquid 组件共享的语义色调。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "默认中性色调，适合普通信息与基础状态。",
+            "type": "'default'",
+            "defaultValue": "中性"
+          },
+          {
+            "prop": "accent",
+            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "type": "'accent'",
+            "defaultValue": "强调"
+          },
+          {
+            "prop": "success",
+            "description": "成功色调，表示任务已经正确完成。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "警告色调，提示可恢复且需要留意的问题。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "danger",
+            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          },
+          {
+            "prop": "muted",
+            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "type": "'muted'",
+            "defaultValue": "弱化"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "toggle": {
     "props": [
@@ -2774,7 +3654,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "toggle-group": {
     "props": [
@@ -2815,7 +3722,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlChoiceOption",
         "description": "列表、组合框或切换组使用的通用选择项。",
@@ -2845,7 +3752,34 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlChoiceOption[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
       }
     ]
   },
@@ -2870,7 +3804,7 @@ export default {
         "defaultValue": "true"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlMenuItem",
         "description": "菜单、下拉菜单、上下文菜单与工具栏使用的命令项。",
@@ -2906,6 +3840,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlMenuItem[]"
       }
     ]
@@ -2973,7 +3908,52 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "structures": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlTone",
+        "title": "DlTone",
+        "description": "Dragon Liquid 组件共享的语义色调。",
+        "rows": [
+          {
+            "prop": "default",
+            "description": "默认中性色调，适合普通信息与基础状态。",
+            "type": "'default'",
+            "defaultValue": "中性"
+          },
+          {
+            "prop": "accent",
+            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "type": "'accent'",
+            "defaultValue": "强调"
+          },
+          {
+            "prop": "success",
+            "description": "成功色调，表示任务已经正确完成。",
+            "type": "'success'",
+            "defaultValue": "成功"
+          },
+          {
+            "prop": "warning",
+            "description": "警告色调，提示可恢复且需要留意的问题。",
+            "type": "'warning'",
+            "defaultValue": "警告"
+          },
+          {
+            "prop": "danger",
+            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "type": "'danger'",
+            "defaultValue": "危险"
+          },
+          {
+            "prop": "muted",
+            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "type": "'muted'",
+            "defaultValue": "弱化"
+          }
+        ]
+      }
+    ]
   },
   "tree": {
     "props": [
@@ -3020,7 +4000,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": [
+    "relatedTypes": [
       {
         "name": "DlTreeNode",
         "description": "Tree 使用的可递归树节点。",
@@ -3056,6 +4036,7 @@ export default {
             "defaultValue": "可选"
           }
         ],
+        "kind": "structure",
         "title": "DlTreeNode[]"
       }
     ]
@@ -3093,7 +4074,7 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   },
   "year-range-picker": {
     "props": [
@@ -3122,6 +4103,6 @@ export default {
         "defaultValue": "false"
       }
     ],
-    "structures": []
+    "relatedTypes": []
   }
 } as const

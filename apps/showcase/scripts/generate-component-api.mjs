@@ -130,6 +130,35 @@ const structureDescriptions = {
   DlTreeNode: 'Tree 使用的可递归树节点。',
 }
 
+const enumDescriptions = {
+  DlSize: '组件可用的标准尺寸。',
+  DlTone: 'Dragon Liquid 组件共享的语义色调。',
+  DlProgressStatus: 'Progress 用于表达任务结果的业务状态。',
+}
+
+const enumValueDescriptions = {
+  DlSize: {
+    sm: ['紧凑尺寸，适合密集界面和次要操作。', '紧凑'],
+    md: ['默认尺寸，适合大多数常规界面。', '标准'],
+    lg: ['放大尺寸，适合重点内容和宽松布局。', '宽松'],
+  },
+  DlTone: {
+    default: ['默认中性色调，适合普通信息与基础状态。', '中性'],
+    accent: ['强调色调，适合品牌重点、当前任务或推荐内容。', '强调'],
+    success: ['成功色调，表示任务已经正确完成。', '成功'],
+    warning: ['警告色调，提示可恢复且需要留意的问题。', '警告'],
+    danger: ['危险色调，表示失败、破坏性操作或高风险状态。', '危险'],
+    muted: ['弱化色调，适合低优先级、只读或后台信息。', '弱化'],
+  },
+  DlProgressStatus: {
+    default: ['未指定额外业务状态，视觉由 tone 决定。', '常规'],
+    success: ['任务已经完成，并覆盖为成功视觉。', '成功'],
+    warning: ['任务仍可继续，但需要用户留意。', '警告'],
+    error: ['任务执行失败；与 danger 使用相同的危险视觉。', '错误'],
+    danger: ['任务失败或已经中断，并覆盖为危险视觉。', '危险'],
+  },
+}
+
 function componentId(filename) {
   return filename
     .replace(/^Dl/, '')
@@ -236,40 +265,62 @@ function structuresFromSource(source) {
   return result
 }
 
-function mentionedStructures(type, structures) {
-  return Object.keys(structures).filter(name => new RegExp(`\\b${name}\\b`).test(type))
-}
+function enumsFromSource(source) {
+  const result = {}
+  const aliases = source.matchAll(/(?:export\s+)?type\s+(Dl[A-Za-z0-9]+)\s*=\s*((?:'[^']+'\s*\|\s*)*'[^']+')/g)
 
-function structuresForRows(rows, structures) {
-  const queue = []
-  const usageCandidates = new Map()
-  const selected = []
-
-  for (const row of rows) {
-    for (const name of mentionedStructures(row.type, structures)) {
-      if (!usageCandidates.has(name)) usageCandidates.set(name, [])
-      usageCandidates.get(name).push(row.type)
-      queue.push(name)
+  for (const match of aliases) {
+    const name = match[1]
+    const values = [...match[2].matchAll(/'([^']+)'/g)].map(value => value[1])
+    result[name] = {
+      kind: 'enum',
+      name,
+      title: name,
+      description: enumDescriptions[name] ?? `${name} 可用的枚举值。`,
+      rows: values.map(value => ({
+        prop: value,
+        description: enumValueDescriptions[name]?.[value]?.[0] ?? `${name} 的 ${value} 选项。`,
+        type: `'${value}'`,
+        defaultValue: enumValueDescriptions[name]?.[value]?.[1] ?? '枚举值',
+      })),
     }
   }
 
-  while (queue.length) {
-    const name = queue.shift()
-    if (selected.includes(name)) continue
+  return result
+}
+
+function mentionedTypes(type, definitions) {
+  return Object.keys(definitions).filter(name => new RegExp(`\\b${name}\\b`).test(type))
+}
+
+function relatedTypesForRows(rows, definitions) {
+  const usageCandidates = new Map()
+  const selected = []
+
+  function visit(name, usageType) {
+    if (!usageCandidates.has(name)) usageCandidates.set(name, [])
+    usageCandidates.get(name).push(usageType)
+    if (selected.includes(name)) return
     selected.push(name)
-    for (const row of structures[name].rows) {
-      for (const dependency of mentionedStructures(row.type, structures)) {
-        if (!usageCandidates.has(dependency)) usageCandidates.set(dependency, [])
-        usageCandidates.get(dependency).push(row.type)
-        queue.push(dependency)
+    const definition = definitions[name]
+    if (definition.kind === 'structure') {
+      for (const row of definition.rows) {
+        for (const dependency of mentionedTypes(row.type, definitions)) {
+          visit(dependency, row.type)
+        }
       }
     }
   }
 
+  for (const row of rows) {
+    for (const name of mentionedTypes(row.type, definitions)) visit(name, row.type)
+  }
+
   return selected.map(name => {
     const usages = usageCandidates.get(name) ?? []
-    const title = usages.some(type => new RegExp(`\\b${name}\\[\\]`).test(type)) ? `${name}[]` : name
-    return { ...structures[name], title }
+    const definition = definitions[name]
+    const title = definition.kind === 'structure' && usages.some(type => new RegExp(`\\b${name}\\[\\]`).test(type)) ? `${name}[]` : name
+    return { ...definition, title }
   })
 }
 
@@ -279,22 +330,30 @@ const filenames = (await readdir(componentsRoot))
 
 const structures = {}
 for (const filename of ['primitive.types.ts', 'select.types.ts']) {
-  Object.assign(structures, structuresFromSource(await readFile(resolve(componentsRoot, filename), 'utf8')))
+  const parsed = structuresFromSource(await readFile(resolve(componentsRoot, filename), 'utf8'))
+  Object.assign(structures, Object.fromEntries(Object.entries(parsed).map(([name, structure]) => [name, { ...structure, kind: 'structure' }])))
 }
+const sharedEnums = enumsFromSource(await readFile(resolve(componentsRoot, '../types.ts'), 'utf8'))
 
 const api = {}
 for (const filename of filenames) {
   const source = await readFile(resolve(componentsRoot, filename), 'utf8')
   const rows = [...modelFromSource(source), ...propsFromSource(source)]
   if (!rows.length) throw new Error(`${filename} 未提取到任何公开属性。`)
+  const definitions = { ...structures, ...sharedEnums, ...enumsFromSource(source) }
   api[componentId(filename)] = {
     props: rows,
-    structures: structuresForRows(rows, structures),
+    relatedTypes: relatedTypesForRows(rows, definitions),
   }
 }
 
-if (!api.toolbar.structures.some(structure => structure.title === 'DlMenuItem[]')) {
+if (!api.toolbar.relatedTypes.some(type => type.title === 'DlMenuItem[]')) {
   throw new Error('Toolbar 缺少 DlMenuItem[] 数据结构 API。')
+}
+for (const [id, definition] of Object.entries(api)) {
+  if (definition.props.some(prop => /\\bDlTone\\b/.test(prop.type)) && !definition.relatedTypes.some(type => type.name === 'DlTone')) {
+    throw new Error(`${id} 使用 DlTone，但缺少 DlTone 枚举 API。`)
+  }
 }
 
 await mkdir(dirname(outputFile), { recursive: true })

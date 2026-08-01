@@ -9,7 +9,14 @@ const content = computed(() => ({
   basic: {
     title: '徽标的色调与外观',
     description: 'tone 对应语义，variant 决定视觉强度。状态文案应短而明确。',
-    code: vueSfc({ imports: ['DlBadge'], template: `  <div class="badges">\n    <DlBadge tone="accent">Accent</DlBadge>\n    <DlBadge tone="success" variant="outline">Success</DlBadge>\n    <DlBadge tone="danger" variant="solid">Danger</DlBadge>\n  </div>`, style: `.badges { display: flex; flex-wrap: wrap; gap: 8px; }` }),
+    code: vueSfc({ imports: ['DlBadge'], template: `  <div class="badges">
+    <DlBadge tone="default">Default</DlBadge>
+    <DlBadge tone="accent">Accent</DlBadge>
+    <DlBadge tone="success">Success</DlBadge>
+    <DlBadge tone="warning">Warning</DlBadge>
+    <DlBadge tone="danger">Danger</DlBadge>
+    <DlBadge tone="muted">Muted</DlBadge>
+  </div>`, style: `.badges { display: flex; flex-wrap: wrap; gap: 8px; }` }),
     tips: ['徽标不应承担主要操作。', '长句或解释性内容应放到正文，而不是塞进徽标。'],
   },
   'content-status': {

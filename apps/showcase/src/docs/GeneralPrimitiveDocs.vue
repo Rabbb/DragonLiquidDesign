@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import {
   DlAccordion,
   DlAvatar,
+  DlBadge,
   DlButton,
   DlCollapsible,
   DlDialog,
@@ -95,6 +96,54 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
       Popover 会显示在 Dialog 上方，并保持各自的焦点与层级。
     </DlPopover>
   </DlDialog>` }),
+    'saved-summary': vueSfc({ imports: ['DlBadge', 'DlButton', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlPopover v-model:open="open" title="保存结果" tone="success" align="start">
+    <template #trigger>
+      <DlButton variant="secondary">查看保存结果</DlButton>
+    </template>
+    <div class="saved-summary">
+      <DlBadge tone="success">已同步</DlBadge>
+      <strong>个人笔记已保存</strong>
+      <p>修改已同步到所有设备，离线副本也已更新。</p>
+    </div>
+  </DlPopover>`, style: `.saved-summary { display: grid; gap: 9px; }
+.saved-summary p { margin: 0; color: #a9b9b0; }` }),
+    'sync-warning': vueSfc({ imports: ['DlButton', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlPopover v-model:open="open" title="同步暂时中断" tone="warning" align="start">
+    <template #trigger>
+      <DlButton variant="secondary">查看同步状态</DlButton>
+    </template>
+    <div class="sync-warning">
+      <p>网络连接不稳定，本次编辑已保存在本机。</p>
+      <DlButton size="sm" @click="open = false">后台重试</DlButton>
+    </div>
+  </DlPopover>`, style: `.sync-warning { display: grid; gap: 12px; }
+.sync-warning p { margin: 0; }` }),
+    'remove-action': vueSfc({ imports: ['DlButton', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\n\nfunction removeTag() {\n  open.value = false\n}`, template: `  <DlPopover v-model:open="open" title="移除个人标签" tone="danger" align="end">
+    <template #trigger>
+      <DlButton variant="danger">移除标签</DlButton>
+    </template>
+    <div class="remove-action">
+      <p>“年度最佳”将从 18 部作品中移除，此操作无法撤销。</p>
+      <footer>
+        <DlButton size="sm" variant="ghost" @click="open = false">取消</DlButton>
+        <DlButton size="sm" variant="danger" @click="removeTag">确认移除</DlButton>
+      </footer>
+    </div>
+  </DlPopover>`, style: `.remove-action { display: grid; gap: 12px; }
+.remove-action p { margin: 0; }
+.remove-action footer { display: flex; justify-content: flex-end; gap: 8px; }` }),
+    'metadata-note': vueSfc({ imports: ['DlButton', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlPopover v-model:open="open" title="元数据来源" tone="muted" side="top">
+    <template #trigger>
+      <DlButton variant="ghost">查看资料来源</DlButton>
+    </template>
+    <dl class="metadata-note">
+      <div><dt>最后更新</dt><dd>2026-08-01 09:42</dd></div>
+      <div><dt>数据来源</dt><dd>本地媒体信息</dd></div>
+      <div><dt>可信度</dt><dd>仅供参考</dd></div>
+    </dl>
+  </DlPopover>`, style: `.metadata-note { display: grid; gap: 9px; margin: 0; }
+.metadata-note div { display: flex; justify-content: space-between; gap: 20px; }
+.metadata-note dt, .metadata-note dd { margin: 0; }
+.metadata-note dt { color: #a9b9b0; }` }),
   },
   progress: {
     basic: vueSfc({ imports: ['DlProgress'], template: `  <div class="progress-list">
@@ -113,6 +162,29 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     <DlProgress :model-value="null" tone="accent" label="分析中" show-value />
   </div>`, style: `.waiting-card { display: grid; gap: 14px; padding: 20px; border: 1px solid rgba(255,255,255,.1); border-radius: 18px; }
 .waiting-card p { margin: 0; color: #a9b9b0; }` }),
+    'failure-state': vueSfc({ imports: ['DlButton', 'DlProgress'], script: `import { ref } from 'vue'\n\nconst progress = ref(43)\n\nfunction retry() {\n  progress.value = 0\n}`, template: `  <section class="failed-task">
+    <DlProgress
+      :model-value="progress"
+      label="上传原始封面"
+      helper="连接已中断，文件没有完成上传"
+      tone="danger"
+      status="danger"
+      show-value
+    />
+    <DlButton variant="danger" size="sm" @click="retry">重新上传</DlButton>
+  </section>`, style: `.failed-task { display: grid; justify-items: start; gap: 16px; }` }),
+    'background-task': vueSfc({ imports: ['DlProgress'], template: `  <section class="background-task">
+    <span>后台维护</span>
+    <DlProgress
+      :model-value="72"
+      label="压缩旧版封面缓存"
+      helper="无需保持页面开启"
+      tone="muted"
+      size="sm"
+      show-value
+    />
+  </section>`, style: `.background-task { display: grid; gap: 12px; padding: 18px; border: 1px solid rgba(148, 163, 184, .16); border-radius: 16px; }
+.background-task > span { color: #94a3b8; font-size: .78rem; }` }),
   },
   tooltip: {
     basic: vueSfc({ imports: ['DlButton', 'DlTooltip'], template: `  <div class="tooltip-grid">
@@ -133,6 +205,18 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
       <DlButton variant="secondary">聚焦或悬停</DlButton>
     </DlTooltip>
   </DlDialog>` }),
+    'secondary-hint': vueSfc({ imports: ['DlButton', 'DlTooltip'], template: `  <div class="secondary-hint">
+    <span>列表视图</span>
+    <DlTooltip
+      title="键盘快捷键"
+      text="按 G，然后按 L，可从任意页面返回收藏列表。"
+      tone="muted"
+      side="bottom"
+      :delay-duration="500"
+    >
+      <DlButton variant="ghost" size="sm" aria-label="查看列表视图快捷键">G L</DlButton>
+    </DlTooltip>
+  </div>`, style: `.secondary-hint { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px; border: 1px solid rgba(148, 163, 184, .16); border-radius: 16px; color: #a9b9b0; }` }),
   },
 }
 
@@ -170,16 +254,34 @@ const content = computed(() => ({
           <template #trigger><DlButton>编辑个人笔记</DlButton></template>
           <form class="popover-quick-edit" @submit.prevent="popoverOpen = false"><label><span>收藏笔记</span><DlInput v-model="note" /></label><footer><DlButton type="button" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton type="submit">保存</DlButton></footer></form>
         </DlPopover>
-        <template v-else>
+        <template v-else-if="scenario === 'nested-composition'">
           <DlButton @click="dialogOpen = true">打开编辑对话框</DlButton>
           <DlDialog v-model:open="dialogOpen" title="编辑作品资料" description="验证嵌套 Portal 的层级关系。"><DlPopover title="选择说明" side="right"><template #trigger><DlButton variant="secondary">查看字段说明</DlButton></template>Popover 会显示在 Dialog 上方，并保持各自的焦点与层级。</DlPopover></DlDialog>
         </template>
+        <DlPopover v-else-if="scenario === 'saved-summary'" v-model:open="popoverOpen" title="保存结果" tone="success" align="start">
+          <template #trigger><DlButton variant="secondary">查看保存结果</DlButton></template>
+          <div class="popover-state"><DlBadge tone="success">已同步</DlBadge><strong>个人笔记已保存</strong><p>修改已同步到所有设备，离线副本也已更新。</p></div>
+        </DlPopover>
+        <DlPopover v-else-if="scenario === 'sync-warning'" v-model:open="popoverOpen" title="同步暂时中断" tone="warning" align="start">
+          <template #trigger><DlButton variant="secondary">查看同步状态</DlButton></template>
+          <div class="popover-state"><p>网络连接不稳定，本次编辑已保存在本机。</p><DlButton size="sm" @click="popoverOpen = false">后台重试</DlButton></div>
+        </DlPopover>
+        <DlPopover v-else-if="scenario === 'remove-action'" v-model:open="popoverOpen" title="移除个人标签" tone="danger" align="end">
+          <template #trigger><DlButton variant="danger">移除标签</DlButton></template>
+          <div class="popover-state"><p>“年度最佳”将从 18 部作品中移除，此操作无法撤销。</p><footer><DlButton size="sm" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton size="sm" variant="danger" @click="popoverOpen = false">确认移除</DlButton></footer></div>
+        </DlPopover>
+        <DlPopover v-else v-model:open="popoverOpen" title="元数据来源" tone="muted" side="top">
+          <template #trigger><DlButton variant="ghost">查看资料来源</DlButton></template>
+          <dl class="metadata-note"><div><dt>最后更新</dt><dd>2026-08-01 09:42</dd></div><div><dt>数据来源</dt><dd>本地媒体信息</dd></div><div><dt>可信度</dt><dd>仅供参考</dd></div></dl>
+        </DlPopover>
       </template>
 
       <div v-else-if="componentDefinition.id === 'progress'" class="progress-stack">
         <template v-if="scenario === 'basic'"><DlProgress :model-value="28" label="Small" size="sm" show-value /><DlProgress :model-value="64" label="Medium" tone="accent" show-value /><DlProgress :model-value="100" label="Large" size="lg" tone="success" status="success" show-value /></template>
         <template v-else-if="scenario === 'application-flow'"><DlProgress :model-value="100" label="读取媒体信息" helper="已完成" tone="success" status="success" show-value /><DlProgress :model-value="68" label="同步分类标签" helper="正在合并本地与远程标签" tone="accent" show-value /><DlProgress :model-value="16" label="生成封面缩略图" helper="剩余 5 张" tone="warning" show-value /></template>
-        <div v-else class="waiting-card"><b>正在分析媒体文件</b><p>任务耗时暂时无法估算，请保持页面开启。</p><DlProgress :model-value="null" tone="accent" label="分析中" show-value /></div>
+        <div v-else-if="scenario === 'nested-composition'" class="waiting-card"><b>正在分析媒体文件</b><p>任务耗时暂时无法估算，请保持页面开启。</p><DlProgress :model-value="null" tone="accent" label="分析中" show-value /></div>
+        <div v-else-if="scenario === 'failure-state'" class="progress-action"><DlProgress :model-value="43" label="上传原始封面" helper="连接已中断，文件没有完成上传" tone="danger" status="danger" show-value /><DlButton variant="danger" size="sm">重新上传</DlButton></div>
+        <div v-else class="background-task"><span>后台维护</span><DlProgress :model-value="72" label="压缩旧版封面缓存" helper="无需保持页面开启" tone="muted" size="sm" show-value /></div>
       </div>
 
       <div v-else-if="componentDefinition.id === 'separator'" class="separator-demo"><p>作品简介与主要资料</p><DlSeparator label="更多信息" /><p>制作人员、别名和外部链接</p></div>
@@ -189,7 +291,8 @@ const content = computed(() => ({
       <template v-else-if="componentDefinition.id === 'tooltip'">
         <div v-if="scenario === 'basic'" class="tooltip-row"><DlTooltip text="显示在上方" side="top"><DlButton variant="secondary">Top</DlButton></DlTooltip><DlTooltip text="显示在右侧" side="right" tone="accent"><DlButton variant="secondary">Right</DlButton></DlTooltip><DlTooltip text="显示在下方" side="bottom" tone="success"><DlButton variant="secondary">Bottom</DlButton></DlTooltip><DlTooltip text="显示在左侧" side="left" tone="warning"><DlButton variant="secondary">Left</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'application-flow'" class="tooltip-row"><DlTooltip text="加入收藏"><DlIconButton label="加入收藏">☆</DlIconButton></DlTooltip><DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip><DlTooltip text="移除收藏" tone="danger"><DlIconButton label="移除收藏" variant="danger">×</DlIconButton></DlTooltip></div>
-        <template v-else><DlButton @click="dialogOpen = true">打开详情对话框</DlButton><DlDialog v-model:open="dialogOpen" title="作品详情"><p>对话框中的紧凑操作仍可使用 Tooltip。</p><DlTooltip title="键盘可用" text="悬停或按 Tab 聚焦都会显示提示。" tone="accent"><DlButton variant="secondary">聚焦或悬停</DlButton></DlTooltip></DlDialog></template>
+        <template v-else-if="scenario === 'nested-composition'"><DlButton @click="dialogOpen = true">打开详情对话框</DlButton><DlDialog v-model:open="dialogOpen" title="作品详情"><p>对话框中的紧凑操作仍可使用 Tooltip。</p><DlTooltip title="键盘可用" text="悬停或按 Tab 聚焦都会显示提示。" tone="accent"><DlButton variant="secondary">聚焦或悬停</DlButton></DlTooltip></DlDialog></template>
+        <div v-else class="secondary-hint"><span>列表视图</span><DlTooltip title="键盘快捷键" text="按 G，然后按 L，可从任意页面返回收藏列表。" tone="muted" side="bottom" :delay-duration="500"><DlButton variant="ghost" size="sm" aria-label="查看列表视图快捷键">G L</DlButton></DlTooltip></div>
       </template>
     </div>
   </DocExampleShell>
@@ -202,6 +305,17 @@ const content = computed(() => ({
 .separator-demo p, .waiting-card p { color: var(--dl-text-muted); }
 .popover-quick-edit, .popover-quick-edit label { display: grid; gap: 12px; }
 .popover-quick-edit footer { display: flex; justify-content: flex-end; gap: 8px; padding-top: 6px; }
+.popover-state { display: grid; gap: 10px; }
+.popover-state p { margin: 0; }
+.popover-state footer { display: flex; justify-content: flex-end; gap: 8px; }
+.metadata-note { display: grid; gap: 9px; margin: 0; }
+.metadata-note div { display: flex; justify-content: space-between; gap: 20px; }
+.metadata-note dt, .metadata-note dd { margin: 0; }
+.metadata-note dt { color: var(--dl-text-muted); }
+.progress-action { display: grid; justify-items: start; gap: 16px; }
+.background-task { display: grid; gap: 12px; padding: 18px; border: 1px solid rgba(148, 163, 184, .16); border-radius: var(--dl-radius-md); }
+.background-task > span { color: #94a3b8; font-size: .78rem; }
+.secondary-hint { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px; border: 1px solid rgba(148, 163, 184, .16); border-radius: var(--dl-radius-md); color: var(--dl-text-muted); }
 .waiting-card { display: grid; gap: 14px; padding: 20px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); background: rgba(3, 14, 8, .32); }
 .waiting-card p { margin: 0; }
 </style>

@@ -140,7 +140,11 @@ const readyComponents: ComponentDefinition[] = [
     scenarios: [
       { id: 'basic', label: '通用案例', summary: '尺寸、标题与关闭行为' },
       { id: 'create-record', label: '创建收藏记录', summary: '在浮层内完成小型表单' },
+      { id: 'featured-preview', label: '重点内容预览', summary: '强调当前推荐或重点任务' },
+      { id: 'publish-success', label: '发布完成', summary: '确认成功结果并提供下一步' },
+      { id: 'unsaved-warning', label: '未保存提醒', summary: '离开前提醒可恢复的编辑内容' },
       { id: 'delete-confirm', label: '删除确认', summary: '确认不可逆的危险操作' },
+      { id: 'archive-note', label: '归档说明', summary: '承载无需立即处理的只读信息' },
     ],
   },
   {
@@ -213,6 +217,10 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'basic', label: '通用案例', summary: '定位、标题与关闭操作' },
       { id: 'application-flow', label: '快捷编辑', summary: '不离开页面完成小型任务' },
       { id: 'nested-composition', label: '对话框内浮层', summary: '验证嵌套 Portal 层级' },
+      { id: 'saved-summary', label: '保存结果', summary: '展示已成功保存的内容摘要' },
+      { id: 'sync-warning', label: '同步提醒', summary: '说明可恢复的同步异常' },
+      { id: 'remove-action', label: '移除操作', summary: '就近确认高风险快捷操作' },
+      { id: 'metadata-note', label: '元数据说明', summary: '展示低优先级的补充信息' },
     ],
   },
   {
@@ -222,6 +230,8 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'basic', label: '通用案例', summary: '确定进度与百分比' },
       { id: 'application-flow', label: '导入任务', summary: '业务状态与色调表达' },
       { id: 'nested-composition', label: '等待状态', summary: '无法估算时的不确定进度' },
+      { id: 'failure-state', label: '失败状态', summary: '标记已中断且需要处理的任务' },
+      { id: 'background-task', label: '后台任务', summary: '弱化无需持续关注的进度' },
     ],
   },
   {
@@ -249,6 +259,7 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'basic', label: '通用案例', summary: '方位、延迟与富文本' },
       { id: 'application-flow', label: '图标操作', summary: '为紧凑按钮补充名称' },
       { id: 'nested-composition', label: '浮层内提示', summary: '验证嵌套 Portal 层级' },
+      { id: 'secondary-hint', label: '次要提示', summary: '弱化快捷键与辅助元数据' },
     ],
   },
 ]
@@ -343,6 +354,9 @@ const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> 
   drawer: [
     { id: 'basic', label: '通用案例', summary: '方向、尺寸与关闭行为' },
     { id: 'edit-record', label: '编辑收藏', summary: '侧边任务表单与固定操作区' },
+    { id: 'import-success', label: '导入完成', summary: '展示成功结果与后续操作' },
+    { id: 'sync-warning', label: '同步冲突', summary: '处理可恢复的数据冲突' },
+    { id: 'danger-zone', label: '危险区域', summary: '隔离高风险批量操作' },
     { id: 'collection-filter', label: '移动端筛选', summary: '底部抽屉承载筛选条件' },
   ],
   'hover-card': [
@@ -353,7 +367,10 @@ const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> 
   toast: [
     { id: 'basic', label: '通用案例', summary: '成功反馈、动作与自动关闭' },
     { id: 'upload-progress', label: '上传进度', summary: '展示封面上传与处理进度' },
+    { id: 'background-notice', label: '后台完成', summary: '普通信息与后续查看入口' },
+    { id: 'network-warning', label: '网络提醒', summary: '可恢复异常与后台重试说明' },
     { id: 'error-recovery', label: '错误恢复', summary: '失败说明与重试操作' },
+    { id: 'quiet-summary', label: '静默摘要', summary: '无需立即处理的低优先级结果' },
   ],
 }
 

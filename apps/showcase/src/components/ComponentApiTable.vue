@@ -43,11 +43,11 @@ const rowConfig = { isHover: true }
           size="small"
           auto-resize
         >
-          <VxeColumn field="prop" title="属性" min-width="150">
+          <VxeColumn field="prop" :title="table.firstColumnTitle" min-width="150">
             <template #default="{ row }"><code>{{ row.prop }}</code></template>
           </VxeColumn>
           <VxeColumn field="description" title="说明" min-width="310" />
-          <VxeColumn field="type" title="类型" min-width="280">
+          <VxeColumn field="type" :title="table.thirdColumnTitle" min-width="280">
             <template #default="{ row }"><code>{{ row.type }}</code></template>
           </VxeColumn>
           <VxeColumn field="defaultValue" :title="table.lastColumnTitle" min-width="150">

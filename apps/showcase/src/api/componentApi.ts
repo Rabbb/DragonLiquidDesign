@@ -7,7 +7,8 @@ export type ComponentApiRow = {
   defaultValue: string
 }
 
-type ComponentStructureApi = {
+type ComponentRelatedTypeApi = {
+  kind: 'structure' | 'enum'
   name: string
   title: string
   description: string
@@ -16,7 +17,7 @@ type ComponentStructureApi = {
 
 type ComponentApiDefinition = {
   props: readonly ComponentApiRow[]
-  structures: readonly ComponentStructureApi[]
+  relatedTypes: readonly ComponentRelatedTypeApi[]
 }
 
 export type ComponentApiTableDefinition = {
@@ -25,6 +26,8 @@ export type ComponentApiTableDefinition = {
   title: string
   description: string
   badge: string
+  firstColumnTitle: string
+  thirdColumnTitle: string
   lastColumnTitle: string
   rows: readonly ComponentApiRow[]
 }
@@ -42,17 +45,21 @@ export function componentApiTables(componentId: string, componentName: string): 
       title: '属性',
       description: `${componentName} 的公开 Props、类型与默认值。`,
       badge: `${componentName} · ${definition.props.length} PROPS`,
+      firstColumnTitle: '属性',
+      thirdColumnTitle: '类型',
       lastColumnTitle: '默认值',
       rows: definition.props,
     },
-    ...definition.structures.map(structure => ({
-      key: `${componentId}-${structure.name}`,
-      eyebrow: 'DATA STRUCTURE',
-      title: structure.title,
-      description: structure.description,
-      badge: `${structure.rows.length} FIELDS`,
-      lastColumnTitle: '是否必填',
-      rows: structure.rows,
+    ...definition.relatedTypes.map(type => ({
+      key: `${componentId}-${type.name}`,
+      eyebrow: type.kind === 'enum' ? 'ENUM' : 'DATA STRUCTURE',
+      title: type.title,
+      description: type.description,
+      badge: `${type.rows.length} ${type.kind === 'enum' ? 'VALUES' : 'FIELDS'}`,
+      firstColumnTitle: type.kind === 'enum' ? '值' : '属性',
+      thirdColumnTitle: type.kind === 'enum' ? '字面量' : '类型',
+      lastColumnTitle: type.kind === 'enum' ? '语义' : '是否必填',
+      rows: type.rows,
     })),
   ]
 }

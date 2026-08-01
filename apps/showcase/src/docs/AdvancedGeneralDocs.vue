@@ -101,6 +101,24 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     show-progress
     :progress="progress"
   />` }),
+    'background-notice': vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="secondary" @click="open = true">运行后台同步</DlButton>
+  <DlToast
+    v-model:open="open"
+    title="后台同步完成"
+    description="新增 12 部作品到本地索引。"
+    tone="default"
+    action-label="查看记录"
+    :duration="6000"
+  />` }),
+    'network-warning': vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="secondary" @click="open = true">模拟网络波动</DlButton>
+  <DlToast
+    v-model:open="open"
+    title="网络连接不稳定"
+    description="自动重试会在后台继续，当前修改已保存到本地。"
+    tone="warning"
+    action-label="查看状态"
+    :duration="9000"
+  />` }),
     'error-recovery': vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nfunction retry() {\n  open.value = false\n  window.setTimeout(() => { open.value = true }, 300)\n}`, template: `  <DlButton variant="danger" @click="open = true">模拟同步失败</DlButton>
   <DlToast
     v-model:open="open"
@@ -110,6 +128,16 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     action-label="重试"
     :duration="10000"
     @action="retry"
+  />` }),
+    'quiet-summary': vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="ghost" @click="open = true">检查重复条目</DlButton>
+  <DlToast
+    v-model:open="open"
+    title="已跳过重复条目"
+    description="3 部作品已存在于收藏库，无需再次导入。"
+    tone="muted"
+    size="sm"
+    :closable="false"
+    :duration="3500"
   />` }),
   },
 }
@@ -150,7 +178,10 @@ function selectAction(value: string) { lastAction.value = value }
       <template v-else-if="componentDefinition.id === 'toast'">
         <template v-if="scenario === 'basic'"><DlButton @click="toastOpen = true">保存作品资料</DlButton><DlToast v-model:open="toastOpen" title="保存成功" description="作品资料已经更新。" tone="success" action-label="查看" /></template>
         <template v-else-if="scenario === 'upload-progress'"><DlButton @click="toastOpen = true">上传新封面</DlButton><DlToast v-model:open="toastOpen" title="正在处理封面" description="已上传 3.4 MB / 5 MB" tone="accent" :duration="12000" show-progress :progress="68" /></template>
-        <template v-else><DlButton variant="danger" @click="toastOpen = true">模拟同步失败</DlButton><DlToast v-model:open="toastOpen" title="同步失败" description="无法连接资料服务器，本地修改尚未丢失。" tone="danger" action-label="重试" :duration="10000" @action="toastOpen = false" /></template>
+        <template v-else-if="scenario === 'background-notice'"><DlButton variant="secondary" @click="toastOpen = true">运行后台同步</DlButton><DlToast v-model:open="toastOpen" title="后台同步完成" description="新增 12 部作品到本地索引。" tone="default" action-label="查看记录" :duration="6000" /></template>
+        <template v-else-if="scenario === 'network-warning'"><DlButton variant="secondary" @click="toastOpen = true">模拟网络波动</DlButton><DlToast v-model:open="toastOpen" title="网络连接不稳定" description="自动重试会在后台继续，当前修改已保存到本地。" tone="warning" action-label="查看状态" :duration="9000" /></template>
+        <template v-else-if="scenario === 'error-recovery'"><DlButton variant="danger" @click="toastOpen = true">模拟同步失败</DlButton><DlToast v-model:open="toastOpen" title="同步失败" description="无法连接资料服务器，本地修改尚未丢失。" tone="danger" action-label="重试" :duration="10000" @action="toastOpen = false" /></template>
+        <template v-else><DlButton variant="ghost" @click="toastOpen = true">检查重复条目</DlButton><DlToast v-model:open="toastOpen" title="已跳过重复条目" description="3 部作品已存在于收藏库，无需再次导入。" tone="muted" size="sm" :closable="false" :duration="3500" /></template>
       </template>
 
       <DlToolbar v-else :items="toolbarItems" @action="selectAction" />
