@@ -5,6 +5,8 @@ describe('TodoMoe overlay style variants', () => {
   it('maps dialog size and semantic tone to stable classes', () => {
     expect(dialogStyles({ size: 'sm', tone: 'danger' })).toContain('dl-dialog--sm')
     expect(dialogStyles({ size: 'sm', tone: 'danger' })).toContain('dl-tone-danger')
+    expect(dialogStyles({ size: 'md' })).toContain('dl-dialog--md')
+    expect(dialogStyles({ size: 'lg' })).toContain('dl-dialog--lg')
   })
 
   it('maps toast size and semantic tone to stable classes', () => {

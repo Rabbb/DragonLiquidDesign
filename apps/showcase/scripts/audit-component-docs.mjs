@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { componentCatalog } from '../src/catalog.ts'
 import { componentGuidance, componentsMissingGuidance } from '../src/componentGuidance.ts'
@@ -13,6 +13,14 @@ const errors = []
 
 function report(condition, message) {
   if (!condition) errors.push(message)
+}
+
+function collectVueFiles(directory) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const path = resolve(directory, entry.name)
+    if (entry.isDirectory()) return collectVueFiles(path)
+    return entry.isFile() && entry.name.endsWith('.vue') ? [path] : []
+  })
 }
 
 const ids = componentCatalog.map(component => component.id)
@@ -38,6 +46,21 @@ for (const id of ids) {
   report(guidance.avoidWhen.trim().length >= 8, `${id} 缺少误用边界。`)
   report(guidance.accessibility.trim().length >= 8, `${id} 缺少无障碍说明。`)
   report(guidance.example.trim().length >= 8, `${id} 缺少案例观察重点。`)
+}
+
+for (const vuePath of collectVueFiles(resolve(showcaseRoot, 'src'))) {
+  const source = readFileSync(vuePath, 'utf8')
+  const buttonTags = [...source.matchAll(/<DlButton\b(?:(?!>).)*>/gs)].map(match => match[0])
+  const implicitButtons = buttonTags.filter(tag => !/\b:?variant\s*=/.test(tag))
+  const allowedDefaults = basename(vuePath) === 'ButtonDocs.vue'
+    ? implicitButtons.filter(tag => tag === '<DlButton>')
+    : []
+  const accidentalDefaults = implicitButtons.filter(tag => !allowedDefaults.includes(tag))
+
+  report(accidentalDefaults.length === 0, `${basename(vuePath)} 存在未显式声明 variant 的历史按钮。`)
+  if (basename(vuePath) === 'ButtonDocs.vue') {
+    report(allowedDefaults.length === 2, 'ButtonDocs.vue 应只保留代码与预览各一个默认 secondary 示例。')
+  }
 }
 
 const apiIds = Object.keys(componentApi)

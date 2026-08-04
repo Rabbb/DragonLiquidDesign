@@ -118,6 +118,9 @@ createApp(App).use(mdxSecurity).mount('#app')
 - `0.5.0-alpha.8` 参考 Ant Design 重写 Button 的默认层级、三档尺寸与完整交互状态；默认 `variant` 改为 `secondary`，既有属性名和值保持不变。
 - `0.5.0-alpha.9` 将 Button 的 Loading 与 Disabled 视觉分离：Loading 保留当前 variant，仅降低透明度并阻止重复点击。
 - `0.6.0-alpha.1` 为 64 个正式导出组件增加统一实例控制器、运行时属性覆盖、可取消事件、反射 API 与组件专有行为。
+- `0.6.0-alpha.5` 修复 Accordion 关闭动画的作用域冲突，确保再次点击已展开标题时完成收起。
+- `0.6.0-alpha.4` 保持 Button 默认 `secondary`，并为历史上依赖默认主按钮的用法显式补充 `variant="primary"`。
+- `0.6.0-alpha.3` 修复 Dialog 的 `size` 宽度约束与运行时尺寸切换，并补充对应回归测试。
 - `0.6.0-alpha.2` 补齐 Tooltip、HoverCard、Select、Combobox、Autocomplete 与日期选择器的受控打开事件，并增强按钮、编辑、分页、标签、树与反馈组件的专有方法。
 - `0.5.0-alpha.3` 收紧协议相对链接与图片策略，支持引用和有序列表内的任务回写，并修复编辑器异步加载前触发工具栏时的命令丢失。
 - `0.5.0-alpha.2` 将 CodeMirror 改为编辑区挂载时异步加载，预览模式和其他组件不再承担编辑器运行时体积。

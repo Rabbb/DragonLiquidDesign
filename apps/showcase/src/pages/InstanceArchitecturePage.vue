@@ -89,7 +89,7 @@ onBeforeUnmount(disposeSubscriptions)
 ${scriptEnd}
 
 <template>
-  <DlButton ref="button" @ready="connect">受控按钮</DlButton>
+  <DlButton variant="primary" ref="button" @ready="connect">受控按钮</DlButton>
 
   <button type="button" @click="simulateSaving">开始保存</button>
   <button type="button" @click="button?.disable()">尝试禁用</button>
@@ -123,7 +123,7 @@ function start() {
 ${scriptEnd}
 
 <template>
-  <DlButton ref="button" @ready="connect">保存资料</DlButton>
+  <DlButton variant="primary" ref="button" @ready="connect">保存资料</DlButton>
   <button type="button" @click="start">实例更新</button>
   <button type="button" @click="button?.resetProperties()">恢复 Props</button>
 </template>`
@@ -164,8 +164,8 @@ function scrollToSection(id: string) {
         <h1>组件实例与行为体系</h1>
         <p>在 Vue 声明式数据流上增加一层可撤销、可监听、类型化的命令式控制。普通页面继续使用 props 与 v-model，复杂工作台则可以像桌面控件一样操作组件实例。</p>
         <div class="instance-hero__actions">
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-complete')"><DlButton variant="primary">查看完整代码</DlButton></a>
-          <a href="#/components/button/instance-api"><DlButton>运行交互案例</DlButton></a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-complete')"><DlButton variant="primary">查看完整代码</DlButton></a>
+          <a href="/components/button/instance-api"><DlButton variant="primary">运行交互案例</DlButton></a>
         </div>
       </div>
       <div class="instance-hero__metrics" aria-label="实例体系概览">
@@ -179,14 +179,14 @@ function scrollToSection(id: string) {
       <aside class="instance-outline">
         <p>ON THIS PAGE</p>
         <nav aria-label="实例体系页面大纲">
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-overview')">设计目标</a>
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-wrapper')">受管包装层</a>
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-properties')">属性覆盖</a>
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-model')">v-model 同步</a>
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-events')">事件管线</a>
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-methods')">组件行为</a>
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-complete')">完整案例</a>
-          <a href="#/instance-api" @click.prevent="scrollToSection('instance-boundaries')">行为边界</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-overview')">设计目标</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-wrapper')">受管包装层</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-properties')">属性覆盖</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-model')">v-model 同步</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-events')">事件管线</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-methods')">组件行为</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-complete')">完整案例</a>
+          <a href="/instance-api" @click.prevent="scrollToSection('instance-boundaries')">行为边界</a>
         </nav>
       </aside>
 
@@ -263,7 +263,7 @@ function scrollToSection(id: string) {
           <div class="section-heading"><span>07</span><div><small>COMPLETE VUE SFC</small><h2>完整使用案例</h2></div></div>
           <p>实例通过模板 ref 获取；<code>@ready</code> 保证控制器已经挂载，可以安全注册事件或调用 DOM 方法。</p>
           <pre class="code-panel code-panel--large"><code>{{ completeCode }}</code></pre>
-          <a class="case-link" href="#/components/button/instance-api"><DlButton variant="primary">打开可运行案例 →</DlButton></a>
+          <a class="case-link" href="/components/button/instance-api"><DlButton variant="primary">打开可运行案例 →</DlButton></a>
         </section>
 
         <section id="instance-boundaries" class="instance-section boundary-section">

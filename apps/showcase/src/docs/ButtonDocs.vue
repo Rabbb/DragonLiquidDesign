@@ -13,9 +13,9 @@ const behaviorLog = ref<string[]>([])
 const content = computed(() => ({
   basic: {
     title: '按钮的层级与状态',
-    description: '默认使用 secondary；只有当前区域的主操作才显式使用 primary，size 只负责空间密度。',
-    code: vueSfc({ imports: ['DlButton'], template: `  <div class="actions">\n    <DlButton variant="primary">主要操作</DlButton>\n    <DlButton>默认操作</DlButton>\n    <DlButton variant="ghost">轻量操作</DlButton>\n    <DlButton variant="danger">危险操作</DlButton>\n  </div>`, style: `.actions { display: flex; flex-wrap: wrap; gap: 12px; }` }),
-    tips: ['遵循 Ant Design 的层级原则：一个操作区域最多保留一个 primary，其余操作使用默认 secondary。', 'loading 会同时禁用按钮并向辅助技术暴露 aria-busy。'],
+    description: '默认使用 secondary；历史主操作必须显式设置 primary，size 只负责空间密度。',
+    code: vueSfc({ imports: ['DlButton'], template: `  <div class="actions">\n    <DlButton variant="primary">主要操作</DlButton>\n    <DlButton>默认操作（secondary）</DlButton>\n    <DlButton variant="ghost">轻量操作</DlButton>\n    <DlButton variant="danger">危险操作</DlButton>\n  </div>`, style: `.actions { display: flex; flex-wrap: wrap; gap: 12px; }` }),
+    tips: ['未传 variant 时使用 secondary；一个操作区域最多保留一个显式 primary。', '历史主操作不要依赖默认值，必须写出 variant="primary"。'],
   },
   'form-submit': {
     title: '表单提交与异步反馈',
@@ -50,7 +50,7 @@ function run() {
 
 function restore() {
   control.value?.resetProperties()
-}`, template: `  <DlButton ref="control" @ready="connect">受控按钮</DlButton>
+}`, template: `  <DlButton ref="control" variant="primary" @ready="connect">受控按钮</DlButton>
   <div class="actions">
     <button type="button" @click="run">设为主按钮并加载</button>
     <button type="button" @click="control?.disable()">禁用</button>
@@ -85,13 +85,13 @@ function runBehavior() {
     <div v-if="scenario === 'basic'" class="case-stack">
       <div class="case-row">
         <DlButton variant="primary"><template #leading>✦</template>主要操作</DlButton>
-        <DlButton>默认操作</DlButton>
+        <DlButton>默认操作（secondary）</DlButton>
         <DlButton variant="ghost">轻量操作</DlButton>
         <DlButton variant="danger">危险操作</DlButton>
       </div>
       <div class="case-row align-end">
-        <DlButton size="sm">Small</DlButton><DlButton size="md">Medium</DlButton><DlButton size="lg">Large</DlButton>
-        <DlButton loading>加载中</DlButton><DlButton disabled>不可用</DlButton>
+        <DlButton variant="primary" size="sm">Small</DlButton><DlButton variant="primary" size="md">Medium</DlButton><DlButton variant="primary" size="lg">Large</DlButton>
+        <DlButton variant="primary" loading>加载中</DlButton><DlButton variant="primary" disabled>不可用</DlButton>
       </div>
     </div>
 
@@ -109,12 +109,12 @@ function runBehavior() {
     <DlCard v-else padding="lg" class="behavior-card">
       <div class="behavior-target">
         <small>TEMPLATE REF · DlComponentRef</small>
-        <DlButton ref="buttonControl" @ready="connectBehavior">受控按钮</DlButton>
+        <DlButton ref="buttonControl" variant="primary" @ready="connectBehavior">受控按钮</DlButton>
       </div>
       <div class="behavior-actions">
-        <DlButton size="sm" @click="runBehavior">Primary + Loading</DlButton>
-        <DlButton size="sm" @click="buttonControl?.disable()">Disable()</DlButton>
-        <DlButton size="sm" @click="buttonControl?.resetProperties()">Reset Props</DlButton>
+        <DlButton variant="primary" size="sm" @click="runBehavior">Primary + Loading</DlButton>
+        <DlButton variant="primary" size="sm" @click="buttonControl?.disable()">Disable()</DlButton>
+        <DlButton variant="primary" size="sm" @click="buttonControl?.resetProperties()">Reset Props</DlButton>
       </div>
       <div class="behavior-log">
         <b>PROPERTY EVENTS</b>

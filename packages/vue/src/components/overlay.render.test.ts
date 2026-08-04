@@ -6,6 +6,7 @@ import DlPopover from './DlPopover.vue'
 import DlToast from './DlToast.vue'
 import DlTooltip from './DlTooltip.vue'
 import DlHoverCard from './DlHoverCard.vue'
+import DlDialog from './DlDialog.vue'
 
 class ResizeObserverMock {
   observe() {}
@@ -28,6 +29,27 @@ function mountOverlay(...parameters: Parameters<typeof mount>) {
 }
 
 describe('ported overlay presentation', () => {
+  it('reacts to dialog size changes on the teleported surface', async () => {
+    const wrapper = mountOverlay(DlDialog, {
+      attachTo: document.body,
+      props: { open: true, title: 'Dialog size', size: 'sm' },
+      slots: { default: 'Dialog content' },
+    })
+    await nextTick()
+
+    let dialog = document.body.querySelector<HTMLElement>('[data-slot="dialog"]')
+    expect(dialog?.dataset.size).toBe('sm')
+    expect(dialog?.classList).toContain('dl-dialog--sm')
+
+    await wrapper.setProps({ size: 'lg' })
+    await nextTick()
+
+    dialog = document.body.querySelector<HTMLElement>('[data-slot="dialog"]')
+    expect(dialog?.dataset.size).toBe('lg')
+    expect(dialog?.classList).toContain('dl-dialog--lg')
+    expect(dialog?.classList).not.toContain('dl-dialog--sm')
+  })
+
   it('renders the popover surface through its portal with the migrated class', async () => {
     mountOverlay(DlPopover, {
       attachTo: document.body,

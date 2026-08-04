@@ -24,7 +24,7 @@ import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string; componentDefinition: ComponentDefinition }>()
-const accordionValue = ref<string | string[]>('story')
+const accordionValue = ref<string | string[] | undefined>('story')
 const tabValue = ref('summary')
 const collapsibleOpen = ref(false)
 const popoverOpen = ref(false)
@@ -134,7 +134,7 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
   </div>`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
     'application-flow': vueSfc({ imports: ['DlButton', 'DlInput', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst note = ref('适合周末继续观看')`, template: `  <DlPopover v-model:open="open" title="快捷编辑笔记" tone="accent" align="start">
     <template #trigger>
-      <DlButton>编辑个人笔记</DlButton>
+      <DlButton variant="primary">编辑个人笔记</DlButton>
     </template>
     <form class="quick-edit" @submit.prevent="open = false">
       <label>
@@ -143,12 +143,12 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
       </label>
       <footer>
         <DlButton type="button" variant="ghost" @click="open = false">取消</DlButton>
-        <DlButton type="submit">保存</DlButton>
+        <DlButton variant="primary" type="submit">保存</DlButton>
       </footer>
     </form>
   </DlPopover>`, style: `.quick-edit, .quick-edit label { display: grid; gap: 12px; }
 .quick-edit footer { display: flex; justify-content: flex-end; gap: 8px; padding-top: 6px; }` }),
-    'nested-composition': vueSfc({ imports: ['DlButton', 'DlDialog', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst dialogOpen = ref(false)\nconst popoverOpen = ref(false)`, template: `  <DlButton @click="dialogOpen = true">打开编辑对话框</DlButton>
+    'nested-composition': vueSfc({ imports: ['DlButton', 'DlDialog', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst dialogOpen = ref(false)\nconst popoverOpen = ref(false)`, template: `  <DlButton variant="primary" @click="dialogOpen = true">打开编辑对话框</DlButton>
   <DlDialog v-model:open="dialogOpen" title="编辑作品资料">
     <DlPopover v-model:open="popoverOpen" title="选择说明" side="right">
       <template #trigger>
@@ -174,7 +174,7 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     </template>
     <div class="sync-warning">
       <p>网络连接不稳定，本次编辑已保存在本机。</p>
-      <DlButton size="sm" @click="open = false">后台重试</DlButton>
+      <DlButton variant="primary" size="sm" @click="open = false">后台重试</DlButton>
     </div>
   </DlPopover>`, style: `.sync-warning { display: grid; gap: 12px; }
 .sync-warning p { margin: 0; }` }),
@@ -295,7 +295,7 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     <DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip>
     <DlTooltip text="移除收藏" tone="danger"><DlIconButton label="移除收藏" variant="danger">×</DlIconButton></DlTooltip>
   </div>`, style: `.toolbar { display: flex; gap: 8px; }` }),
-    'nested-composition': vueSfc({ imports: ['DlButton', 'DlDialog', 'DlTooltip'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">打开详情对话框</DlButton>
+    'nested-composition': vueSfc({ imports: ['DlButton', 'DlDialog', 'DlTooltip'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="primary" @click="open = true">打开详情对话框</DlButton>
   <DlDialog v-model:open="open" title="作品详情">
     <p>对话框中的紧凑操作仍可使用 Tooltip。</p>
     <DlTooltip title="键盘可用" text="悬停或按 Tab 聚焦都会显示提示。" tone="accent">
@@ -332,7 +332,10 @@ const content = computed(() => ({
 <template>
   <DocExampleShell v-bind="content">
     <div class="general-demo">
-      <DlAccordion v-if="componentDefinition.id === 'accordion'" v-model="accordionValue" :items="accordionItems" />
+      <template v-if="componentDefinition.id === 'accordion'">
+        <DlAccordion v-model="accordionValue" :items="accordionItems" collapsible />
+        <output class="accordion-value">当前展开：{{ accordionValue || '无' }}</output>
+      </template>
 
       <div v-else-if="componentDefinition.id === 'avatar'" class="avatar-row">
         <DlAvatar fallback="DL" size="sm" /><DlAvatar fallback="龙" size="md" /><DlAvatar fallback="MOE" shape="rounded" size="lg" />
@@ -351,11 +354,11 @@ const content = computed(() => ({
           <DlPopover v-for="item in toneOptions" :key="item.value" :title="item.label" :tone="item.value"><template #trigger><DlButton variant="secondary">{{ item.label }}</DlButton></template>{{ item.description }}。当前展示 <code>{{ item.value }}</code> 的完整视觉。</DlPopover>
         </div>
         <DlPopover v-else-if="scenario === 'application-flow'" v-model:open="popoverOpen" title="快捷编辑笔记" tone="accent" align="start">
-          <template #trigger><DlButton>编辑个人笔记</DlButton></template>
-          <form class="popover-quick-edit" @submit.prevent="popoverOpen = false"><label><span>收藏笔记</span><DlInput v-model="note" /></label><footer><DlButton type="button" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton type="submit">保存</DlButton></footer></form>
+          <template #trigger><DlButton variant="primary">编辑个人笔记</DlButton></template>
+          <form class="popover-quick-edit" @submit.prevent="popoverOpen = false"><label><span>收藏笔记</span><DlInput v-model="note" /></label><footer><DlButton type="button" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton variant="primary" type="submit">保存</DlButton></footer></form>
         </DlPopover>
         <template v-else-if="scenario === 'nested-composition'">
-          <DlButton @click="dialogOpen = true">打开编辑对话框</DlButton>
+          <DlButton variant="primary" @click="dialogOpen = true">打开编辑对话框</DlButton>
           <DlDialog v-model:open="dialogOpen" title="编辑作品资料" description="验证嵌套 Portal 的层级关系。"><DlPopover title="选择说明" side="right"><template #trigger><DlButton variant="secondary">查看字段说明</DlButton></template>Popover 会显示在 Dialog 上方，并保持各自的焦点与层级。</DlPopover></DlDialog>
         </template>
         <DlPopover v-else-if="scenario === 'saved-summary'" v-model:open="popoverOpen" title="保存结果" tone="success" align="start">
@@ -364,7 +367,7 @@ const content = computed(() => ({
         </DlPopover>
         <DlPopover v-else-if="scenario === 'sync-warning'" v-model:open="popoverOpen" title="同步暂时中断" tone="warning" align="start">
           <template #trigger><DlButton variant="secondary">查看同步状态</DlButton></template>
-          <div class="popover-state"><p>网络连接不稳定，本次编辑已保存在本机。</p><DlButton size="sm" @click="popoverOpen = false">后台重试</DlButton></div>
+          <div class="popover-state"><p>网络连接不稳定，本次编辑已保存在本机。</p><DlButton variant="primary" size="sm" @click="popoverOpen = false">后台重试</DlButton></div>
         </DlPopover>
         <DlPopover v-else-if="scenario === 'remove-action'" v-model:open="popoverOpen" title="移除个人标签" tone="danger" align="end">
           <template #trigger><DlButton variant="danger">移除标签</DlButton></template>
@@ -393,7 +396,7 @@ const content = computed(() => ({
         <div v-if="scenario === 'basic'" class="tooltip-row"><DlTooltip text="显示在上方" side="top"><DlButton variant="secondary">Top</DlButton></DlTooltip><DlTooltip text="显示在右侧" side="right" tone="accent"><DlButton variant="secondary">Right</DlButton></DlTooltip><DlTooltip text="显示在下方" side="bottom" tone="success"><DlButton variant="secondary">Bottom</DlButton></DlTooltip><DlTooltip text="显示在左侧" side="left" tone="warning"><DlButton variant="secondary">Left</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'tone-gallery'" class="tone-control-grid"><DlTooltip v-for="item in toneOptions" :key="item.value" :title="item.label" :text="item.description" :tone="item.value" side="bottom"><DlButton variant="secondary">{{ item.label }}</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'application-flow'" class="tooltip-row"><DlTooltip text="加入收藏"><DlIconButton label="加入收藏">☆</DlIconButton></DlTooltip><DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip><DlTooltip text="移除收藏" tone="danger"><DlIconButton label="移除收藏" variant="danger">×</DlIconButton></DlTooltip></div>
-        <template v-else-if="scenario === 'nested-composition'"><DlButton @click="dialogOpen = true">打开详情对话框</DlButton><DlDialog v-model:open="dialogOpen" title="作品详情"><p>对话框中的紧凑操作仍可使用 Tooltip。</p><DlTooltip title="键盘可用" text="悬停或按 Tab 聚焦都会显示提示。" tone="accent"><DlButton variant="secondary">聚焦或悬停</DlButton></DlTooltip></DlDialog></template>
+        <template v-else-if="scenario === 'nested-composition'"><DlButton variant="primary" @click="dialogOpen = true">打开详情对话框</DlButton><DlDialog v-model:open="dialogOpen" title="作品详情"><p>对话框中的紧凑操作仍可使用 Tooltip。</p><DlTooltip title="键盘可用" text="悬停或按 Tab 聚焦都会显示提示。" tone="accent"><DlButton variant="secondary">聚焦或悬停</DlButton></DlTooltip></DlDialog></template>
         <div v-else class="secondary-hint"><span>列表视图</span><DlTooltip title="键盘快捷键" text="按 G，然后按 L，可从任意页面返回收藏列表。" tone="muted" side="bottom" :delay-duration="500"><DlButton variant="ghost" size="sm" aria-label="查看列表视图快捷键">G L</DlButton></DlTooltip></div>
       </template>
     </div>
@@ -402,6 +405,7 @@ const content = computed(() => ({
 
 <style scoped>
 .general-demo { width: min(100%, 720px); margin: 0 auto; padding: 1rem; }
+.accordion-value { color: var(--dl-text-muted); font-size: 0.82rem; }
 .avatar-row, .tooltip-row { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; }
 .tone-control-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
 .progress-stack, .separator-demo { display: grid; gap: 1.5rem; width: 100%; }

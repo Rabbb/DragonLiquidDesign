@@ -35,9 +35,9 @@ const menus: DlMenuGroup[] = [
   { value: 'view', label: '视图', items: [{ value: 'grid', label: '网格视图' }, { value: 'list', label: '列表视图' }] },
 ]
 const navigation: DlNavigationItem[] = [
-  { value: 'home', label: '首页', href: '#/' },
-  { value: 'library', label: '组件', children: [{ value: 'form', label: '表单组件', description: '输入、选择与校验', href: '#/components/input/basic' }, { value: 'overlay', label: '浮层组件', description: '对话框、菜单和提示', href: '#/components/dialog/basic' }] },
-  { value: 'docs', label: '工程文档', href: '#/components/button/basic' },
+  { value: 'home', label: '首页', href: '/' },
+  { value: 'library', label: '组件', children: [{ value: 'form', label: '表单组件', description: '输入、选择与校验', href: '/components/input/basic' }, { value: 'overlay', label: '浮层组件', description: '对话框、菜单和提示', href: '/components/dialog/basic' }] },
+  { value: 'docs', label: '工程文档', href: '/components/button/basic' },
 ]
 const panels: DlSplitterPanel[] = [{ id: 'outline', defaultSize: 34, minSize: 20 }, { id: 'content', defaultSize: 66, minSize: 30 }]
 const steps: DlStepItem[] = [{ step: 1, title: '基础资料', description: '标题与封面' }, { step: 2, title: '分类标签', description: '题材与状态' }, { step: 3, title: '确认发布', description: '检查并保存' }]
@@ -116,16 +116,16 @@ const menus: DlMenuGroup[] = [
   </section>`, style: `.example { display: grid; gap: 12px; }
 output { color: #a9b9b0; }` }),
   'navigation-menu': vueSfc({ imports: ['DlNavigationMenu', 'type DlNavigationItem'], script: `const items: DlNavigationItem[] = [
-  { value: 'home', label: '首页', href: '#/' },
+  { value: 'home', label: '首页', href: '/' },
   {
     value: 'library',
     label: '组件',
     children: [
-      { value: 'form', label: '表单组件', description: '输入、选择与校验', href: '#/components/input/basic' },
-      { value: 'overlay', label: '浮层组件', description: '对话框、菜单和提示', href: '#/components/dialog/basic' },
+      { value: 'form', label: '表单组件', description: '输入、选择与校验', href: '/components/input/basic' },
+      { value: 'overlay', label: '浮层组件', description: '对话框、菜单和提示', href: '/components/dialog/basic' },
     ],
   },
-  { value: 'architecture', label: '实例体系', href: '#/instance-api' },
+  { value: 'architecture', label: '实例体系', href: '/instance-api' },
 ]`, template: `  <DlNavigationMenu :items="items" aria-label="主导航" />` }),
   pagination: vueSfc({ imports: ['DlPagination'], script: `import { ref } from 'vue'
 
@@ -218,7 +218,7 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
 .episode-card p { margin: 0; color: #b8c7bf; }` }),
   },
   toast: {
-    basic: vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">保存作品资料</DlButton>
+    basic: vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="primary" @click="open = true">保存作品资料</DlButton>
   <DlToast v-model:open="open" title="保存成功" description="作品资料已经更新。" tone="success" action-label="查看" />` }),
     'tone-gallery': vueSfc({ imports: ['DlButton', 'DlToast', 'type DlTone'], script: `import { ref } from 'vue'
 
@@ -249,7 +249,7 @@ function showTone(tone: DlTone) {
     :duration="8000"
     closable
   />`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
-    'upload-progress': vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst progress = ref(68)`, template: `  <DlButton @click="open = true">上传新封面</DlButton>
+    'upload-progress': vueSfc({ imports: ['DlButton', 'DlToast'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst progress = ref(68)`, template: `  <DlButton variant="primary" @click="open = true">上传新封面</DlButton>
   <DlToast
     v-model:open="open"
     title="正在处理封面"
@@ -321,9 +321,9 @@ function selectAction(value: string) { lastAction.value = value }
       <DlDropdownMenu v-else-if="componentDefinition.id === 'dropdown-menu'" :items="menuItems" label="作品操作" @select="selectAction"><template #trigger><DlButton variant="secondary">打开操作菜单 ▾</DlButton></template></DlDropdownMenu>
 
       <template v-else-if="componentDefinition.id === 'hover-card'">
-        <DlHoverCard v-if="scenario === 'basic'" :open-delay="220" align="start"><template #trigger><a class="hover-link" href="#/components/avatar/basic">悬停预览《来自深渊》</a></template><article class="anime-preview"><div class="anime-preview__cover">深</div><div><b>来自深渊</b><small>Made in Abyss · 2017</small></div><p>在巨大洞穴“阿比斯”边缘展开的奇幻冒险。</p><span>奇幻冒险 · 已收藏</span></article></DlHoverCard>
-        <DlHoverCard v-else-if="scenario === 'creator-profile'" side="right" :open-delay="180"><template #trigger><button class="hover-link-button">监督：斋藤圭一郎</button></template><section class="creator-preview"><div class="creator-preview__avatar">斋</div><div><b>斋藤圭一郎</b><small>动画监督</small></div><p>代表作品包含《葬送的芙莉莲》《孤独摇滚！》。</p><a href="#/components/avatar/basic">查看 8 部关联作品 →</a></section></DlHoverCard>
-        <DlHoverCard v-else side="top" align="start"><template #trigger><a class="hover-link" href="#/components/progress/basic">第 9 集 · 断头台阿乌拉</a></template><section class="episode-preview"><header><b>第 9 集</b><span>24:10</span></header><p>芙莉莲一行抵达格拉纳特伯爵领，与魔族使者展开交涉。</p><DlProgress :model-value="72" label="观看进度" size="sm" tone="accent" show-value /></section></DlHoverCard>
+        <DlHoverCard v-if="scenario === 'basic'" :open-delay="220" align="start"><template #trigger><a class="hover-link" href="/components/avatar/basic">悬停预览《来自深渊》</a></template><article class="anime-preview"><div class="anime-preview__cover">深</div><div><b>来自深渊</b><small>Made in Abyss · 2017</small></div><p>在巨大洞穴“阿比斯”边缘展开的奇幻冒险。</p><span>奇幻冒险 · 已收藏</span></article></DlHoverCard>
+        <DlHoverCard v-else-if="scenario === 'creator-profile'" side="right" :open-delay="180"><template #trigger><button class="hover-link-button">监督：斋藤圭一郎</button></template><section class="creator-preview"><div class="creator-preview__avatar">斋</div><div><b>斋藤圭一郎</b><small>动画监督</small></div><p>代表作品包含《葬送的芙莉莲》《孤独摇滚！》。</p><a href="/components/avatar/basic">查看 8 部关联作品 →</a></section></DlHoverCard>
+        <DlHoverCard v-else side="top" align="start"><template #trigger><a class="hover-link" href="/components/progress/basic">第 9 集 · 断头台阿乌拉</a></template><section class="episode-preview"><header><b>第 9 集</b><span>24:10</span></header><p>芙莉莲一行抵达格拉纳特伯爵领，与魔族使者展开交涉。</p><DlProgress :model-value="72" label="观看进度" size="sm" tone="accent" show-value /></section></DlHoverCard>
       </template>
 
       <DlMenubar v-else-if="componentDefinition.id === 'menubar'" :menus="menus" @select="selectAction" />
@@ -334,9 +334,9 @@ function selectAction(value: string) { lastAction.value = value }
       <DlStepper v-else-if="componentDefinition.id === 'stepper'" v-model="step" :items="steps" />
 
       <template v-else-if="componentDefinition.id === 'toast'">
-        <template v-if="scenario === 'basic'"><DlButton @click="toastOpen = true">保存作品资料</DlButton><DlToast v-model:open="toastOpen" title="保存成功" description="作品资料已经更新。" tone="success" action-label="查看" /></template>
+        <template v-if="scenario === 'basic'"><DlButton variant="primary" @click="toastOpen = true">保存作品资料</DlButton><DlToast v-model:open="toastOpen" title="保存成功" description="作品资料已经更新。" tone="success" action-label="查看" /></template>
         <template v-else-if="scenario === 'tone-gallery'"><div class="toast-tone-grid"><DlButton v-for="item in toneOptions" :key="item.value" variant="secondary" @click="toastTone = item.value; toastOpen = true">{{ item.label }}</DlButton></div><DlToast v-model:open="toastOpen" :title="toastTone + ' 色调通知'" :description="toastToneInfo.description" :tone="toastTone" :duration="8000" closable /></template>
-        <template v-else-if="scenario === 'upload-progress'"><DlButton @click="toastOpen = true">上传新封面</DlButton><DlToast v-model:open="toastOpen" title="正在处理封面" description="已上传 3.4 MB / 5 MB" tone="accent" :duration="12000" show-progress :progress="68" /></template>
+        <template v-else-if="scenario === 'upload-progress'"><DlButton variant="primary" @click="toastOpen = true">上传新封面</DlButton><DlToast v-model:open="toastOpen" title="正在处理封面" description="已上传 3.4 MB / 5 MB" tone="accent" :duration="12000" show-progress :progress="68" /></template>
         <template v-else-if="scenario === 'background-notice'"><DlButton variant="secondary" @click="toastOpen = true">运行后台同步</DlButton><DlToast v-model:open="toastOpen" title="后台同步完成" description="新增 12 部作品到本地索引。" tone="default" action-label="查看记录" :duration="6000" /></template>
         <template v-else-if="scenario === 'network-warning'"><DlButton variant="secondary" @click="toastOpen = true">模拟网络波动</DlButton><DlToast v-model:open="toastOpen" title="网络连接不稳定" description="自动重试会在后台继续，当前修改已保存到本地。" tone="warning" action-label="查看状态" :duration="9000" /></template>
         <template v-else-if="scenario === 'error-recovery'"><DlButton variant="danger" @click="toastOpen = true">模拟同步失败</DlButton><DlToast v-model:open="toastOpen" title="同步失败" description="无法连接资料服务器，本地修改尚未丢失。" tone="danger" action-label="重试" :duration="10000" @action="toastOpen = false" /></template>

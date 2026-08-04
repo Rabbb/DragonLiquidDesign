@@ -77,7 +77,7 @@ const content = computed(() => ({
       <DlInput v-model="username" status="error" />
       <small role="alert">用户名只能包含字母、数字和连字符。</small>
     </label>
-    <DlButton type="submit">保存账户信息</DlButton>
+    <DlButton variant="primary" type="submit">保存账户信息</DlButton>
   </form>`, style: `.fields, .fields label { display: grid; gap: 12px; }
 .fields small { color: #a9b9b0; }
 .fields [role='alert'] { color: #fca5a5; }
@@ -106,7 +106,7 @@ const content = computed(() => ({
     <DlCard v-else padding="lg" class="validation-form-card">
       <label class="scenario-field"><span>联系邮箱 <i>校验成功</i></span><DlInput v-model="email" status="success"><template #trailing>✓</template></DlInput><small>我们会把发布通知发送到这个地址。</small></label>
       <label class="scenario-field error-field"><span>用户名 <em>需要修改</em></span><DlInput v-model="username" status="error"><template #trailing>!</template></DlInput><small role="alert">用户名只能包含字母、数字和连字符。</small></label>
-      <DlButton>保存账户信息</DlButton>
+      <DlButton variant="primary">保存账户信息</DlButton>
     </DlCard>
   </DocExampleShell>
 </template>

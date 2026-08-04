@@ -40,7 +40,7 @@ const drawerCodes: Record<string, string> = {
   </div>
   <DlDrawer v-model:open="open" title="抽屉预览" description="支持方向、尺寸与滑动关闭" :placement="placement" size="sm">
     <p>当前方向：{{ placement }}</p>
-    <template #footer><DlButton @click="open = false">完成</DlButton></template>
+    <template #footer><DlButton variant="primary" @click="open = false">完成</DlButton></template>
   </DlDrawer>`, style: `.actions { display: flex; flex-wrap: wrap; gap: 10px; }` }),
   'tone-gallery': vueSfc({ imports: ['DlButton', 'DlDrawer', 'type DlTone'], script: `import { ref } from 'vue'
 
@@ -71,9 +71,9 @@ function showTone(tone: DlTone) {
     placement="right"
   >
     <p>当前 Drawer 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p>
-    <template #footer><DlButton @click="open = false">关闭预览</DlButton></template>
+    <template #footer><DlButton variant="primary" @click="open = false">关闭预览</DlButton></template>
   </DlDrawer>`, style: `.tone-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
-  'edit-record': vueSfc({ imports: ['DlButton', 'DlDrawer', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('来自深渊')\nconst status = ref('watching')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n  { value: 'completed', label: '已经看完' },\n]`, template: `  <DlButton @click="open = true">编辑收藏</DlButton>
+  'edit-record': vueSfc({ imports: ['DlButton', 'DlDrawer', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('来自深渊')\nconst status = ref('watching')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n  { value: 'completed', label: '已经看完' },\n]`, template: `  <DlButton variant="primary" @click="open = true">编辑收藏</DlButton>
   <DlDrawer v-model:open="open" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent">
     <form class="drawer-form" @submit.prevent="open = false">
       <label><span>作品标题</span><DlInput v-model="title" /></label>
@@ -81,10 +81,10 @@ function showTone(tone: DlTone) {
     </form>
     <template #footer>
       <DlButton variant="ghost" @click="open = false">取消</DlButton>
-      <DlButton @click="open = false">保存修改</DlButton>
+      <DlButton variant="primary" @click="open = false">保存修改</DlButton>
     </template>
   </DlDrawer>`, style: `.drawer-form, .drawer-form label { display: grid; gap: 12px; }` }),
-  'import-success': vueSfc({ imports: ['DlBadge', 'DlButton', 'DlDrawer'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">查看导入结果</DlButton>
+  'import-success': vueSfc({ imports: ['DlBadge', 'DlButton', 'DlDrawer'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="primary" @click="open = true">查看导入结果</DlButton>
   <DlDrawer
     v-model:open="open"
     title="导入已经完成"
@@ -99,7 +99,7 @@ function showTone(tone: DlTone) {
     </div>
     <template #footer>
       <DlButton variant="ghost" @click="open = false">关闭</DlButton>
-      <DlButton @click="open = false">查看新增作品</DlButton>
+      <DlButton variant="primary" @click="open = false">查看新增作品</DlButton>
     </template>
   </DlDrawer>`, style: `.result-card { display: grid; gap: 12px; }
 .result-card p { margin: 0; color: #a9b9b0; line-height: 1.7; }` }),
@@ -118,7 +118,7 @@ function showTone(tone: DlTone) {
     </div>
     <template #footer>
       <DlButton variant="ghost" @click="open = false">稍后处理</DlButton>
-      <DlButton @click="open = false">保留远程进度</DlButton>
+      <DlButton variant="primary" @click="open = false">保留远程进度</DlButton>
     </template>
   </DlDrawer>`, style: `.conflict-card { display: grid; gap: 8px; padding: 16px; border: 1px solid rgba(255, 179, 71, .22); border-radius: 16px; }
 .conflict-card p { margin: 0; color: #a9b9b0; }` }),
@@ -140,7 +140,7 @@ function showTone(tone: DlTone) {
     </template>
   </DlDrawer>`, style: `.danger-card { display: grid; gap: 10px; padding: 16px; border: 1px solid rgba(255, 123, 123, .22); border-radius: 16px; }
 .danger-card p { margin: 0; color: #a9b9b0; line-height: 1.7; }` }),
-  'collection-filter': vueSfc({ imports: ['DlButton', 'DlDrawer', 'DlSelect', 'DlSwitch', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst status = ref('all')\nconst onlyUnwatched = ref(false)\nconst options: DlSelectOption[] = [\n  { value: 'all', label: '全部状态' },\n  { value: 'watching', label: '正在观看' },\n  { value: 'completed', label: '已经看完' },\n]`, template: `  <DlButton @click="open = true">筛选收藏库</DlButton>
+  'collection-filter': vueSfc({ imports: ['DlButton', 'DlDrawer', 'DlSelect', 'DlSwitch', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst status = ref('all')\nconst onlyUnwatched = ref(false)\nconst options: DlSelectOption[] = [\n  { value: 'all', label: '全部状态' },\n  { value: 'watching', label: '正在观看' },\n  { value: 'completed', label: '已经看完' },\n]`, template: `  <DlButton variant="primary" @click="open = true">筛选收藏库</DlButton>
   <DlDrawer v-model:open="open" title="筛选收藏库" description="适合窄屏操作的低优先级辅助面板" placement="bottom" size="md" tone="muted">
     <div class="filter-form">
       <label><span>观看状态</span><DlSelect v-model="status" :options="options" /></label>
@@ -148,7 +148,7 @@ function showTone(tone: DlTone) {
     </div>
     <template #footer>
       <DlButton variant="ghost" @click="status = 'all'; onlyUnwatched = false">重置</DlButton>
-      <DlButton @click="open = false">查看结果</DlButton>
+      <DlButton variant="primary" @click="open = false">查看结果</DlButton>
     </template>
   </DlDrawer>`, style: `.filter-form, .filter-form label { display: grid; gap: 12px; }
 .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
@@ -176,31 +176,31 @@ function showDrawer(next: 'right' | 'bottom' | 'left') {
     <template v-if="componentDefinition.id === 'drawer'">
       <template v-if="scenario === 'basic'">
         <div class="drawer-actions"><DlButton variant="secondary" @click="showDrawer('left')">从左侧打开</DlButton><DlButton variant="secondary" @click="showDrawer('right')">从右侧打开</DlButton><DlButton variant="secondary" @click="showDrawer('bottom')">从底部打开</DlButton></div>
-        <DlDrawer v-model:open="drawerOpen" title="抽屉预览" description="支持方向、尺寸与滑动关闭" :placement="placement" size="sm"><p>当前方向：{{ placement }}</p><template #footer><DlButton @click="drawerOpen = false">完成</DlButton></template></DlDrawer>
+        <DlDrawer v-model:open="drawerOpen" title="抽屉预览" description="支持方向、尺寸与滑动关闭" :placement="placement" size="sm"><p>当前方向：{{ placement }}</p><template #footer><DlButton variant="primary" @click="drawerOpen = false">完成</DlButton></template></DlDrawer>
       </template>
       <template v-else-if="scenario === 'tone-gallery'">
         <div class="drawer-tone-grid"><button v-for="item in toneOptions" :key="item.value" type="button" @click="drawerTone = item.value; drawerOpen = true"><b>{{ item.label }}</b><span>{{ item.description }}</span></button></div>
-        <DlDrawer v-model:open="drawerOpen" :title="drawerTone + ' 色调抽屉'" description="比较边框、侧边炫彩条与环境光。" :tone="drawerTone" placement="right"><p>当前 Drawer 正在展示 <code>{{ drawerTone }}</code> 的完整视觉。</p><template #footer><DlButton @click="drawerOpen = false">关闭预览</DlButton></template></DlDrawer>
+        <DlDrawer v-model:open="drawerOpen" :title="drawerTone + ' 色调抽屉'" description="比较边框、侧边炫彩条与环境光。" :tone="drawerTone" placement="right"><p>当前 Drawer 正在展示 <code>{{ drawerTone }}</code> 的完整视觉。</p><template #footer><DlButton variant="primary" @click="drawerOpen = false">关闭预览</DlButton></template></DlDrawer>
       </template>
       <template v-else-if="scenario === 'edit-record'">
-        <DlButton @click="drawerOpen = true">编辑收藏</DlButton>
-        <DlDrawer v-model:open="drawerOpen" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent"><form class="drawer-form" @submit.prevent="drawerOpen = false"><label><span>作品标题</span><DlInput v-model="title" /></label><label><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></form><template #footer><DlButton variant="ghost" @click="drawerOpen = false">取消</DlButton><DlButton @click="drawerOpen = false">保存修改</DlButton></template></DlDrawer>
+        <DlButton variant="primary" @click="drawerOpen = true">编辑收藏</DlButton>
+        <DlDrawer v-model:open="drawerOpen" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent"><form class="drawer-form" @submit.prevent="drawerOpen = false"><label><span>作品标题</span><DlInput v-model="title" /></label><label><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></form><template #footer><DlButton variant="ghost" @click="drawerOpen = false">取消</DlButton><DlButton variant="primary" @click="drawerOpen = false">保存修改</DlButton></template></DlDrawer>
       </template>
       <template v-else-if="scenario === 'import-success'">
-        <DlButton @click="drawerOpen = true">查看导入结果</DlButton>
-        <DlDrawer v-model:open="drawerOpen" title="导入已经完成" description="本地媒体资料已合并到收藏库。" placement="right" tone="success"><div class="drawer-state-card"><strong>新增 24 部作品</strong><p>另有 3 条重复记录已自动跳过，没有覆盖原有笔记。</p></div><template #footer><DlButton variant="ghost" @click="drawerOpen = false">关闭</DlButton><DlButton @click="drawerOpen = false">查看新增作品</DlButton></template></DlDrawer>
+        <DlButton variant="primary" @click="drawerOpen = true">查看导入结果</DlButton>
+        <DlDrawer v-model:open="drawerOpen" title="导入已经完成" description="本地媒体资料已合并到收藏库。" placement="right" tone="success"><div class="drawer-state-card"><strong>新增 24 部作品</strong><p>另有 3 条重复记录已自动跳过，没有覆盖原有笔记。</p></div><template #footer><DlButton variant="ghost" @click="drawerOpen = false">关闭</DlButton><DlButton variant="primary" @click="drawerOpen = false">查看新增作品</DlButton></template></DlDrawer>
       </template>
       <template v-else-if="scenario === 'sync-warning'">
         <DlButton variant="secondary" @click="drawerOpen = true">处理同步冲突</DlButton>
-        <DlDrawer v-model:open="drawerOpen" title="发现 2 条同步冲突" description="远程记录与本地编辑时间接近，需要选择保留方式。" placement="right" tone="warning"><div class="drawer-state-card"><strong>来自深渊 · 观看进度</strong><p>本地：第 8 集 · 10 分钟前</p><p>远程：第 9 集 · 12 分钟前</p></div><template #footer><DlButton variant="ghost" @click="drawerOpen = false">稍后处理</DlButton><DlButton @click="drawerOpen = false">保留远程进度</DlButton></template></DlDrawer>
+        <DlDrawer v-model:open="drawerOpen" title="发现 2 条同步冲突" description="远程记录与本地编辑时间接近，需要选择保留方式。" placement="right" tone="warning"><div class="drawer-state-card"><strong>来自深渊 · 观看进度</strong><p>本地：第 8 集 · 10 分钟前</p><p>远程：第 9 集 · 12 分钟前</p></div><template #footer><DlButton variant="ghost" @click="drawerOpen = false">稍后处理</DlButton><DlButton variant="primary" @click="drawerOpen = false">保留远程进度</DlButton></template></DlDrawer>
       </template>
       <template v-else-if="scenario === 'danger-zone'">
         <DlButton variant="danger" @click="drawerOpen = true">打开危险区域</DlButton>
         <DlDrawer v-model:open="drawerOpen" title="清空观看历史" description="此操作会影响收藏库中的全部作品。" placement="right" tone="danger"><div class="drawer-state-card"><strong>将永久删除 428 条观看记录</strong><p>收藏作品和个人标签会保留，但删除后的进度无法恢复。</p></div><template #footer><DlButton variant="secondary" @click="drawerOpen = false">取消</DlButton><DlButton variant="danger" @click="drawerOpen = false">确认清空历史</DlButton></template></DlDrawer>
       </template>
       <template v-else>
-        <DlButton @click="drawerOpen = true">筛选收藏库</DlButton>
-        <DlDrawer v-model:open="drawerOpen" title="筛选收藏库" description="适合窄屏操作的低优先级辅助面板" placement="bottom" size="md" tone="muted"><div class="filter-form"><label><span>观看状态</span><DlSelect v-model="filterStatus" :options="filterOptions" /></label><div class="switch-row"><span><b>仅显示未看剧集</b><small>隐藏已完成的单集</small></span><DlSwitch v-model="onlyUnwatched" /></div></div><template #footer><DlButton variant="ghost" @click="filterStatus = 'all'; onlyUnwatched = false">重置</DlButton><DlButton @click="drawerOpen = false">查看结果</DlButton></template></DlDrawer>
+        <DlButton variant="primary" @click="drawerOpen = true">筛选收藏库</DlButton>
+        <DlDrawer v-model:open="drawerOpen" title="筛选收藏库" description="适合窄屏操作的低优先级辅助面板" placement="bottom" size="md" tone="muted"><div class="filter-form"><label><span>观看状态</span><DlSelect v-model="filterStatus" :options="filterOptions" /></label><div class="switch-row"><span><b>仅显示未看剧集</b><small>隐藏已完成的单集</small></span><DlSwitch v-model="onlyUnwatched" /></div></div><template #footer><DlButton variant="ghost" @click="filterStatus = 'all'; onlyUnwatched = false">重置</DlButton><DlButton variant="primary" @click="drawerOpen = false">查看结果</DlButton></template></DlDrawer>
       </template>
     </template>
     <DlTree v-else v-model="selected" v-model:expanded="expanded" :items="nodes" />

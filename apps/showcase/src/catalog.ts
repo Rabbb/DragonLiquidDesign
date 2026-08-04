@@ -469,7 +469,7 @@ export const componentCatalog: ComponentDefinition[] = componentCategories.flatM
 ])
 
 export function componentRoute(componentId: string, scenarioId = 'basic') {
-  return `#/components/${componentId}/${scenarioId}`
+  return `/components/${componentId}/${scenarioId}`
 }
 
 export function resolveComponent(componentId?: string, scenarioId?: string) {

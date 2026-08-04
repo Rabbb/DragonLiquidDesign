@@ -35,7 +35,7 @@ const mdxSecurity = createDlMdxSecurityPolicy({
   domains: {
     links: ['developer.mozilla.org', 'reka-ui.com', 'nuxt.com'],
     images: ['images.unsplash.com', '*.githubusercontent.com'],
-    files: [],
+    files: ['registry.npmjs.org'],
   },
   fileExtensions: ['pdf', 'json', 'zip', 'tgz'],
   allowedProtocols: ['https'],

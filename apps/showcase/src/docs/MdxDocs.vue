@@ -82,7 +82,7 @@ const securitySource = [
   '',
   '[未列入白名单的链接](https://example.com/private)',
   '',
-  '[允许的本地 npm 包](/packages/dragon-liquid-vue-0.6.0-alpha.2.tgz)',
+  '[允许的 npm 包](https://registry.npmjs.org/@dragon-liquid/vue/-/vue-0.6.0-alpha.5.tgz)',
   '',
   '[未允许的可执行文件](/packages/setup.exe)',
   '',

@@ -157,7 +157,7 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('HoverCard', DlHoverCard, 'general', 'stable', { defaultContent: '悬浮卡片中的作品摘要。', triggerLabel: '悬停查看资料' }),
   official('Mdx', DlMdx, 'general', 'alpha', { aliases: ['MarkdownX'], defaultProps: { modelValue: '## 嵌套 MarkdownX\n\n官方注册表也包含文档组件。', mode: 'preview', showToolbar: false, minHeight: '12rem' } }),
   official('Menubar', DlMenubar, 'general', 'stable', { defaultProps: { menus: [{ value: 'file', label: '文件', items: menuItems }] } }),
-  official('NavigationMenu', DlNavigationMenu, 'general', 'stable', { defaultProps: { items: [{ value: 'home', label: '首页', href: '#/' }, { value: 'archive', label: '档案', href: '#/components/mdx/basic' }] } }),
+  official('NavigationMenu', DlNavigationMenu, 'general', 'stable', { defaultProps: { items: [{ value: 'home', label: '首页', href: '/' }, { value: 'archive', label: '档案', href: '/components/mdx/basic' }] } }),
   official('Pagination', DlPagination, 'general', 'stable', { defaultProps: { total: 120, itemsPerPage: 12, page: 2 } }),
   official('Popover', DlPopover, 'general', 'stable', { defaultProps: { title: '快捷资料' }, defaultContent: 'Popover 中的安全扩展内容。', triggerLabel: '打开气泡卡片' }),
   official('Progress', DlProgress, 'general', 'stable', { defaultProps: { modelValue: 68, showValue: true, label: '整理进度' } }),

@@ -32,7 +32,7 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
           支撑从内容收藏到后台工具的多种产品界面。
         </p>
         <div class="hero-actions">
-          <a href="#/components/button/basic">
+          <a href="/components/button/basic">
             <DlButton variant="primary" size="lg"><template #leading>✦</template>开始浏览组件</DlButton>
           </a>
           <a href="#quick-start">
@@ -54,7 +54,7 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
         <DlCard class="install-card" padding="md">
           <div class="code-head">
             <span><i /> npm package</span>
-            <DlBadge tone="success">LOCAL REGISTRY</DlBadge>
+            <DlBadge tone="success">NPM REGISTRY</DlBadge>
           </div>
           <code>npm i @dragon-liquid/vue</code>
           <div class="code-rule" />
@@ -141,7 +141,7 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
       <div class="quick-start-grid">
         <DlCard padding="lg" class="code-panel">
           <div class="code-head"><span><i /> PowerShell</span><DlBadge tone="accent">INSTALL</DlBadge></div>
-          <pre><code><b>npm install</b> O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.2.tgz</code></pre>
+          <pre><code><b>npm install</b> @dragon-liquid/vue@alpha</code></pre>
         </DlCard>
         <DlCard padding="lg" class="code-panel">
           <div class="code-head"><span><i /> main.ts</span><DlBadge tone="success">IMPORT</DlBadge></div>
@@ -151,7 +151,7 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
       </div>
       <div class="home-cta">
         <div><DlBadge tone="accent" variant="outline">READY TO EXPLORE</DlBadge><h3>在按需加载的案例中查看每一个状态。</h3></div>
-        <a href="#/components/button/basic"><DlButton variant="primary" size="lg">进入组件文档 <template #trailing>→</template></DlButton></a>
+        <a href="/components/button/basic"><DlButton variant="primary" size="lg">进入组件文档 <template #trailing>→</template></DlButton></a>
       </div>
     </section>
   </main>

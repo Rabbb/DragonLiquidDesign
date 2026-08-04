@@ -20,7 +20,7 @@ describe('DlButton', () => {
     expect(wrapper.get('button').attributes('aria-busy')).toBe('true')
   })
 
-  it('uses the Ant Design default-button hierarchy when variant is omitted', () => {
+  it('uses the secondary style when variant is omitted', () => {
     const wrapper = mount(DlButton, { slots: { default: '默认操作' } })
     const button = wrapper.get('button')
 
@@ -28,6 +28,13 @@ describe('DlButton', () => {
     expect(button.classes()).toContain('[background:var(--dl-button-secondary-bg)]')
     expect(button.classes()).toContain('hover:border-[var(--dl-button-secondary-border-hover)]')
     expect(button.classes()).not.toContain('[background:var(--dl-button-primary-bg)]')
+  })
+
+  it('keeps secondary available as an explicit supporting action too', () => {
+    const button = mount(DlButton, { props: { variant: 'secondary' } }).get('button')
+
+    expect(button.attributes('data-variant')).toBe('secondary')
+    expect(button.classes()).toContain('[background:var(--dl-button-secondary-bg)]')
   })
 
   it('uses the TodoMoe primary appearance tokens for every interaction state', () => {

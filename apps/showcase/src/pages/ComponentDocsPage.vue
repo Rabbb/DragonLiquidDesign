@@ -197,7 +197,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
 
   <article class="docs-content">
     <div class="docs-breadcrumb">
-      <a href="#/">首页</a><span>/</span><a href="#/components/button/basic">组件</a><span>/</span><b>{{ selectedComponent.name }}</b>
+      <a href="/">首页</a><span>/</span><a href="/components/button/basic">组件</a><span>/</span><b>{{ selectedComponent.name }}</b>
     </div>
     <header class="component-header">
       <div>
@@ -210,8 +210,8 @@ function toggleCategory(category: typeof componentCategories[number]) {
         <h1>{{ selectedComponent.name }}</h1>
         <p>{{ selectedComponent.summary }}</p>
       </div>
-      <a href="/packages/dragon-liquid-vue-0.6.0-alpha.2.tgz" download>
-        <DlButton variant="secondary" size="sm">下载 npm 包 ↓</DlButton>
+      <a href="https://www.npmjs.com/package/@dragon-liquid/vue/v/0.6.0-alpha.5" target="_blank" rel="noreferrer">
+        <DlButton variant="secondary" size="sm">查看 npm 包 ↗</DlButton>
       </a>
     </header>
 

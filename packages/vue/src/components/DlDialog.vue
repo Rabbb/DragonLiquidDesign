@@ -51,6 +51,7 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
         data-dl
         data-slot="dialog"
         data-dl-layer="modal"
+        :data-size="size"
         :style="{ zIndex: contentZIndex }"
         :class="dialogStyles({ size, tone })"
       >
@@ -89,6 +90,7 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
 }
 
 .dl-dialog {
+  --dl-dialog-width: 640px;
   --dl-overlay-border: rgba(255, 239, 186, 0.22);
   --dl-overlay-rail: linear-gradient(90deg, rgba(255, 223, 128, 0.22), rgba(104, 225, 255, 0.46), rgba(124, 255, 190, 0.14));
   --dl-overlay-glow: rgba(255, 215, 110, 0.08);
@@ -98,7 +100,8 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 20px;
-  width: calc(100vw - 2rem);
+  width: min(calc(100vw - 2rem), var(--dl-dialog-width));
+  max-width: var(--dl-dialog-width);
   max-height: calc(100dvh - 48px);
   padding: 24px;
   transform: translate(-50%, -50%);
@@ -142,9 +145,9 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
   pointer-events: none;
 }
 
-.dl-dialog--sm { max-width: 500px; gap: 16px; padding: 20px; border-radius: 22px; }
-.dl-dialog--md { max-width: 640px; }
-.dl-dialog--lg { max-width: 840px; gap: 24px; padding: 28px; border-radius: 32px; }
+.dl-dialog--sm { --dl-dialog-width: 500px; gap: 16px; padding: 20px; border-radius: 22px; }
+.dl-dialog--md { --dl-dialog-width: 640px; }
+.dl-dialog--lg { --dl-dialog-width: 840px; gap: 24px; padding: 28px; border-radius: 32px; }
 .dl-tone-accent { --dl-overlay-border: rgba(255, 223, 128, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(104, 225, 255, 0.18), rgba(255, 215, 110, 0.74), rgba(104, 225, 255, 0.24)); --dl-overlay-glow: rgba(104, 225, 255, 0.12); }
 .dl-tone-success { --dl-overlay-border: rgba(113, 209, 173, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(124, 255, 190, 0.22), rgba(0, 206, 209, 0.62), rgba(124, 255, 190, 0.18)); --dl-overlay-glow: rgba(124, 255, 190, 0.12); }
 .dl-tone-warning { --dl-overlay-border: rgba(255, 179, 71, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(255, 178, 89, 0.24), rgba(255, 215, 110, 0.74), rgba(255, 178, 89, 0.2)); --dl-overlay-glow: rgba(255, 178, 89, 0.14); }

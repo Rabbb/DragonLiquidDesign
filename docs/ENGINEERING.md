@@ -229,8 +229,8 @@ npm run build:showcase
 
 ### 9.1 信息架构
 
-- `#/`：设计系统介绍首页，只呈现定位、技术分层、组件目录和接入方式。
-- `#/components/{component}/{scenario}`：组件查询与案例页。
+- `/`：设计系统介绍首页，只呈现定位、技术分层、组件目录和接入方式。
+- `/components/{component}/{scenario}`：组件查询与案例页。
 - 左侧大纲按“基础 Foundation / 表单 Form / 色彩 Color / 日期 Dates / 通用 General”分组，分组可折叠，只展开当前组件的场景子菜单。
 - 目录对齐 Reka UI 的 Form、Color、Dates、General 组件顺序并保留 Alpha 标记；Dragon Liquid 自有基础组件单列 Foundation。
 - 每个组件先提供一个不进入子菜单的基础示例；额外场景数量为 `0..n`，只有存在不同业务流程、不同组合结构或不同交互边界时才增加场景子菜单。

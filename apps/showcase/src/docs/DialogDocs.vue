@@ -6,6 +6,7 @@ import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const basicOpen = ref(false)
+const basicSize = ref<'sm' | 'md' | 'lg'>('md')
 const toneGalleryOpen = ref(false)
 const activeTone = ref<DlTone>('default')
 const createOpen = ref(false)
@@ -27,12 +28,50 @@ const toneOptions: { value: DlTone; label: string; description: string }[] = [
 ]
 const activeToneInfo = computed(() => toneOptions.find(item => item.value === activeTone.value) ?? toneOptions[0])
 
+function openBasicDialog(size: 'sm' | 'md' | 'lg') {
+  basicSize.value = size
+  basicOpen.value = true
+}
+
 const content = computed(() => ({
   basic: {
     title: '模态浮层基础行为',
     description: 'Dialog 管理焦点锁定、Esc 关闭、遮罩交互和标题描述语义。',
-    code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">打开对话框</DlButton>\n  <DlDialog\n    v-model:open="open"\n    title="对话框标题"\n    description="补充说明"\n  >\n    <p>这里是需要用户聚焦处理的内容。</p>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton @click="open = false">完成</DlButton>\n    </template>\n  </DlDialog>` }),
-    tips: ['打开后焦点应进入对话框，关闭后返回触发元素。', '不要用 Dialog 承载长篇阅读内容或复杂多步流程。'],
+    code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'
+
+type DialogSize = 'sm' | 'md' | 'lg'
+
+const open = ref(false)
+const size = ref<DialogSize>('md')
+const sizes: DialogSize[] = ['sm', 'md', 'lg']
+
+function showDialog(nextSize: DialogSize) {
+  size.value = nextSize
+  open.value = true
+}`, template: `  <div class="size-actions">
+    <DlButton
+      v-for="item in sizes"
+      :key="item"
+      variant="secondary"
+      @click="showDialog(item)"
+    >
+      打开 {{ item.toUpperCase() }}
+    </DlButton>
+  </div>
+
+  <DlDialog
+    v-model:open="open"
+    :title="\`对话框尺寸 · \${size.toUpperCase()}\`"
+    description="size 控制对话框的宽度规格。"
+    :size="size"
+  >
+    <p>当前尺寸：<strong>{{ size }}</strong></p>
+    <template #footer>
+      <DlButton variant="ghost" @click="open = false">取消</DlButton>
+      <DlButton variant="primary" @click="open = false">完成</DlButton>
+    </template>
+  </DlDialog>`, style: `.size-actions { display: flex; flex-wrap: wrap; gap: 10px; }` }),
+    tips: ['sm、md、lg 分别限制为 500px、640px、840px；窄屏下会自动收缩。', '打开后焦点应进入对话框，关闭后返回触发元素。', '不要用 Dialog 承载长篇阅读内容或复杂多步流程。'],
   },
   'tone-gallery': {
     title: 'Dialog 全部语义色调',
@@ -68,7 +107,7 @@ function showTone(tone: DlTone) {
   >
     <p>当前 Dialog 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p>
     <template #footer>
-      <DlButton @click="open = false">关闭预览</DlButton>
+      <DlButton variant="primary" @click="open = false">关闭预览</DlButton>
     </template>
   </DlDialog>`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .tone-grid button { display: grid; gap: 5px; padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: rgba(255,255,255,.06); color: #fff; text-align: left; cursor: pointer; }
@@ -78,13 +117,13 @@ function showTone(tone: DlTone) {
   'create-record': {
     title: '创建收藏记录',
     description: '适合字段较少、上下文明确的小型创建流程。',
-    code: vueSfc({ imports: ['DlButton', 'DlDialog', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('')\nconst status = ref('planned')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n]`, template: `  <DlButton @click="open = true">收录新作品</DlButton>\n  <DlDialog v-model:open="open" title="收录新作品" size="md">\n    <div class="form">\n      <DlInput v-model="title" placeholder="作品标题" />\n      <DlSelect v-model="status" :options="statusOptions" />\n    </div>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton @click="open = false">确认收录</DlButton>\n    </template>\n  </DlDialog>`, style: `.form { display: grid; gap: 12px; }` }),
+    code: vueSfc({ imports: ['DlButton', 'DlDialog', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('')\nconst status = ref('planned')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n]`, template: `  <DlButton variant="primary" @click="open = true">收录新作品</DlButton>\n  <DlDialog v-model:open="open" title="收录新作品" size="md">\n    <div class="form">\n      <DlInput v-model="title" placeholder="作品标题" />\n      <DlSelect v-model="status" :options="statusOptions" />\n    </div>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton variant="primary" @click="open = false">确认收录</DlButton>\n    </template>\n  </DlDialog>`, style: `.form { display: grid; gap: 12px; }` }),
     tips: ['表单内容超过一个屏幕时优先使用独立页面。', '提交成功后关闭浮层，并在原页面提供结果反馈。'],
   },
   'featured-preview': {
     title: '重点内容预览',
     description: 'Accent 用于当前推荐、品牌重点或需要被优先看见的任务。',
-    code: vueSfc({ imports: ['DlBadge', 'DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">查看本周推荐</DlButton>
+    code: vueSfc({ imports: ['DlBadge', 'DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="primary" @click="open = true">查看本周推荐</DlButton>
   <DlDialog
     v-model:open="open"
     title="本周推荐 · 葬送的芙莉莲"
@@ -99,7 +138,7 @@ function showTone(tone: DlTone) {
     </div>
     <template #footer>
       <DlButton variant="ghost" @click="open = false">稍后再看</DlButton>
-      <DlButton @click="open = false">加入收藏</DlButton>
+      <DlButton variant="primary" @click="open = false">加入收藏</DlButton>
     </template>
   </DlDialog>`, style: `.feature-preview { display: grid; gap: 12px; }
 .feature-preview h3, .feature-preview p { margin: 0; }
@@ -109,7 +148,7 @@ function showTone(tone: DlTone) {
   'publish-success': {
     title: '发布完成',
     description: 'Success 用于确认操作已经完成，并把下一步保持为可选项。',
-    code: vueSfc({ imports: ['DlBadge', 'DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton @click="open = true">查看发布结果</DlButton>
+    code: vueSfc({ imports: ['DlBadge', 'DlButton', 'DlDialog'], script: `import { ref } from 'vue'\n\nconst open = ref(false)`, template: `  <DlButton variant="primary" @click="open = true">查看发布结果</DlButton>
   <DlDialog
     v-model:open="open"
     title="收藏记录已发布"
@@ -123,7 +162,7 @@ function showTone(tone: DlTone) {
     </div>
     <template #footer>
       <DlButton variant="ghost" @click="open = false">关闭</DlButton>
-      <DlButton @click="open = false">查看作品</DlButton>
+      <DlButton variant="primary" @click="open = false">查看作品</DlButton>
     </template>
   </DlDialog>`, style: `.result-message { display: grid; gap: 12px; }
 .result-message p { margin: 0; color: #a9b9b0; line-height: 1.7; }` }),
@@ -143,7 +182,7 @@ function showTone(tone: DlTone) {
     <p>直接离开会丢失本次编辑，你也可以返回并保存。</p>
     <template #footer>
       <DlButton variant="ghost" @click="discardChanges">放弃修改</DlButton>
-      <DlButton @click="open = false">继续编辑</DlButton>
+      <DlButton variant="primary" @click="open = false">继续编辑</DlButton>
     </template>
   </DlDialog>` }),
     tips: ['Warning 适合可恢复的风险；不可逆操作使用 Danger。', '默认路径应帮助用户保留已有工作。'],
@@ -182,29 +221,29 @@ function showTone(tone: DlTone) {
 <template>
   <DocExampleShell v-bind="content">
     <div v-if="scenario === 'basic'" class="dialog-trigger-grid">
-      <div v-for="size in (['sm', 'md', 'lg'] as const)" :key="size"><span>{{ size.toUpperCase() }}</span><p>{{ size === 'sm' ? '确认与简短反馈' : size === 'md' ? '小型表单与配置' : '较宽内容与预览' }}</p><DlButton variant="secondary" @click="basicOpen = true">打开 {{ size }}</DlButton></div>
-      <DlDialog v-model:open="basicOpen" title="Dragon Liquid Dialog" description="这是一个具备完整无障碍语义的基础对话框。" size="sm"><div class="dialog-inline-demo"><span>龍</span><p>按下 Esc、点击遮罩或关闭按钮都可以离开。</p></div><template #footer><DlButton variant="ghost" @click="basicOpen = false">取消</DlButton><DlButton @click="basicOpen = false">完成</DlButton></template></DlDialog>
+      <div v-for="size in (['sm', 'md', 'lg'] as const)" :key="size"><span>{{ size.toUpperCase() }}</span><p>{{ size === 'sm' ? '确认与简短反馈' : size === 'md' ? '小型表单与配置' : '较宽内容与预览' }}</p><DlButton variant="secondary" @click="openBasicDialog(size)">打开 {{ size }}</DlButton></div>
+      <DlDialog v-model:open="basicOpen" :title="`Dragon Liquid Dialog · ${basicSize.toUpperCase()}`" description="这是一个具备完整无障碍语义的基础对话框。" :size="basicSize"><div class="dialog-inline-demo"><span>龍</span><p>当前宽度规格为 <strong>{{ basicSize }}</strong>。按下 Esc、点击遮罩或关闭按钮都可以离开。</p></div><template #footer><DlButton variant="ghost" @click="basicOpen = false">取消</DlButton><DlButton variant="primary" @click="basicOpen = false">完成</DlButton></template></DlDialog>
     </div>
 
     <div v-else-if="scenario === 'tone-gallery'" class="tone-gallery-grid">
       <button v-for="item in toneOptions" :key="item.value" type="button" class="tone-gallery-item" @click="activeTone = item.value; toneGalleryOpen = true"><b>{{ item.label }}</b><span>{{ item.description }}</span></button>
-      <DlDialog v-model:open="toneGalleryOpen" :title="`${activeTone} 色调对话框`" :description="activeToneInfo.description" :tone="activeTone" size="sm"><p>当前 Dialog 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p><template #footer><DlButton @click="toneGalleryOpen = false">关闭预览</DlButton></template></DlDialog>
+      <DlDialog v-model:open="toneGalleryOpen" :title="`${activeTone} 色调对话框`" :description="activeToneInfo.description" :tone="activeTone" size="sm"><p>当前 Dialog 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p><template #footer><DlButton variant="primary" @click="toneGalleryOpen = false">关闭预览</DlButton></template></DlDialog>
     </div>
 
-    <div v-else-if="scenario === 'create-record'" class="center-trigger"><DlButton size="lg" @click="createOpen = true"><template #leading>＋</template>收录新作品</DlButton>
-      <DlDialog v-model:open="createOpen" title="收录新作品" description="填写最基本的信息，之后可以继续完善资料。" size="md"><div class="dialog-form"><label class="scenario-field"><span>作品标题</span><DlInput v-model="title" /></label><label class="scenario-field"><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></div><template #footer><DlButton variant="ghost" @click="createOpen = false">取消</DlButton><DlButton @click="createOpen = false">确认收录</DlButton></template></DlDialog>
+    <div v-else-if="scenario === 'create-record'" class="center-trigger"><DlButton variant="primary" size="lg" @click="createOpen = true"><template #leading>＋</template>收录新作品</DlButton>
+      <DlDialog v-model:open="createOpen" title="收录新作品" description="填写最基本的信息，之后可以继续完善资料。" size="md"><div class="dialog-form"><label class="scenario-field"><span>作品标题</span><DlInput v-model="title" /></label><label class="scenario-field"><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></div><template #footer><DlButton variant="ghost" @click="createOpen = false">取消</DlButton><DlButton variant="primary" @click="createOpen = false">确认收录</DlButton></template></DlDialog>
     </div>
 
-    <div v-else-if="scenario === 'featured-preview'" class="center-trigger"><DlButton size="lg" @click="featuredOpen = true">查看本周推荐</DlButton>
-      <DlDialog v-model:open="featuredOpen" title="本周推荐 · 葬送的芙莉莲" description="根据收藏偏好生成的重点内容预览。" size="lg" tone="accent"><div class="dialog-message"><DlBadge tone="accent">编辑精选</DlBadge><h3>跨越时间的旅程，适合慢慢观看</h3><p>预览推荐理由、分类与观看建议，再决定是否加入收藏。</p></div><template #footer><DlButton variant="ghost" @click="featuredOpen = false">稍后再看</DlButton><DlButton @click="featuredOpen = false">加入收藏</DlButton></template></DlDialog>
+    <div v-else-if="scenario === 'featured-preview'" class="center-trigger"><DlButton variant="primary" size="lg" @click="featuredOpen = true">查看本周推荐</DlButton>
+      <DlDialog v-model:open="featuredOpen" title="本周推荐 · 葬送的芙莉莲" description="根据收藏偏好生成的重点内容预览。" size="lg" tone="accent"><div class="dialog-message"><DlBadge tone="accent">编辑精选</DlBadge><h3>跨越时间的旅程，适合慢慢观看</h3><p>预览推荐理由、分类与观看建议，再决定是否加入收藏。</p></div><template #footer><DlButton variant="ghost" @click="featuredOpen = false">稍后再看</DlButton><DlButton variant="primary" @click="featuredOpen = false">加入收藏</DlButton></template></DlDialog>
     </div>
 
-    <div v-else-if="scenario === 'publish-success'" class="center-trigger"><DlButton size="lg" @click="successOpen = true">查看发布结果</DlButton>
-      <DlDialog v-model:open="successOpen" title="收藏记录已发布" description="作品资料和分类标签已经同步。" size="sm" tone="success"><div class="dialog-message"><DlBadge tone="success">同步完成</DlBadge><p>《迷宫饭》现在可在公开收藏页中查看。</p></div><template #footer><DlButton variant="ghost" @click="successOpen = false">关闭</DlButton><DlButton @click="successOpen = false">查看作品</DlButton></template></DlDialog>
+    <div v-else-if="scenario === 'publish-success'" class="center-trigger"><DlButton variant="primary" size="lg" @click="successOpen = true">查看发布结果</DlButton>
+      <DlDialog v-model:open="successOpen" title="收藏记录已发布" description="作品资料和分类标签已经同步。" size="sm" tone="success"><div class="dialog-message"><DlBadge tone="success">同步完成</DlBadge><p>《迷宫饭》现在可在公开收藏页中查看。</p></div><template #footer><DlButton variant="ghost" @click="successOpen = false">关闭</DlButton><DlButton variant="primary" @click="successOpen = false">查看作品</DlButton></template></DlDialog>
     </div>
 
     <div v-else-if="scenario === 'unsaved-warning'" class="center-trigger"><DlButton variant="secondary" size="lg" @click="warningOpen = true">离开编辑器</DlButton>
-      <DlDialog v-model:open="warningOpen" title="尚有未保存的修改" description="简介与个人标签的修改还没有保存。" size="sm" tone="warning"><p>直接离开会丢失本次编辑，你也可以返回并保存。</p><template #footer><DlButton variant="ghost" @click="warningOpen = false">放弃修改</DlButton><DlButton @click="warningOpen = false">继续编辑</DlButton></template></DlDialog>
+      <DlDialog v-model:open="warningOpen" title="尚有未保存的修改" description="简介与个人标签的修改还没有保存。" size="sm" tone="warning"><p>直接离开会丢失本次编辑，你也可以返回并保存。</p><template #footer><DlButton variant="ghost" @click="warningOpen = false">放弃修改</DlButton><DlButton variant="primary" @click="warningOpen = false">继续编辑</DlButton></template></DlDialog>
     </div>
 
     <div v-else-if="scenario === 'delete-confirm'" class="center-trigger"><DlButton variant="danger" size="lg" @click="deleteOpen = true">移出收藏</DlButton>

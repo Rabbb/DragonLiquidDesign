@@ -44,14 +44,14 @@ const content = computed(() => ({
     <DlCard v-else-if="scenario === 'content-editor'" padding="lg" class="content-editor-card">
       <div><DlBadge tone="accent">ANIME PROFILE</DlBadge><h3>编辑作品简介</h3></div>
       <label class="scenario-field"><span>简介内容</span><DlTextarea v-model="synopsis" :rows="7" /></label>
-      <footer><small :class="{ warning: synopsis.length > 180 }">{{ synopsis.length }} / 200</small><div><DlButton variant="ghost">保存草稿</DlButton><DlButton>发布修改</DlButton></div></footer>
+      <footer><small :class="{ warning: synopsis.length > 180 }">{{ synopsis.length }} / 200</small><div><DlButton variant="ghost">保存草稿</DlButton><DlButton variant="primary">发布修改</DlButton></div></footer>
     </DlCard>
 
     <DlCard v-else padding="lg" class="feedback-form-card">
       <div><span class="feedback-symbol">?</span><div><h3>告诉我们发生了什么</h3><p>清晰的上下文会帮助维护者更快定位问题。</p></div></div>
       <label class="scenario-field"><span>问题类别</span><DlSelect v-model="category" :options="categoryOptions" /></label>
       <label class="scenario-field"><span>问题描述</span><DlTextarea v-model="feedback" :rows="6" placeholder="复现步骤、预期行为、实际结果……" /></label>
-      <DlButton :disabled="feedback.length < 10">提交反馈</DlButton>
+      <DlButton variant="primary" :disabled="feedback.length < 10">提交反馈</DlButton>
     </DlCard>
   </DocExampleShell>
 </template>

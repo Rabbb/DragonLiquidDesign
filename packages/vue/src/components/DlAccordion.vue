@@ -21,7 +21,7 @@ const styles = tv({
     item: 'border-b border-[var(--dl-border)] last:border-b-0',
     trigger: 'group flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-sm font-semibold text-[var(--dl-text)] outline-none transition hover:bg-white/[0.045] focus-visible:[box-shadow:inset_var(--dl-focus)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
     icon: 'text-xs text-amber-300 transition-transform duration-200 group-data-[state=open]:rotate-180',
-    content: 'overflow-hidden text-sm text-[var(--dl-text-muted)] data-[state=closed]:animate-[dl-accordion-close_.2s_ease-out] data-[state=open]:animate-[dl-accordion-open_.25s_ease-out]',
+    content: 'dl-accordion__content overflow-hidden text-sm text-[var(--dl-text-muted)]',
   },
 })
 const classes = computed(() => styles())
@@ -56,7 +56,9 @@ const classes = computed(() => styles())
   </AccordionRoot>
 </template>
 
-<style scoped>
+<style>
+.dl-accordion__content[data-state='open'] { animation: dl-accordion-open 250ms ease-out; }
+.dl-accordion__content[data-state='closed'] { animation: dl-accordion-close 200ms ease-out; }
 @keyframes dl-accordion-open { from { height: 0; opacity: 0; } to { height: var(--reka-accordion-content-height); opacity: 1; } }
 @keyframes dl-accordion-close { from { height: var(--reka-accordion-content-height); opacity: 1; } to { height: 0; opacity: 0; } }
 </style>
