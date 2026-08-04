@@ -52,7 +52,7 @@ onMounted(async () => {
     const dragonTheme = loadedView.EditorView.theme({
       '&': { height: '100%', minHeight: 'inherit', color: 'var(--dl-text)', backgroundColor: 'transparent', fontSize: '0.9rem' },
       '&.cm-focused': { outline: 'none' },
-      '.cm-scroller': { minHeight: 'inherit', fontFamily: '"Cascadia Code", "SFMono-Regular", Consolas, monospace', lineHeight: '1.72', overscrollBehavior: 'contain' },
+      '.cm-scroller': { minHeight: 'inherit', fontFamily: '"Cascadia Code", "SFMono-Regular", Consolas, monospace', lineHeight: '1.72', overscrollBehavior: 'auto' },
       '.cm-content': { padding: '1rem 0.9rem 4rem', caretColor: '#ffe08a' },
       '.cm-line': { padding: '0 0.5rem' },
       '.cm-gutters': { color: 'var(--dl-text-faint)', backgroundColor: 'rgba(3, 12, 8, .32)', borderRight: '1px solid var(--dl-border)' },

@@ -313,7 +313,7 @@
 .dl-mdx__preview-pane {
   max-height: var(--dl-mdx-preview-max-height);
   overflow: auto;
-  overscroll-behavior: contain;
+  overscroll-behavior: auto;
   scrollbar-color: rgba(255, 215, 80, 0.28) transparent;
   scrollbar-width: thin;
   background: radial-gradient(circle at 80% 0%, rgba(80, 195, 146, 0.045), transparent 34%);
