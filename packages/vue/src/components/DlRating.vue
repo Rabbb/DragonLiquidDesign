@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<{
 }>(), { modelValue: 0, length: 5, step: 1, clearable: true, hoverable: true, disabled: false, readonly: false, size: 'md', name: undefined })
 const emit = defineEmits<{ 'update:modelValue': [value: number] }>()
 
+const ratingStarPoints = '50,4 61.76,33.82 93.75,35.78 69.02,56.18 77.04,87.22 50,70 22.96,87.22 30.98,56.18 6.25,35.78 38.24,33.82'
 const ratingSegments = [
   '50,50 30.98,56.18 6.25,35.78 38.24,33.82',
   '50,50 50,70 22.96,87.22 30.98,56.18',
@@ -53,7 +54,7 @@ function updateRating(value: number) {
   <RatingRoot v-slot="{ items }" data-dl data-slot="rating" :model-value="modelValue" :length="length" :step="step" :clearable="clearable" :hoverable="hoverable && !readonly" :disabled="disabled || readonly" :aria-readonly="readonly || undefined" :name="name" class="flex w-fit select-none items-center gap-1" @mouseleave="clearPreview" @focusout="clearPreview" @update:model-value="updateRating">
     <RatingItem v-for="item in items" :key="item" v-slot="{ steps }" :item="item" :class="['relative grid place-items-center text-slate-600 transition focus-within:[filter:drop-shadow(0_0_6px_rgba(255,215,0,.7))]', !disabled && !readonly && 'hover:scale-110', disabled && 'opacity-40', size === 'sm' ? 'size-6 text-xl' : size === 'lg' ? 'size-10 text-4xl' : 'size-8 text-3xl']">
       <svg class="pointer-events-none size-full overflow-visible [filter:drop-shadow(0_0_5px_rgba(255,193,7,.22))]" viewBox="0 0 100 100" aria-hidden="true">
-        <polygon v-for="segment in ratingSegments" :key="`base-${segment}`" :points="segment" class="fill-slate-600 stroke-slate-950/25" stroke-width="1.4" />
+        <polygon :points="ratingStarPoints" class="fill-slate-600" />
         <polygon
           v-for="(segment, segmentIndex) in ratingSegments"
           :key="`fill-${segment}`"
@@ -61,8 +62,8 @@ function updateRating(value: number) {
           :data-rating-item="item"
           :data-rating-segment-index="segmentIndex"
           :points="segment"
-          class="fill-amber-300 stroke-amber-100/20 transition-opacity duration-100"
-          stroke-width="1.1"
+          class="fill-amber-300 stroke-amber-300 transition-opacity duration-100"
+          stroke-width="1.5"
           :style="{ opacity: segmentOpacity(item, segmentIndex) }"
         />
       </svg>
