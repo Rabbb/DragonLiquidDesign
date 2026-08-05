@@ -7,6 +7,7 @@ import DlToast from './DlToast.vue'
 import DlTooltip from './DlTooltip.vue'
 import DlHoverCard from './DlHoverCard.vue'
 import DlDialog from './DlDialog.vue'
+import DlAutocomplete from './DlAutocomplete.vue'
 
 class ResizeObserverMock {
   observe() {}
@@ -14,6 +15,7 @@ class ResizeObserverMock {
   disconnect() {}
 }
 globalThis.ResizeObserver = ResizeObserverMock
+HTMLElement.prototype.scrollIntoView = () => {}
 
 const wrappers: ReturnType<typeof mount>[] = []
 
@@ -29,6 +31,20 @@ function mountOverlay(...parameters: Parameters<typeof mount>) {
 }
 
 describe('ported overlay presentation', () => {
+  it('aligns the autocomplete surface to the anchor start edge and width', async () => {
+    mountOverlay(DlAutocomplete, {
+      attachTo: document.body,
+      props: { open: true, modelValue: '', suggestions: ['异世界冒险', '异世界日常'] },
+    })
+    await nextTick()
+
+    const content = document.body.querySelector<HTMLElement>('[data-dl-layer="select"]')
+    expect(content).not.toBeNull()
+    expect(content?.dataset.align).toBe('start')
+    expect(content?.classList).toContain('w-[var(--reka-combobox-trigger-width)]')
+    expect(content?.classList).not.toContain('min-w-[var(--reka-autocomplete-trigger-width)]')
+  })
+
   it('reacts to dialog size changes on the teleported surface', async () => {
     const wrapper = mountOverlay(DlDialog, {
       attachTo: document.body,

@@ -27,7 +27,7 @@ const heightClass = computed(() => ({ sm: 'min-h-9 text-xs', md: 'min-h-11 text-
       <AutocompleteTrigger class="grid size-7 place-items-center rounded-lg text-xs text-[var(--dl-text-faint)] hover:bg-white/[0.07]" aria-label="显示建议">⌄</AutocompleteTrigger>
     </AutocompleteAnchor>
     <AutocompletePortal>
-      <AutocompleteContent data-dl data-dl-layer="select" :style="{ zIndex: layer }" position="popper" :side-offset="8" class="min-w-[var(--reka-autocomplete-trigger-width)] overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-1.5 text-sm text-[var(--dl-text)] shadow-[0_24px_70px_rgba(0,0,0,.44)] backdrop-blur-2xl">
+      <AutocompleteContent data-dl data-dl-layer="select" :style="{ zIndex: layer }" position="popper" align="start" :side-offset="8" :collision-padding="8" class="box-border w-[var(--reka-combobox-trigger-width)] max-w-[var(--reka-combobox-content-available-width)] overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-1.5 text-sm text-[var(--dl-text)] shadow-[0_24px_70px_rgba(0,0,0,.44)] backdrop-blur-2xl">
         <AutocompleteViewport class="dl-scrollbar max-h-72">
           <AutocompleteEmpty class="px-3 py-6 text-center text-[var(--dl-text-faint)]">没有建议，仍可使用当前输入</AutocompleteEmpty>
           <AutocompleteItem v-for="suggestion in suggestions" :key="suggestion" :value="suggestion" class="relative flex min-h-9 cursor-default items-center rounded-xl py-2 pl-9 pr-3 outline-none data-[highlighted]:bg-white/[0.09] data-[highlighted]:text-amber-100" @select="emit('select', suggestion)">
