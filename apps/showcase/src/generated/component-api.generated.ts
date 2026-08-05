@@ -3329,6 +3329,12 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",

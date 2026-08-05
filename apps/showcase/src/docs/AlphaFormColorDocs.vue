@@ -8,7 +8,7 @@ import { vueSfc, type VueExampleSource } from './exampleCode'
 
 const props = defineProps<{ scenario: string; componentDefinition: ComponentDefinition }>()
 const query = ref('异世界')
-const rating = ref(4)
+const rating = ref(3.5)
 const color = ref('#ff8c00')
 const swatches = ['#ff8c00', '#ffd700', '#32cd32', '#00ced1', '#4169e1', '#9370db', '#ff69b4']
 const suggestions = ['异世界冒险', '异世界日常', '异世界转生', '异世界魔法']
@@ -21,7 +21,7 @@ const currentValue = computed(() => {
 
 const sources: Record<string, VueExampleSource> = {
   autocomplete: { imports: ['DlAutocomplete'], script: `import { ref } from 'vue'\n\nconst keyword = ref('')\nconst suggestions = ['异世界冒险', '异世界日常', '异世界转生']`, template: `  <section class="example">\n    <DlAutocomplete\n      v-model="keyword"\n      :suggestions="suggestions"\n      placeholder="搜索动漫题材"\n      aria-label="动漫题材"\n    />\n    <output>当前文本：{{ keyword || '等待输入' }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; max-width: 480px; }\noutput { color: #a9b9b0; }` },
-  rating: { imports: ['DlRating'], script: `import { ref } from 'vue'\n\nconst score = ref(4)`, template: `  <section class="example">\n    <DlRating v-model="score" :length="5" hoverable clearable aria-label="作品评分" />\n    <output aria-live="polite">当前评分：{{ score }} / 5</output>\n  </section>`, style: `.example { display: grid; gap: 12px; }\noutput { color: #a9b9b0; }` },
+  rating: { imports: ['DlRating'], script: `import { ref } from 'vue'\n\nconst score = ref(3.5)`, template: `  <section class="example">\n    <div class="rating-row">\n      <span>可交互 · 半星步进</span>\n      <DlRating v-model="score" :length="5" :step="0.5" hoverable clearable aria-label="作品评分" />\n    </div>\n    <div class="rating-row">\n      <span>四分之一星 · 4.25</span>\n      <DlRating :model-value="4.25" :step="0.25" readonly aria-label="四点二五星" />\n    </div>\n    <div class="rating-row">\n      <span>十分之一星 · 4.8</span>\n      <DlRating :model-value="4.8" :step="0.1" readonly aria-label="四点八星" />\n    </div>\n    <output aria-live="polite">当前评分：{{ score }} / 5</output>\n  </section>`, style: `.example { display: grid; gap: 16px; }\n.rating-row { display: grid; gap: 6px; }\n.rating-row > span, output { color: #a9b9b0; font-size: 13px; }` },
   'color-area': { imports: ['DlColorArea'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <section class="example">\n    <DlColorArea v-model="color" color-space="hsl" aria-label="主题色饱和度和亮度" />\n    <output>当前颜色：{{ color }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; }\noutput { color: #a9b9b0; }` },
   'color-field': { imports: ['DlColorField'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <section class="example">\n    <DlColorField v-model="color" placeholder="#RRGGBB" aria-label="主题色十六进制值" />\n    <output>当前颜色：{{ color }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; max-width: 360px; }\noutput { color: #a9b9b0; }` },
   'color-slider': { imports: ['DlColorSlider'], script: `import { ref } from 'vue'\n\nconst color = ref('#ff8c00')`, template: `  <section class="example">\n    <DlColorSlider v-model="color" channel="hue" color-space="hsl" aria-label="主题色色相" />\n    <output>当前颜色：{{ color }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; }\noutput { color: #a9b9b0; }` },
@@ -39,7 +39,11 @@ const content = computed(() => ({
   <DocExampleShell v-bind="content">
     <div class="alpha-form-demo">
       <DlAutocomplete v-if="componentDefinition.id === 'autocomplete'" v-model="query" :suggestions="suggestions" placeholder="搜索动漫题材" />
-      <DlRating v-else-if="componentDefinition.id === 'rating'" v-model="rating" />
+      <div v-else-if="componentDefinition.id === 'rating'" class="rating-showcase">
+        <div><span>可交互 · 半星步进</span><DlRating v-model="rating" :step="0.5" aria-label="作品评分" /></div>
+        <div><span>四分之一星 · 4.25</span><DlRating :model-value="4.25" :step="0.25" readonly aria-label="四点二五星" /></div>
+        <div><span>十分之一星 · 4.8</span><DlRating :model-value="4.8" :step="0.1" readonly aria-label="四点八星" /></div>
+      </div>
       <DlColorArea v-else-if="componentDefinition.id === 'color-area'" v-model="color" />
       <DlColorField v-else-if="componentDefinition.id === 'color-field'" v-model="color" />
       <DlColorSlider v-else-if="componentDefinition.id === 'color-slider'" v-model="color" channel="hue" />
@@ -51,5 +55,5 @@ const content = computed(() => ({
 </template>
 
 <style scoped>
-.alpha-form-demo { display: grid; gap: 1.2rem; width: min(100%, 680px); margin: 0 auto; padding: 1rem; }.swatch-row { display: flex; flex-wrap: wrap; gap: .75rem; }.alpha-form-demo output { color: var(--dl-text-faint); font-size: .76rem; }
+.alpha-form-demo { display: grid; gap: 1.2rem; width: min(100%, 680px); margin: 0 auto; padding: 1rem; }.swatch-row { display: flex; flex-wrap: wrap; gap: .75rem; }.rating-showcase { display: grid; gap: 1rem; }.rating-showcase > div { display: grid; gap: .4rem; }.rating-showcase span, .alpha-form-demo output { color: var(--dl-text-faint); font-size: .76rem; }
 </style>

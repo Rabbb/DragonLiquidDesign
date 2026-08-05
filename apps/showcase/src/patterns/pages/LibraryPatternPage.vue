@@ -135,7 +135,7 @@ function handleAction(action: string, item: ArchiveItem) {
             <div class="archive-hover-content"><small>{{ item.studio }}</small><b>{{ item.originalTitle }}</b><p>{{ item.summary }}</p></div>
           </DlHoverCard>
           <p>{{ item.summary }}</p>
-          <div class="archive-card-rating"><DlRating :model-value="item.rating" :step="0.1" size="sm" disabled /><span>{{ item.rating }}</span></div>
+          <div class="archive-card-rating"><DlRating :model-value="item.rating" :step="0.1" size="sm" readonly /><span>{{ item.rating }}</span></div>
           <div class="archive-tags"><span v-for="tag in item.tags" :key="tag">#{{ tag }}</span></div>
           <footer>
             <span>{{ item.watched }} / {{ item.episodes }} 话</span>

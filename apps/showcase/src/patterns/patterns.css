@@ -146,8 +146,8 @@
 .detail-original { margin: 3px 0 18px; color: #82e8cd; font-size: .77rem; letter-spacing: .04em; }
 .detail-summary { max-width: 800px; color: var(--dl-text-muted); line-height: 1.85; }
 .detail-rating { display: flex; align-items: center; gap: 9px; }
-.detail-rating b { color: #ffe49c; font-size: 1.15rem; }
-.detail-rating span { color: var(--dl-text-faint); font-size: .7rem; }
+.detail-rating > b { color: #ffe49c; font-size: 1.15rem; }
+.detail-rating > span { color: var(--dl-text-faint); font-size: .7rem; }
 .detail-layout { display: grid; grid-template-columns: minmax(0,1fr) 330px; gap: 18px; align-items: start; margin-top: 18px; }
 .detail-tab-content { display: grid; gap: 14px; }
 .staff-list { display: grid; gap: 10px; }

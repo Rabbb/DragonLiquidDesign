@@ -69,7 +69,7 @@ function changeProgress(step: number) {
         <DlEditable v-model="draftTitle" activation-mode="dblclick" submit-mode="both" @submit="saveTitle" />
         <p class="detail-original">{{ selectedItem.originalTitle }}</p>
         <p class="detail-summary">{{ selectedItem.summary }}</p>
-        <div class="detail-rating"><DlRating :model-value="selectedItem.rating" :step="0.1" /><b>{{ selectedItem.rating }}</b><span>个人评分</span></div>
+        <div class="detail-rating"><DlRating :model-value="selectedItem.rating" :step="0.1" readonly /><b>{{ selectedItem.rating }}</b><span>个人评分</span></div>
         <div class="pattern-actions">
           <a href="/patterns/editor"><DlButton variant="primary">编辑完整资料</DlButton></a>
           <DlButton variant="secondary" @click="toggleFavorite(selectedItem.id)">{{ favoriteIds.includes(selectedItem.id) ? '取消收藏' : '加入收藏' }}</DlButton>
