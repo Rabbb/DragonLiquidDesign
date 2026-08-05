@@ -295,7 +295,7 @@ function autoTriggerCurrent() {
   const countdownDuration = 1800
   autoTriggeredIds.add(target.id)
   autoTriggerActiveId.value = target.id
-  trigger.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' })
+  scrollElementIntoGuideView(trigger, 'auto')
   createAutoCountdownMarker(trigger, target.component.name, countdownDuration)
   autoClickPrepareTimer = window.setTimeout(() => {
     if (!props.open || !trigger.isConnected || current.value?.id !== target.id) return

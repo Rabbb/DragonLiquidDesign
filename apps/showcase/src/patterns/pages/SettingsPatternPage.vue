@@ -192,7 +192,7 @@ onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleG
             <div class="settings-section">
               <header><small>LOCAL DATA</small><h2>本地数据与保护</h2><p>演示站没有账号和服务器，所有选项只影响浏览器内存。</p></header>
               <div class="settings-field"><DlLabel>本地封面缓存上限（MB）</DlLabel><DlNumberField v-model="cacheLimit" :min="64" :max="2048" :step="64" /></div>
-              <DlCheckbox v-model="protectChanges" label="重要设置需要 PIN 确认" description="展示固定长度敏感输入与设置项之间的联动" />
+              <DlCheckbox v-model="protectChanges" data-guide-opens="pin-input" label="重要设置需要 PIN 确认" description="展示固定长度敏感输入与设置项之间的联动" />
               <div v-if="protectChanges" class="settings-field"><DlLabel>设置四位本地 PIN</DlLabel><DlPinInput v-model="pin" :length="4" mask /></div>
               <DlSeparator label="危险区域" />
               <DlCard class="danger-setting" padding="md"><div><b>恢复全部默认设置</b><span>重置当前演示会话中的界面偏好</span></div><DlButton variant="danger" data-guide-opens="alert-dialog" @click="resetOpen = true">恢复默认</DlButton></DlCard>
