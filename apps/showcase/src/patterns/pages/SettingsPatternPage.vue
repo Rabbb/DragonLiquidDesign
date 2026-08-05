@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue'
+import { onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import {
   CalendarDate,
   Time,
@@ -64,6 +64,29 @@ const tabs: DlTabItem[] = [
   { value: 'schedule', label: '日期与归档' },
   { value: 'privacy', label: '本地数据' },
 ]
+const componentGuideTabs: Record<string, string> = {
+  'color-area': 'appearance',
+  'color-field': 'appearance',
+  'color-slider': 'appearance',
+  'color-swatch': 'appearance',
+  'color-swatch-picker': 'appearance',
+  'date-picker': 'behavior',
+  'time-field': 'behavior',
+  select: 'behavior',
+  calendar: 'schedule',
+  'date-field': 'schedule',
+  'date-range-field': 'schedule',
+  'date-range-picker': 'schedule',
+  'range-calendar': 'schedule',
+  'time-range-field': 'schedule',
+  'month-picker': 'schedule',
+  'month-range-picker': 'schedule',
+  'year-picker': 'schedule',
+  'year-range-picker': 'schedule',
+  checkbox: 'privacy',
+  'number-field': 'privacy',
+  'pin-input': 'privacy',
+}
 const layoutOptions: DlRadioOption[] = [
   { value: 'grid', label: '卡片网格', description: '适合封面驱动的内容浏览' },
   { value: 'list', label: '紧凑列表', description: '同一屏幕展示更多元数据' },
@@ -97,10 +120,18 @@ function resetSettings() {
   resetOpen.value = false
   notify('已恢复默认设置', '演示状态已经重置。', 'warning')
 }
+
+function handleGuideTabRequest(event: Event) {
+  const value = (event as CustomEvent<{ value?: string }>).detail?.value
+  if (value && tabs.some(item => item.value === value)) tab.value = value
+}
+
+onMounted(() => window.addEventListener('dl-guide-tab-request', handleGuideTabRequest))
+onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleGuideTabRequest))
 </script>
 
 <template>
-  <section class="pattern-view settings-page">
+  <section class="pattern-view settings-page" :data-guide-tabs="JSON.stringify(componentGuideTabs)">
     <div class="demo-page-heading">
       <div><small>PREFERENCE · PERSISTENCE · RESET</small><h1>应用偏好设置</h1><p>持续生效的选择集中管理；即时开关和提交型设置使用不同反馈方式。</p></div>
       <DlBadge tone="accent" variant="outline">LOCAL STATE</DlBadge>
