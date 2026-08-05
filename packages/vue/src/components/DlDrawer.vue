@@ -45,6 +45,7 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
         data-dl
         data-slot="drawer"
         data-dl-layer="modal"
+        data-guide-surface="drawer"
         :style="{ zIndex: contentZIndex }"
         :class="drawerStyles({ placement, size, tone })"
       >
@@ -63,7 +64,7 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
               </div>
             </div>
           </div>
-          <DrawerClose v-if="closable" class="dl-drawer__close" aria-label="关闭">×</DrawerClose>
+          <DrawerClose v-if="closable" data-guide-closes="drawer" class="dl-drawer__close" aria-label="关闭">×</DrawerClose>
         </header>
 
         <div class="dl-drawer__body"><slot /></div>

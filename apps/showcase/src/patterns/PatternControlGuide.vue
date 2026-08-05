@@ -6,8 +6,9 @@ import { componentCatalog, componentCategories, componentRoute, type ComponentDe
 type GuideTarget = {
   id: string
   component: ComponentDefinition
-  element: HTMLElement
+  element?: HTMLElement
   instances: number
+  tabValue?: string
 }
 
 const props = defineProps<{
@@ -27,6 +28,7 @@ const activeTabLabel = ref('')
 const activeTabIndex = ref(-1)
 const tabCount = ref(0)
 const guideTabs = ref<Array<{ index: number; label: string }>>([])
+const autoTriggerActiveId = ref('')
 const categoryById = new Map(componentCategories.map(item => [item.id, item.label]))
 const slotAliases: Record<string, string> = {
   'select-trigger': 'select',
@@ -36,16 +38,33 @@ const slotAliases: Record<string, string> = {
 }
 
 const current = computed(() => activeIndex.value >= 0 ? targets.value[activeIndex.value] : undefined)
-const pendingComponent = computed(() => componentCatalog.find(item => item.id === pendingId.value))
+const pendingComponent = computed(() => current.value?.component ?? componentCatalog.find(item => item.id === pendingId.value))
 const progress = computed(() => current.value && targets.value.length
   ? ((activeIndex.value + 1) / targets.value.length) * 100
   : 0)
+const sectionProgress = computed(() => {
+  const value = current.value?.tabValue
+  if (!value) return undefined
+  const sectionTargets = targets.value.filter(target => target.tabValue === value)
+  const index = sectionTargets.findIndex(target => target.id === current.value?.id)
+  return index >= 0 ? { index: index + 1, total: sectionTargets.length } : undefined
+})
 
 let mutationObserver: MutationObserver | undefined
 let scanTimer = 0
 let tabTimer = 0
 let tabSwitching = false
+let autoClickPrepareTimer = 0
+let autoClickActionTimer = 0
+let autoClickHideTimer = 0
+let autoCountdownInterval = 0
+let autoClickMarker: HTMLElement | undefined
+let guideWasOpen = false
+let lastScannedTabValue = ''
 const searchedTabs = new Set<string>()
+const discoveredTabById = new Map<string, string>()
+const instanceCountById = new Map<string, number>()
+const autoTriggeredIds = new Set<string>()
 
 function normalizeSlot(slot: string) {
   return slotAliases[slot] ?? slot
@@ -69,6 +88,51 @@ function collectElements() {
     && !element.closest('[data-guide-ignore]')
     && isVisible(element)
   ))
+}
+
+function elementComponentIds(element: HTMLElement) {
+  const slot = element.dataset.slot ?? ''
+  return {
+    slot,
+    ids: new Set([
+      normalizeSlot(slot),
+      ...(element.dataset.guideComponent?.split(/\s+/).filter(Boolean) ?? []),
+    ]),
+  }
+}
+
+function guideElementDepth(element: HTMLElement) {
+  let depth = 0
+  let parent = element.parentElement
+  while (parent && !parent.matches('.pattern-view')) {
+    if (parent.matches('[data-dl][data-slot], [data-guide-component]')) depth += 1
+    parent = parent.parentElement
+  }
+  return depth
+}
+
+function compareGuideTargets(a: GuideTarget, b: GuideTarget) {
+  if (!a.element || !b.element) return 0
+  if (a.element === b.element) return 0
+  if (a.element.contains(b.element)) return -1
+  if (b.element.contains(a.element)) return 1
+  const depthDifference = guideElementDepth(a.element) - guideElementDepth(b.element)
+  if (depthDifference) return depthDifference
+  const aRect = a.element.getBoundingClientRect()
+  const bRect = b.element.getBoundingClientRect()
+  if (Math.abs(aRect.top - bRect.top) > 6) return aRect.top - bRect.top
+  if (Math.abs(aRect.left - bRect.left) > 6) return aRect.left - bRect.left
+  return a.element.compareDocumentPosition(b.element) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+}
+
+function guideTabHints() {
+  const host = document.querySelector<HTMLElement>('.pattern-view[data-guide-tabs], .pattern-view [data-guide-tabs]')
+  if (!host?.dataset.guideTabs) return new Map<string, string>()
+  try {
+    return new Map(Object.entries(JSON.parse(host.dataset.guideTabs) as Record<string, string>))
+  } catch {
+    return new Map<string, string>()
+  }
 }
 
 function tabState() {
@@ -98,37 +162,182 @@ function tabValue(trigger: HTMLButtonElement) {
 }
 
 function hintedTabIndex(componentId: string, triggers: HTMLButtonElement[]) {
-  const host = document.querySelector<HTMLElement>('.pattern-view[data-guide-tabs], .pattern-view [data-guide-tabs]')
-  if (!host?.dataset.guideTabs) return -1
-  try {
-    const hints = JSON.parse(host.dataset.guideTabs) as Record<string, string>
-    const value = hints[componentId]
-    if (!value) return -1
-    return triggers.findIndex(trigger => trigger.id.endsWith(`-trigger-${value}`) || trigger.getAttribute('aria-controls')?.endsWith(`-content-${value}`))
-  } catch {
-    return -1
-  }
+  const value = guideTabHints().get(componentId)
+  if (!value) return -1
+  return triggers.findIndex(trigger => trigger.id.endsWith(`-trigger-${value}`) || trigger.getAttribute('aria-controls')?.endsWith(`-content-${value}`))
+}
+
+function scrollElementIntoGuideView(element: HTMLElement, behavior: ScrollBehavior = 'smooth') {
+  const rect = element.getBoundingClientRect()
+  const topSafeArea = 18
+  const bottomSafeArea = 92
+  const visible = rect.top >= topSafeArea && rect.bottom <= window.innerHeight - bottomSafeArea
+  if (!visible) element.scrollIntoView({ behavior, block: 'nearest', inline: 'nearest' })
+  window.setTimeout(updatePosition, visible ? 0 : 260)
 }
 
 function scrollCurrentIntoView() {
-  current.value?.element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
-  window.setTimeout(updatePosition, 260)
+  const element = current.value?.element
+  if (element) scrollElementIntoGuideView(element)
+}
+
+function clearAutoClick() {
+  window.clearTimeout(autoClickPrepareTimer)
+  window.clearTimeout(autoClickActionTimer)
+  window.clearTimeout(autoClickHideTimer)
+  window.clearInterval(autoCountdownInterval)
+  autoClickMarker?.remove()
+  autoClickMarker = undefined
+  autoTriggerActiveId.value = ''
+}
+
+function createAutoCountdownMarker(trigger: HTMLElement, label: string, duration: number) {
+  autoClickMarker?.remove()
+  const marker = document.createElement('span')
+  const wheel = document.createElement('i')
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  const track = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+  const progress = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+  const count = document.createElement('strong')
+  const radius = 29
+  const circumference = 2 * Math.PI * radius
+  marker.dataset.guideIgnore = ''
+  marker.setAttribute('aria-hidden', 'true')
+  Object.assign(marker.style, {
+    position: 'absolute', left: '50%', top: '50%', zIndex: '20', width: '72px', height: '72px',
+    borderRadius: '50%', background: 'rgba(4,22,17,.9)', boxShadow: '0 0 0 7px rgba(255,218,91,.055), 0 0 34px rgba(255,205,54,.3)',
+    transform: 'translate(-50%,-50%)', pointerEvents: 'none', overflow: 'visible',
+  })
+  Object.assign(wheel.style, {
+    position: 'absolute', inset: '-5px', border: '1px dashed rgba(123,235,207,.52)', borderRadius: '50%',
+  })
+  wheel.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: 1200, iterations: Infinity, easing: 'linear' })
+  svg.setAttribute('viewBox', '0 0 72 72')
+  Object.assign(svg.style, { position: 'absolute', inset: '0', width: '72px', height: '72px', transform: 'rotate(-90deg)' })
+  for (const circle of [track, progress]) {
+    circle.setAttribute('cx', '36')
+    circle.setAttribute('cy', '36')
+    circle.setAttribute('r', String(radius))
+    circle.setAttribute('fill', 'none')
+    circle.setAttribute('stroke-width', '5')
+  }
+  track.setAttribute('stroke', 'rgba(255,255,255,.1)')
+  progress.setAttribute('stroke', '#ffe078')
+  progress.setAttribute('stroke-linecap', 'round')
+  progress.setAttribute('stroke-dasharray', String(circumference))
+  progress.setAttribute('stroke-dashoffset', '0')
+  progress.style.filter = 'drop-shadow(0 0 5px rgba(255,215,90,.65))'
+  progress.animate([
+    { strokeDashoffset: '0' },
+    { strokeDashoffset: String(circumference) },
+  ], { duration, easing: 'linear', fill: 'forwards' })
+  count.textContent = '3'
+  count.dataset.guideCountdown = ''
+  Object.assign(count.style, {
+    position: 'absolute', inset: '0', display: 'grid', placeItems: 'center', color: '#fff2bd',
+    fontSize: '1.25rem', fontWeight: '900', fontFamily: '"Cascadia Code", Consolas, monospace', textShadow: '0 0 14px rgba(255,215,90,.45)',
+  })
+  marker.title = `倒计时后自动打开 ${label}`
+  svg.append(track, progress)
+  marker.append(wheel, svg, count)
+  trigger.append(marker)
+  marker.animate([
+    { opacity: 0, transform: 'translate(-50%,-50%) scale(.82)' },
+    { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' },
+  ], { duration: 220, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' })
+  const startedAt = performance.now()
+  autoCountdownInterval = window.setInterval(() => {
+    const remaining = Math.max(1, Math.ceil(3 * (1 - (performance.now() - startedAt) / duration)))
+    count.textContent = String(remaining)
+  }, 100)
+  autoClickMarker = marker
+}
+
+function playAutoClick(trigger: HTMLElement) {
+  window.clearInterval(autoCountdownInterval)
+  const count = autoClickMarker?.querySelector<HTMLElement>('[data-guide-countdown]')
+  if (count) count.textContent = '•'
+  autoClickMarker?.animate([
+    { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' },
+    { opacity: 1, transform: 'translate(-50%,-50%) scale(.72)', offset: .32 },
+    { opacity: 0, transform: 'translate(-50%,-50%) scale(1.5)' },
+  ], { duration: 620, easing: 'cubic-bezier(.16,.84,.24,1)', fill: 'both' })
+  trigger.animate([
+    { transform: 'scale(1)', filter: 'brightness(1)' },
+    { transform: 'scale(.9)', filter: 'brightness(1.5)' },
+    { transform: 'scale(1.04)', filter: 'brightness(1.2)' },
+    { transform: 'scale(1)', filter: 'brightness(1)' },
+  ], { duration: 620, easing: 'cubic-bezier(.2,.8,.2,1)' })
+}
+
+function findAutoTrigger(componentId: string) {
+  return [...document.querySelectorAll<HTMLElement>('.pattern-view [data-guide-opens]')]
+    .find(element => element.dataset.guideOpens?.split(/\s+/).includes(componentId) && isVisible(element))
+}
+
+function closeGuideSurfaces(nextTarget?: GuideTarget) {
+  const nextElement = nextTarget?.element
+  for (const surface of document.querySelectorAll<HTMLElement>('[data-guide-surface]')) {
+    if (nextElement && surface.contains(nextElement)) continue
+    const surfaceIds = surface.dataset.guideSurface?.split(/\s+/).filter(Boolean) ?? []
+    const closer = [...surface.querySelectorAll<HTMLElement>('[data-guide-closes]')]
+      .find(element => element.dataset.guideCloses?.split(/\s+/).some(id => surfaceIds.includes(id)))
+    closer?.click()
+  }
+}
+
+function autoTriggerCurrent() {
+  const target = current.value
+  if (!props.open || !target || target.element || tabSwitching || autoTriggeredIds.has(target.id)) return
+  const trigger = findAutoTrigger(target.id)
+  if (!trigger) return
+
+  const countdownDuration = 1800
+  autoTriggeredIds.add(target.id)
+  autoTriggerActiveId.value = target.id
+  trigger.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' })
+  createAutoCountdownMarker(trigger, target.component.name, countdownDuration)
+  autoClickPrepareTimer = window.setTimeout(() => {
+    if (!props.open || !trigger.isConnected || current.value?.id !== target.id) return
+    playAutoClick(trigger)
+    autoClickActionTimer = window.setTimeout(() => trigger.click(), 260)
+    autoClickHideTimer = window.setTimeout(() => {
+      autoClickMarker?.remove()
+      autoClickMarker = undefined
+      if (current.value?.id === target.id && !current.value.element) autoTriggerActiveId.value = ''
+    }, 900)
+  }, countdownDuration)
 }
 
 function activateTab(index: number, targetPosition: 'first' | 'last' | 'pending') {
   const state = tabState()
   const trigger = state.triggers[index]
   if (!trigger) return false
+  const targetTabValue = tabValue(trigger)
+  if (targetPosition !== 'pending') {
+    const tabTargets = targets.value.filter(target => target.tabValue === targetTabValue)
+    closeGuideSurfaces(targetPosition === 'first' ? tabTargets[0] : tabTargets[tabTargets.length - 1])
+  }
   tabSwitching = true
-  window.dispatchEvent(new CustomEvent('dl-guide-tab-request', { detail: { value: tabValue(trigger) } }))
+  activeTabIndex.value = index
+  activeTabLabel.value = trigger.textContent?.trim() ?? ''
+  window.dispatchEvent(new CustomEvent('dl-guide-tab-request', { detail: { value: targetTabValue } }))
   trigger.click()
   window.clearTimeout(tabTimer)
   tabTimer = window.setTimeout(() => {
     tabSwitching = false
     scanTargets(false)
     if (targetPosition !== 'pending' && targets.value.length) {
-      activeIndex.value = targetPosition === 'first' ? 0 : targets.value.length - 1
-      nextTick(scrollCurrentIntoView)
+      const matchingIndices = targets.value
+        .map((target, targetIndex) => target.tabValue === targetTabValue ? targetIndex : -1)
+        .filter(targetIndex => targetIndex >= 0)
+      activeIndex.value = matchingIndices.length
+        ? targetPosition === 'first' ? matchingIndices[0] : matchingIndices[matchingIndices.length - 1]
+        : targetPosition === 'first' ? 0 : targets.value.length - 1
+      nextTick(() => {
+        scrollCurrentIntoView()
+        autoTriggerCurrent()
+      })
     }
   }, 110)
   return true
@@ -150,16 +359,12 @@ function searchPendingInTabs() {
 
 function scanTargets(scrollToTarget = false) {
   if (!props.open) return
-  tabState()
+  const state = tabState()
   const previousId = current.value?.id
   const grouped = new Map<string, HTMLElement[]>()
 
   for (const element of collectElements()) {
-    const slot = element.dataset.slot ?? ''
-    const ids = new Set([
-      normalizeSlot(slot),
-      ...(element.dataset.guideComponent?.split(/\s+/).filter(Boolean) ?? []),
-    ])
+    const { slot, ids } = elementComponentIds(element)
     for (const id of ids) {
       if (!componentCatalog.some(component => component.id === id)) continue
       const group = grouped.get(id) ?? []
@@ -169,14 +374,65 @@ function scanTargets(scrollToTarget = false) {
     }
   }
 
-  targets.value = [...grouped.entries()].flatMap(([id, elements]) => {
-    const component = componentCatalog.find(item => item.id === id)
-    return component ? [{ id, component, element: elements[0], instances: elements.length }] : []
-  })
+  const declaredHints = guideTabHints()
+  const currentTabValue = state.index >= 0 ? tabValue(state.triggers[state.index]) : ''
+  const aggregateTabs = state.triggers.length > 1 && declaredHints.size > 0
+  const manuallyChangedTab = aggregateTabs
+    && Boolean(lastScannedTabValue)
+    && currentTabValue !== lastScannedTabValue
+    && !tabSwitching
+
+  if (aggregateTabs) {
+    for (const [id, elements] of grouped) {
+      if (declaredHints.has(id) || discoveredTabById.has(id)) continue
+      const hasPanelElement = elements.some(element => Boolean(element.closest('[role="tabpanel"]')))
+      const hasExternalElement = elements.some(element => !element.closest('[role="tabpanel"]') && !element.closest('[data-dl-layer]'))
+      if (currentTabValue && hasPanelElement && !hasExternalElement) {
+        discoveredTabById.set(id, currentTabValue)
+      }
+    }
+
+    const resolvedHints = new Map([...declaredHints, ...discoveredTabById])
+    const externalTargets = [...grouped.entries()].flatMap(([id, elements]) => {
+      if (resolvedHints.has(id)) return []
+      const externalElements = elements.filter(element => !element.closest('[role="tabpanel"]') && !element.closest('[data-dl-layer]'))
+      const component = componentCatalog.find(item => item.id === id)
+      return component && externalElements.length
+        ? [{ id, component, element: externalElements[0], instances: externalElements.length }]
+        : []
+    }).sort(compareGuideTargets)
+    const hintedTargets = [...resolvedHints.entries()].flatMap(([id, targetTab]) => {
+      const component = componentCatalog.find(item => item.id === id)
+      if (!component) return []
+      const elements = currentTabValue === targetTab
+        ? (grouped.get(id) ?? []).filter(element => Boolean(element.closest('[role="tabpanel"]') || element.closest('[data-dl-layer]')))
+        : []
+      if (elements.length) instanceCountById.set(id, elements.length)
+      return [{
+        id,
+        component,
+        element: elements[0],
+        instances: instanceCountById.get(id) ?? 0,
+        tabValue: targetTab,
+      }]
+    })
+    targets.value = [...externalTargets, ...hintedTargets]
+  } else {
+    targets.value = [...grouped.entries()].flatMap(([id, elements]) => {
+      const component = componentCatalog.find(item => item.id === id)
+      return component ? [{ id, component, element: elements[0], instances: elements.length }] : []
+    }).sort(compareGuideTargets)
+  }
 
   const desiredId = pendingId.value || previousId
   const desiredIndex = desiredId ? targets.value.findIndex(item => item.id === desiredId) : -1
-  if (desiredIndex >= 0) {
+  const manualTabStartIndex = manuallyChangedTab
+    ? targets.value.findIndex(target => target.tabValue === currentTabValue)
+    : -1
+  if (manualTabStartIndex >= 0) {
+    activeIndex.value = manualTabStartIndex
+    pendingId.value = ''
+  } else if (desiredIndex >= 0) {
     activeIndex.value = desiredIndex
     pendingId.value = ''
   } else if (pendingId.value) {
@@ -184,12 +440,32 @@ function scanTargets(scrollToTarget = false) {
   } else {
     activeIndex.value = Math.min(Math.max(activeIndex.value, 0), targets.value.length - 1)
   }
+  lastScannedTabValue = aggregateTabs ? currentTabValue : ''
+  const selectedTarget = current.value
+  if (selectedTarget?.element && autoTriggerActiveId.value === selectedTarget.id) {
+    clearAutoClick()
+  } else if (!selectedTarget?.element && (!selectedTarget?.tabValue || selectedTarget.tabValue === currentTabValue) && !tabSwitching) {
+    autoTriggerCurrent()
+  }
 
   nextTick(() => {
-    if (scrollToTarget && current.value) current.value.element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
-    window.setTimeout(updatePosition, scrollToTarget ? 260 : 0)
+    const target = current.value
+    if (target?.tabValue && target.tabValue !== currentTabValue && !tabSwitching) {
+      const targetTabIndex = state.triggers.findIndex(trigger => tabValue(trigger) === target.tabValue)
+      if (targetTabIndex >= 0) activateTab(targetTabIndex, 'pending')
+      return
+    }
+    if (!target?.element) {
+      autoTriggerCurrent()
+      return
+    }
+    if (scrollToTarget && target?.element) {
+      scrollElementIntoGuideView(target.element)
+      return
+    }
+    window.setTimeout(updatePosition, 0)
   })
-  if (pendingId.value && desiredIndex < 0) window.setTimeout(searchPendingInTabs, 0)
+  if (pendingId.value && desiredIndex < 0 && !aggregateTabs) window.setTimeout(searchPendingInTabs, 0)
 }
 
 function scheduleScan() {
@@ -199,7 +475,8 @@ function scheduleScan() {
 
 function updatePosition() {
   const target = current.value?.element
-  if (!target?.isConnected) {
+  if (!target) return
+  if (!target.isConnected) {
     if (props.open) scheduleScan()
     return
   }
@@ -242,13 +519,28 @@ function updatePosition() {
 
 function goTo(index: number) {
   if (!targets.value.length) return
+  const nextIndex = (index + targets.value.length) % targets.value.length
+  const nextTarget = targets.value[nextIndex]
+  closeGuideSurfaces(nextTarget)
+  const previousId = current.value?.id
+  clearAutoClick()
+  if (previousId) autoTriggeredIds.delete(previousId)
   pendingId.value = ''
   searchedTabs.clear()
-  if (index >= targets.value.length && switchGuideTab(1)) return
-  if (index < 0 && switchGuideTab(-1)) return
-  activeIndex.value = (index + targets.value.length) % targets.value.length
+  activeIndex.value = nextIndex
+  const target = current.value
+  const state = tabState()
+  const currentTabValue = state.index >= 0 ? tabValue(state.triggers[state.index]) : ''
+  if (target?.tabValue && target.tabValue !== currentTabValue) {
+    const targetTabIndex = state.triggers.findIndex(trigger => tabValue(trigger) === target.tabValue)
+    if (targetTabIndex >= 0) {
+      activateTab(targetTabIndex, 'pending')
+      return
+    }
+  }
   nextTick(() => {
     scrollCurrentIntoView()
+    autoTriggerCurrent()
   })
 }
 
@@ -276,14 +568,25 @@ function handleKeydown(event: KeyboardEvent) {
 
 function startGuide() {
   searchedTabs.clear()
+  discoveredTabById.clear()
+  instanceCountById.clear()
+  autoTriggeredIds.clear()
+  lastScannedTabValue = ''
+  clearAutoClick()
   pendingId.value = props.initialComponentId ?? ''
   activeIndex.value = -1
   scanTargets(true)
 }
 
 watch(() => [props.open, props.pageKey, props.initialComponentId] as const, ([open]) => {
-  if (open) nextTick(startGuide)
+  if (open) {
+    guideWasOpen = true
+    nextTick(startGuide)
+  }
   else {
+    if (guideWasOpen) closeGuideSurfaces()
+    guideWasOpen = false
+    clearAutoClick()
     targets.value = []
     activeIndex.value = -1
     pendingId.value = ''
@@ -307,6 +610,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.clearTimeout(scanTimer)
   window.clearTimeout(tabTimer)
+  clearAutoClick()
   mutationObserver?.disconnect()
   window.removeEventListener('resize', updatePosition)
   window.removeEventListener('scroll', updatePosition, true)
@@ -317,12 +621,12 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
     <div v-if="open" class="dl-control-guide" data-guide-ignore>
-      <div v-if="current" class="dl-control-guide__target" :style="targetStyle">
+      <div v-if="current?.element" class="dl-control-guide__target" :style="targetStyle">
         <span>{{ activeIndex + 1 }}</span>
       </div>
 
       <aside
-        v-if="current"
+        v-if="current?.element"
         class="dl-control-guide__popover"
         :data-placement="placement"
         :style="bubbleStyle"
@@ -337,8 +641,8 @@ onBeforeUnmount(() => {
         <div class="dl-control-guide__badges">
           <DlBadge :tone="toneFor(current.component)" variant="outline" size="sm">{{ current.component.maturity }}</DlBadge>
           <DlBadge tone="muted" variant="outline" size="sm">{{ categoryById.get(current.component.category) }}</DlBadge>
-          <span>本页 {{ current.instances }} 个实例</span>
-          <span v-if="activeTabLabel">Tab：{{ activeTabLabel }}</span>
+          <span>当前分区 {{ current.instances }} 个实例</span>
+          <span>{{ current.tabValue ? `Tab：${activeTabLabel}` : '公共区域' }}</span>
         </div>
         <nav v-if="guideTabs.length > 1" class="dl-control-guide__tabs" aria-label="导览页面分区">
           <button
@@ -360,24 +664,51 @@ onBeforeUnmount(() => {
           <a :href="componentRoute(current.id, current.component.scenarios[0].id)"><DlButton variant="primary" size="sm">案例与 API</DlButton></a>
           <DlButton variant="secondary" size="sm" @click="goTo(activeIndex + 1)">下一个 →</DlButton>
         </footer>
-        <small class="dl-control-guide__count">{{ activeIndex + 1 }} / {{ targets.length }} · 到达边界后自动切换 Tab</small>
+        <small class="dl-control-guide__count">
+          全局 {{ activeIndex + 1 }} / {{ targets.length }}
+          <template v-if="sectionProgress"> · 本 Tab {{ sectionProgress.index }} / {{ sectionProgress.total }}</template>
+          · 由外而内、由上到下
+        </small>
       </aside>
 
-      <aside v-else class="dl-control-guide__popover dl-control-guide__popover--waiting" role="status" aria-live="polite">
+      <aside v-else-if="!autoTriggerActiveId" class="dl-control-guide__popover dl-control-guide__popover--waiting" role="status" aria-live="polite">
         <header>
           <div><small>DYNAMIC COMPONENT POPOVER</small><b>{{ pendingComponent?.name ?? '等待控件渲染' }}</b></div>
           <button type="button" aria-label="关闭控件导览" @click="emit('update:open', false)">×</button>
         </header>
+        <nav v-if="guideTabs.length > 1" class="dl-control-guide__tabs" aria-label="导览页面分区">
+          <button
+            v-for="tabItem in guideTabs"
+            :key="tabItem.index"
+            type="button"
+            :class="{ active: tabItem.index === activeTabIndex }"
+            :aria-current="tabItem.index === activeTabIndex ? 'page' : undefined"
+            @click="activateTab(tabItem.index, 'first')"
+          >
+            {{ tabItem.label }}
+          </button>
+        </nav>
         <p v-if="pendingComponent">{{ pendingComponent.summary }}</p>
-        <p>这个控件目前尚未挂载。请在页面中触发相应操作；控件出现后，导览泡泡会自动定位。</p>
+        <p>这个控件属于整页导览队列，但目前尚未挂载。请触发相应的折叠区或条件选项；控件出现后，导览泡泡会自动定位。</p>
         <footer>
-          <DlButton variant="secondary" size="sm" @click="pendingId = ''; scanTargets(true)">先看当前控件</DlButton>
+          <DlButton variant="secondary" size="sm" @click="goTo(activeIndex - 1)">← 上一个</DlButton>
           <DlButton variant="primary" size="sm" @click="scanTargets(false)">重新扫描</DlButton>
+          <DlButton variant="secondary" size="sm" @click="goTo(activeIndex + 1)">下一个 →</DlButton>
         </footer>
+        <small v-if="current" class="dl-control-guide__count">
+          全局 {{ activeIndex + 1 }} / {{ targets.length }}
+          <template v-if="sectionProgress"> · 本 Tab {{ sectionProgress.index }} / {{ sectionProgress.total }}</template>
+          · 可跳过尚未挂载的控件
+        </small>
       </aside>
 
       <div class="dl-control-guide__dock">
-        <span><b>控件导览</b>{{ targets.length }} 种可见控件<small v-if="activeTabLabel">{{ activeTabLabel }} {{ activeTabIndex + 1 }}/{{ tabCount }}</small></span>
+        <span>
+          <b>控件导览</b>{{ targets.length }} 种整页控件
+          <small v-if="current?.tabValue && sectionProgress">{{ activeTabLabel }} · 全局 {{ activeIndex + 1 }}/{{ targets.length }} · 分区 {{ sectionProgress.index }}/{{ sectionProgress.total }}</small>
+          <small v-else-if="current">公共区域 · 全局 {{ activeIndex + 1 }}/{{ targets.length }}</small>
+          <small v-else-if="activeTabLabel">{{ activeTabLabel }} {{ activeTabIndex + 1 }}/{{ tabCount }}</small>
+        </span>
         <button v-if="tabCount > 1" type="button" @click="switchGuideTab(1)">下一 Tab</button>
         <button type="button" @click="scanTargets(false)">重新扫描</button>
         <button type="button" @click="emit('update:open', false)">退出 ESC</button>
@@ -416,7 +747,7 @@ onBeforeUnmount(() => {
 .dl-control-guide__count { color: var(--dl-text-faint); font-size: .58rem; text-align: center; }
 .dl-control-guide__popover--waiting { top: 50%; left: 50%; width: min(390px, calc(100vw - 24px)); transform: translate(-50%,-50%); }
 .dl-control-guide__popover--waiting::before { display: none; }
-.dl-control-guide__popover--waiting > footer { grid-template-columns: 1fr 1fr; }
+.dl-control-guide__popover--waiting > footer { grid-template-columns: 1fr auto 1fr; }
 .dl-control-guide__dock { position: fixed; right: 18px; bottom: 18px; display: flex; align-items: center; gap: 6px; padding: 7px; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: rgba(3,18,15,.93); box-shadow: 0 16px 48px rgba(0,0,0,.4); backdrop-filter: blur(18px); pointer-events: auto; }
 .dl-control-guide__dock span { display: grid; gap: 1px; padding: 0 8px; color: var(--dl-text-faint); font-size: .57rem; }
 .dl-control-guide__dock span b { color: #fff; font-size: .66rem; }

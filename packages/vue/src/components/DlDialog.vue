@@ -51,6 +51,7 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
         data-dl
         data-slot="dialog"
         data-dl-layer="modal"
+        data-guide-surface="dialog"
         :data-size="size"
         :style="{ zIndex: contentZIndex }"
         :class="dialogStyles({ size, tone })"
@@ -62,6 +63,7 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
           </div>
           <DialogClose
             v-if="closable"
+            data-guide-closes="dialog"
             class="dl-dialog__close"
             aria-label="关闭"
           >

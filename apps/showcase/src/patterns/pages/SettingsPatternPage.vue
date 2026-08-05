@@ -65,27 +65,33 @@ const tabs: DlTabItem[] = [
   { value: 'privacy', label: '本地数据' },
 ]
 const componentGuideTabs: Record<string, string> = {
-  'color-area': 'appearance',
+  label: 'appearance',
+  'radio-group': 'appearance',
+  separator: 'appearance',
+  'color-swatch-picker': 'appearance',
   'color-field': 'appearance',
+  collapsible: 'appearance',
+  switch: 'appearance',
+  'color-area': 'appearance',
   'color-slider': 'appearance',
   'color-swatch': 'appearance',
-  'color-swatch-picker': 'appearance',
   'date-picker': 'behavior',
   'time-field': 'behavior',
   select: 'behavior',
-  calendar: 'schedule',
   'date-field': 'schedule',
-  'date-range-field': 'schedule',
-  'date-range-picker': 'schedule',
-  'range-calendar': 'schedule',
   'time-range-field': 'schedule',
+  'date-range-picker': 'schedule',
+  'date-range-field': 'schedule',
+  calendar: 'schedule',
+  'range-calendar': 'schedule',
   'month-picker': 'schedule',
   'month-range-picker': 'schedule',
   'year-picker': 'schedule',
   'year-range-picker': 'schedule',
-  checkbox: 'privacy',
   'number-field': 'privacy',
+  checkbox: 'privacy',
   'pin-input': 'privacy',
+  'alert-dialog': 'privacy',
 }
 const layoutOptions: DlRadioOption[] = [
   { value: 'grid', label: '卡片网格', description: '适合封面驱动的内容浏览' },
@@ -189,7 +195,7 @@ onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleG
               <DlCheckbox v-model="protectChanges" label="重要设置需要 PIN 确认" description="展示固定长度敏感输入与设置项之间的联动" />
               <div v-if="protectChanges" class="settings-field"><DlLabel>设置四位本地 PIN</DlLabel><DlPinInput v-model="pin" :length="4" mask /></div>
               <DlSeparator label="危险区域" />
-              <DlCard class="danger-setting" padding="md"><div><b>恢复全部默认设置</b><span>重置当前演示会话中的界面偏好</span></div><DlButton variant="danger" @click="resetOpen = true">恢复默认</DlButton></DlCard>
+              <DlCard class="danger-setting" padding="md"><div><b>恢复全部默认设置</b><span>重置当前演示会话中的界面偏好</span></div><DlButton variant="danger" data-guide-opens="alert-dialog" @click="resetOpen = true">恢复默认</DlButton></DlCard>
             </div>
           </template>
         </DlTabs>
