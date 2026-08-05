@@ -158,7 +158,8 @@ const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
   'hover-card': { basic: 'library', 'creator-profile': 'detail', 'episode-progress': 'detail' },
   popover: {
     basic: 'feedback', 'tone-gallery': 'feedback', 'application-flow': 'create', 'nested-composition': 'feedback',
-    'saved-summary': 'feedback', 'sync-warning': 'feedback', 'remove-action': 'feedback', 'metadata-note': 'detail',
+    arrowless: 'feedback', 'saved-summary': 'feedback', 'sync-warning': 'feedback', 'remove-action': 'feedback',
+    'metadata-note': 'detail',
   },
   progress: {
     basic: 'feedback', 'tone-gallery': 'feedback', 'application-flow': 'import', 'nested-composition': 'feedback',
@@ -170,7 +171,7 @@ const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
   },
   tooltip: {
     basic: 'feedback', 'tone-gallery': 'feedback', 'application-flow': 'library', 'nested-composition': 'feedback',
-    'secondary-hint': 'feedback',
+    arrowless: 'feedback', 'secondary-hint': 'feedback',
   },
   mdx: {
     basic: 'editor', 'archive-document': 'editor', 'component-blocks': 'editor', 'official-foundation': 'editor',

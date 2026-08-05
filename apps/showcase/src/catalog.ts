@@ -217,7 +217,8 @@ const readyComponents: ComponentDefinition[] = [
     summary: '通过触发器在 Portal 中展示富内容。',
     scenarios: [
       { id: 'basic', label: '通用案例', summary: '定位、标题与关闭操作' },
-      { id: 'tone-gallery', label: '全部色调', summary: '交互预览六种 DlTone 语义色调' },
+      { id: 'tone-gallery', label: '全部色调', summary: '交互预览七种 DlPopoverTone 色调，包含低调表面' },
+      { id: 'arrowless', label: '无箭头贴边', summary: '隐藏指向箭头并自动取消触发器间距' },
       { id: 'application-flow', label: '快捷编辑', summary: '不离开页面完成小型任务' },
       { id: 'nested-composition', label: '对话框内浮层', summary: '验证嵌套 Portal 层级' },
       { id: 'saved-summary', label: '保存结果', summary: '展示已成功保存的内容摘要' },
@@ -262,6 +263,7 @@ const readyComponents: ComponentDefinition[] = [
     scenarios: [
       { id: 'basic', label: '通用案例', summary: '方位、延迟与富文本' },
       { id: 'tone-gallery', label: '全部色调', summary: '悬停预览六种 DlTone 语义色调' },
+      { id: 'arrowless', label: '无箭头提示', summary: '隐藏箭头并自动取消默认间距' },
       { id: 'application-flow', label: '图标操作', summary: '为紧凑按钮补充名称' },
       { id: 'nested-composition', label: '浮层内提示', summary: '验证嵌套 Portal 层级' },
       { id: 'secondary-hint', label: '次要提示', summary: '弱化快捷键与辅助元数据' },

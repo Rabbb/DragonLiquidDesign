@@ -1,0 +1,17 @@
+.dl-popover.dl-date-picker-panel {
+  width: auto;
+  gap: 0;
+  padding: 12px;
+}
+
+.dl-date-picker-panel .dl-popover__body {
+  line-height: normal;
+}
+
+.dl-date-picker-panel [data-slot='calendar'],
+.dl-date-picker-panel [data-slot='range-calendar'] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}

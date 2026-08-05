@@ -9,6 +9,11 @@ const toneVariants = {
   muted: 'dl-tone-muted',
 } as const
 
+const popoverToneVariants = {
+  ...toneVariants,
+  subtle: 'dl-tone-subtle',
+} as const
+
 export const dialogStyles = tv({
   base: 'dl-dialog',
   variants: {
@@ -43,7 +48,7 @@ export const tooltipStyles = tv({
 
 export const popoverStyles = tv({
   base: 'dl-popover',
-  variants: { tone: toneVariants },
+  variants: { tone: popoverToneVariants },
   defaultVariants: { tone: 'default' },
 })
 

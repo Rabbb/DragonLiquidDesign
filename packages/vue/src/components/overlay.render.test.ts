@@ -8,6 +8,8 @@ import DlTooltip from './DlTooltip.vue'
 import DlHoverCard from './DlHoverCard.vue'
 import DlDialog from './DlDialog.vue'
 import DlAutocomplete from './DlAutocomplete.vue'
+import DlDatePicker from './DlDatePicker.vue'
+import DlDateRangePicker from './DlDateRangePicker.vue'
 
 class ResizeObserverMock {
   observe() {}
@@ -31,6 +33,42 @@ function mountOverlay(...parameters: Parameters<typeof mount>) {
 }
 
 describe('ported overlay presentation', () => {
+  it('renders a compact date picker panel without the unused header controls', async () => {
+    mountOverlay(DlDatePicker, {
+      attachTo: document.body,
+      props: { open: true },
+    })
+    await nextTick()
+
+    const panel = document.body.querySelector<HTMLElement>('.dl-date-picker-panel')
+    expect(panel).not.toBeNull()
+    expect(panel?.classList.contains('dl-tone-subtle')).toBe(true)
+    expect(panel?.dataset.arrow).toBe('hidden')
+    expect(panel?.dataset.sideOffset).toBe('0')
+    expect(panel?.querySelector('.dl-popover__arrow')).toBeNull()
+    expect(panel?.querySelector('[data-slot="calendar"]')).not.toBeNull()
+    expect(panel?.querySelector('.dl-popover__header')).toBeNull()
+    expect(panel?.querySelector('.dl-popover__close')).toBeNull()
+  })
+
+  it('uses the same compact panel for the date range picker', async () => {
+    mountOverlay(DlDateRangePicker, {
+      attachTo: document.body,
+      props: { open: true },
+    })
+    await nextTick()
+
+    const panel = document.body.querySelector<HTMLElement>('.dl-date-picker-panel')
+    expect(panel).not.toBeNull()
+    expect(panel?.classList.contains('dl-tone-subtle')).toBe(true)
+    expect(panel?.dataset.arrow).toBe('hidden')
+    expect(panel?.dataset.sideOffset).toBe('0')
+    expect(panel?.querySelector('.dl-popover__arrow')).toBeNull()
+    expect(panel?.querySelector('[data-slot="range-calendar"]')).not.toBeNull()
+    expect(panel?.querySelector('.dl-popover__header')).toBeNull()
+    expect(panel?.querySelector('.dl-popover__close')).toBeNull()
+  })
+
   it('aligns the autocomplete surface to the anchor start edge and width', async () => {
     mountOverlay(DlAutocomplete, {
       attachTo: document.body,
@@ -77,6 +115,24 @@ describe('ported overlay presentation', () => {
     const content = document.body.querySelector<HTMLElement>('[data-slot="popover-content"]')
     expect(content).not.toBeNull()
     expect(content?.classList).toContain('dl-popover')
+    expect(content?.dataset.arrow).toBe('visible')
+    expect(content?.dataset.sideOffset).toBe('6')
+    const arrow = content?.querySelector<HTMLElement>('.dl-popover__arrow')
+    expect(arrow?.tagName).toBe('SPAN')
+  })
+
+  it('removes the popover arrow and trigger gap together', async () => {
+    mountOverlay(DlPopover, {
+      attachTo: document.body,
+      props: { open: true, arrow: false },
+      slots: { trigger: '<button>打开</button>', default: '贴近触发器的内容' },
+    })
+    await nextTick()
+
+    const content = document.body.querySelector<HTMLElement>('[data-slot="popover-content"]')
+    expect(content?.dataset.arrow).toBe('hidden')
+    expect(content?.dataset.sideOffset).toBe('0')
+    expect(content?.querySelector('.dl-popover__arrow')).toBeNull()
   })
 
   it('renders the toast in its viewport with the migrated class', async () => {
@@ -108,6 +164,22 @@ describe('ported overlay presentation', () => {
     const tooltip = document.body.querySelector<HTMLElement>('[data-slot="tooltip-content"]')
     expect(tooltip).not.toBeNull()
     expect(tooltip?.classList).toContain('dl-tooltip')
+    expect(tooltip?.dataset.arrow).toBe('visible')
+    expect(tooltip?.dataset.sideOffset).toBe('4')
+  })
+
+  it('removes the tooltip arrow and its default gap together', async () => {
+    mountOverlay(DlTooltip, {
+      attachTo: document.body,
+      props: { open: true, text: '无箭头提示', arrow: false },
+      slots: { default: '<button>查看提示</button>' },
+    })
+    await nextTick()
+
+    const tooltip = document.body.querySelector<HTMLElement>('[data-slot="tooltip-content"]')
+    expect(tooltip?.dataset.arrow).toBe('hidden')
+    expect(tooltip?.dataset.sideOffset).toBe('0')
+    expect(tooltip?.querySelector('.dl-tooltip__arrow')).toBeNull()
   })
 
   it('shows the hover card through its portal with the migrated class', async () => {

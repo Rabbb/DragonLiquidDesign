@@ -15,6 +15,7 @@ import {
   DlTabs,
   DlTooltip,
   type DlAccordionItem,
+  type DlPopoverTone,
   type DlTabItem,
   type DlTone,
 } from '@dragon-liquid/vue'
@@ -37,6 +38,10 @@ const toneOptions: { value: DlTone; label: string; description: string }[] = [
   { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
   { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
   { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+]
+const popoverToneOptions: { value: DlPopoverTone; label: string; description: string }[] = [
+  ...toneOptions,
+  { value: 'subtle', label: 'Subtle 低调', description: '日期、菜单等以内容为主的紧凑浮层' },
 ]
 
 const accordionItems: DlAccordionItem[] = [
@@ -119,19 +124,34 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
     </template>
     当前浮层会根据可用空间自动调整位置，炫彩条始终位于箭头对侧。
   </DlPopover>` }),
-    'tone-gallery': vueSfc({ imports: ['DlButton', 'DlPopover', 'type DlTone'], script: `const tones: { value: DlTone; label: string; description: string }[] = [
+    'tone-gallery': vueSfc({ imports: ['DlButton', 'DlPopover', 'type DlPopoverTone'], script: `const tones: { value: DlPopoverTone; label: string; description: string }[] = [
   { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
   { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
   { value: 'success', label: 'Success 成功', description: '已经正确完成的结果' },
   { value: 'warning', label: 'Warning 警告', description: '可恢复且需要留意的问题' },
   { value: 'danger', label: 'Danger 危险', description: '失败或不可逆操作' },
   { value: 'muted', label: 'Muted 弱化', description: '低优先级与只读信息' },
+  { value: 'subtle', label: 'Subtle 低调', description: '日期、菜单等以内容为主的紧凑浮层' },
 ]`, template: `  <div class="tone-grid">
     <DlPopover v-for="item in tones" :key="item.value" :title="item.label" :tone="item.value">
       <template #trigger><DlButton variant="secondary">{{ item.label }}</DlButton></template>
       {{ item.description }}。当前展示 <code>{{ item.value }}</code> 的完整视觉。
     </DlPopover>
   </div>`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
+    arrowless: vueSfc({ imports: ['DlButton', 'DlPopover'], script: `import { ref } from 'vue'
+
+const open = ref(false)`, template: `  <DlPopover
+    v-model:open="open"
+    title="紧贴触发器"
+    tone="subtle"
+    :arrow="false"
+    align="start"
+  >
+    <template #trigger>
+      <DlButton variant="secondary">打开无箭头浮层</DlButton>
+    </template>
+    显示箭头时默认保留 6px 间距；隐藏箭头后 sideOffset 自动归零，也可显式传入自定义间距。
+  </DlPopover>` }),
     'application-flow': vueSfc({ imports: ['DlButton', 'DlInput', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst note = ref('适合周末继续观看')`, template: `  <DlPopover v-model:open="open" title="快捷编辑笔记" tone="accent" align="start">
     <template #trigger>
       <DlButton variant="primary">编辑个人笔记</DlButton>
@@ -290,6 +310,12 @@ const scenarioCodeById: Record<string, Record<string, string>> = {
       <DlButton variant="secondary">{{ item.label }}</DlButton>
     </DlTooltip>
   </div>`, style: `.tone-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
+    arrowless: vueSfc({ imports: ['DlButton', 'DlTooltip'], template: `  <DlTooltip
+    text="无箭头时默认取消间距，也可通过 sideOffset 主动留白。"
+    :arrow="false"
+  >
+    <DlButton variant="secondary">悬停查看无箭头提示</DlButton>
+  </DlTooltip>` }),
     'application-flow': vueSfc({ imports: ['DlIconButton', 'DlTooltip'], template: `  <div class="toolbar">
     <DlTooltip text="加入收藏"><DlIconButton label="加入收藏">☆</DlIconButton></DlTooltip>
     <DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip>
@@ -351,8 +377,12 @@ const content = computed(() => ({
           当前浮层会根据可用空间自动调整位置，炫彩条始终位于箭头对侧。
         </DlPopover>
         <div v-else-if="scenario === 'tone-gallery'" class="tone-control-grid">
-          <DlPopover v-for="item in toneOptions" :key="item.value" :title="item.label" :tone="item.value"><template #trigger><DlButton variant="secondary">{{ item.label }}</DlButton></template>{{ item.description }}。当前展示 <code>{{ item.value }}</code> 的完整视觉。</DlPopover>
+          <DlPopover v-for="item in popoverToneOptions" :key="item.value" :title="item.label" :tone="item.value"><template #trigger><DlButton variant="secondary">{{ item.label }}</DlButton></template>{{ item.description }}。当前展示 <code>{{ item.value }}</code> 的完整视觉。</DlPopover>
         </div>
+        <DlPopover v-else-if="scenario === 'arrowless'" v-model:open="popoverOpen" title="紧贴触发器" tone="subtle" :arrow="false" align="start">
+          <template #trigger><DlButton variant="secondary">打开无箭头浮层</DlButton></template>
+          显示箭头时默认保留 6px 间距；隐藏箭头后 sideOffset 自动归零，也可显式传入自定义间距。
+        </DlPopover>
         <DlPopover v-else-if="scenario === 'application-flow'" v-model:open="popoverOpen" title="快捷编辑笔记" tone="accent" align="start">
           <template #trigger><DlButton variant="primary">编辑个人笔记</DlButton></template>
           <form class="popover-quick-edit" @submit.prevent="popoverOpen = false"><label><span>收藏笔记</span><DlInput v-model="note" /></label><footer><DlButton type="button" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton variant="primary" type="submit">保存</DlButton></footer></form>
@@ -395,6 +425,7 @@ const content = computed(() => ({
       <template v-else-if="componentDefinition.id === 'tooltip'">
         <div v-if="scenario === 'basic'" class="tooltip-row"><DlTooltip text="显示在上方" side="top"><DlButton variant="secondary">Top</DlButton></DlTooltip><DlTooltip text="显示在右侧" side="right" tone="accent"><DlButton variant="secondary">Right</DlButton></DlTooltip><DlTooltip text="显示在下方" side="bottom" tone="success"><DlButton variant="secondary">Bottom</DlButton></DlTooltip><DlTooltip text="显示在左侧" side="left" tone="warning"><DlButton variant="secondary">Left</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'tone-gallery'" class="tone-control-grid"><DlTooltip v-for="item in toneOptions" :key="item.value" :title="item.label" :text="item.description" :tone="item.value" side="bottom"><DlButton variant="secondary">{{ item.label }}</DlButton></DlTooltip></div>
+        <div v-else-if="scenario === 'arrowless'" class="tooltip-row"><DlTooltip text="无箭头时默认取消间距，也可通过 sideOffset 主动留白。" :arrow="false"><DlButton variant="secondary">悬停查看无箭头提示</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'application-flow'" class="tooltip-row"><DlTooltip text="加入收藏"><DlIconButton label="加入收藏">☆</DlIconButton></DlTooltip><DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip><DlTooltip text="移除收藏" tone="danger"><DlIconButton label="移除收藏" variant="danger">×</DlIconButton></DlTooltip></div>
         <template v-else-if="scenario === 'nested-composition'"><DlButton variant="primary" @click="dialogOpen = true">打开详情对话框</DlButton><DlDialog v-model:open="dialogOpen" title="作品详情"><p>对话框中的紧凑操作仍可使用 Tooltip。</p><DlTooltip title="键盘可用" text="悬停或按 Tab 聚焦都会显示提示。" tone="accent"><DlButton variant="secondary">聚焦或悬停</DlButton></DlTooltip></DlDialog></template>
         <div v-else class="secondary-hint"><span>列表视图</span><DlTooltip title="键盘快捷键" text="按 G，然后按 L，可从任意页面返回收藏列表。" tone="muted" side="bottom" :delay-duration="500"><DlButton variant="ghost" size="sm" aria-label="查看列表视图快捷键">G L</DlButton></DlTooltip></div>

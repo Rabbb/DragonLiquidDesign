@@ -2912,7 +2912,7 @@ export default {
       {
         "prop": "tone",
         "description": "设置语义色调。",
-        "type": "DlTone",
+        "type": "DlPopoverTone",
         "defaultValue": "'default'"
       },
       {
@@ -2920,6 +2920,24 @@ export default {
         "description": "关闭按钮的无障碍名称。",
         "type": "string",
         "defaultValue": "'关闭'"
+      },
+      {
+        "prop": "arrow",
+        "description": "是否显示指向触发器的箭头；Popover 与 Tooltip 关闭箭头后，未显式设置的间距会自动归零。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "sideOffset",
+        "description": "浮层与触发器之间的间距；Popover 有箭头时默认 6、无箭头时默认 0，Tooltip 默认 4。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "contentClass",
+        "description": "设置 contentClass 属性。",
+        "type": "string",
+        "defaultValue": "undefined"
       },
       {
         "prop": "zIndex",
@@ -2931,19 +2949,19 @@ export default {
     "relatedTypes": [
       {
         "kind": "enum",
-        "name": "DlTone",
-        "title": "DlTone",
-        "description": "Dragon Liquid 组件共享的语义色调。",
+        "name": "DlPopoverTone",
+        "title": "DlPopoverTone",
+        "description": "Popover 可用的语义色调，并额外提供低调表面。",
         "rows": [
           {
             "prop": "default",
-            "description": "默认中性色调，适合普通信息与基础状态。",
+            "description": "默认气泡卡片色调，适合普通信息与基础任务。",
             "type": "'default'",
             "defaultValue": "中性"
           },
           {
             "prop": "accent",
-            "description": "强调色调，适合品牌重点、当前任务或推荐内容。",
+            "description": "强调色调，适合品牌重点与当前任务。",
             "type": "'accent'",
             "defaultValue": "强调"
           },
@@ -2961,15 +2979,21 @@ export default {
           },
           {
             "prop": "danger",
-            "description": "危险色调，表示失败、破坏性操作或高风险状态。",
+            "description": "危险色调，表示失败或高风险操作。",
             "type": "'danger'",
             "defaultValue": "危险"
           },
           {
             "prop": "muted",
-            "description": "弱化色调，适合低优先级、只读或后台信息。",
+            "description": "弱化色调，适合低优先级与只读信息。",
             "type": "'muted'",
             "defaultValue": "弱化"
+          },
+          {
+            "prop": "subtle",
+            "description": "低调的纯净表面，适合日期、菜单等以内容为主的紧凑浮层。",
+            "type": "'subtle'",
+            "defaultValue": "低调"
           }
         ]
       }
@@ -4536,6 +4560,18 @@ export default {
         "description": "设置浮层相对触发器的对齐方式。",
         "type": "'start' | 'center' | 'end'",
         "defaultValue": "'center'"
+      },
+      {
+        "prop": "arrow",
+        "description": "是否显示指向触发器的箭头；Popover 与 Tooltip 关闭箭头后，未显式设置的间距会自动归零。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "sideOffset",
+        "description": "浮层与触发器之间的间距；Popover 有箭头时默认 6、无箭头时默认 0，Tooltip 默认 4。",
+        "type": "number",
+        "defaultValue": "undefined"
       },
       {
         "prop": "delayDuration",

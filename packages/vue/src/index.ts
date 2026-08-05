@@ -91,5 +91,5 @@ export type {
   DlMdxSecurityStatus,
   DlMdxUrlKind,
 } from './components/dl-mdx.security'
-export type { DlSize, DlTone } from './types'
+export type { DlPopoverTone, DlSize, DlTone } from './types'
 export type { ColorChannel, ColorSpace, DateRange, DateValue, TimeValue } from 'reka-ui'

@@ -19,6 +19,7 @@ describe('TodoMoe overlay style variants', () => {
     expect(tooltipStyles({ tone: 'warning' })).toContain('dl-tone-warning')
     expect(popoverStyles({ tone: 'accent' })).toContain('dl-popover')
     expect(popoverStyles({ tone: 'accent' })).toContain('dl-tone-accent')
+    expect(popoverStyles({ tone: 'subtle' })).toContain('dl-tone-subtle')
   })
 
   it('maps drawer placement, size and tone without changing Reka behavior', () => {

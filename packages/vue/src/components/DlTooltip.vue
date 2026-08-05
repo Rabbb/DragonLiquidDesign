@@ -12,6 +12,8 @@ const props = withDefaults(defineProps<{
   tone?: DlTone
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
+  arrow?: boolean
+  sideOffset?: number
   delayDuration?: number
   skipDelayDuration?: number
   disabled?: boolean
@@ -24,6 +26,8 @@ const props = withDefaults(defineProps<{
   tone: 'default',
   side: 'top',
   align: 'center',
+  arrow: true,
+  sideOffset: undefined,
   delayDuration: 350,
   skipDelayDuration: 300,
   disabled: false,
@@ -34,6 +38,7 @@ const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const contentZIndex = useDlTooltipLayer(() => props.zIndex)
 const tooltipText = computed(() => props.text)
 const resolvedMaxWidth = computed(() => typeof props.maxWidth === 'number' ? `${props.maxWidth}px` : props.maxWidth)
+const resolvedSideOffset = computed(() => props.sideOffset ?? (props.arrow ? 4 : 0))
 </script>
 
 <template>
@@ -45,9 +50,11 @@ const resolvedMaxWidth = computed(() => typeof props.maxWidth === 'number' ? `${
           data-dl
           data-slot="tooltip-content"
           data-dl-layer="tooltip"
+          :data-arrow="arrow ? 'visible' : 'hidden'"
+          :data-side-offset="resolvedSideOffset"
           :side="side"
           :align="align"
-          :side-offset="8"
+          :side-offset="resolvedSideOffset"
           :style="{ zIndex: contentZIndex, maxWidth: resolvedMaxWidth }"
           :class="tooltipStyles({ tone })"
         >
@@ -55,7 +62,7 @@ const resolvedMaxWidth = computed(() => typeof props.maxWidth === 'number' ? `${
             <strong v-if="title || $slots.title" class="dl-tooltip__title"><slot name="title">{{ title }}</slot></strong>
             <span class="dl-tooltip__content"><slot name="content">{{ tooltipText }}</slot></span>
           </span>
-          <TooltipArrow class="dl-tooltip__arrow" />
+          <TooltipArrow v-if="arrow" class="dl-tooltip__arrow" />
         </TooltipContent>
       </TooltipPortal>
     </TooltipRoot>
