@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { DlBadge } from '@dragon-liquid/vue'
 import HomePage from './pages/HomePage.vue'
-import ComponentDocsPage from './pages/ComponentDocsPage.vue'
-import InstanceArchitecturePage from './pages/InstanceArchitecturePage.vue'
 import { resolveComponent } from './catalog'
 
+const ComponentDocsPage = defineAsyncComponent(() => import('./pages/ComponentDocsPage.vue'))
+const InstanceArchitecturePage = defineAsyncComponent(() => import('./pages/InstanceArchitecturePage.vue'))
+const PatternShowcasePage = defineAsyncComponent(() => import('./patterns/PatternShowcasePage.vue'))
+
 type ShowcaseRoute = {
-  page: 'home' | 'components' | 'instance-api'
+  page: 'home' | 'components' | 'instance-api' | 'patterns'
   componentId?: string
   scenarioId?: string
+  patternPageId?: string
+  guideComponentId?: string
 }
 
 function migrateLegacyHashRoute() {
@@ -22,10 +26,16 @@ function migrateLegacyHashRoute() {
 migrateLegacyHashRoute()
 
 const currentPath = ref(window.location.pathname || '/')
+const currentSearch = ref(window.location.search)
 
 const route = computed<ShowcaseRoute>(() => {
   const parts = currentPath.value.replace(/^\//, '').split('/').filter(Boolean)
   if (parts[0] === 'instance-api') return { page: 'instance-api' }
+  if (parts[0] === 'patterns') return {
+    page: 'patterns',
+    patternPageId: parts[1] ?? 'overview',
+    guideComponentId: new URLSearchParams(currentSearch.value).get('guide') ?? undefined,
+  }
   if (parts[0] !== 'components') return { page: 'home' }
 
   const resolved = resolveComponent(parts[1], parts[2])
@@ -38,6 +48,7 @@ const route = computed<ShowcaseRoute>(() => {
 
 function syncLocation() {
   currentPath.value = window.location.pathname || '/'
+  currentSearch.value = window.location.search
   window.scrollTo({ top: 0, behavior: 'instant' })
 }
 
@@ -94,6 +105,7 @@ onBeforeUnmount(() => {
       <nav aria-label="主导航">
         <a href="/" :class="{ active: route.page === 'home' }">首页</a>
         <a href="/components/button/basic" :class="{ active: route.page === 'components' }">组件</a>
+        <a href="/patterns" :class="{ active: route.page === 'patterns' }">应用演示</a>
         <a href="/instance-api" :class="{ active: route.page === 'instance-api' }">实例体系</a>
         <a href="https://www.npmjs.com/package/@dragon-liquid/vue" target="_blank" rel="noreferrer">NPM ↗</a>
       </nav>
@@ -108,7 +120,12 @@ onBeforeUnmount(() => {
       :component-id="route.componentId!"
       :scenario-id="route.scenarioId!"
     />
-    <InstanceArchitecturePage v-else />
+    <PatternShowcasePage
+      v-else-if="route.page === 'patterns'"
+      :page-id="route.patternPageId"
+      :guide-component-id="route.guideComponentId"
+    />
+    <InstanceArchitecturePage v-else-if="route.page === 'instance-api'" />
 
     <footer v-if="route.page === 'home'" class="site-footer">
       <div class="brand compact">

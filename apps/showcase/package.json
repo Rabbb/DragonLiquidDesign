@@ -6,9 +6,11 @@
   "scripts": {
     "generate:api": "node scripts/generate-component-api.mjs",
     "audit:docs": "node --no-warnings --experimental-strip-types scripts/audit-component-docs.mjs",
-    "prebuild": "npm run generate:api && npm run audit:docs",
+    "audit:patterns": "node --no-warnings --experimental-strip-types scripts/audit-pattern-coverage.mjs",
+    "prebuild": "npm run generate:api && npm run audit:docs && npm run audit:patterns",
     "build": "vue-tsc --noEmit && vite build",
-    "predev": "npm run generate:api && npm run audit:docs",
+    "postbuild": "node scripts/create-static-routes.mjs",
+    "predev": "npm run generate:api && npm run audit:docs && npm run audit:patterns",
     "dev": "vite"
   },
   "dependencies": {
