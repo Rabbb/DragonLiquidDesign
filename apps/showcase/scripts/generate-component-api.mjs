@@ -199,6 +199,8 @@ const enumDescriptions = {
   DlSize: '组件可用的标准尺寸。',
   DlTone: 'Dragon Liquid 组件共享的语义色调。',
   DlPopoverTone: 'Popover 可用的语义色调，并额外提供低调表面。',
+  DlOverlaySide: 'Popover 与 Tooltip 共用的十二方位数字枚举。',
+  DlOverlayBaseSide: '兼容 Reka UI 的四个基础方位字符串。',
   DlProgressStatus: 'Progress 用于表达任务结果的业务状态。',
   DlMdxMode: 'MarkdownX 的编辑、预览和分栏工作模式。',
   DlMdxToolbarAction: 'MarkdownX 内置格式工具栏支持的动作。',
@@ -208,6 +210,20 @@ const enumDescriptions = {
 }
 
 const enumValueDescriptions = {
+  DlOverlaySide: {
+    Top: ['上方居中。', '上'],
+    TopLeft: ['上方靠左。', '左上'],
+    TopRight: ['上方靠右。', '右上'],
+    Right: ['右侧居中。', '右'],
+    RightTop: ['右侧靠上。', '右上'],
+    RightBottom: ['右侧靠下。', '右下'],
+    Bottom: ['下方居中。', '下'],
+    BottomLeft: ['下方靠左。', '左下'],
+    BottomRight: ['下方靠右。', '右下'],
+    Left: ['左侧居中。', '左'],
+    LeftTop: ['左侧靠上。', '左上'],
+    LeftBottom: ['左侧靠下。', '左下'],
+  },
   DlMdxMode: {
     edit: ['只显示 CodeMirror 编辑器，适合集中书写。', '编辑'],
     preview: ['只显示结构化安全预览，适合发布和阅读。', '预览'],
@@ -389,11 +405,34 @@ function enumsFromSource(source) {
     }
   }
 
+  const enums = source.matchAll(/export\s+enum\s+(Dl[A-Za-z0-9]+)\s*\{([\s\S]*?)\}/g)
+  for (const match of enums) {
+    const name = match[1]
+    let value = 0
+    const rows = match[2].split(',').map(source => source.trim()).filter(Boolean).map(source => {
+      const member = source.match(/^([A-Za-z]\w*)(?:\s*=\s*(\d+))?$/)
+      if (!member) throw new Error(`无法解析 ${name} 的枚举项：${source}`)
+      value = member[2] === undefined ? value : Number(member[2])
+      const row = {
+        prop: member[1],
+        description: enumValueDescriptions[name]?.[member[1]]?.[0] ?? `${name} 的 ${member[1]} 选项。`,
+        type: String(value++),
+        defaultValue: enumValueDescriptions[name]?.[member[1]]?.[1] ?? '枚举值',
+      }
+      return row
+    })
+    result[name] = { kind: 'enum', name, title: name, description: enumDescriptions[name] ?? `${name} 可用的枚举值。`, rows }
+  }
+
   return result
 }
 
 function mentionedTypes(type, definitions) {
-  return Object.keys(definitions).filter(name => new RegExp(`\\b${name}\\b`).test(type))
+  return Object.keys(definitions)
+    .map(name => [name, type.search(new RegExp(`\\b${name}\\b`))])
+    .filter(([, index]) => index >= 0)
+    .sort((left, right) => left[1] - right[1])
+    .map(([name]) => name)
 }
 
 function relatedTypesForRows(rows, definitions) {

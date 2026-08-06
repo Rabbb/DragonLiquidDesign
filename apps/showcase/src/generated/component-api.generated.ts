@@ -2888,8 +2888,8 @@ export default {
       {
         "prop": "side",
         "description": "设置浮层相对触发器出现的方位。",
-        "type": "'top' | 'right' | 'bottom' | 'left'",
-        "defaultValue": "'bottom'"
+        "type": "DlOverlaySide | DlOverlayBaseSide",
+        "defaultValue": "DlOverlaySide.Bottom"
       },
       {
         "prop": "align",
@@ -2947,6 +2947,118 @@ export default {
       }
     ],
     "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlOverlaySide",
+        "title": "DlOverlaySide",
+        "description": "Popover 与 Tooltip 共用的十二方位数字枚举。",
+        "rows": [
+          {
+            "prop": "Top",
+            "description": "上方居中。",
+            "type": "0",
+            "defaultValue": "上"
+          },
+          {
+            "prop": "TopLeft",
+            "description": "上方靠左。",
+            "type": "1",
+            "defaultValue": "左上"
+          },
+          {
+            "prop": "TopRight",
+            "description": "上方靠右。",
+            "type": "2",
+            "defaultValue": "右上"
+          },
+          {
+            "prop": "Right",
+            "description": "右侧居中。",
+            "type": "3",
+            "defaultValue": "右"
+          },
+          {
+            "prop": "RightTop",
+            "description": "右侧靠上。",
+            "type": "4",
+            "defaultValue": "右上"
+          },
+          {
+            "prop": "RightBottom",
+            "description": "右侧靠下。",
+            "type": "5",
+            "defaultValue": "右下"
+          },
+          {
+            "prop": "Bottom",
+            "description": "下方居中。",
+            "type": "6",
+            "defaultValue": "下"
+          },
+          {
+            "prop": "BottomLeft",
+            "description": "下方靠左。",
+            "type": "7",
+            "defaultValue": "左下"
+          },
+          {
+            "prop": "BottomRight",
+            "description": "下方靠右。",
+            "type": "8",
+            "defaultValue": "右下"
+          },
+          {
+            "prop": "Left",
+            "description": "左侧居中。",
+            "type": "9",
+            "defaultValue": "左"
+          },
+          {
+            "prop": "LeftTop",
+            "description": "左侧靠上。",
+            "type": "10",
+            "defaultValue": "左上"
+          },
+          {
+            "prop": "LeftBottom",
+            "description": "左侧靠下。",
+            "type": "11",
+            "defaultValue": "左下"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlOverlayBaseSide",
+        "title": "DlOverlayBaseSide",
+        "description": "兼容 Reka UI 的四个基础方位字符串。",
+        "rows": [
+          {
+            "prop": "top",
+            "description": "DlOverlayBaseSide 的 top 选项。",
+            "type": "'top'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "right",
+            "description": "DlOverlayBaseSide 的 right 选项。",
+            "type": "'right'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "bottom",
+            "description": "DlOverlayBaseSide 的 bottom 选项。",
+            "type": "'bottom'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "left",
+            "description": "DlOverlayBaseSide 的 left 选项。",
+            "type": "'left'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
       {
         "kind": "enum",
         "name": "DlPopoverTone",
@@ -4552,8 +4664,8 @@ export default {
       {
         "prop": "side",
         "description": "设置浮层相对触发器出现的方位。",
-        "type": "'top' | 'right' | 'bottom' | 'left'",
-        "defaultValue": "'top'"
+        "type": "DlOverlaySide | DlOverlayBaseSide",
+        "defaultValue": "DlOverlaySide.Top"
       },
       {
         "prop": "align",
@@ -4646,6 +4758,118 @@ export default {
             "description": "弱化色调，适合低优先级、只读或后台信息。",
             "type": "'muted'",
             "defaultValue": "弱化"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlOverlaySide",
+        "title": "DlOverlaySide",
+        "description": "Popover 与 Tooltip 共用的十二方位数字枚举。",
+        "rows": [
+          {
+            "prop": "Top",
+            "description": "上方居中。",
+            "type": "0",
+            "defaultValue": "上"
+          },
+          {
+            "prop": "TopLeft",
+            "description": "上方靠左。",
+            "type": "1",
+            "defaultValue": "左上"
+          },
+          {
+            "prop": "TopRight",
+            "description": "上方靠右。",
+            "type": "2",
+            "defaultValue": "右上"
+          },
+          {
+            "prop": "Right",
+            "description": "右侧居中。",
+            "type": "3",
+            "defaultValue": "右"
+          },
+          {
+            "prop": "RightTop",
+            "description": "右侧靠上。",
+            "type": "4",
+            "defaultValue": "右上"
+          },
+          {
+            "prop": "RightBottom",
+            "description": "右侧靠下。",
+            "type": "5",
+            "defaultValue": "右下"
+          },
+          {
+            "prop": "Bottom",
+            "description": "下方居中。",
+            "type": "6",
+            "defaultValue": "下"
+          },
+          {
+            "prop": "BottomLeft",
+            "description": "下方靠左。",
+            "type": "7",
+            "defaultValue": "左下"
+          },
+          {
+            "prop": "BottomRight",
+            "description": "下方靠右。",
+            "type": "8",
+            "defaultValue": "右下"
+          },
+          {
+            "prop": "Left",
+            "description": "左侧居中。",
+            "type": "9",
+            "defaultValue": "左"
+          },
+          {
+            "prop": "LeftTop",
+            "description": "左侧靠上。",
+            "type": "10",
+            "defaultValue": "左上"
+          },
+          {
+            "prop": "LeftBottom",
+            "description": "左侧靠下。",
+            "type": "11",
+            "defaultValue": "左下"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlOverlayBaseSide",
+        "title": "DlOverlayBaseSide",
+        "description": "兼容 Reka UI 的四个基础方位字符串。",
+        "rows": [
+          {
+            "prop": "top",
+            "description": "DlOverlayBaseSide 的 top 选项。",
+            "type": "'top'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "right",
+            "description": "DlOverlayBaseSide 的 right 选项。",
+            "type": "'right'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "bottom",
+            "description": "DlOverlayBaseSide 的 bottom 选项。",
+            "type": "'bottom'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "left",
+            "description": "DlOverlayBaseSide 的 left 选项。",
+            "type": "'left'",
+            "defaultValue": "枚举值"
           }
         ]
       }

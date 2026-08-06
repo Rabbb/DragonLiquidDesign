@@ -216,7 +216,7 @@ const readyComponents: ComponentDefinition[] = [
     id: 'popover', name: 'Popover 气泡卡片', category: 'general', since: '0.2.0', implementation: 'ready', maturity: 'stable',
     summary: '通过触发器在 Portal 中展示富内容。',
     scenarios: [
-      { id: 'basic', label: '通用案例', summary: '定位、标题与关闭操作' },
+      { id: 'basic', label: '通用案例', summary: '十二种组合方位、标题与关闭操作' },
       { id: 'tone-gallery', label: '全部色调', summary: '交互预览七种 DlPopoverTone 色调，包含低调表面' },
       { id: 'arrowless', label: '无箭头贴边', summary: '隐藏指向箭头并自动取消触发器间距' },
       { id: 'application-flow', label: '快捷编辑', summary: '不离开页面完成小型任务' },
@@ -261,7 +261,7 @@ const readyComponents: ComponentDefinition[] = [
     id: 'tooltip', name: 'Tooltip 文字提示', category: 'general', since: '0.2.0', implementation: 'ready', maturity: 'stable',
     summary: '在悬停或键盘聚焦时补充简短说明。',
     scenarios: [
-      { id: 'basic', label: '通用案例', summary: '方位、延迟与富文本' },
+      { id: 'basic', label: '通用案例', summary: '十二种组合方位、延迟与富文本' },
       { id: 'tone-gallery', label: '全部色调', summary: '悬停预览六种 DlTone 语义色调' },
       { id: 'arrowless', label: '无箭头提示', summary: '隐藏箭头并自动取消默认间距' },
       { id: 'application-flow', label: '图标操作', summary: '为紧凑按钮补充名称' },

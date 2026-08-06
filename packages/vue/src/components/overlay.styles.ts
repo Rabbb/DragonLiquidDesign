@@ -1,4 +1,19 @@
 import { tv } from 'tailwind-variants'
+import { DlOverlaySide, type DlOverlayBaseSide } from '../types'
+
+type DlRekaAlign = 'start' | 'center' | 'end'
+
+const dlOverlayPlacements = [
+  ['top'], ['top', 'start'], ['top', 'end'],
+  ['right'], ['right', 'start'], ['right', 'end'],
+  ['bottom'], ['bottom', 'start'], ['bottom', 'end'],
+  ['left'], ['left', 'start'], ['left', 'end'],
+] as const satisfies readonly (readonly [DlOverlayBaseSide, DlRekaAlign?])[]
+
+export function resolveDlOverlayPlacement(side: DlOverlaySide | DlOverlayBaseSide, align: DlRekaAlign) {
+  const placement: readonly [DlOverlayBaseSide, DlRekaAlign?] = typeof side === 'number' ? dlOverlayPlacements[side] : [side]
+  return [placement[0], placement[1] ?? align] as const
+}
 
 const toneVariants = {
   default: 'dl-tone-default',

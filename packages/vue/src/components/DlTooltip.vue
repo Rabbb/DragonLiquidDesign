@@ -2,15 +2,15 @@
 import { computed } from 'vue'
 import { TooltipArrow, TooltipContent, TooltipPortal, TooltipProvider, TooltipRoot, TooltipTrigger } from 'reka-ui'
 import { useDlTooltipLayer } from '../composables/useDlLayer'
-import type { DlTone } from '../types'
-import { tooltipStyles } from './overlay.styles'
+import { DlOverlaySide, type DlOverlayBaseSide, type DlTone } from '../types'
+import { resolveDlOverlayPlacement, tooltipStyles } from './overlay.styles'
 
 const props = withDefaults(defineProps<{
   open?: boolean
   text?: string
   title?: string
   tone?: DlTone
-  side?: 'top' | 'right' | 'bottom' | 'left'
+  side?: DlOverlaySide | DlOverlayBaseSide
   align?: 'start' | 'center' | 'end'
   arrow?: boolean
   sideOffset?: number
@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
   text: '',
   title: undefined,
   tone: 'default',
-  side: 'top',
+  side: DlOverlaySide.Top,
   align: 'center',
   arrow: true,
   sideOffset: undefined,
@@ -39,6 +39,7 @@ const contentZIndex = useDlTooltipLayer(() => props.zIndex)
 const tooltipText = computed(() => props.text)
 const resolvedMaxWidth = computed(() => typeof props.maxWidth === 'number' ? `${props.maxWidth}px` : props.maxWidth)
 const resolvedSideOffset = computed(() => props.sideOffset ?? (props.arrow ? 4 : 0))
+const resolvedPlacement = computed(() => resolveDlOverlayPlacement(props.side, props.align))
 </script>
 
 <template>
@@ -52,8 +53,8 @@ const resolvedSideOffset = computed(() => props.sideOffset ?? (props.arrow ? 4 :
           data-dl-layer="tooltip"
           :data-arrow="arrow ? 'visible' : 'hidden'"
           :data-side-offset="resolvedSideOffset"
-          :side="side"
-          :align="align"
+          :side="resolvedPlacement[0]"
+          :align="resolvedPlacement[1]"
           :side-offset="resolvedSideOffset"
           :style="{ zIndex: contentZIndex, maxWidth: resolvedMaxWidth }"
           :class="tooltipStyles({ tone })"

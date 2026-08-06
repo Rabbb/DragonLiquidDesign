@@ -2,12 +2,12 @@
 import { computed } from 'vue'
 import { PopoverArrow, PopoverClose, PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
 import { useDlPopoverLayer } from '../composables/useDlLayer'
-import type { DlPopoverTone } from '../types'
-import { popoverStyles } from './overlay.styles'
+import { DlOverlaySide, type DlOverlayBaseSide, type DlPopoverTone } from '../types'
+import { popoverStyles, resolveDlOverlayPlacement } from './overlay.styles'
 
 const props = withDefaults(defineProps<{
   open?: boolean
-  side?: 'top' | 'right' | 'bottom' | 'left'
+  side?: DlOverlaySide | DlOverlayBaseSide
   align?: 'start' | 'center' | 'end'
   modal?: boolean
   title?: string
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<{
   zIndex?: number
 }>(), {
   open: undefined,
-  side: 'bottom',
+  side: DlOverlaySide.Bottom,
   align: 'center',
   modal: false,
   title: undefined,
@@ -33,6 +33,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const contentZIndex = useDlPopoverLayer(() => props.zIndex)
 const resolvedSideOffset = computed(() => props.sideOffset ?? (props.arrow ? 6 : 0))
+const resolvedPlacement = computed(() => resolveDlOverlayPlacement(props.side, props.align))
 </script>
 
 <template>
@@ -49,8 +50,8 @@ const resolvedSideOffset = computed(() => props.sideOffset ?? (props.arrow ? 6 :
         data-dl-layer="popover"
         :data-arrow="arrow ? 'visible' : 'hidden'"
         :data-side-offset="resolvedSideOffset"
-        :side="side"
-        :align="align"
+        :side="resolvedPlacement[0]"
+        :align="resolvedPlacement[1]"
         :side-offset="resolvedSideOffset"
         :style="{ zIndex: contentZIndex }"
         :class="[popoverStyles({ tone }), contentClass]"
@@ -70,13 +71,13 @@ const resolvedSideOffset = computed(() => props.sideOffset ?? (props.arrow ? 6 :
 </template>
 
 <style>
-.dl-popover { --dl-popover-border: rgba(255, 239, 186, 0.22); --dl-popover-rail: linear-gradient(90deg, rgba(255, 215, 110, 0.2), rgba(104, 225, 255, 0.68), rgba(124, 255, 190, 0.18)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(255, 215, 110, 0.2), rgba(104, 225, 255, 0.68), rgba(124, 255, 190, 0.18)); --dl-popover-glow: rgba(104, 225, 255, 0.08); --dl-popover-arrow: rgba(10, 30, 24, 0.99); position: relative; display: grid; gap: 16px; width: min(22rem, calc(100vw - 2rem)); padding: 16px; overflow: visible; isolation: isolate; border: 1px solid var(--dl-popover-border); border-radius: 24px; background: linear-gradient(180deg, rgba(20, 51, 41, 0.99), rgba(10, 30, 24, 0.99)); color: var(--dl-text-muted); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 20px 44px rgba(4, 14, 12, 0.34), 0 0 24px var(--dl-popover-glow); outline: none; backdrop-filter: blur(24px) saturate(112%); }
+.dl-popover { --dl-popover-border: rgba(255, 239, 186, 0.22); --dl-popover-rail: linear-gradient(90deg, rgba(184, 169, 116, 0.12), rgba(91, 173, 177, 0.46), rgba(102, 168, 139, 0.12)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(184, 169, 116, 0.12), rgba(91, 173, 177, 0.46), rgba(102, 168, 139, 0.12)); --dl-popover-glow: rgba(91, 173, 177, 0.07); --dl-popover-arrow: rgba(10, 30, 24, 0.99); position: relative; display: grid; gap: 16px; width: min(22rem, calc(100vw - 2rem)); padding: 16px; overflow: visible; isolation: isolate; border: 1px solid var(--dl-popover-border); border-radius: 24px; background: linear-gradient(180deg, rgba(20, 51, 41, 0.99), rgba(10, 30, 24, 0.99)); color: var(--dl-text-muted); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 20px 44px rgba(4, 14, 12, 0.34), 0 0 24px var(--dl-popover-glow); outline: none; backdrop-filter: blur(24px) saturate(112%); }
 .dl-popover::before { content: ''; position: absolute; inset: 1px; z-index: -1; border-radius: inherit; background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 32%); pointer-events: none; }
-.dl-popover::after { content: ''; position: absolute; z-index: 1; border-radius: 999px; background: var(--dl-popover-rail); box-shadow: 0 0 10px var(--dl-popover-glow), 0 0 18px rgba(255, 215, 110, 0.14); opacity: 0.9; pointer-events: none; }
-.dl-popover[data-side='top']::after { inset: 2px 28px auto; height: 4px; }
-.dl-popover[data-side='bottom']::after { inset: auto 28px 2px; height: 4px; }
-.dl-popover[data-side='left']::after { inset: 28px auto 28px 2px; width: 4px; background: var(--dl-popover-rail-vertical); }
-.dl-popover[data-side='right']::after { inset: 28px 2px 28px auto; width: 4px; background: var(--dl-popover-rail-vertical); }
+.dl-popover::after { content: ''; position: absolute; z-index: 1; background: var(--dl-popover-rail); box-shadow: 0 0 5px var(--dl-popover-glow); -webkit-mask: var(--dl-popover-rail-mask); mask: var(--dl-popover-rail-mask); opacity: 0.72; pointer-events: none; }
+.dl-popover[data-side='top']::after { --dl-popover-rail-mask: linear-gradient(#000 0 0) top/100% 1px no-repeat, radial-gradient(ellipse 50% 100% at 50% 0, #000 94%, transparent 100%) top/100% 100% no-repeat; inset: 0 30px auto; height: 5px; }
+.dl-popover[data-side='bottom']::after { --dl-popover-rail-mask: linear-gradient(#000 0 0) bottom/100% 1px no-repeat, radial-gradient(ellipse 50% 100% at 50% 100%, #000 94%, transparent 100%) bottom/100% 100% no-repeat; inset: auto 30px 0; height: 5px; }
+.dl-popover[data-side='left']::after { --dl-popover-rail-mask: linear-gradient(#000 0 0) left/1px 100% no-repeat, radial-gradient(ellipse 100% 50% at 0 50%, #000 94%, transparent 100%) left/100% 100% no-repeat; inset: 30px auto 30px 0; width: 5px; background: var(--dl-popover-rail-vertical); }
+.dl-popover[data-side='right']::after { --dl-popover-rail-mask: linear-gradient(#000 0 0) right/1px 100% no-repeat, radial-gradient(ellipse 100% 50% at 100% 50%, #000 94%, transparent 100%) right/100% 100% no-repeat; inset: 30px 0 30px auto; width: 5px; background: var(--dl-popover-rail-vertical); }
 .dl-popover__aura { position: absolute; inset: 1px; z-index: -1; border: 1px solid rgba(255, 239, 186, 0.06); border-radius: inherit; pointer-events: none; }
 .dl-popover__header { position: relative; z-index: 2; display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
 .dl-popover__title { margin: 0; color: #fff; font-size: 0.98rem; font-weight: 800; line-height: 1.38; }
@@ -85,11 +86,11 @@ const resolvedSideOffset = computed(() => props.sideOffset ?? (props.arrow ? 6 :
 .dl-popover__close:hover { transform: translateY(-1px); background: rgba(255, 255, 255, 0.12); color: var(--dl-text); }
 .dl-popover__close:focus-visible, .dl-popover:focus-visible { box-shadow: var(--dl-focus); }
 .dl-popover__arrow { position: relative; z-index: -1; display: block; box-sizing: border-box; width: 9px; height: 9px; border: 1px solid var(--dl-popover-border); background: var(--dl-popover-arrow); box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.28); transform: translateY(-4.5px) rotate(45deg); }
-.dl-tone-accent { --dl-popover-border: rgba(255, 223, 128, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(104, 225, 255, 0.2), rgba(255, 215, 110, 0.8), rgba(104, 225, 255, 0.26)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(104, 225, 255, 0.2), rgba(255, 215, 110, 0.8), rgba(104, 225, 255, 0.26)); --dl-popover-glow: rgba(255, 215, 110, 0.14); }
-.dl-tone-success { --dl-popover-border: rgba(113, 209, 173, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(124, 255, 190, 0.24), rgba(0, 206, 209, 0.72), rgba(124, 255, 190, 0.2)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(124, 255, 190, 0.24), rgba(0, 206, 209, 0.72), rgba(124, 255, 190, 0.2)); --dl-popover-glow: rgba(124, 255, 190, 0.14); }
-.dl-tone-warning { --dl-popover-border: rgba(255, 179, 71, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(255, 178, 89, 0.3), rgba(255, 215, 110, 0.78), rgba(255, 178, 89, 0.24)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(255, 178, 89, 0.3), rgba(255, 215, 110, 0.78), rgba(255, 178, 89, 0.24)); --dl-popover-glow: rgba(255, 178, 89, 0.16); }
-.dl-tone-danger { --dl-popover-border: rgba(255, 123, 123, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(255, 112, 112, 0.28), rgba(255, 140, 0, 0.72), rgba(255, 112, 112, 0.24)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(255, 112, 112, 0.28), rgba(255, 140, 0, 0.72), rgba(255, 112, 112, 0.24)); --dl-popover-glow: rgba(255, 112, 112, 0.16); }
-.dl-tone-muted { --dl-popover-border: rgba(116, 134, 160, 0.28); --dl-popover-rail: linear-gradient(90deg, rgba(148, 163, 184, 0.22), rgba(104, 225, 255, 0.3), rgba(148, 163, 184, 0.18)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(148, 163, 184, 0.22), rgba(104, 225, 255, 0.3), rgba(148, 163, 184, 0.18)); --dl-popover-glow: rgba(148, 163, 184, 0.12); }
+.dl-tone-accent { --dl-popover-border: rgba(255, 223, 128, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(91, 157, 170, 0.12), rgba(207, 175, 101, 0.54), rgba(91, 157, 170, 0.14)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(91, 157, 170, 0.12), rgba(207, 175, 101, 0.54), rgba(91, 157, 170, 0.14)); --dl-popover-glow: rgba(207, 175, 101, 0.1); }
+.dl-tone-success { --dl-popover-border: rgba(113, 209, 173, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(102, 184, 148, 0.14), rgba(45, 155, 151, 0.5), rgba(102, 184, 148, 0.12)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(102, 184, 148, 0.14), rgba(45, 155, 151, 0.5), rgba(102, 184, 148, 0.12)); --dl-popover-glow: rgba(102, 184, 148, 0.09); }
+.dl-tone-warning { --dl-popover-border: rgba(255, 179, 71, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(194, 128, 65, 0.16), rgba(207, 167, 88, 0.52), rgba(194, 128, 65, 0.12)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(194, 128, 65, 0.16), rgba(207, 167, 88, 0.52), rgba(194, 128, 65, 0.12)); --dl-popover-glow: rgba(194, 128, 65, 0.1); }
+.dl-tone-danger { --dl-popover-border: rgba(255, 123, 123, 0.34); --dl-popover-rail: linear-gradient(90deg, rgba(190, 80, 80, 0.15), rgba(194, 105, 47, 0.5), rgba(190, 80, 80, 0.12)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(190, 80, 80, 0.15), rgba(194, 105, 47, 0.5), rgba(190, 80, 80, 0.12)); --dl-popover-glow: rgba(190, 80, 80, 0.1); }
+.dl-tone-muted { --dl-popover-border: rgba(116, 134, 160, 0.28); --dl-popover-rail: linear-gradient(90deg, rgba(125, 139, 158, 0.12), rgba(84, 149, 157, 0.26), rgba(125, 139, 158, 0.1)); --dl-popover-rail-vertical: linear-gradient(180deg, rgba(125, 139, 158, 0.12), rgba(84, 149, 157, 0.26), rgba(125, 139, 158, 0.1)); --dl-popover-glow: rgba(125, 139, 158, 0.07); }
 .dl-popover.dl-tone-subtle { --dl-popover-border: var(--dl-border); --dl-popover-arrow: #102c20; border-radius: var(--dl-radius-md); background: #102c20; box-shadow: var(--dl-shadow); backdrop-filter: none; }
 .dl-popover.dl-tone-subtle::before, .dl-popover.dl-tone-subtle::after, .dl-popover.dl-tone-subtle .dl-popover__aura { display: none; }
 .dl-popover.dl-tone-subtle .dl-popover__arrow { filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2)); }
