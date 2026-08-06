@@ -4680,6 +4680,12 @@ export default {
         "defaultValue": "true"
       },
       {
+        "prop": "arrowPadding",
+        "description": "设置 Tooltip 箭头与内容圆角边缘之间的安全距离。",
+        "type": "number",
+        "defaultValue": "8"
+      },
+      {
         "prop": "sideOffset",
         "description": "浮层与触发器之间的间距；Popover 有箭头时默认 6、无箭头时默认 0，Tooltip 默认 4。",
         "type": "number",

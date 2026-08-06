@@ -26,6 +26,7 @@ const descriptions = {
   activationMode: '设置组件进入激活或编辑状态的方式。',
   align: '设置浮层相对触发器的对齐方式。',
   arrow: '是否显示指向触发器的箭头；Popover 与 Tooltip 关闭箭头后，未显式设置的间距会自动归零。',
+  arrowPadding: '设置 Tooltip 箭头与内容圆角边缘之间的安全距离。',
   aliases: '组件块可使用的附加名称；同时自动支持 Dl 前缀别名。',
   allowedProps: '允许文档传入的属性白名单；不传时读取组件公开 Props。',
   alt: '图片无法展示时使用的替代文本。',

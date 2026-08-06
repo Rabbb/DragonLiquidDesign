@@ -45,6 +45,10 @@ const popoverToneOptions: { value: DlPopoverTone; label: string; description: st
   { value: 'subtle', label: 'Subtle 低调', description: '日期、菜单等以内容为主的紧凑浮层' },
 ]
 const overlaySides = Object.values(DlOverlaySide).filter(Number.isInteger) as DlOverlaySide[]
+const popoverLabOpen = ref(true)
+const popoverSide = ref(DlOverlaySide.TopLeft)
+const tooltipSide = ref(DlOverlaySide.TopLeft)
+const overlayPlacementDetails = ['top / center', 'top / start', 'top / end', 'right / center', 'right / start', 'right / end', 'bottom / center', 'bottom / start', 'bottom / end', 'left / center', 'left / start', 'left / end'] as const
 
 const accordionItems: DlAccordionItem[] = [
   { value: 'story', title: '故事简介', description: '展开查看无剧透梗概', content: '异世界冒险从一封没有署名的委托开始，主角需要在城市与迷宫之间寻找线索。' },
@@ -114,12 +118,46 @@ output { color: #a9b9b0; }` }),
 
 const scenarioCodeById: Record<string, Record<string, string>> = {
   popover: {
-    basic: vueSfc({ imports: ['DlButton', 'DlOverlaySide', 'DlPopover'], script: `const sides = Object.values(DlOverlaySide).filter(Number.isInteger) as DlOverlaySide[]`, template: `  <div class="placement-grid">
-    <DlPopover v-for="side in sides" :key="side" :side="side" :title="DlOverlaySide[side]">
-      <template #trigger><DlButton variant="secondary">{{ DlOverlaySide[side] }}</DlButton></template>
-      当前使用 <code>DlOverlaySide.{{ DlOverlaySide[side] }}</code>。
-    </DlPopover>
-  </div>`, style: `.placement-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }` }),
+    basic: vueSfc({ imports: ['DlButton', 'DlOverlaySide', 'DlPopover'], script: `import { ref } from 'vue'
+
+const sides = Object.values(DlOverlaySide).filter(Number.isInteger) as DlOverlaySide[]
+const open = ref(true)
+const side = ref(DlOverlaySide.TopLeft)
+const details = ['top / center', 'top / start', 'top / end', 'right / center', 'right / start', 'right / end', 'bottom / center', 'bottom / start', 'bottom / end', 'left / center', 'left / start', 'left / end'] as const
+
+function selectSide(value: DlOverlaySide) {
+  side.value = value
+  open.value = true
+}`, template: `  <section class="placement-lab">
+    <div class="placement-stage">
+      <DlPopover v-model:open="open" :side="side" :title="DlOverlaySide[side]">
+        <template #trigger>
+          <DlButton class="placement-anchor" variant="secondary">固定锚点 · 180px</DlButton>
+        </template>
+        当前映射为 <code>{{ details[side] }}</code>，切换方位时始终使用同一个锚点。
+      </DlPopover>
+    </div>
+
+    <div class="placement-controls" aria-label="Popover 方位">
+      <DlButton
+        v-for="item in sides"
+        :key="item"
+        size="sm"
+        :variant="item === side ? 'primary' : 'secondary'"
+        @click="selectSide(item)"
+      >
+        {{ DlOverlaySide[item] }}
+      </DlButton>
+    </div>
+    <output>DlOverlaySide.{{ DlOverlaySide[side] }} → {{ details[side] }}</output>
+  </section>`, style: `.placement-lab { display: grid; gap: 16px; }
+.placement-stage { position: relative; display: grid; place-items: center; min-height: 340px; overflow: visible; border: 1px solid rgba(148, 163, 184, .16); border-radius: 18px; background: radial-gradient(circle, rgba(104, 225, 255, .06), transparent 48%); }
+.placement-stage::before, .placement-stage::after { content: ''; position: absolute; border-color: rgba(148, 163, 184, .2); border-style: dashed; pointer-events: none; }
+.placement-stage::before { inset: 50% 24px auto; border-width: 1px 0 0; }
+.placement-stage::after { inset: 24px auto 24px 50%; border-width: 0 0 0 1px; }
+.placement-anchor { position: relative; z-index: 1; width: 180px; }
+.placement-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+output { color: #a9b9b0; font: 500 .82rem/1.5 ui-monospace, monospace; text-align: center; }` }),
     'tone-gallery': vueSfc({ imports: ['DlButton', 'DlPopover', 'type DlPopoverTone'], script: `const tones: { value: DlPopoverTone; label: string; description: string }[] = [
   { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
   { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
@@ -281,11 +319,42 @@ const open = ref(false)`, template: `  <DlPopover
 .background-task > span { color: #94a3b8; font-size: .78rem; }` }),
   },
   tooltip: {
-    basic: vueSfc({ imports: ['DlButton', 'DlOverlaySide', 'DlTooltip'], script: `const sides = Object.values(DlOverlaySide).filter(Number.isInteger) as DlOverlaySide[]`, template: `  <div class="placement-grid">
-    <DlTooltip v-for="side in sides" :key="side" :side="side" :text="'当前使用 DlOverlaySide.' + DlOverlaySide[side]">
-      <DlButton variant="secondary">{{ DlOverlaySide[side] }}</DlButton>
-    </DlTooltip>
-  </div>`, style: `.placement-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }` }),
+    basic: vueSfc({ imports: ['DlButton', 'DlOverlaySide', 'DlTooltip'], script: `import { ref } from 'vue'
+
+const sides = Object.values(DlOverlaySide).filter(Number.isInteger) as DlOverlaySide[]
+const side = ref(DlOverlaySide.TopLeft)
+const details = ['top / center', 'top / start', 'top / end', 'right / center', 'right / start', 'right / end', 'bottom / center', 'bottom / start', 'bottom / end', 'left / center', 'left / start', 'left / end'] as const`, template: `  <section class="placement-lab">
+    <div class="placement-stage">
+      <DlTooltip
+        :open="true"
+        :side="side"
+        :title="DlOverlaySide[side]"
+        :text="details[side]"
+      >
+        <DlButton class="placement-anchor" variant="secondary">固定锚点 · 180px</DlButton>
+      </DlTooltip>
+    </div>
+
+    <div class="placement-controls" aria-label="Tooltip 方位">
+      <DlButton
+        v-for="item in sides"
+        :key="item"
+        size="sm"
+        :variant="item === side ? 'primary' : 'secondary'"
+        @click="side = item"
+      >
+        {{ DlOverlaySide[item] }}
+      </DlButton>
+    </div>
+    <output>DlOverlaySide.{{ DlOverlaySide[side] }} → {{ details[side] }}</output>
+  </section>`, style: `.placement-lab { display: grid; gap: 16px; }
+.placement-stage { position: relative; display: grid; place-items: center; min-height: 340px; overflow: visible; border: 1px solid rgba(148, 163, 184, .16); border-radius: 18px; background: radial-gradient(circle, rgba(104, 225, 255, .06), transparent 48%); }
+.placement-stage::before, .placement-stage::after { content: ''; position: absolute; border-color: rgba(148, 163, 184, .2); border-style: dashed; pointer-events: none; }
+.placement-stage::before { inset: 50% 24px auto; border-width: 1px 0 0; }
+.placement-stage::after { inset: 24px auto 24px 50%; border-width: 0 0 0 1px; }
+.placement-anchor { position: relative; z-index: 1; width: 180px; }
+.placement-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+output { color: #a9b9b0; font: 500 .82rem/1.5 ui-monospace, monospace; text-align: center; }` }),
     'tone-gallery': vueSfc({ imports: ['DlButton', 'DlTooltip', 'type DlTone'], script: `const tones: { value: DlTone; label: string; description: string }[] = [
   { value: 'default', label: 'Default 默认', description: '普通信息与基础任务' },
   { value: 'accent', label: 'Accent 强调', description: '品牌重点与当前任务' },
@@ -367,7 +436,11 @@ const content = computed(() => ({
       </DlCollapsible>
 
       <template v-else-if="componentDefinition.id === 'popover'">
-        <div v-if="scenario === 'basic'" class="placement-grid"><DlPopover v-for="side in overlaySides" :key="side" :side="side" :title="DlOverlaySide[side]"><template #trigger><DlButton variant="secondary">{{ DlOverlaySide[side] }}</DlButton></template>当前使用 <code>DlOverlaySide.{{ DlOverlaySide[side] }}</code>。</DlPopover></div>
+        <section v-if="scenario === 'basic'" class="overlay-placement-lab">
+          <div class="overlay-placement-stage"><DlPopover v-model:open="popoverLabOpen" :side="popoverSide" :title="DlOverlaySide[popoverSide]"><template #trigger><DlButton class="overlay-placement-anchor" variant="secondary">固定锚点 · 180px</DlButton></template>当前映射为 <code>{{ overlayPlacementDetails[popoverSide] }}</code>，切换方位时始终使用同一个锚点。</DlPopover></div>
+          <div class="overlay-placement-controls" aria-label="Popover 方位"><DlButton v-for="side in overlaySides" :key="side" size="sm" :variant="side === popoverSide ? 'primary' : 'secondary'" @click="popoverSide = side; popoverLabOpen = true">{{ DlOverlaySide[side] }}</DlButton></div>
+          <output>DlOverlaySide.{{ DlOverlaySide[popoverSide] }} → {{ overlayPlacementDetails[popoverSide] }}</output>
+        </section>
         <div v-else-if="scenario === 'tone-gallery'" class="tone-control-grid">
           <DlPopover v-for="item in popoverToneOptions" :key="item.value" :title="item.label" :tone="item.value"><template #trigger><DlButton variant="secondary">{{ item.label }}</DlButton></template>{{ item.description }}。当前展示 <code>{{ item.value }}</code> 的完整视觉。</DlPopover>
         </div>
@@ -415,7 +488,11 @@ const content = computed(() => ({
       <DlTabs v-else-if="componentDefinition.id === 'tabs'" v-model="tabValue" :items="tabItems"><template #default="{ item }"><strong>{{ item.label }}</strong><p>{{ item.description }}</p></template></DlTabs>
 
       <template v-else-if="componentDefinition.id === 'tooltip'">
-        <div v-if="scenario === 'basic'" class="placement-grid"><DlTooltip v-for="side in overlaySides" :key="side" :side="side" :text="`当前使用 DlOverlaySide.${DlOverlaySide[side]}`"><DlButton variant="secondary">{{ DlOverlaySide[side] }}</DlButton></DlTooltip></div>
+        <section v-if="scenario === 'basic'" class="overlay-placement-lab">
+          <div class="overlay-placement-stage"><DlTooltip :open="true" :side="tooltipSide" :title="DlOverlaySide[tooltipSide]" :text="overlayPlacementDetails[tooltipSide]"><DlButton class="overlay-placement-anchor" variant="secondary">固定锚点 · 180px</DlButton></DlTooltip></div>
+          <div class="overlay-placement-controls" aria-label="Tooltip 方位"><DlButton v-for="side in overlaySides" :key="side" size="sm" :variant="side === tooltipSide ? 'primary' : 'secondary'" @click="tooltipSide = side">{{ DlOverlaySide[side] }}</DlButton></div>
+          <output>DlOverlaySide.{{ DlOverlaySide[tooltipSide] }} → {{ overlayPlacementDetails[tooltipSide] }}</output>
+        </section>
         <div v-else-if="scenario === 'tone-gallery'" class="tone-control-grid"><DlTooltip v-for="item in toneOptions" :key="item.value" :title="item.label" :text="item.description" :tone="item.value" side="bottom"><DlButton variant="secondary">{{ item.label }}</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'arrowless'" class="tooltip-row"><DlTooltip text="无箭头时默认取消间距，也可通过 sideOffset 主动留白。" :arrow="false"><DlButton variant="secondary">悬停查看无箭头提示</DlButton></DlTooltip></div>
         <div v-else-if="scenario === 'application-flow'" class="tooltip-row"><DlTooltip text="加入收藏"><DlIconButton label="加入收藏">☆</DlIconButton></DlTooltip><DlTooltip text="编辑作品资料" tone="accent"><DlIconButton label="编辑作品资料">✎</DlIconButton></DlTooltip><DlTooltip text="移除收藏" tone="danger"><DlIconButton label="移除收藏" variant="danger">×</DlIconButton></DlTooltip></div>
@@ -430,7 +507,14 @@ const content = computed(() => ({
 .general-demo { width: min(100%, 720px); margin: 0 auto; padding: 1rem; }
 .accordion-value { color: var(--dl-text-muted); font-size: 0.82rem; }
 .avatar-row, .tooltip-row { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; }
-.placement-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; }
+.overlay-placement-lab { display: grid; gap: 16px; width: 100%; }
+.overlay-placement-stage { position: relative; display: grid; place-items: center; min-height: 340px; overflow: visible; border: 1px solid rgba(148, 163, 184, .16); border-radius: var(--dl-radius-md); background: radial-gradient(circle, rgba(104, 225, 255, .06), transparent 48%); }
+.overlay-placement-stage::before, .overlay-placement-stage::after { content: ''; position: absolute; border-color: rgba(148, 163, 184, .2); border-style: dashed; pointer-events: none; }
+.overlay-placement-stage::before { inset: 50% 24px auto; border-width: 1px 0 0; }
+.overlay-placement-stage::after { inset: 24px auto 24px 50%; border-width: 0 0 0 1px; }
+.overlay-placement-anchor { position: relative; z-index: 1; width: 180px; }
+.overlay-placement-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.overlay-placement-lab output { color: var(--dl-text-muted); font: 500 .82rem/1.5 ui-monospace, monospace; text-align: center; }
 .tone-control-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
 .progress-stack, .separator-demo { display: grid; gap: 1.5rem; width: 100%; }
 .separator-demo p, .waiting-card p { color: var(--dl-text-muted); }
@@ -447,7 +531,7 @@ const content = computed(() => ({
 .background-task { display: grid; gap: 12px; padding: 18px; border: 1px solid rgba(148, 163, 184, .16); border-radius: var(--dl-radius-md); }
 .background-task > span { color: #94a3b8; font-size: .78rem; }
 .secondary-hint { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px; border: 1px solid rgba(148, 163, 184, .16); border-radius: var(--dl-radius-md); color: var(--dl-text-muted); }
-@media (max-width: 560px) { .placement-grid, .tone-control-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .tone-control-grid, .overlay-placement-controls { grid-template-columns: 1fr; } }
 .waiting-card { display: grid; gap: 14px; padding: 20px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); background: rgba(3, 14, 8, .32); }
 .waiting-card p { margin: 0; }
 </style>

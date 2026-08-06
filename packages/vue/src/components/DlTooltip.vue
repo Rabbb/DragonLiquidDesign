@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
   side?: DlOverlaySide | DlOverlayBaseSide
   align?: 'start' | 'center' | 'end'
   arrow?: boolean
+  arrowPadding?: number
   sideOffset?: number
   delayDuration?: number
   skipDelayDuration?: number
@@ -27,6 +28,7 @@ const props = withDefaults(defineProps<{
   side: DlOverlaySide.Top,
   align: 'center',
   arrow: true,
+  arrowPadding: 8,
   sideOffset: undefined,
   delayDuration: 350,
   skipDelayDuration: 300,
@@ -52,9 +54,11 @@ const resolvedPlacement = computed(() => resolveDlOverlayPlacement(props.side, p
           data-slot="tooltip-content"
           data-dl-layer="tooltip"
           :data-arrow="arrow ? 'visible' : 'hidden'"
+          :data-arrow-padding="arrowPadding"
           :data-side-offset="resolvedSideOffset"
           :side="resolvedPlacement[0]"
           :align="resolvedPlacement[1]"
+          :arrow-padding="arrowPadding"
           :side-offset="resolvedSideOffset"
           :style="{ zIndex: contentZIndex, maxWidth: resolvedMaxWidth }"
           :class="tooltipStyles({ tone })"
@@ -82,6 +86,7 @@ const resolvedPlacement = computed(() => resolveDlOverlayPlacement(props.side, p
 .dl-tooltip__title { color: inherit; font-size: 0.78rem; font-weight: 700; line-height: 1.3; }
 .dl-tooltip__content { font-size: 0.82rem; line-height: 1.45; }
 .dl-tooltip__arrow { fill: var(--dl-tooltip-arrow); stroke: rgba(255, 255, 255, 0.14); filter: drop-shadow(0 8px 14px rgba(15, 23, 42, 0.24)); }
+.dl-tooltip:is([data-align='start'], [data-align='end']) > span:has(> .dl-tooltip__arrow) { visibility: visible !important; }
 .dl-tone-default { --dl-tooltip-bg: radial-gradient(circle at 14% 8%, rgba(255, 223, 128, 0.08), transparent 42%), radial-gradient(circle at 92% 100%, rgba(104, 225, 255, 0.1), transparent 48%), linear-gradient(180deg, rgba(25, 31, 37, 0.98), rgba(17, 23, 29, 0.96)); --dl-tooltip-arrow: rgba(17, 23, 29, 0.98); --dl-tooltip-text: #fff6dc; --dl-tooltip-border: rgba(226, 232, 240, 0.16); --dl-tooltip-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 14px 30px rgba(10, 16, 22, 0.3); --dl-tooltip-rail: linear-gradient(90deg, rgba(255, 223, 128, 0.24), rgba(226, 232, 240, 0.52), rgba(104, 225, 255, 0.38), rgba(124, 255, 190, 0.16)); }
 .dl-tone-accent { --dl-tooltip-bg: radial-gradient(circle at 16% 8%, rgba(255, 230, 150, 0.18), transparent 42%), radial-gradient(circle at 92% 100%, rgba(104, 225, 255, 0.12), transparent 46%), linear-gradient(180deg, rgba(33, 43, 35, 0.97), rgba(22, 31, 27, 0.95)); --dl-tooltip-arrow: rgba(22, 31, 27, 0.98); --dl-tooltip-text: #fff7dc; --dl-tooltip-border: rgba(255, 226, 142, 0.26); --dl-tooltip-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 14px 30px rgba(12, 24, 19, 0.3), 0 0 18px rgba(255, 220, 118, 0.08); --dl-tooltip-rail: linear-gradient(90deg, rgba(104, 225, 255, 0.38), rgba(255, 246, 210, 0.78), rgba(255, 215, 110, 0.62), rgba(124, 255, 190, 0.28)); }
 .dl-tone-success { --dl-tooltip-bg: radial-gradient(circle at 16% 8%, rgba(124, 255, 190, 0.18), transparent 42%), radial-gradient(circle at 90% 100%, rgba(0, 206, 209, 0.12), transparent 48%), linear-gradient(180deg, rgba(17, 59, 44, 0.98), rgba(10, 40, 30, 0.96)); --dl-tooltip-arrow: rgba(10, 40, 30, 0.98); --dl-tooltip-text: #edfff6; --dl-tooltip-border: rgba(124, 255, 190, 0.26); --dl-tooltip-shadow: inset 0 1px 0 rgba(225, 255, 242, 0.1), 0 14px 30px rgba(5, 31, 23, 0.32), 0 0 18px rgba(80, 220, 166, 0.1); --dl-tooltip-rail: linear-gradient(90deg, rgba(80, 220, 166, 0.38), rgba(205, 255, 230, 0.72), rgba(0, 206, 209, 0.58), rgba(124, 255, 190, 0.28)); }

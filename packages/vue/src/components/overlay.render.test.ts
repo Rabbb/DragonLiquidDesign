@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
 import { readFileSync } from 'node:fs'
+import { DlOverlaySide } from '../types'
 import DlPopover from './DlPopover.vue'
 import DlToast from './DlToast.vue'
 import DlTooltip from './DlTooltip.vue'
@@ -165,6 +166,7 @@ describe('ported overlay presentation', () => {
     expect(tooltip).not.toBeNull()
     expect(tooltip?.classList).toContain('dl-tooltip')
     expect(tooltip?.dataset.arrow).toBe('visible')
+    expect(tooltip?.dataset.arrowPadding).toBe('8')
     expect(tooltip?.dataset.sideOffset).toBe('4')
   })
 
@@ -180,6 +182,19 @@ describe('ported overlay presentation', () => {
     expect(tooltip?.dataset.arrow).toBe('hidden')
     expect(tooltip?.dataset.sideOffset).toBe('0')
     expect(tooltip?.querySelector('.dl-tooltip__arrow')).toBeNull()
+  })
+
+  it('keeps an arrow mounted with safe padding for edge-aligned tooltips', async () => {
+    mountOverlay(DlTooltip, {
+      attachTo: document.body,
+      props: { open: true, text: '边缘方位', side: DlOverlaySide.TopLeft, arrowPadding: 12 },
+      slots: { default: '<button>固定锚点</button>' },
+    })
+    await nextTick()
+
+    const tooltip = document.body.querySelector<HTMLElement>('[data-slot="tooltip-content"]')
+    expect(tooltip?.dataset.arrowPadding).toBe('12')
+    expect(tooltip?.querySelector('.dl-tooltip__arrow')).not.toBeNull()
   })
 
   it('shows the hover card through its portal with the migrated class', async () => {
