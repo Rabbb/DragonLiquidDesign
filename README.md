@@ -27,6 +27,9 @@ npm run publish:local
 http://localhost:8030/
 ```
 
+本地 npm 包由独立 IIS 站点 `DragonLiquidPackages` 提供，发布目录为
+`O:\DragonLiquidPackages.deploy`，访问地址为 `http://localhost:8031/`。
+
 展厅首页用于介绍设计系统；点击顶部“组件”进入文档工作台。组件文档使用
 `/components/{component}/{scenario}` 深链；额外场景按 `0..n` 声明，左侧只在确有场景时
 展开子菜单，右侧只渲染当前案例。目录按 Foundation、Form、Color、Dates、General 分组，对齐 Reka UI 的组件
@@ -41,7 +44,7 @@ http://localhost:8030/
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.5.tgz"
+    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.8.tgz"
   }
 }
 ```

@@ -110,7 +110,7 @@ onBeforeUnmount(() => {
         <a href="https://www.npmjs.com/package/@dragon-liquid/vue" target="_blank" rel="noreferrer">NPM ↗</a>
       </nav>
       <DlBadge tone="success" variant="outline" size="md">
-        <span class="live-dot" /> v0.6.0-alpha.5 · ALPHA
+        <span class="live-dot" /> v0.6.0-alpha.8 · ALPHA
       </DlBadge>
     </header>
 
