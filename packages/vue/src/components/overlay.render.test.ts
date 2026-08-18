@@ -13,7 +13,9 @@ import DlAutocomplete from './DlAutocomplete.vue'
 import DlDatePicker from './DlDatePicker.vue'
 import DlDateRangePicker from './DlDateRangePicker.vue'
 import DlMonthPicker from './DlMonthPicker.vue'
+import DlMonthRangePicker from './DlMonthRangePicker.vue'
 import DlYearPicker from './DlYearPicker.vue'
+import DlYearRangePicker from './DlYearRangePicker.vue'
 
 class ResizeObserverMock {
   observe() {}
@@ -68,12 +70,15 @@ describe('ported overlay presentation', () => {
     await nextTick()
 
     expect(document.body.querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+    expect(document.body.querySelector('.dl-year-picker-grid')?.children).toHaveLength(12)
+    expect(document.body.querySelector('.dl-year-picker-grid')?.classList.contains('dl-year-picker-grid--decade')).toBe(false)
     const year = document.body.querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2025-"]')
     expect(year).not.toBeNull()
     year?.click()
     await nextTick()
 
     expect(document.body.querySelector('[data-slot="month-picker-panel"]')).not.toBeNull()
+    expect(document.body.querySelector('.dl-month-picker-grid')?.children).toHaveLength(12)
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     const month = document.body.querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2025-11-"]')
     expect(month).not.toBeNull()
@@ -101,15 +106,79 @@ describe('ported overlay presentation', () => {
 
     expect(wrapper.get('[data-slot="month-picker"]').text()).toContain('2026年8月')
     expect(document.body.querySelector('[data-slot="month-picker-panel"]')).not.toBeNull()
+    expect(document.body.querySelector('.dl-month-picker-grid')?.children).toHaveLength(12)
+    document.body.querySelector<HTMLElement>('[data-slot="month-picker-year-trigger"]')?.click()
+    await nextTick()
 
-    const month = document.body.querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2026-09-"]')
+    expect(document.body.querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+    document.body.querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2027-"]')?.click()
+    await nextTick()
+
+    expect(document.body.querySelector('[data-slot="month-picker-panel"]')).not.toBeNull()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    const month = document.body.querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2027-09-"]')
     expect(month).not.toBeNull()
     month?.click()
     await nextTick()
 
     const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as CalendarDate
-    expect(selected.toString()).toBe('2026-09-01')
+    expect(selected.toString()).toBe('2027-09-01')
     expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
+  })
+
+  it('renders the month range picker as a two-panel popover with live range preview', async () => {
+    const wrapper = mountOverlay(DlMonthRangePicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: { start: new CalendarDate(2025, 11, 1), end: new CalendarDate(2026, 2, 1) }, locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    expect(wrapper.get('[data-slot="month-range-picker"]').text()).toContain('2025年11月 — 2026年2月')
+    const panel = document.body.querySelector<HTMLElement>('.dl-date-picker-panel')
+    const calendars = panel?.querySelectorAll<HTMLElement>('[data-slot="month-range-picker-panel"]')
+    expect(calendars).toHaveLength(2)
+    expect(calendars?.[0].querySelector('[data-slot="month-range-picker-year-trigger"]')?.textContent).toBe('2025年')
+    expect(calendars?.[1].querySelector('[data-slot="month-range-picker-year-trigger"]')?.textContent).toBe('2026年')
+    expect(calendars?.[0].querySelector('[aria-label="下一年"]')?.hasAttribute('disabled')).toBe(true)
+    expect(calendars?.[1].querySelector('[aria-label="上一年"]')?.hasAttribute('disabled')).toBe(true)
+
+    calendars?.[0].querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2025-12-"]')?.click()
+    await nextTick()
+    const previewEnd = calendars?.[1].querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2026-03-"]')
+    previewEnd?.dispatchEvent(new Event('pointerenter', { bubbles: true }))
+    await nextTick()
+
+    expect(calendars?.[0].querySelector('[data-value^="2025-12-"]')?.hasAttribute('data-selection-start')).toBe(true)
+    expect(calendars?.[1].querySelector('[data-value^="2026-01-"]')?.hasAttribute('data-highlighted')).toBe(true)
+    expect(previewEnd?.hasAttribute('data-selection-end')).toBe(true)
+    previewEnd?.click()
+    await nextTick()
+
+    const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as { start: CalendarDate; end: CalendarDate }
+    expect(`${selected.start.year}-${selected.start.month}`).toBe('2025-12')
+    expect(`${selected.end.year}-${selected.end.month}`).toBe('2026-3')
+    expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
+  })
+
+  it('switches either month range panel through a constrained year picker', async () => {
+    const wrapper = mountOverlay(DlMonthRangePicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: { start: new CalendarDate(2025, 4, 1), end: new CalendarDate(2028, 8, 1) }, locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    const calendars = document.body.querySelectorAll<HTMLElement>('[data-slot="month-range-picker-panel"]')
+    calendars[0].querySelector<HTMLElement>('[data-slot="month-range-picker-year-trigger"]')?.click()
+    await nextTick()
+
+    expect(calendars[0].querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+    expect(calendars[0].querySelector('[data-reka-year-picker-cell-trigger][data-value^="2028-"]')?.hasAttribute('data-disabled')).toBe(true)
+    calendars[0].querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2027-"]')?.click()
+    await nextTick()
+
+    expect(calendars[0].querySelector('[data-slot="month-range-picker-year-trigger"]')?.textContent).toBe('2027年')
+    expect(calendars[1].querySelector('[data-slot="month-range-picker-year-trigger"]')?.textContent).toBe('2028年')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
   })
 
   it('renders the year picker as an input-triggered popover', async () => {
@@ -121,21 +190,75 @@ describe('ported overlay presentation', () => {
 
     expect(wrapper.get('[data-slot="year-picker"]').text()).toContain('2026年')
     expect(document.body.querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+    expect(document.body.querySelector('.dl-year-picker-grid')?.children).toHaveLength(10)
+    expect(document.body.querySelector('.dl-year-picker-grid')?.classList.contains('dl-year-picker-grid--decade')).toBe(true)
+    document.body.querySelector<HTMLElement>('[data-slot="year-picker-decade-trigger"]')?.click()
+    await nextTick()
 
-    const year = document.body.querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2027-"]')
+    expect(document.body.querySelector('[data-slot="decade-picker-panel"]')).not.toBeNull()
+    expect(document.body.querySelector('.dl-decade-picker-grid')?.children).toHaveLength(10)
+    document.body.querySelector<HTMLElement>('[data-dl-decade-picker-cell-trigger][data-value="2030"]')?.click()
+    await nextTick()
+
+    expect(document.body.querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    const year = document.body.querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2037-"]')
     expect(year).not.toBeNull()
     year?.click()
     await nextTick()
 
     const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as CalendarDate
-    expect(selected.toString()).toBe('2027-08-01')
+    expect(selected.toString()).toBe('2037-08-01')
+    expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
+  })
+
+  it('renders the year range picker as two non-overlapping pages with live range preview', async () => {
+    const wrapper = mountOverlay(DlYearRangePicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: { start: new CalendarDate(2025, 1, 1), end: new CalendarDate(2034, 1, 1) }, locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    expect(wrapper.get('[data-slot="year-range-picker"]').text()).toContain('2025年 — 2034年')
+    const panel = document.body.querySelector<HTMLElement>('.dl-date-picker-panel')
+    const calendars = panel?.querySelectorAll<HTMLElement>('[data-slot="year-range-picker-panel"]')
+    expect(calendars).toHaveLength(2)
+    expect(calendars?.[0].querySelector('[role="heading"]')?.textContent).toBe('2020年 - 2029年')
+    expect(calendars?.[1].querySelector('[role="heading"]')?.textContent).toBe('2030年 - 2039年')
+    expect(calendars?.[0].querySelector('[aria-label="下一页年份"]')?.hasAttribute('disabled')).toBe(true)
+    expect(calendars?.[1].querySelector('[aria-label="上一页年份"]')?.hasAttribute('disabled')).toBe(true)
+
+    calendars?.[1].querySelector<HTMLElement>('[data-slot="year-range-picker-decade-trigger"]')?.click()
+    await nextTick()
+    expect(calendars?.[1].querySelector('[data-slot="decade-picker-panel"]')).not.toBeNull()
+    expect(calendars?.[1].querySelector('[data-dl-decade-picker-cell-trigger][data-value="2020"]')?.hasAttribute('disabled')).toBe(true)
+    calendars?.[1].querySelector<HTMLElement>('[data-dl-decade-picker-cell-trigger][data-value="2040"]')?.click()
+    await nextTick()
+    expect(calendars?.[1].querySelector('[data-slot="year-range-picker-decade-trigger"]')?.textContent).toBe('2040年 - 2049年')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+
+    calendars?.[0].querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2028-"]')?.click()
+    await nextTick()
+    const previewEnd = calendars?.[1].querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2044-"]')
+    previewEnd?.dispatchEvent(new Event('pointerenter', { bubbles: true }))
+    await nextTick()
+
+    expect(calendars?.[0].querySelector('[data-value^="2028-"]')?.hasAttribute('data-selection-start')).toBe(true)
+    expect(calendars?.[1].querySelector('[data-value^="2040-"]')?.hasAttribute('data-highlighted')).toBe(true)
+    expect(previewEnd?.hasAttribute('data-selection-end')).toBe(true)
+    previewEnd?.click()
+    await nextTick()
+
+    const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as { start: CalendarDate; end: CalendarDate }
+    expect(selected.start.year).toBe(2028)
+    expect(selected.end.year).toBe(2044)
     expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
   })
 
   it('uses the same compact panel for the date range picker', async () => {
-    mountOverlay(DlDateRangePicker, {
+    const wrapper = mountOverlay(DlDateRangePicker, {
       attachTo: document.body,
-      props: { open: true },
+      props: { open: true, modelValue: { start: new CalendarDate(2026, 1, 10), end: new CalendarDate(2026, 5, 20) }, locale: 'zh-CN' },
     })
     await nextTick()
 
@@ -145,9 +268,106 @@ describe('ported overlay presentation', () => {
     expect(panel?.dataset.arrow).toBe('hidden')
     expect(panel?.dataset.sideOffset).toBe('0')
     expect(panel?.querySelector('.dl-popover__arrow')).toBeNull()
-    expect(panel?.querySelector('[data-slot="range-calendar"]')).not.toBeNull()
+    const calendars = panel?.querySelectorAll('[data-slot="range-picker-panel"]')
+    expect(calendars).toHaveLength(2)
+    expect(calendars?.[0].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年一月')
+    expect(calendars?.[1].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年五月')
     expect(panel?.querySelector('.dl-popover__header')).toBeNull()
     expect(panel?.querySelector('.dl-popover__close')).toBeNull()
+
+    calendars?.[0].querySelector<HTMLElement>('[aria-label="下个月"]')?.click()
+    await nextTick()
+    expect(calendars?.[0].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年二月')
+    expect(calendars?.[1].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年五月')
+
+    calendars?.[0].querySelector<HTMLElement>('[data-reka-calendar-cell-trigger][data-value="2026-02-12"]:not([data-outside-view])')?.click()
+    await nextTick()
+    const previewEnd = calendars?.[1].querySelector<HTMLElement>('[data-reka-calendar-cell-trigger][data-value="2026-05-15"]:not([data-outside-view])')
+    previewEnd?.dispatchEvent(new Event('pointerenter', { bubbles: true }))
+    await nextTick()
+
+    expect(calendars?.[0].querySelector('[data-value="2026-02-12"]')?.hasAttribute('data-selection-start')).toBe(true)
+    expect(calendars?.[0].querySelector('[data-value="2026-02-20"]')?.hasAttribute('data-highlighted')).toBe(true)
+    expect(calendars?.[1].querySelector('[data-value="2026-05-01"]')?.hasAttribute('data-highlighted')).toBe(true)
+    expect(previewEnd?.hasAttribute('data-selection-end')).toBe(true)
+
+    previewEnd?.click()
+    await nextTick()
+
+    const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as { start: CalendarDate; end: CalendarDate }
+    expect(selected.start.toString()).toBe('2026-02-12')
+    expect(selected.end.toString()).toBe('2026-05-15')
+    expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
+  })
+
+  it('switches a range panel through year and month pickers without committing a date', async () => {
+    const wrapper = mountOverlay(DlDateRangePicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: { start: new CalendarDate(2025, 1, 10), end: new CalendarDate(2026, 5, 20) }, locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    const panel = document.body.querySelector<HTMLElement>('.dl-date-picker-panel')
+    const calendars = panel?.querySelectorAll<HTMLElement>('[data-slot="range-picker-panel"]')
+    calendars?.[0].querySelector<HTMLElement>('[data-slot="date-range-picker-year-trigger"]')?.click()
+    await nextTick()
+
+    expect(calendars?.[0].querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+    calendars?.[0].querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2026-"]')?.click()
+    await nextTick()
+
+    expect(calendars?.[0].querySelector('[data-slot="month-picker-panel"]')).not.toBeNull()
+    const blockedMonth = calendars?.[0].querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2026-05-"]')
+    expect(blockedMonth?.hasAttribute('data-disabled')).toBe(true)
+    calendars?.[0].querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2026-04-"]')?.click()
+    await nextTick()
+
+    expect(calendars?.[0].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年四月')
+    expect(calendars?.[1].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年五月')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
+
+  it('keeps independent range picker panels ordered and non-overlapping', async () => {
+    mountOverlay(DlDateRangePicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: { start: new CalendarDate(2026, 1, 10), end: new CalendarDate(2026, 5, 20) }, locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    const panel = document.body.querySelector<HTMLElement>('.dl-date-picker-panel')
+    const calendars = panel?.querySelectorAll('[data-slot="range-picker-panel"]')
+    for (let index = 0; index < 4; index++) {
+      calendars?.[0].querySelector<HTMLElement>('[aria-label="下个月"]')?.click()
+      await nextTick()
+    }
+
+    expect(calendars?.[0].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年四月')
+    expect(calendars?.[1].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年五月')
+    expect(calendars?.[0].querySelector('[aria-label="下个月"]')?.hasAttribute('disabled')).toBe(true)
+    expect(calendars?.[1].querySelector('[aria-label="上个月"]')?.hasAttribute('disabled')).toBe(true)
+
+    calendars?.[1].querySelector<HTMLElement>('[aria-label="下个月"]')?.click()
+    await nextTick()
+    calendars?.[0].querySelector<HTMLElement>('[aria-label="下个月"]')?.click()
+    await nextTick()
+    expect(calendars?.[0].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年五月')
+    expect(calendars?.[1].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年六月')
+  })
+
+  it('uses one range picker panel when the available dates stay in one month', async () => {
+    mountOverlay(DlDateRangePicker, {
+      attachTo: document.body,
+      props: { open: true, minValue: new CalendarDate(2026, 2, 5), maxValue: new CalendarDate(2026, 2, 24), locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    const panel = document.body.querySelector<HTMLElement>('.dl-date-picker-panel')
+    const calendars = panel?.querySelectorAll('[data-slot="range-picker-panel"]')
+    expect(calendars).toHaveLength(1)
+    expect(calendars?.[0].querySelector('[data-slot="range-picker-calendar-heading"]')?.textContent).toBe('2026年二月')
+    expect(calendars?.[0].querySelector('[data-value="2026-02-04"]')?.hasAttribute('data-disabled')).toBe(true)
+    expect(calendars?.[0].querySelector('[data-value="2026-02-05"]')?.hasAttribute('data-disabled')).toBe(false)
+    expect(calendars?.[0].querySelector('[data-value="2026-02-25"]')?.hasAttribute('data-disabled')).toBe(true)
   })
 
   it('aligns the autocomplete surface to the anchor start edge and width', async () => {

@@ -119,7 +119,7 @@ O:\DragonLiquidDesign
 
 1. 在 `packages/vue` 执行构建和测试。
 2. 使用 `npm pack --pack-destination O:\DragonLiquidDesign\registry` 生成版本化 `.tgz`。
-3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.8.tgz` 安装，引用的是发布产物而非源码。
+3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.9.tgz` 安装，引用的是发布产物而非源码。
 4. 修改组件后必须提升包版本、重新打包并在消费方重新安装。
 
 若以后部署 Verdaccio，可保持包名和版本不变，执行：
@@ -205,7 +205,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.6.0-alpha.8.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.6.0-alpha.9.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -268,5 +268,5 @@ npm run build:showcase
 当前版本下载地址为：
 
 ```text
-http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.8.tgz
+http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.9.tgz
 ```

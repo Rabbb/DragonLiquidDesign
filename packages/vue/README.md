@@ -101,6 +101,7 @@ createApp(App).use(mdxSecurity).mount('#app')
 
 - 42 个稳定组件覆盖基础、表单、内容、导航、菜单、浮层和反馈。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.9` 统一 Date、Month 与 Year 选择器的分层快速导航，为范围选择增加独立双面板、动态高亮与规则化年月网格。
 - `0.6.0-alpha.8` 补齐 Popover 与 Tooltip 的十二方位数字枚举、方位实验台、箭头和贴边间距控制，收敛 Popover 炫彩条，并统一日期浮层的紧凑表面；`alpha.6`、`alpha.7` 仅为已废弃的本地构建号，不再复用。
 - `0.6.0-alpha.5` 修复 Accordion 关闭动画的作用域冲突，确保再次点击已展开标题时完成收起。
 - `0.6.0-alpha.4` 保持 Button 默认 `secondary`，并为历史上依赖默认主按钮的用法显式补充 `variant="primary"`。
