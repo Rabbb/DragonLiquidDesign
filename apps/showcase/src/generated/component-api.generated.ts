@@ -457,6 +457,12 @@ export default {
         "defaultValue": "null"
       },
       {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "DateValue",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "locale",
         "description": "日期、时间或数字格式使用的区域语言。",
         "type": "string",
@@ -2535,10 +2541,22 @@ export default {
   "month-picker": {
     "props": [
       {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
         "type": "DateValue | DateValue[] | null",
         "defaultValue": "null"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择月份'"
       },
       {
         "prop": "locale",
@@ -2553,6 +2571,12 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "preventDeselect",
+        "description": "设置 preventDeselect 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -2563,6 +2587,12 @@ export default {
         "description": "是否只读；保留浏览能力但禁止修改。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
       }
     ],
     "relatedTypes": []
@@ -4970,10 +5000,22 @@ export default {
   "year-picker": {
     "props": [
       {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
         "type": "DateValue | DateValue[] | null",
         "defaultValue": "null"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择年份'"
       },
       {
         "prop": "locale",
@@ -4988,6 +5030,12 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "preventDeselect",
+        "description": "设置 preventDeselect 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -4998,6 +5046,12 @@ export default {
         "description": "是否只读；保留浏览能力但禁止修改。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
       }
     ],
     "relatedTypes": []

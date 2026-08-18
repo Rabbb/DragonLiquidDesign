@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { CalendarDate } from '@internationalized/date'
 import { afterEach, describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
 import { readFileSync } from 'node:fs'
@@ -11,6 +12,8 @@ import DlDialog from './DlDialog.vue'
 import DlAutocomplete from './DlAutocomplete.vue'
 import DlDatePicker from './DlDatePicker.vue'
 import DlDateRangePicker from './DlDateRangePicker.vue'
+import DlMonthPicker from './DlMonthPicker.vue'
+import DlYearPicker from './DlYearPicker.vue'
 
 class ResizeObserverMock {
   observe() {}
@@ -50,6 +53,83 @@ describe('ported overlay presentation', () => {
     expect(panel?.querySelector('[data-slot="calendar"]')).not.toBeNull()
     expect(panel?.querySelector('.dl-popover__header')).toBeNull()
     expect(panel?.querySelector('.dl-popover__close')).toBeNull()
+  })
+
+  it('switches between year, month, and day panels before committing a date', async () => {
+    const wrapper = mountOverlay(DlDatePicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: new CalendarDate(2024, 10, 15), locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    const yearTrigger = document.body.querySelector<HTMLElement>('[data-slot="date-picker-year-trigger"]')
+    expect(yearTrigger).not.toBeNull()
+    yearTrigger?.click()
+    await nextTick()
+
+    expect(document.body.querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+    const year = document.body.querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2025-"]')
+    expect(year).not.toBeNull()
+    year?.click()
+    await nextTick()
+
+    expect(document.body.querySelector('[data-slot="month-picker-panel"]')).not.toBeNull()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    const month = document.body.querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2025-11-"]')
+    expect(month).not.toBeNull()
+    month?.click()
+    await nextTick()
+
+    expect(document.body.querySelector('[data-slot="calendar"]')).not.toBeNull()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    const day = document.body.querySelector<HTMLElement>('[data-reka-calendar-cell-trigger][data-value="2025-11-20"]:not([data-outside-view])')
+    expect(day).not.toBeNull()
+    day?.click()
+    await nextTick()
+
+    const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as CalendarDate
+    expect(selected.toString()).toBe('2025-11-20')
+    expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
+  })
+
+  it('renders the month picker as an input-triggered popover', async () => {
+    const wrapper = mountOverlay(DlMonthPicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: new CalendarDate(2026, 8, 1), locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    expect(wrapper.get('[data-slot="month-picker"]').text()).toContain('2026年8月')
+    expect(document.body.querySelector('[data-slot="month-picker-panel"]')).not.toBeNull()
+
+    const month = document.body.querySelector<HTMLElement>('[data-reka-month-picker-cell-trigger][data-value^="2026-09-"]')
+    expect(month).not.toBeNull()
+    month?.click()
+    await nextTick()
+
+    const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as CalendarDate
+    expect(selected.toString()).toBe('2026-09-01')
+    expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
+  })
+
+  it('renders the year picker as an input-triggered popover', async () => {
+    const wrapper = mountOverlay(DlYearPicker, {
+      attachTo: document.body,
+      props: { open: true, modelValue: new CalendarDate(2026, 8, 1), locale: 'zh-CN' },
+    })
+    await nextTick()
+
+    expect(wrapper.get('[data-slot="year-picker"]').text()).toContain('2026年')
+    expect(document.body.querySelector('[data-slot="year-picker-panel"]')).not.toBeNull()
+
+    const year = document.body.querySelector<HTMLElement>('[data-reka-year-picker-cell-trigger][data-value^="2027-"]')
+    expect(year).not.toBeNull()
+    year?.click()
+    await nextTick()
+
+    const selected = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as CalendarDate
+    expect(selected.toString()).toBe('2027-08-01')
+    expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
   })
 
   it('uses the same compact panel for the date range picker', async () => {

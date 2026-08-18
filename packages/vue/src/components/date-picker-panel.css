@@ -9,9 +9,28 @@
 }
 
 .dl-date-picker-panel [data-slot='calendar'],
-.dl-date-picker-panel [data-slot='range-calendar'] {
+.dl-date-picker-panel [data-slot='range-calendar'],
+.dl-date-picker-panel [data-slot='month-picker-panel'],
+.dl-date-picker-panel [data-slot='year-picker-panel'] {
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
+}
+
+.dl-date-picker-heading-trigger {
+  border-radius: 7px;
+  padding: 3px 6px;
+  color: var(--dl-text);
+  outline: none;
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+.dl-date-picker-heading-trigger:hover {
+  color: rgb(254 243 199);
+  background: rgb(255 255 255 / 0.08);
+}
+
+.dl-date-picker-heading-trigger:focus-visible {
+  box-shadow: var(--dl-focus);
 }
