@@ -76,9 +76,10 @@ export type {
   DlMdxValue,
 } from './components/dl-mdx.types'
 export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
-export { applyDlMdxCommand } from './components/dl-mdx.commands'
+export { applyDlMdxCommand, insertDlMdxSnippet } from './components/dl-mdx.commands'
 export type { DlMdxCommandContext, DlMdxCommandResult, DlMdxSelection } from './components/dl-mdx.commands'
 export {
+  createDlMdxComponentSnippet,
   createDlMdxRegistry,
   defineDlMdxComponent,
   dlMdxRegistryKey,

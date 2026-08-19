@@ -13,6 +13,16 @@ function replace(context: DlMdxCommandContext, value: string, selection?: DlMdxS
   return { source, selection: selection ?? { start: caret, end: caret } }
 }
 
+export function insertDlMdxSnippet(context: DlMdxCommandContext, snippet: string): DlMdxCommandResult {
+  const range = normalize(context.selection)
+  const normalizedSnippet = snippet.trim()
+  if (!normalizedSnippet) return { source: context.source, selection: range }
+  const leadingBreak = range.start > 0 && context.source[range.start - 1] !== '\n' ? '\n' : ''
+  const trailingBreak = range.end < context.source.length && context.source[range.end] !== '\n' ? '\n' : ''
+  const value = `${leadingBreak}${normalizedSnippet}\n${trailingBreak}`
+  return replace(context, value)
+}
+
 function wrap(context: DlMdxCommandContext, left: string, right = left, placeholder = ''): DlMdxCommandResult {
   const range = normalize(context.selection)
   const selected = context.source.slice(range.start, range.end)
@@ -88,9 +98,6 @@ export function applyDlMdxCommand(action: DlMdxToolbarAction, context: DlMdxComm
         ? { start: range.start + 7, end: range.start + 7 + selected.length }
         : { start: range.start + 7, end: range.start + 7 })
     }
-    case 'component': {
-      const value = '\n+++component:Callout\nid = "callout"\ntone = "accent"\n+++end\n'
-      return replace(context, value, { start: context.selection.start + 14, end: context.selection.start + 21 })
-    }
+    case 'component': return { source: context.source, selection: normalize(context.selection) }
   }
 }

@@ -27,6 +27,7 @@ export interface DlMdxComponentDefinition {
   category?: DlMdxComponentCategory
   maturity?: DlMdxComponentMaturity
   description?: string
+  insertable?: boolean
 }
 
 export interface DlMdxRegistry {
@@ -89,6 +90,28 @@ export function createDlMdxRegistry(definitions: DlMdxComponentDefinition[] = []
   }
 
   return registry.registerAll(definitions)
+}
+
+function serializeDlMdxValue(value: DlMdxValue): string | undefined {
+  if (value === null) return 'null'
+  if (typeof value === 'string') return JSON.stringify(value)
+  if (typeof value === 'boolean') return String(value)
+  if (typeof value === 'number') return Number.isFinite(value) ? String(value) : undefined
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return undefined
+  }
+}
+
+export function createDlMdxComponentSnippet(definition: DlMdxComponentDefinition): string | undefined {
+  if (definition.insertable === false || (!definition.component && !definition.render)) return undefined
+  const properties = Object.entries(definition.defaultProps ?? {}).flatMap(([name, value]) => {
+    if (!/^[A-Za-z][\w.-]*$/.test(name)) return []
+    const serialized = serializeDlMdxValue(value)
+    return serialized === undefined ? [] : [`${name} = ${serialized}`]
+  })
+  return [`+++component:${definition.name}`, ...properties, '+++end'].join('\n')
 }
 
 export function useDlMdxRegistry(fallback?: DlMdxRegistry): DlMdxRegistry | undefined {

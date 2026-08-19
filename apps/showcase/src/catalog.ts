@@ -273,7 +273,7 @@ const readyComponents: ComponentDefinition[] = [
     id: 'mdx', name: 'MDX 富文本文档', category: 'general', since: '0.5.0-alpha.1', implementation: 'ready', maturity: 'alpha',
     summary: '从 TodoMoe 迁移并升级的 MarkdownX 编辑、预览与安全组件扩展工作台。',
     scenarios: [
-      { id: 'basic', label: '双栏写作', summary: 'CodeMirror 编辑与防抖实时预览' },
+      { id: 'basic', label: '双栏写作', summary: '全高预览与安全组件浮动插入库' },
       { id: 'archive-document', label: '内容档案', summary: '标题、表格、任务、引用与代码块' },
       { id: 'component-blocks', label: '安全组件块', summary: '通过显式 Vue 插槽扩展 MarkdownX' },
       { id: 'official-foundation', label: '官方注册 · 基础', summary: '基础视觉与文本输入组件定义' },

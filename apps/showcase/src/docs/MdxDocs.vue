@@ -210,14 +210,24 @@ const content = computed(() => {
   }
   return ({
   basic: {
-    title: '沉浸式双栏写作',
-    description: '迁移 TodoMoe 的编辑工作流，并用 CodeMirror 6 补回行号、语法高亮、折叠、括号匹配、撤销历史与键盘快捷键。',
-    code: vueSfc({
+    title: '全高双栏写作与安全组件库',
+    description: '左右面板共享完整工作区高度；浮动组件库只列出当前可信注册表中可真实插入的定义，并支持连续插入。',
+    code: `// main.ts
+import { createApp } from 'vue'
+import { createDlMdxOfficialRegistry } from '@dragon-liquid/vue'
+import App from './App.vue'
+
+createApp(App)
+  .use(createDlMdxOfficialRegistry())
+  .mount('#app')
+
+// App.vue
+${vueSfc({
       imports: ['DlMdx'],
       script: `import { ref } from 'vue'\n\nconst source = ref([\n  '# 作品资料草稿',\n  '',\n  '> 在左侧编辑，右侧会安全地实时预览。',\n  '',\n  '- [ ] 补充角色关系',\n].join('\\n'))`,
       template: `  <DlMdx\n    v-model="source"\n    mode="split"\n    min-height="30rem"\n    aria-label="作品资料"\n  />`,
-    }),
-    tips: ['Ctrl/Cmd + B 与 Ctrl/Cmd + I 可直接操作当前选区。', '预览默认防抖 120ms；超长文档可适当提高 debounce。'],
+    })}`,
+    tips: ['工具栏的 ◇ 只在安全注册表存在可插入定义时出现；未注册时不生成 Callout 等占位代码。', '选择组件后代码插入当前光标，焦点返回编辑器，组件库浮窗保持打开以便连续插入。', '分栏模式下右侧预览会占满工作区高度并独立滚动。', 'Ctrl/Cmd + B 与 Ctrl/Cmd + I 可直接操作当前选区。'],
   },
   'archive-document': {
     title: '发布后的内容档案',

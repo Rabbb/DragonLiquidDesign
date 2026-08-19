@@ -2289,6 +2289,12 @@ export default {
             "description": "补充说明文字；不传时隐藏说明区域。",
             "type": "string",
             "defaultValue": "可选"
+          },
+          {
+            "prop": "insertable",
+            "description": "是否允许该可信注册定义出现在 MarkdownX 浮动组件库中。",
+            "type": "boolean",
+            "defaultValue": "可选"
           }
         ],
         "kind": "structure",

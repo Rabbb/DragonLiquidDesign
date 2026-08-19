@@ -77,6 +77,7 @@ const descriptions = {
   icon: '自定义状态图标；不传时按色调选择默认图标。',
   id: '控件或输入元素使用的唯一标识。',
   interactive: '是否启用悬停抬升等可交互视觉反馈。',
+  insertable: '是否允许该可信注册定义出现在 MarkdownX 浮动组件库中。',
   install: '把当前工具注入 Vue 应用；通常由 app.use 自动调用。',
   items: '用于渲染控件内容的结构化项目列表。',
   itemsPerPage: '每页显示的数据条数。',

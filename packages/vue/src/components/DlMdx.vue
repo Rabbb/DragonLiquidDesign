@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId, watch, type ComponentPublicInstance } from 'vue'
 import { tv } from 'tailwind-variants'
-import { applyDlMdxCommand } from './dl-mdx.commands'
+import { applyDlMdxCommand, insertDlMdxSnippet, type DlMdxSelection } from './dl-mdx.commands'
 import { parseDlMdx } from './dl-mdx.parser'
-import { useDlMdxRegistry, type DlMdxRegistry } from './dl-mdx.registry'
+import {
+  createDlMdxComponentSnippet,
+  useDlMdxRegistry,
+  type DlMdxComponentCategory,
+  type DlMdxComponentDefinition,
+  type DlMdxRegistry,
+} from './dl-mdx.registry'
 import { useDlMdxSecurityPolicy } from './dl-mdx.security'
 import type {
   DlMdxDocument,
@@ -14,6 +20,13 @@ import type {
 } from './dl-mdx.types'
 import MdxEditor from './MdxEditor.vue'
 import MdxPreview from './MdxPreview.vue'
+
+type ComponentLibraryEntry = {
+  definition: DlMdxComponentDefinition
+  snippet: string
+}
+
+type ComponentLibraryCategory = 'all' | DlMdxComponentCategory
 
 const props = withDefaults(defineProps<{
   modelValue?: string | null
@@ -78,6 +91,15 @@ const toolbarLabels: Record<DlMdxToolbarAction, { symbol: string; label: string;
 const localSource = ref(props.modelValue ?? '')
 const localMode = ref<DlMdxMode>(props.mode)
 const editorRef = ref<InstanceType<typeof MdxEditor>>()
+const lastEditorSelection = ref<DlMdxSelection>({ start: localSource.value.length, end: localSource.value.length })
+const componentLibraryOpen = ref(false)
+const componentSearch = ref('')
+const componentCategory = ref<ComponentLibraryCategory>('all')
+const componentLibraryTrigger = ref<HTMLElement>()
+const componentLibraryWindow = ref<HTMLElement>()
+const componentLibraryPosition = ref({ left: 12, top: 12 })
+const componentLibraryId = `dl-mdx-component-library-${useId().replace(/[^A-Za-z0-9_-]/g, '')}`
+const componentLibraryTitleId = `${componentLibraryId}-title`
 const injectedRegistry = useDlMdxRegistry()
 const injectedSecurityPolicy = useDlMdxSecurityPolicy()
 const document = shallowRef<DlMdxDocument>(parseDlMdx(localSource.value))
@@ -90,8 +112,38 @@ const policy = computed<Required<DlMdxLinkPolicy>>(() => ({
   allowImages: props.linkPolicy?.allowImages ?? true,
   allowDataImages: props.linkPolicy?.allowDataImages ?? false,
 }))
-const actions = computed(() => props.toolbar ?? defaultToolbar)
 const activeRegistry = computed(() => props.registry ?? injectedRegistry)
+const componentLibraryEntries = computed<ComponentLibraryEntry[]>(() => (activeRegistry.value?.entries() ?? [])
+  .flatMap((definition) => {
+    const snippet = createDlMdxComponentSnippet(definition)
+    return snippet ? [{ definition, snippet }] : []
+  })
+  .sort((left, right) => left.definition.name.localeCompare(right.definition.name, 'en')))
+const actions = computed(() => (props.toolbar ?? defaultToolbar)
+  .filter(action => action !== 'component' || componentLibraryEntries.value.length > 0))
+const componentCategoryLabels: Record<ComponentLibraryCategory, string> = {
+  all: '全部',
+  foundation: '基础',
+  form: '表单',
+  color: '色彩',
+  dates: '日期',
+  general: '通用',
+}
+const availableComponentCategories = computed<ComponentLibraryCategory[]>(() => {
+  const categories = new Set(componentLibraryEntries.value.map(entry => entry.definition.category ?? 'general'))
+  return ['all', ...(['foundation', 'form', 'color', 'dates', 'general'] as DlMdxComponentCategory[])
+    .filter(category => categories.has(category))]
+})
+const filteredComponentEntries = computed(() => {
+  const query = componentSearch.value.trim().toLocaleLowerCase()
+  return componentLibraryEntries.value.filter(({ definition }) => {
+    const category = definition.category ?? 'general'
+    if (componentCategory.value !== 'all' && category !== componentCategory.value) return false
+    if (!query) return true
+    return [definition.name, definition.description, definition.maturity, category]
+      .some(value => value?.toLocaleLowerCase().includes(query))
+  })
+})
 const canEdit = computed(() => !props.readonly && !props.disabled)
 const rootClass = computed(() => tv({
   base: 'dl-mdx',
@@ -108,7 +160,25 @@ watch(() => props.modelValue, value => {
 watch(() => props.mode, value => { localMode.value = value })
 watch(localSource, scheduleParse, { immediate: true })
 watch(() => props.debounce, scheduleParse)
-onBeforeUnmount(() => { if (parseTimer) clearTimeout(parseTimer) })
+watch(() => componentLibraryEntries.value.length, (length) => {
+  if (!length) componentLibraryOpen.value = false
+  if (!availableComponentCategories.value.includes(componentCategory.value)) componentCategory.value = 'all'
+})
+watch(componentLibraryOpen, (open) => {
+  if (open) {
+    window.addEventListener('resize', positionComponentLibrary)
+    window.addEventListener('scroll', positionComponentLibrary, true)
+    void nextTick(positionComponentLibrary)
+  } else {
+    window.removeEventListener('resize', positionComponentLibrary)
+    window.removeEventListener('scroll', positionComponentLibrary, true)
+  }
+})
+onBeforeUnmount(() => {
+  if (parseTimer) clearTimeout(parseTimer)
+  window.removeEventListener('resize', positionComponentLibrary)
+  window.removeEventListener('scroll', positionComponentLibrary, true)
+})
 
 function scheduleParse() {
   if (parseTimer) clearTimeout(parseTimer)
@@ -140,10 +210,70 @@ function setMode(value: DlMdxMode) {
 
 function execute(action: DlMdxToolbarAction) {
   if (!canEdit.value) return
+  if (action === 'component') {
+    if (!componentLibraryEntries.value.length) return
+    rememberEditorSelection()
+    componentLibraryOpen.value = true
+    return
+  }
   const selection = editorRef.value?.getSelection() ?? { start: localSource.value.length, end: localSource.value.length }
   const result = applyDlMdxCommand(action, { source: localSource.value, selection })
   if (editorRef.value) editorRef.value.replaceDocument(result.source, result.selection)
   else updateSource(result.source)
+}
+
+function rememberEditorSelection() {
+  lastEditorSelection.value = editorRef.value?.getSelection() ?? lastEditorSelection.value
+}
+
+function updateEditorSelection(selection: DlMdxSelection) {
+  lastEditorSelection.value = selection
+}
+
+function setComponentLibraryTrigger(element: Element | ComponentPublicInstance | null) {
+  componentLibraryTrigger.value = element instanceof HTMLElement ? element : undefined
+}
+
+function positionComponentLibrary() {
+  const trigger = componentLibraryTrigger.value
+  if (!trigger || !componentLibraryOpen.value) return
+  const triggerRect = trigger.getBoundingClientRect()
+  const windowRect = componentLibraryWindow.value?.getBoundingClientRect()
+  const width = windowRect?.width || Math.min(608, window.innerWidth - 24)
+  const height = windowRect?.height || Math.min(560, window.innerHeight - 24)
+  const below = triggerRect.bottom + 8
+  const above = triggerRect.top - height - 8
+  const desiredTop = below + height <= window.innerHeight - 12 || above < 12 ? below : above
+  componentLibraryPosition.value = {
+    left: Math.max(12, Math.min(triggerRect.left, window.innerWidth - width - 12)),
+    top: Math.max(12, Math.min(desiredTop, window.innerHeight - height - 12)),
+  }
+}
+
+function toggleComponentLibrary() {
+  if (!canEdit.value || !componentLibraryEntries.value.length) return
+  rememberEditorSelection()
+  componentLibraryOpen.value = !componentLibraryOpen.value
+}
+
+function closeComponentLibrary() {
+  componentLibraryOpen.value = false
+  void nextTick(() => editorRef.value?.focus())
+}
+
+function insertRegisteredComponent(entry: ComponentLibraryEntry) {
+  if (!canEdit.value || !componentLibraryEntries.value.includes(entry)) return
+  const selection = editorRef.value?.getSelection() ?? lastEditorSelection.value
+  const result = insertDlMdxSnippet({ source: localSource.value, selection }, entry.snippet)
+  lastEditorSelection.value = result.selection
+  if (editorRef.value) editorRef.value.replaceDocument(result.source, result.selection)
+  else updateSource(result.source)
+  componentLibraryOpen.value = true
+  void nextTick(() => {
+    componentLibraryOpen.value = true
+    editorRef.value?.focus()
+    positionComponentLibrary()
+  })
 }
 
 function toggleTask(line: number) {
@@ -156,19 +286,40 @@ function toggleTask(line: number) {
 </script>
 
 <template>
-  <section data-dl data-slot="mdx" :class="rootClass" :style="rootStyle">
+  <section
+    data-dl
+    data-slot="mdx"
+    :data-toolbar="showToolbar ? 'true' : 'false'"
+    :data-status="showStatus ? 'true' : 'false'"
+    :class="rootClass"
+    :style="rootStyle"
+  >
     <header v-if="showToolbar" class="dl-mdx__toolbar">
       <div v-if="localMode !== 'preview'" class="dl-mdx__format-actions" role="toolbar" aria-label="Markdown 格式工具">
         <slot name="toolbar-start" />
-        <button
-          v-for="action in actions"
-          :key="action"
-          type="button"
-          :disabled="!canEdit"
-          :aria-label="toolbarLabels[action].label"
-          :title="toolbarLabels[action].shortcut ? `${toolbarLabels[action].label} · ${toolbarLabels[action].shortcut}` : toolbarLabels[action].label"
-          @click="execute(action)"
-        ><b>{{ toolbarLabels[action].symbol }}</b></button>
+        <template v-for="action in actions" :key="action">
+          <button
+            v-if="action === 'component'"
+            :ref="setComponentLibraryTrigger"
+            data-slot="mdx-component-library-trigger"
+            type="button"
+            :disabled="!canEdit"
+            :aria-label="toolbarLabels.component.label"
+            :aria-expanded="componentLibraryOpen"
+            :aria-controls="componentLibraryId"
+            title="打开当前安全注册表中的可插入组件"
+            @pointerdown="rememberEditorSelection"
+            @click="toggleComponentLibrary"
+          ><b>{{ toolbarLabels.component.symbol }}</b></button>
+          <button
+            v-else
+            type="button"
+            :disabled="!canEdit"
+            :aria-label="toolbarLabels[action].label"
+            :title="toolbarLabels[action].shortcut ? `${toolbarLabels[action].label} · ${toolbarLabels[action].shortcut}` : toolbarLabels[action].label"
+            @click="execute(action)"
+          ><b>{{ toolbarLabels[action].symbol }}</b></button>
+        </template>
         <slot name="toolbar-end" />
       </div>
       <span v-else class="dl-mdx__preview-label">DRAGON LIQUID · RENDERED DOCUMENT</span>
@@ -176,6 +327,66 @@ function toggleTask(line: number) {
         <button v-for="item in ([['edit', '编辑'], ['split', '分栏'], ['preview', '预览']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
       </div>
     </header>
+
+    <Teleport to="body">
+      <section
+        v-if="componentLibraryOpen"
+        :id="componentLibraryId"
+        ref="componentLibraryWindow"
+        data-dl
+        data-slot="mdx-component-library-window"
+        class="dl-mdx__component-library-window"
+        role="dialog"
+        :aria-labelledby="componentLibraryTitleId"
+        :style="{ left: `${componentLibraryPosition.left}px`, top: `${componentLibraryPosition.top}px` }"
+        @keydown.esc.stop.prevent="closeComponentLibrary"
+      >
+        <header class="dl-mdx__component-library-header">
+          <span>
+            <small>MARKDOWNX · TRUSTED REGISTRY</small>
+            <b :id="componentLibraryTitleId">安全组件库</b>
+          </span>
+          <button type="button" aria-label="关闭安全组件库" @click="closeComponentLibrary">×</button>
+        </header>
+        <div class="dl-mdx__component-library">
+          <label class="dl-mdx__component-search">
+            <span>搜索安全组件</span>
+            <input v-model="componentSearch" type="search" placeholder="按名称或说明筛选" autocomplete="off">
+          </label>
+          <nav class="dl-mdx__component-categories" aria-label="安全组件分类">
+            <button
+              v-for="category in availableComponentCategories"
+              :key="category"
+              type="button"
+              :class="{ active: componentCategory === category }"
+              :aria-pressed="componentCategory === category"
+              @click="componentCategory = category"
+            >{{ componentCategoryLabels[category] }}</button>
+          </nav>
+          <div v-if="filteredComponentEntries.length" class="dl-mdx__component-list" role="list">
+            <button
+              v-for="entry in filteredComponentEntries"
+              :key="entry.definition.name"
+              type="button"
+              role="listitem"
+              :data-component-name="entry.definition.name"
+              @mousedown.prevent
+              @click="insertRegisteredComponent(entry)"
+            >
+              <span>
+                <b>Dl{{ entry.definition.name }}</b>
+                <small>{{ entry.definition.description || '已由当前安全注册表提供' }}</small>
+              </span>
+              <em>{{ (entry.definition.maturity || 'stable').toUpperCase() }}</em>
+            </button>
+          </div>
+          <p v-else class="dl-mdx__component-empty">当前筛选条件下没有可插入的安全组件。</p>
+          <footer class="dl-mdx__component-library-foot">
+            仅列出当前注册表中可真实解析的定义；点击后浮窗保持打开。
+          </footer>
+        </div>
+      </section>
+    </Teleport>
 
     <div class="dl-mdx__workspace">
       <section v-show="localMode !== 'preview'" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
@@ -188,6 +399,7 @@ function toggleTask(line: number) {
           :line-wrapping="lineWrapping"
           :aria-label="`${ariaLabel}编辑器`"
           @update:model-value="updateSource"
+          @selection-change="updateEditorSelection"
           @command="execute"
           @error="emit('error', $event)"
         />

@@ -3,7 +3,7 @@ import { defineComponent, h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import DlMdx from './DlMdx.vue'
 import { createDlMdxOfficialRegistry, dlMdxOfficialComponents } from './dl-mdx.official'
-import { createDlMdxRegistry, defineDlMdxComponent } from './dl-mdx.registry'
+import { createDlMdxComponentSnippet, createDlMdxRegistry, defineDlMdxComponent } from './dl-mdx.registry'
 
 if (!Range.prototype.getClientRects) {
   Range.prototype.getClientRects = () => ({ length: 0, item: () => null, [Symbol.iterator]: function* () {} }) as DOMRectList
@@ -29,6 +29,25 @@ describe('MarkdownX component registry', () => {
     expect(registry.entries()).toHaveLength(1)
     expect(registry.unregister('notice')).toBe(true)
     expect(registry.resolve('Callout')).toBeUndefined()
+  })
+
+  it('generates insertion code only for real insertable definitions', () => {
+    const component = defineComponent(() => () => h('p', 'notice'))
+    const notice = defineDlMdxComponent({
+      name: 'Notice',
+      component,
+      defaultProps: { tone: 'accent', count: 2, options: ['one', 'two'] },
+    })
+    const internal = defineDlMdxComponent({ name: 'InternalOnly', component, insertable: false })
+
+    expect(createDlMdxComponentSnippet(notice)).toBe([
+      '+++component:Notice',
+      'tone = "accent"',
+      'count = 2',
+      'options = ["one","two"]',
+      '+++end',
+    ].join('\n'))
+    expect(createDlMdxComponentSnippet(internal)).toBeUndefined()
   })
 
   it('renders globally registered components and lets local slots override them', () => {
