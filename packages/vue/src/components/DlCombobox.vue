@@ -34,14 +34,14 @@ const heightClass = computed(() => ({ sm: 'min-h-9 text-xs', md: 'min-h-11 text-
         class="min-w-0 flex-1 border-0 bg-transparent text-[var(--dl-text)] outline-none placeholder:text-[var(--dl-text-faint)]"
         @update:model-value="emit('update:searchTerm', $event)"
       />
-      <ComboboxTrigger class="grid size-7 place-items-center rounded-lg text-xs text-[var(--dl-text-faint)] hover:bg-white/[0.07]" aria-label="打开选项">▼</ComboboxTrigger>
+      <ComboboxTrigger class="grid size-7 place-items-center rounded-lg text-xs text-[var(--dl-text-faint)] hover:bg-[var(--dl-surface-hover)]" aria-label="打开选项">▼</ComboboxTrigger>
     </ComboboxAnchor>
     <ComboboxPortal>
       <ComboboxContent data-dl data-dl-layer="select" :style="{ zIndex: layer }" position="popper" :side-offset="8" class="min-w-[var(--reka-combobox-trigger-width)] overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-1.5 text-[var(--dl-text)] shadow-[0_24px_70px_rgba(0,0,0,.42)] backdrop-blur-2xl">
         <ComboboxViewport class="dl-scrollbar max-h-72">
           <ComboboxEmpty class="px-3 py-6 text-center text-sm text-[var(--dl-text-faint)]">没有匹配项</ComboboxEmpty>
-          <ComboboxItem v-for="option in options" :key="option.value" :value="option.value" :disabled="option.disabled" class="relative flex min-h-10 cursor-default items-center rounded-xl py-2 pl-9 pr-3 text-sm outline-none data-[disabled]:opacity-40 data-[highlighted]:bg-white/[0.1] data-[state=checked]:bg-amber-300/10">
-            <ComboboxItemIndicator class="absolute left-3 text-amber-300">●</ComboboxItemIndicator>
+          <ComboboxItem v-for="option in options" :key="option.value" :value="option.value" :disabled="option.disabled" class="relative flex min-h-10 cursor-default items-center rounded-xl py-2 pl-9 pr-3 text-sm outline-none data-[disabled]:opacity-40 data-[highlighted]:bg-[var(--dl-surface-hover)] data-[state=checked]:bg-[var(--dl-accent-surface)]">
+            <ComboboxItemIndicator class="absolute left-3 text-[var(--dl-accent)]">●</ComboboxItemIndicator>
             <span><b class="block font-medium">{{ option.label }}</b><small v-if="option.description" class="text-[var(--dl-text-faint)]">{{ option.description }}</small></span>
           </ComboboxItem>
         </ComboboxViewport>

@@ -1,5 +1,6 @@
 import { createApp, h } from 'vue'
 import {
+  createDlTheme,
   createDlMdxOfficialRegistry,
   createDlMdxSecurityPolicy,
   defineDlMdxComponent,
@@ -10,6 +11,30 @@ import {
 import '@dragon-liquid/vue/style.css'
 import './showcase.css'
 import App from './App.vue'
+
+const dlTheme = createDlTheme({
+  mode: 'system',
+  lightTheme: 'white',
+  darkTheme: 'black',
+  storageKey: 'dragon-liquid-showcase-theme',
+  themes: [
+    {
+      name: 'docs-blue',
+      label: 'Docs Blue',
+      colorScheme: 'light',
+      base: 'white',
+      tokens: {
+        '--dl-accent': '#356b92',
+        '--dl-accent-text': '#285778',
+        '--dl-accent-surface': 'rgba(53, 107, 146, 0.1)',
+        '--dl-accent-surface-hover': 'rgba(53, 107, 146, 0.16)',
+        '--dl-accent-border': 'rgba(53, 107, 146, 0.28)',
+        '--dl-border-focus': 'rgba(53, 107, 146, 0.72)',
+        '--dl-focus': '0 0 0 3px rgba(53, 107, 146, 0.14), 0 0 0 1px rgba(53, 107, 146, 0.5)',
+      },
+    },
+  ],
+})
 
 const mdxRegistry = createDlMdxOfficialRegistry([
   defineDlMdxComponent({
@@ -43,6 +68,7 @@ const mdxSecurity = createDlMdxSecurityPolicy({
 })
 
 createApp(App)
+  .use(dlTheme)
   .use(mdxRegistry)
   .use(mdxSecurity)
   .mount('#app')

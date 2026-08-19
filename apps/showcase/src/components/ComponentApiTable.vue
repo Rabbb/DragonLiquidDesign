@@ -69,10 +69,10 @@ const rowConfig = { isHover: true }
 .component-api-card {
   padding: 16px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--dl-border);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  background: var(--dl-surface);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .component-api-header {
@@ -85,7 +85,7 @@ const rowConfig = { isHover: true }
 
 .component-api-header p {
   margin: 0 0 8px;
-  color: #ffd750;
+  color: var(--dl-accent-text);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -93,24 +93,24 @@ const rowConfig = { isHover: true }
 
 .component-api-header h2 {
   margin: 0;
-  color: #fff;
+  color: var(--dl-text);
   font-size: 1.15rem;
 }
 
 .component-api-header small {
   display: block;
   margin-top: 7px;
-  color: rgba(226, 232, 240, 0.58);
+  color: var(--dl-text-faint);
   font-size: 0.69rem;
   line-height: 1.55;
 }
 
 .component-api-header > span {
   padding: 7px 10px;
-  border: 1px solid rgba(255, 215, 80, 0.17);
+  border: 1px solid var(--dl-accent-border);
   border-radius: 999px;
-  color: rgba(255, 232, 156, 0.76);
-  background: rgba(255, 215, 80, 0.075);
+  color: var(--dl-accent-text);
+  background: var(--dl-accent-surface);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.07em;
@@ -119,7 +119,7 @@ const rowConfig = { isHover: true }
 
 .component-api-table-wrap {
   overflow-x: auto;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--dl-border);
   border-radius: 13px;
 }
 
@@ -127,13 +127,13 @@ const rowConfig = { isHover: true }
   min-width: 890px;
   --vxe-ui-font-family: Inter, "Microsoft YaHei", sans-serif;
   --vxe-ui-font-size-small: 13px;
-  --vxe-ui-font-color: rgba(226, 232, 240, 0.78);
-  --vxe-ui-font-primary-color: #ffd750;
-  --vxe-ui-layout-background-color: rgba(5, 14, 10, 0.64);
-  --vxe-ui-table-header-font-color: #fff;
-  --vxe-ui-table-header-background-color: rgba(255, 255, 255, 0.045);
-  --vxe-ui-table-border-color: rgba(255, 255, 255, 0.08);
-  --vxe-ui-table-row-hover-background-color: rgba(255, 215, 80, 0.055);
+  --vxe-ui-font-color: var(--dl-text-muted);
+  --vxe-ui-font-primary-color: var(--dl-accent);
+  --vxe-ui-layout-background-color: var(--dl-surface-solid);
+  --vxe-ui-table-header-font-color: var(--dl-text);
+  --vxe-ui-table-header-background-color: var(--dl-night-soft);
+  --vxe-ui-table-border-color: var(--dl-border);
+  --vxe-ui-table-row-hover-background-color: var(--dl-accent-surface);
   --vxe-ui-table-row-height-small: 46px;
   --vxe-ui-table-cell-padding-small: 9px;
 }
@@ -158,8 +158,8 @@ code {
   display: inline-block;
   padding: 4px 8px;
   border-radius: 10px;
-  color: #ffe08a;
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--dl-accent-text);
+  background: var(--dl-accent-surface);
   font: 0.76rem/1.45 "Cascadia Code", Consolas, monospace;
 }
 

@@ -29,6 +29,40 @@ import '@dragon-liquid/vue/style.css'
 </DlCard>
 ```
 
+## 多套主题与日夜模式
+
+组件库内置 `white`、`black`、`warm`、`midnight` 和魔法森林 `forest` 五套主题。默认跟随浏览器日夜模式，白天使用 `white`，夜间使用 `black`；模式和实际配色相互独立，因此也可以让白天、夜间都使用同一主题。
+
+```ts
+import { createApp } from 'vue'
+import { createDlTheme } from '@dragon-liquid/vue'
+import App from './App.vue'
+
+const theme = createDlTheme({
+  mode: 'system',
+  lightTheme: 'white',
+  darkTheme: 'black', // 改成 white 即可让夜间仍使用白色主题
+  storageKey: 'my-site-theme',
+  themes: [
+    {
+      name: 'brand-blue',
+      label: 'Brand Blue',
+      colorScheme: 'light',
+      base: 'white',
+      tokens: {
+        '--dl-accent': '#356b92',
+        '--dl-accent-text': '#285778',
+        '--dl-border-focus': 'rgba(53, 107, 146, 0.72)',
+      },
+    },
+  ],
+})
+
+createApp(App).use(theme).mount('#app')
+```
+
+网站用户手动选择时，可在组件中调用 `useDlTheme()`：`setMode('system' | 'light' | 'dark')` 切换模式，`setTheme('white' | 'black' | 'forest' | 自定义名称)` 固定主题，`clearThemeOverride()` 恢复当前模式映射。`registerTheme()` 还可以在运行时注册用户主题；设置了 `storageKey` 后，用户选择会写入 `localStorage`。
+
 ## 组件实例、运行时属性与事件
 
 包入口导出的 64 个组件都带有统一的 `DlComponentRef`。声明式 props 和 `v-model` 仍然是常规数据流；需要桌面应用式控制时，可通过模板 `ref` 建立响应式实例覆盖：

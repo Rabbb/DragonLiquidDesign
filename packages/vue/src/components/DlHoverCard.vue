@@ -39,10 +39,10 @@ const layer = useDlPopoverLayer(() => props.zIndex)
 
 <style>
 .dl-hover-card {
-  --dl-hover-card-border: rgba(255, 239, 186, 0.22);
-  --dl-hover-card-arrow: rgba(11, 32, 28, 0.98);
-  --dl-hover-card-glow: rgba(104, 225, 255, 0.1);
-  --dl-hover-card-rail: linear-gradient(90deg, rgba(255, 215, 110, 0.26), rgba(104, 225, 255, 0.8), rgba(124, 255, 190, 0.24));
+  --dl-hover-card-border: rgba(15, 23, 42, 0.14);
+  --dl-hover-card-arrow: var(--dl-surface-solid);
+  --dl-hover-card-glow: rgba(15, 23, 42, 0.035);
+  --dl-hover-card-rail: linear-gradient(90deg, rgba(164, 105, 11, 0.12), rgba(148, 163, 184, 0.38), rgba(71, 85, 105, 0.08));
   position: relative;
   display: grid;
   width: min(22rem, calc(100vw - 2rem));
@@ -51,19 +51,14 @@ const layer = useDlPopoverLayer(() => props.zIndex)
   isolation: isolate;
   border: 1px solid var(--dl-hover-card-border);
   border-radius: 24px;
-  background:
-    radial-gradient(circle at top left, rgba(255, 215, 110, 0.14), transparent 32%),
-    radial-gradient(circle at top right, rgba(104, 225, 255, 0.12), transparent 38%),
-    radial-gradient(circle at bottom left, rgba(50, 205, 50, 0.1), transparent 42%),
-    linear-gradient(180deg, rgba(23, 58, 46, 0.98), rgba(12, 35, 28, 0.97) 56%, rgba(7, 18, 24, 0.98));
+  background: var(--dl-panel);
   color: var(--dl-text-muted);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-    0 22px 46px rgba(4, 14, 12, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 18px 42px rgba(15, 23, 42, 0.14),
     0 0 30px var(--dl-hover-card-glow);
   outline: none;
-  backdrop-filter: blur(28px) saturate(132%);
+  backdrop-filter: blur(24px) saturate(104%);
 }
 
 .dl-hover-card::before {
@@ -131,7 +126,7 @@ const layer = useDlPopoverLayer(() => props.zIndex)
   line-height: 1.65;
 }
 
-.dl-hover-card__body > :first-child { color: #fff; }
+.dl-hover-card__body > :first-child { color: var(--dl-text); }
 .dl-hover-card__body p { margin: 0; }
 
 .dl-hover-card__arrow {

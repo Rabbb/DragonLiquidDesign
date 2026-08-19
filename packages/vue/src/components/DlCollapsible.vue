@@ -18,8 +18,8 @@ const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const styles = tv({
   slots: {
     root: 'overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border)] bg-[var(--dl-surface)] shadow-[var(--dl-shadow)] backdrop-blur-xl',
-    trigger: 'group flex w-full items-center justify-between gap-4 px-4 py-3 text-left text-sm font-semibold text-[var(--dl-text)] outline-none transition hover:bg-white/[0.045] focus-visible:[box-shadow:inset_var(--dl-focus)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
-    icon: 'text-xs text-amber-300 transition-transform group-data-[state=open]:rotate-180',
+    trigger: 'group flex w-full items-center justify-between gap-4 px-4 py-3 text-left text-sm font-semibold text-[var(--dl-text)] outline-none transition hover:bg-[var(--dl-surface-hover)] focus-visible:[box-shadow:inset_var(--dl-focus)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
+    icon: 'text-xs text-[var(--dl-accent)] transition-transform group-data-[state=open]:rotate-180',
     content: 'overflow-hidden border-t border-[var(--dl-border)] text-sm text-[var(--dl-text-muted)] data-[state=closed]:animate-[dl-collapsible-close_.2s_ease-out] data-[state=open]:animate-[dl-collapsible-open_.25s_ease-out]',
   },
 })

@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
-import { DlBadge } from '@dragon-liquid/vue'
+import { DlBadge, useDlTheme } from '@dragon-liquid/vue'
+import GlobalSearch from './components/GlobalSearch.vue'
 import HomePage from './pages/HomePage.vue'
 import { resolveComponent } from './catalog'
 
 const ComponentDocsPage = defineAsyncComponent(() => import('./pages/ComponentDocsPage.vue'))
 const InstanceArchitecturePage = defineAsyncComponent(() => import('./pages/InstanceArchitecturePage.vue'))
 const PatternShowcasePage = defineAsyncComponent(() => import('./patterns/PatternShowcasePage.vue'))
+const ThemePage = defineAsyncComponent(() => import('./pages/ThemePage.vue'))
+const theme = useDlTheme()
+
+const themeChoice = computed<string>({
+  get: () => theme.themeOverride.value ?? theme.mode.value,
+  set: (value) => {
+    if (value === 'system' || value === 'light' || value === 'dark') theme.setMode(value)
+    else theme.setTheme(value)
+  },
+})
 
 type ShowcaseRoute = {
-  page: 'home' | 'components' | 'instance-api' | 'patterns'
+  page: 'home' | 'components' | 'instance-api' | 'patterns' | 'themes'
   componentId?: string
   scenarioId?: string
   patternPageId?: string
@@ -30,6 +41,7 @@ const currentSearch = ref(window.location.search)
 
 const route = computed<ShowcaseRoute>(() => {
   const parts = currentPath.value.replace(/^\//, '').split('/').filter(Boolean)
+  if (parts[0] === 'themes') return { page: 'themes' }
   if (parts[0] === 'instance-api') return { page: 'instance-api' }
   if (parts[0] === 'patterns') return {
     page: 'patterns',
@@ -105,13 +117,32 @@ onBeforeUnmount(() => {
       <nav aria-label="主导航">
         <a href="/" :class="{ active: route.page === 'home' }">首页</a>
         <a href="/components/button/basic" :class="{ active: route.page === 'components' }">组件</a>
+        <a href="/themes" :class="{ active: route.page === 'themes' }">主题</a>
         <a href="/patterns" :class="{ active: route.page === 'patterns' }">应用演示</a>
         <a href="/instance-api" :class="{ active: route.page === 'instance-api' }">实例体系</a>
         <a href="https://www.npmjs.com/package/@dragon-liquid/vue" target="_blank" rel="noreferrer">NPM ↗</a>
       </nav>
-      <DlBadge tone="success" variant="outline" size="md">
-        <span class="live-dot" /> v0.6.0-alpha.9 · ALPHA
-      </DlBadge>
+      <div class="topbar-actions">
+        <GlobalSearch />
+        <label class="theme-picker">
+          <span>主题</span>
+          <select v-model="themeChoice" aria-label="切换配色主题">
+            <optgroup label="模式">
+              <option value="system">跟随系统</option>
+              <option value="light">日间方案</option>
+              <option value="dark">夜间方案</option>
+            </optgroup>
+            <optgroup label="固定主题">
+              <option v-for="preset in theme.themes.value" :key="preset.name" :value="preset.name">
+                {{ preset.label ?? preset.name }}
+              </option>
+            </optgroup>
+          </select>
+        </label>
+        <DlBadge tone="success" variant="outline" size="md">
+          <span class="live-dot" /> v0.6.0-alpha.9 · ALPHA
+        </DlBadge>
+      </div>
     </header>
 
     <HomePage v-if="route.page === 'home'" />
@@ -125,6 +156,7 @@ onBeforeUnmount(() => {
       :page-id="route.patternPageId"
       :guide-component-id="route.guideComponentId"
     />
+    <ThemePage v-else-if="route.page === 'themes'" />
     <InstanceArchitecturePage v-else-if="route.page === 'instance-api'" />
 
     <footer v-if="route.page === 'home'" class="site-footer">

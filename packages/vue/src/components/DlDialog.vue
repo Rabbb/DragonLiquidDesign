@@ -84,18 +84,16 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 12%, rgba(255, 215, 110, 0.12), transparent 20%),
-    radial-gradient(circle at 30% 18%, rgba(104, 225, 255, 0.12), transparent 24%),
-    radial-gradient(circle at 70% 26%, rgba(50, 205, 50, 0.08), transparent 28%),
-    linear-gradient(180deg, rgba(9, 23, 19, 0.68), rgba(5, 14, 17, 0.82));
-  backdrop-filter: blur(16px) saturate(112%);
+    radial-gradient(circle at 50% 12%, rgba(190, 126, 22, 0.05), transparent 24%),
+    rgba(15, 23, 42, 0.28);
+  backdrop-filter: blur(10px) saturate(104%);
 }
 
 .dl-dialog {
   --dl-dialog-width: 640px;
-  --dl-overlay-border: rgba(255, 239, 186, 0.22);
-  --dl-overlay-rail: linear-gradient(90deg, rgba(255, 223, 128, 0.22), rgba(104, 225, 255, 0.46), rgba(124, 255, 190, 0.14));
-  --dl-overlay-glow: rgba(255, 215, 110, 0.08);
+  --dl-overlay-border: rgba(15, 23, 42, 0.14);
+  --dl-overlay-rail: linear-gradient(90deg, rgba(164, 105, 11, 0.12), rgba(148, 163, 184, 0.32), rgba(71, 85, 105, 0.08));
+  --dl-overlay-glow: rgba(15, 23, 42, 0.04);
   position: fixed;
   left: 50%;
   top: 50%;
@@ -111,19 +109,14 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
   isolation: isolate;
   border: 1px solid var(--dl-overlay-border);
   border-radius: 28px;
-  background:
-    radial-gradient(circle at top left, rgba(255, 215, 110, 0.12), transparent 34%),
-    radial-gradient(circle at top right, rgba(104, 225, 255, 0.12), transparent 42%),
-    radial-gradient(circle at bottom left, rgba(50, 205, 50, 0.1), transparent 40%),
-    linear-gradient(180deg, rgba(22, 58, 43, 0.96), rgba(12, 34, 27, 0.94) 58%, rgba(8, 18, 24, 0.94));
+  background: var(--dl-panel);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-    0 28px 64px rgba(6, 18, 14, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 24px 60px rgba(15, 23, 42, 0.18),
     0 0 40px var(--dl-overlay-glow);
   color: var(--dl-text);
   outline: none;
-  backdrop-filter: blur(28px) saturate(132%);
+  backdrop-filter: blur(24px) saturate(106%);
 }
 
 .dl-dialog::before {
@@ -133,8 +126,8 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 20%, transparent 72%, rgba(255, 255, 255, 0.04));
-  opacity: 0.88;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), transparent 24%);
+  opacity: 0.6;
 }
 
 .dl-dialog::after {
@@ -158,14 +151,14 @@ const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
 
 .dl-dialog__header { position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .dl-dialog__meta { display: grid; gap: 9px; min-width: 0; }
-.dl-dialog__title { margin: 0; color: #fff; font-size: 1.24rem; line-height: 1.18; font-weight: 900; letter-spacing: 0.01em; }
+.dl-dialog__title { margin: 0; color: var(--dl-text); font-size: 1.24rem; line-height: 1.18; font-weight: 900; letter-spacing: 0.01em; }
 .dl-dialog--sm .dl-dialog__title { font-size: 1.12rem; }
 .dl-dialog--lg .dl-dialog__title { font-size: 1.32rem; }
 .dl-dialog__description { margin: 0; color: var(--dl-text-muted); font-size: 0.96rem; line-height: 1.65; }
 .dl-dialog__body { position: relative; z-index: 1; min-height: 0; display: grid; gap: 14px; overflow: auto; overscroll-behavior: contain; }
 .dl-dialog__footer { position: relative; z-index: 1; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
-.dl-dialog__close { flex: 0 0 auto; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 46%), linear-gradient(180deg, rgba(46, 92, 72, 0.34), rgba(22, 48, 39, 0.24)); color: var(--dl-text); font-size: 1.1rem; line-height: 1; cursor: pointer; outline: none; transition: 0.18s ease; }
-.dl-dialog__close:hover { transform: translateY(-1px); border-color: rgba(175, 235, 212, 0.2); background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.22), transparent 46%), linear-gradient(180deg, rgba(58, 110, 88, 0.4), rgba(30, 62, 50, 0.28)); box-shadow: 0 0 18px rgba(104, 225, 255, 0.08); }
+.dl-dialog__close { flex: 0 0 auto; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid var(--dl-border); border-radius: 18px; background: var(--dl-surface); color: var(--dl-text-muted); font-size: 1.1rem; line-height: 1; cursor: pointer; outline: none; transition: 0.18s ease; }
+.dl-dialog__close:hover { transform: translateY(-1px); border-color: var(--dl-border-strong); background: var(--dl-surface-hover); color: var(--dl-text); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08); }
 .dl-dialog__close:focus-visible, .dl-dialog:focus-visible { box-shadow: var(--dl-focus); }
 .dl-dialog[data-state='open'], .dl-dialog-overlay[data-state='open'] { animation: dl-overlay-in 180ms ease-out; }
 .dl-dialog[data-state='closed'], .dl-dialog-overlay[data-state='closed'] { animation: dl-overlay-out 150ms ease-in; }

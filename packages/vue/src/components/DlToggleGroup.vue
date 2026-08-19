@@ -16,8 +16,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ 'update:modelValue': [value: string | string[]] }>()
 const styles = tv({
   slots: {
-    root: 'inline-flex w-fit rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-black/20 p-1 data-[orientation=vertical]:flex-col',
-    item: 'rounded-[9px] font-semibold text-[var(--dl-text-muted)] outline-none transition hover:bg-white/[0.05] hover:text-[var(--dl-text)] focus-visible:[box-shadow:var(--dl-focus)] data-[state=on]:bg-[var(--dl-surface-strong)] data-[state=on]:text-amber-200 data-[state=on]:shadow-[inset_0_1px_0_rgba(255,255,255,.1)] data-[disabled]:opacity-40',
+    root: 'inline-flex w-fit rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-[var(--dl-night-soft)] p-1 data-[orientation=vertical]:flex-col',
+    item: 'rounded-[9px] font-semibold text-[var(--dl-text-muted)] outline-none transition hover:bg-[var(--dl-surface-hover)] hover:text-[var(--dl-text)] focus-visible:[box-shadow:var(--dl-focus)] data-[state=on]:bg-[var(--dl-surface-strong)] data-[state=on]:text-[var(--dl-accent-text)] data-[state=on]:shadow-[0_1px_3px_rgba(15,23,42,.1)] data-[disabled]:opacity-40',
   },
   variants: { size: { sm: { item: 'min-h-7 px-2 text-xs' }, md: { item: 'min-h-9 px-3 text-sm' }, lg: { item: 'min-h-11 px-4 text-base' } } },
 })

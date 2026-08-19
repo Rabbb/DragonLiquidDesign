@@ -37,7 +37,7 @@ describe('DlButton', () => {
     expect(button.classes()).toContain('[background:var(--dl-button-secondary-bg)]')
   })
 
-  it('uses the TodoMoe primary appearance tokens for every interaction state', () => {
+  it('uses the restrained primary appearance tokens and press feedback', () => {
     const wrapper = mount(DlButton, { props: { variant: 'primary' } })
     const classes = wrapper.get('button').classes()
 
@@ -45,7 +45,7 @@ describe('DlButton', () => {
     expect(classes).toContain('hover:[background:var(--dl-button-primary-bg-hover)]')
     expect(classes).toContain('active:[background:var(--dl-button-primary-bg-active)]')
     expect(classes).toContain('[box-shadow:var(--dl-button-primary-shadow)]')
-    expect(classes.some(className => className.includes('translate-y'))).toBe(false)
+    expect(classes).toContain('active:translate-y-px')
   })
 
   it('keeps the public variant and size names while applying semantic state tokens', () => {

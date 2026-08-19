@@ -19,8 +19,8 @@ const styles = tv({
   slots: {
     root: 'overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border)] bg-[var(--dl-surface)] shadow-[var(--dl-shadow)] backdrop-blur-xl',
     item: 'border-b border-[var(--dl-border)] last:border-b-0',
-    trigger: 'group flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-sm font-semibold text-[var(--dl-text)] outline-none transition hover:bg-white/[0.045] focus-visible:[box-shadow:inset_var(--dl-focus)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
-    icon: 'text-xs text-amber-300 transition-transform duration-200 group-data-[state=open]:rotate-180',
+    trigger: 'group flex w-full items-center justify-between gap-4 px-4 py-3.5 text-left text-sm font-semibold text-[var(--dl-text)] outline-none transition hover:bg-[var(--dl-surface-hover)] focus-visible:[box-shadow:inset_var(--dl-focus)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
+    icon: 'text-xs text-[var(--dl-accent)] transition-transform duration-200 group-data-[state=open]:rotate-180',
     content: 'dl-accordion__content overflow-hidden text-sm text-[var(--dl-text-muted)]',
   },
 })

@@ -5,6 +5,7 @@ const root = resolve(import.meta.dirname, '..')
 const dist = resolve(root, 'dist')
 const index = resolve(dist, 'index.html')
 const routes = [
+  'themes',
   'patterns',
   'patterns/library',
   'patterns/create',

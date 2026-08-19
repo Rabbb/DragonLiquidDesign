@@ -1,5 +1,18 @@
 import './styles/index.css'
 
+export { createDlTheme, dlThemeKey, dlThemePresets, useDlTheme } from './theme'
+export type {
+  DlResolvedThemeMode,
+  DlThemeColorScheme,
+  DlThemeDefinition,
+  DlThemeManager,
+  DlThemeMode,
+  DlThemeModeThemes,
+  DlThemeOptions,
+  DlThemeTarget,
+  DlThemeTokens,
+} from './theme'
+
 export { CalendarDate, Time } from '@internationalized/date'
 
 export {

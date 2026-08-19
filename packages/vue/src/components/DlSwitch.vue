@@ -26,8 +26,8 @@ const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
 const styles = tv({
   slots: {
     root: 'group inline-flex cursor-pointer items-center gap-3 text-[var(--dl-text)] data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50',
-    track: 'relative shrink-0 rounded-full border border-[var(--dl-border-strong)] bg-black/25 p-[3px] shadow-[inset_0_2px_5px_rgba(0,0,0,.28)] outline-none transition group-hover:border-amber-300/35 focus-visible:[box-shadow:var(--dl-focus)] data-[state=checked]:border-amber-200/45 data-[state=checked]:[background:var(--dl-button-primary-bg)]',
-    thumb: 'block aspect-square h-full rounded-full bg-slate-100 shadow-[0_2px_8px_rgba(0,0,0,.38)] transition-transform will-change-transform data-[state=checked]:translate-x-full data-[state=checked]:bg-[var(--dl-button-primary-text)]',
+    track: 'relative shrink-0 rounded-full border border-[var(--dl-border-strong)] bg-[var(--dl-night-soft)] p-[3px] shadow-[inset_0_1px_2px_rgba(15,23,42,.1)] outline-none transition group-hover:border-[var(--dl-border-focus)] focus-visible:[box-shadow:var(--dl-focus)] data-[state=checked]:border-[var(--dl-button-primary-border)] data-[state=checked]:[background:var(--dl-button-primary-bg)]',
+    thumb: 'block aspect-square h-full rounded-full bg-white shadow-[0_1px_4px_rgba(15,23,42,.24)] transition-transform will-change-transform data-[state=checked]:translate-x-full data-[state=checked]:bg-white',
     label: 'block font-semibold leading-tight',
     description: 'mt-1 block leading-relaxed text-[var(--dl-text-faint)]',
   },

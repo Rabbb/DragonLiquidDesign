@@ -20,10 +20,10 @@ const iconButton = tv({
   base: 'inline-flex shrink-0 select-none items-center justify-center rounded-[var(--dl-radius-sm)] border outline-none transition duration-200 focus-visible:[box-shadow:var(--dl-focus)] disabled:pointer-events-none disabled:opacity-50',
   variants: {
     variant: {
-      primary: 'border-amber-200/45 [background:var(--dl-primary)] text-[#271503] shadow-[0_10px_26px_rgba(255,140,0,.22)] hover:-translate-y-0.5 hover:[background:var(--dl-primary-hover)]',
-      secondary: 'border-[var(--dl-border)] bg-white/[0.08] text-[var(--dl-text)] hover:-translate-y-0.5 hover:border-[var(--dl-border-strong)] hover:bg-white/[0.14]',
-      ghost: 'border-transparent bg-transparent text-[var(--dl-text-muted)] hover:bg-white/[0.08] hover:text-[var(--dl-text)]',
-      danger: 'border-red-300/30 bg-red-500/15 text-red-100 hover:bg-red-500/24',
+      primary: 'border-[var(--dl-button-primary-border)] [background:var(--dl-primary)] text-white shadow-[var(--dl-button-primary-shadow)] hover:-translate-y-0.5 hover:[background:var(--dl-primary-hover)] hover:shadow-[var(--dl-button-primary-shadow-hover)]',
+      secondary: 'border-[var(--dl-border)] bg-[var(--dl-surface)] text-[var(--dl-text)] hover:-translate-y-0.5 hover:border-[var(--dl-border-strong)] hover:bg-[var(--dl-surface-hover)]',
+      ghost: 'border-transparent bg-transparent text-[var(--dl-text-muted)] hover:bg-[var(--dl-surface-hover)] hover:text-[var(--dl-text)]',
+      danger: 'border-red-300/60 bg-red-50 text-red-700 hover:bg-red-100',
     },
     size: {
       sm: 'size-9 text-sm',

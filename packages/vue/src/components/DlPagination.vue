@@ -10,7 +10,7 @@ withDefaults(defineProps<{
   disabled?: boolean
 }>(), { page: 1, itemsPerPage: 10, siblingCount: 1, showEdges: true, disabled: false })
 const emit = defineEmits<{ 'update:page': [value: number] }>()
-const buttonClass = 'grid size-9 place-items-center rounded-[10px] border border-transparent text-sm font-semibold text-[var(--dl-text-muted)] outline-none transition hover:border-[var(--dl-border)] hover:bg-white/[0.07] hover:text-[var(--dl-text)] focus-visible:[box-shadow:var(--dl-focus)] disabled:opacity-35 data-[selected]:border-amber-200/30 data-[selected]:bg-amber-300/12 data-[selected]:text-amber-100'
+const buttonClass = 'grid size-9 place-items-center rounded-[10px] border border-transparent text-sm font-semibold text-[var(--dl-text-muted)] outline-none transition hover:border-[var(--dl-border)] hover:bg-[var(--dl-surface-hover)] hover:text-[var(--dl-text)] focus-visible:[box-shadow:var(--dl-focus)] disabled:opacity-35 data-[selected]:border-[var(--dl-accent-border)] data-[selected]:bg-[var(--dl-accent-surface)] data-[selected]:text-[var(--dl-accent-text)]'
 </script>
 
 <template>

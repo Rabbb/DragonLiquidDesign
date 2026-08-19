@@ -17,6 +17,6 @@ const props = withDefaults(defineProps<{
     class="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--dl-text)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
   >
     <slot />
-    <span v-if="required" class="text-amber-300" aria-hidden="true">*</span>
+    <span v-if="required" class="text-[var(--dl-accent)]" aria-hidden="true">*</span>
   </Label>
 </template>

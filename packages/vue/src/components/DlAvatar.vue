@@ -23,7 +23,7 @@ const avatar = tv({
   slots: {
     root: 'inline-flex shrink-0 select-none items-center justify-center overflow-hidden border border-[var(--dl-border-strong)] bg-[var(--dl-surface-strong)] shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_8px_22px_rgba(0,0,0,.22)]',
     image: 'size-full object-cover',
-    fallback: 'grid size-full place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(255,215,0,.24),transparent_45%),linear-gradient(145deg,rgba(50,205,50,.2),rgba(13,40,24,.8))] font-black text-amber-100',
+    fallback: 'grid size-full place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(239,207,119,.16),transparent_45%),linear-gradient(145deg,#f4f5f7,#e6e9ed)] font-black text-[var(--dl-accent-text)]',
   },
   variants: {
     size: { sm: { root: 'size-8', fallback: 'text-xs' }, md: { root: 'size-11', fallback: 'text-sm' }, lg: { root: 'size-16', fallback: 'text-lg' } },

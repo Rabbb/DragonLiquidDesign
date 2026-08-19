@@ -95,7 +95,7 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
         {{ copiedCodeId === block.id ? '已复制' : copyFailedId === block.id ? '复制失败' : '复制代码' }}
       </button>
     </div>
-    <pre><code><span v-for="(line, index) in codeLines" :key="index" class="dl-mdx__code-line"><i>{{ index + 1 }}</i><b>{{ line }}{{ index < codeLines.length - 1 ? '\n' : '' }}</b></span></code></pre>
+    <pre><code><span v-for="(line, index) in codeLines" :key="index" class="dl-mdx__code-line"><span class="dl-mdx__code-line-number" aria-hidden="true">{{ index + 1 }}</span><span class="dl-mdx__code-line-content">{{ line }}{{ index < codeLines.length - 1 ? '\n' : '' }}</span></span></code></pre>
   </div>
 
   <hr v-else-if="block.type === 'divider'" class="dl-mdx__divider">

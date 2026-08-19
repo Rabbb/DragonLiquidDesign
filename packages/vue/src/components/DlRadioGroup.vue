@@ -25,7 +25,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const styles = tv({
   slots: {
     root: 'flex gap-3',
-    option: 'group flex cursor-pointer items-start gap-3 rounded-[var(--dl-radius-sm)] border border-transparent p-2 text-[var(--dl-text)] transition hover:border-[var(--dl-border)] hover:bg-white/[0.035] data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-45',
+    option: 'group flex cursor-pointer items-start gap-3 rounded-[var(--dl-radius-sm)] border border-transparent p-2 text-[var(--dl-text)] transition hover:border-[var(--dl-border)] hover:bg-[var(--dl-surface-hover)] data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-45',
     control: 'mt-0.5 grid shrink-0 place-items-center rounded-full border border-[var(--dl-border-strong)] bg-[var(--dl-surface)] outline-none transition group-hover:border-amber-300/45 focus-visible:[box-shadow:var(--dl-focus)] data-[state=checked]:border-amber-200/60',
     indicator: 'rounded-full [background:var(--dl-primary)] shadow-[0_0_10px_rgba(255,193,7,.45)]',
     label: 'block font-semibold leading-tight',

@@ -24,7 +24,7 @@ const layer = useDlPopoverLayer(() => props.zIndex)
         <DropdownMenuLabel v-if="label" class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-[var(--dl-text-faint)]">{{ label }}</DropdownMenuLabel>
         <template v-for="item in items" :key="item.value">
           <DropdownMenuSeparator v-if="item.separator" class="my-1 h-px bg-[var(--dl-border)]" />
-          <DropdownMenuItem v-else :disabled="item.disabled" class="flex min-h-9 cursor-default items-center justify-between gap-4 rounded-xl px-3 outline-none data-[disabled]:opacity-40 data-[highlighted]:bg-white/[0.09] data-[highlighted]:text-amber-100" @select="emit('select', item.value)">
+          <DropdownMenuItem v-else :disabled="item.disabled" class="flex min-h-9 cursor-default items-center justify-between gap-4 rounded-xl px-3 outline-none data-[disabled]:opacity-40 data-[highlighted]:bg-[var(--dl-surface-hover)] data-[highlighted]:text-[var(--dl-accent-text)]" @select="emit('select', item.value)">
             <slot name="item" :item="item">{{ item.label }}</slot><kbd v-if="item.shortcut" class="text-[10px] text-[var(--dl-text-faint)]">{{ item.shortcut }}</kbd>
           </DropdownMenuItem>
         </template>

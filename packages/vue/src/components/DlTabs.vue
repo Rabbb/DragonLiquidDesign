@@ -21,8 +21,8 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const styles = tv({
   slots: {
     root: 'flex gap-4 data-[orientation=horizontal]:flex-col data-[orientation=vertical]:flex-row',
-    list: 'flex w-fit rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-black/20 p-1 data-[orientation=vertical]:flex-col',
-    trigger: 'rounded-[10px] font-semibold text-[var(--dl-text-muted)] outline-none transition hover:bg-white/[0.04] hover:text-[var(--dl-text)] focus-visible:[box-shadow:var(--dl-focus)] data-[state=active]:bg-[var(--dl-surface-strong)] data-[state=active]:text-amber-200 data-[state=active]:shadow-[inset_0_1px_0_rgba(255,255,255,.1),0_5px_16px_rgba(0,0,0,.2)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40',
+    list: 'flex w-fit rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-[var(--dl-night-soft)] p-1 data-[orientation=vertical]:flex-col',
+    trigger: 'rounded-[10px] font-semibold text-[var(--dl-text-muted)] outline-none transition hover:bg-[var(--dl-surface-hover)] hover:text-[var(--dl-text)] focus-visible:[box-shadow:var(--dl-focus)] data-[state=active]:bg-[var(--dl-surface-strong)] data-[state=active]:text-[var(--dl-accent-text)] data-[state=active]:shadow-[0_1px_3px_rgba(15,23,42,.1)] data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40',
     content: 'min-w-0 flex-1 rounded-[var(--dl-radius-md)] border border-[var(--dl-border)] bg-[var(--dl-surface)] p-4 text-sm text-[var(--dl-text-muted)] outline-none focus-visible:[box-shadow:var(--dl-focus)]',
   },
   variants: {

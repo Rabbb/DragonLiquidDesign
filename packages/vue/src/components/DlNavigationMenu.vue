@@ -4,7 +4,7 @@ import type { DlNavigationItem } from './primitive.types'
 
 withDefaults(defineProps<{ modelValue?: string; items: DlNavigationItem[]; delayDuration?: number }>(), { modelValue: undefined, delayDuration: 200 })
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
-const triggerClass = 'flex min-h-10 items-center gap-2 rounded-[10px] px-3 text-sm font-semibold text-[var(--dl-text-muted)] outline-none transition hover:bg-white/[0.07] hover:text-[var(--dl-text)] data-[state=open]:bg-white/[0.09] data-[state=open]:text-amber-100 focus-visible:[box-shadow:var(--dl-focus)]'
+const triggerClass = 'flex min-h-10 items-center gap-2 rounded-[10px] px-3 text-sm font-semibold text-[var(--dl-text-muted)] outline-none transition hover:bg-[var(--dl-surface-hover)] hover:text-[var(--dl-text)] data-[state=open]:bg-[var(--dl-surface-hover)] data-[state=open]:text-[var(--dl-accent-text)] focus-visible:[box-shadow:var(--dl-focus)]'
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const triggerClass = 'flex min-h-10 items-center gap-2 rounded-[10px] px-3 text-
           <NavigationMenuTrigger :disabled="item.disabled" :class="triggerClass">{{ item.label }} <span class="text-[10px]">▼</span></NavigationMenuTrigger>
           <NavigationMenuContent class="absolute left-0 top-0 w-full p-2">
             <div class="grid min-w-[420px] grid-cols-2 gap-1">
-              <NavigationMenuLink v-for="child in item.children" :key="child.value" :href="child.href" class="rounded-xl p-3 outline-none transition hover:bg-white/[0.08] focus-visible:[box-shadow:var(--dl-focus)]">
+              <NavigationMenuLink v-for="child in item.children" :key="child.value" :href="child.href" class="rounded-xl p-3 outline-none transition hover:bg-[var(--dl-surface-hover)] focus-visible:[box-shadow:var(--dl-focus)]">
                 <b class="block text-sm text-[var(--dl-text)]">{{ child.label }}</b><small v-if="child.description" class="mt-1 block leading-5 text-[var(--dl-text-faint)]">{{ child.description }}</small>
               </NavigationMenuLink>
             </div>

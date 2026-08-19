@@ -34,9 +34,9 @@ const emit = defineEmits<{
 const styles = tv({
   slots: {
     root: 'relative flex w-full touch-none select-none items-center data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45',
-    track: 'relative grow overflow-hidden rounded-full border border-[var(--dl-border)] bg-black/30 shadow-inner',
-    range: 'absolute h-full rounded-full [background:var(--dl-primary)] shadow-[0_0_14px_rgba(255,193,7,.25)]',
-    thumb: 'block rounded-full border border-amber-100/65 bg-amber-200 shadow-[0_2px_10px_rgba(0,0,0,.4),0_0_12px_rgba(255,193,7,.28)] outline-none transition hover:scale-110 focus-visible:[box-shadow:var(--dl-focus)]',
+    track: 'relative grow overflow-hidden rounded-full border border-[var(--dl-border)] bg-[var(--dl-night-soft)] shadow-inner',
+    range: 'absolute h-full rounded-full [background:var(--dl-primary)] shadow-[0_1px_3px_rgba(15,23,42,.18)]',
+    thumb: 'block rounded-full border border-slate-500 bg-white shadow-[0_2px_8px_rgba(15,23,42,.2)] outline-none transition hover:scale-110 focus-visible:[box-shadow:var(--dl-focus)]',
   },
   variants: {
     size: {

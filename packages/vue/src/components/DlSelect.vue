@@ -82,9 +82,9 @@ const contentZIndex = useDlSelectLayer(() => props.zIndex)
             :key="option.value"
             :value="option.value"
             :disabled="option.disabled"
-            class="relative flex min-h-10 cursor-default select-none items-center rounded-xl py-2 pl-9 pr-3 text-sm outline-none transition data-[disabled]:pointer-events-none data-[disabled]:opacity-40 data-[highlighted]:bg-white/[0.1] data-[highlighted]:text-amber-50 data-[state=checked]:bg-amber-300/10"
+            class="relative flex min-h-10 cursor-default select-none items-center rounded-xl py-2 pl-9 pr-3 text-sm outline-none transition data-[disabled]:pointer-events-none data-[disabled]:opacity-40 data-[highlighted]:bg-[var(--dl-surface-hover)] data-[highlighted]:text-[var(--dl-accent-text)] data-[state=checked]:bg-[var(--dl-accent-surface)]"
           >
-            <SelectItemIndicator class="absolute left-3 text-amber-300">◆</SelectItemIndicator>
+            <SelectItemIndicator class="absolute left-3 text-[var(--dl-accent)]">◆</SelectItemIndicator>
             <SelectItemText>
               <span class="block">{{ option.label }}</span>
               <span v-if="option.description" class="mt-0.5 block text-xs text-[var(--dl-text-faint)]">{{ option.description }}</span>
