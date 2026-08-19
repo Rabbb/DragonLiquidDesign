@@ -20,10 +20,16 @@ const emit = defineEmits<{ 'update:modelValue': [value: number] }>()
 const field = tv({
   slots: {
     root: 'inline-flex w-full items-stretch overflow-hidden rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-[var(--dl-surface)] shadow-[inset_0_1px_0_rgba(255,255,255,.06)] transition focus-within:border-[var(--dl-border-focus)] focus-within:[box-shadow:var(--dl-focus)] data-[disabled]:opacity-50',
-    button: 'grid shrink-0 place-items-center border-[var(--dl-border)] px-3 font-bold text-[var(--dl-text-muted)] outline-none transition hover:bg-[var(--dl-surface-hover)] hover:text-[var(--dl-accent-text)] disabled:cursor-not-allowed disabled:opacity-35',
-    input: 'min-w-0 flex-1 border-0 bg-transparent px-3 text-center text-[var(--dl-text)] outline-none',
+    button: 'grid shrink-0 place-items-center border-[var(--dl-border)] font-bold text-[var(--dl-text-muted)] outline-none transition hover:bg-[var(--dl-surface-hover)] hover:text-[var(--dl-accent-text)] disabled:cursor-not-allowed disabled:opacity-35',
+    input: 'min-w-0 flex-1 border-0 bg-transparent text-center tabular-nums text-[var(--dl-text)] outline-none',
   },
-  variants: { size: { sm: { root: 'min-h-9 text-xs' }, md: { root: 'min-h-11 text-sm' }, lg: { root: 'min-h-[3.25rem] text-base' } } },
+  variants: {
+    size: {
+      sm: { root: 'min-h-9 text-xs', button: 'px-2', input: 'px-1.5 text-xs' },
+      md: { root: 'min-h-11 text-sm', button: 'px-3', input: 'px-2.5 text-sm' },
+      lg: { root: 'min-h-[3.25rem] text-base', button: 'px-4', input: 'px-3 text-base' },
+    },
+  },
 })
 const classes = computed(() => field({ size: props.size }))
 </script>

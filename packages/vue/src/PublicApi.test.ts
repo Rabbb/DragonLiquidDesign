@@ -33,9 +33,12 @@ describe('public component API', () => {
     expect(wrapper.text()).toContain('*')
   })
 
-  it('renders an accessible number field', () => {
+  it('renders and updates an accessible number field value', async () => {
     const wrapper = mount(DlNumberField, { props: { modelValue: 12, min: 1, max: 24 } })
     expect(wrapper.get('[role="group"]').attributes('data-slot')).toBe('number-field')
     expect(wrapper.get('input').attributes('role')).toBe('spinbutton')
+    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('12')
+    await wrapper.get('input').trigger('keydown', { key: 'ArrowUp' })
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([13])
   })
 })
