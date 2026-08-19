@@ -35,8 +35,8 @@ function openBasicDialog(size: 'sm' | 'md' | 'lg') {
 
 const content = computed(() => ({
   basic: {
-    title: '模态浮层基础行为',
-    description: 'Dialog 管理焦点锁定、Esc 关闭、遮罩交互和标题描述语义。',
+    title: '可移动、可调整尺寸的模态窗口',
+    description: 'Dialog 在保留焦点锁定与关闭语义的同时，支持桌面端拖动位置和调整窗口尺寸。',
     code: vueSfc({ imports: ['DlButton', 'DlDialog'], script: `import { ref } from 'vue'
 
 type DialogSize = 'sm' | 'md' | 'lg'
@@ -64,14 +64,18 @@ function showDialog(nextSize: DialogSize) {
     :title="\`对话框尺寸 · \${size.toUpperCase()}\`"
     description="size 控制对话框的宽度规格。"
     :size="size"
+    draggable
+    resizable
+    :min-width="320"
+    :min-height="200"
   >
-    <p>当前尺寸：<strong>{{ size }}</strong></p>
+    <p>拖动标题栏移动窗口，拖动右下角调整尺寸。</p>
     <template #footer>
       <DlButton variant="ghost" @click="open = false">取消</DlButton>
       <DlButton variant="primary" @click="open = false">完成</DlButton>
     </template>
   </DlDialog>`, style: `.size-actions { display: flex; flex-wrap: wrap; gap: 10px; }` }),
-    tips: ['sm、md、lg 分别限制为 500px、640px、840px；窄屏下会自动收缩。', '打开后焦点应进入对话框，关闭后返回触发元素。', '不要用 Dialog 承载长篇阅读内容或复杂多步流程。'],
+    tips: ['拖动标题栏或顶部拖动柄可移动窗口，右下角缩放柄用于调整尺寸；双击对应控制柄可重置。', '控制柄支持方向键微调，按住 Shift 时使用更大的步长；窄屏和横屏低高度下会自动回到固定布局。', 'sm、md、lg 控制初始宽度；minWidth、minHeight 约束用户可调整的最小尺寸。', '打开后焦点应进入对话框，关闭后返回触发元素。'],
   },
   'tone-gallery': {
     title: 'Dialog 全部语义色调',
@@ -222,7 +226,7 @@ function showTone(tone: DlTone) {
   <DocExampleShell v-bind="content">
     <div v-if="scenario === 'basic'" class="dialog-trigger-grid">
       <div v-for="size in (['sm', 'md', 'lg'] as const)" :key="size"><span>{{ size.toUpperCase() }}</span><p>{{ size === 'sm' ? '确认与简短反馈' : size === 'md' ? '小型表单与配置' : '较宽内容与预览' }}</p><DlButton variant="secondary" @click="openBasicDialog(size)">打开 {{ size }}</DlButton></div>
-      <DlDialog v-model:open="basicOpen" :title="`Dragon Liquid Dialog · ${basicSize.toUpperCase()}`" description="这是一个具备完整无障碍语义的基础对话框。" :size="basicSize"><div class="dialog-inline-demo"><span>龍</span><p>当前宽度规格为 <strong>{{ basicSize }}</strong>。按下 Esc、点击遮罩或关闭按钮都可以离开。</p></div><template #footer><DlButton variant="ghost" @click="basicOpen = false">取消</DlButton><DlButton variant="primary" @click="basicOpen = false">完成</DlButton></template></DlDialog>
+      <DlDialog v-model:open="basicOpen" :title="`Dragon Liquid Dialog · ${basicSize.toUpperCase()}`" description="拖动标题栏移动窗口，拖动右下角调整尺寸。" :size="basicSize"><div class="dialog-inline-demo"><span>龍</span><p>当前初始宽度规格为 <strong>{{ basicSize }}</strong>。也可以用控制柄的方向键精确移动和缩放。</p></div><template #footer><DlButton variant="ghost" @click="basicOpen = false">取消</DlButton><DlButton variant="primary" @click="basicOpen = false">完成</DlButton></template></DlDialog>
     </div>
 
     <div v-else-if="scenario === 'tone-gallery'" class="tone-gallery-grid">

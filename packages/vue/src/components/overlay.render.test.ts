@@ -405,6 +405,66 @@ describe('ported overlay presentation', () => {
     expect(dialog?.classList).not.toContain('dl-dialog--sm')
   })
 
+  it('moves and resizes the dialog while keeping geometry observable', async () => {
+    const wrapper = mountOverlay(DlDialog, {
+      attachTo: document.body,
+      props: { open: true, title: 'Movable dialog' },
+      slots: { default: 'Dialog content' },
+    })
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('[data-slot="dialog"]')!
+    dialog.getBoundingClientRect = () => ({
+      x: 280,
+      y: 180,
+      left: 280,
+      top: 180,
+      right: 920,
+      bottom: 580,
+      width: 640,
+      height: 400,
+      toJSON: () => ({}),
+    })
+
+    const header = dialog.querySelector<HTMLElement>('.dl-dialog__header')!
+    header.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: 320, clientY: 200 }))
+    window.dispatchEvent(new MouseEvent('pointermove', { bubbles: true, clientX: 370, clientY: 235 }))
+    window.dispatchEvent(new MouseEvent('pointerup', { bubbles: true }))
+    await nextTick()
+
+    expect(dialog.style.left).toBe('330px')
+    expect(dialog.style.top).toBe('215px')
+    expect(wrapper.emitted('update:position')?.at(-1)).toEqual([{ x: 330, y: 215 }])
+    expect(wrapper.emitted('drag-start')).toEqual([[{ x: 280, y: 180 }]])
+    expect(wrapper.emitted('drag-end')).toEqual([[{ x: 330, y: 215 }]])
+
+    const resizeHandle = dialog.querySelector<HTMLElement>('[data-slot="dialog-resize-handle"]')!
+    resizeHandle.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' }))
+    await nextTick()
+
+    expect(dialog.style.width).toBe('640px')
+    expect(dialog.style.height).toBe('410px')
+    expect(wrapper.emitted('update:dimensions')?.at(-1)).toEqual([{ width: 640, height: 410 }])
+
+    await wrapper.setProps({ open: false })
+    expect(wrapper.emitted('update:position')?.at(-1)).toEqual([null])
+    expect(wrapper.emitted('update:dimensions')?.at(-1)).toEqual([null])
+  })
+
+  it('can opt out of dialog window controls', async () => {
+    mountOverlay(DlDialog, {
+      attachTo: document.body,
+      props: { open: true, title: 'Fixed dialog', draggable: false, resizable: false },
+    })
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('[data-slot="dialog"]')
+    expect(dialog?.dataset.draggable).toBe('false')
+    expect(dialog?.dataset.resizable).toBe('false')
+    expect(dialog?.querySelector('[data-slot="dialog-drag-handle"]')).toBeNull()
+    expect(dialog?.querySelector('[data-slot="dialog-resize-handle"]')).toBeNull()
+  })
+
   it('renders the popover surface through its portal with the migrated class', async () => {
     mountOverlay(DlPopover, {
       attachTo: document.body,

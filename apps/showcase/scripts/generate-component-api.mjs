@@ -60,7 +60,9 @@ const descriptions = {
   defaultContent: '组件块没有提供内容属性时使用的默认插槽文本。',
   defaultProps: '组件块未覆盖时使用的安全默认属性。',
   direction: '设置布局分割方向。',
+  dimensions: '对话框当前宽高；使用 v-model:dimensions 读取或保存用户调整后的尺寸。',
   disabled: '是否禁用控件及其交互。',
+  draggable: '是否允许在桌面视口中拖动标题栏或拖动柄来移动对话框。',
   duration: '内容自动关闭前的停留时间，单位毫秒。',
   expanded: '当前已展开节点的标识列表。',
   fallback: '图片不可用时显示的回退文字。',
@@ -105,7 +107,8 @@ const descriptions = {
   showToolbar: '是否显示格式操作和视图模式工具栏。',
   showStatus: '是否显示行数、字符数、阅读时间和解析状态。',
   taskInteractive: '是否允许在预览区直接切换任务列表状态。',
-  minHeight: '编辑器工作区的最小高度，接受任意合法 CSS 长度。',
+  minHeight: '组件或工作区允许使用的最小高度。',
+  minWidth: '组件允许使用的最小宽度。',
   maxPreviewHeight: '预览区域的最大高度，超过后在区域内滚动。',
   multiple: '是否允许同时选择多个值。',
   name: '参与表单提交时使用的字段名称。',
@@ -120,6 +123,7 @@ const descriptions = {
   panels: '分割布局中各面板的尺寸与约束配置。',
   placeholder: '当前值为空时显示的占位提示。',
   placement: '抽屉从视口的哪一侧进入。',
+  position: '对话框左上角的视口坐标；使用 v-model:position 读取或保存用户拖动后的位置。',
   progress: '自定义进度百分比。',
   props: '经过默认值合并与安全过滤后的组件块属性。',
   propagateSelect: '选中节点时是否同步选择其子节点。',
@@ -130,6 +134,8 @@ const descriptions = {
   render: '不直接使用 Vue 组件时，由业务提供的受信任渲染函数。',
   resolve: '按组件名或别名查询当前生效的注册定义。',
   readonly: '是否只读；保留浏览能力但禁止修改。',
+  resetGeometryOnClose: '关闭后是否恢复居中位置与 size 对应的初始尺寸。',
+  resizable: '是否允许在桌面视口中拖动右下角缩放柄来调整对话框尺寸。',
   required: '是否标记为表单必填项。',
   scrollHideDelay: '停止滚动后隐藏滚动条的延迟时间，单位毫秒。',
   separator: '是否将该项目渲染为菜单分隔线。',
@@ -160,6 +166,10 @@ const descriptions = {
   value: '表单提交或选择操作使用的值。',
   variant: '设置控件的视觉变体。',
   weekStartsOn: '一周起始日，0 表示星期日。',
+  width: '窗口或区域的宽度。',
+  height: '窗口或区域的高度。',
+  x: '相对视口左侧的横向坐标。',
+  y: '相对视口顶部的纵向坐标。',
   xChannel: '二维颜色区域横轴控制的颜色通道。',
   yChannel: '二维颜色区域纵轴控制的颜色通道。',
   zIndex: '覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。',
@@ -176,6 +186,8 @@ const descriptions = {
 
 const structureDescriptions = {
   DlAccordionItem: 'Accordion 的单个折叠面板配置。',
+  DlDialogDimensions: 'Dialog 调整后的像素尺寸。',
+  DlDialogPosition: 'Dialog 左上角相对视口的像素坐标。',
   DlChoiceOption: '列表、组合框或切换组使用的通用选择项。',
   DlMenuGroup: 'Menubar 的一级菜单分组，内部通过 items 提供命令。',
   DlMenuItem: '菜单、下拉菜单、上下文菜单与工具栏使用的命令项。',
@@ -475,7 +487,7 @@ const filenames = (await readdir(componentsRoot))
 
 const structures = {}
 const componentEnums = {}
-for (const filename of ['primitive.types.ts', 'select.types.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts']) {
+for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts']) {
   const typeSource = await readFile(resolve(componentsRoot, filename), 'utf8')
   const parsed = structuresFromSource(typeSource)
   Object.assign(structures, Object.fromEntries(Object.entries(parsed).map(([name, structure]) => [name, { ...structure, kind: 'structure' }])))
@@ -488,7 +500,10 @@ for (const filename of filenames) {
   const source = await readFile(resolve(componentsRoot, filename), 'utf8')
   const rows = [...modelFromSource(source), ...propsFromSource(source)]
   if (!rows.length) throw new Error(`${filename} 未提取到任何公开属性。`)
-  const definitions = { ...structures, ...componentEnums, ...sharedEnums, ...enumsFromSource(source) }
+  const localStructures = Object.fromEntries(
+    Object.entries(structuresFromSource(source)).map(([name, structure]) => [name, { ...structure, kind: 'structure' }]),
+  )
+  const definitions = { ...structures, ...componentEnums, ...localStructures, ...sharedEnums, ...enumsFromSource(source) }
   api[componentId(filename)] = {
     props: rows,
     relatedTypes: relatedTypesForRows(rows, definitions),

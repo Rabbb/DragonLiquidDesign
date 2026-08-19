@@ -61,6 +61,7 @@ export type {
   DlTreeNode,
 } from './components/primitive.types'
 export type { DlSelectOption } from './components/select.types'
+export type { DlDialogDimensions, DlDialogPosition } from './components/dialog.types'
 export type {
   DlMdxBlock,
   DlMdxComponentContext,

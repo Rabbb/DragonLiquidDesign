@@ -139,7 +139,7 @@ const readyComponents: ComponentDefinition[] = [
     maturity: 'stable',
     sourceUrl: 'https://reka-ui.com/docs/components/dialog',
     scenarios: [
-      { id: 'basic', label: '通用案例', summary: '尺寸、标题与关闭行为' },
+      { id: 'basic', label: '通用案例', summary: '拖动位置、调整尺寸与关闭行为' },
       { id: 'tone-gallery', label: '全部色调', summary: '交互预览六种 DlTone 语义色调' },
       { id: 'create-record', label: '创建收藏记录', summary: '在浮层内完成小型表单' },
       { id: 'featured-preview', label: '重点内容预览', summary: '强调当前推荐或重点任务' },

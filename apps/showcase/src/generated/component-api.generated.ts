@@ -1270,6 +1270,48 @@ export default {
         "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
         "type": "number",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "draggable",
+        "description": "是否允许在桌面视口中拖动标题栏或拖动柄来移动对话框。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "resizable",
+        "description": "是否允许在桌面视口中拖动右下角缩放柄来调整对话框尺寸。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "position",
+        "description": "对话框左上角的视口坐标；使用 v-model:position 读取或保存用户拖动后的位置。",
+        "type": "DlDialogPosition | null",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "dimensions",
+        "description": "对话框当前宽高；使用 v-model:dimensions 读取或保存用户调整后的尺寸。",
+        "type": "DlDialogDimensions | null",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "minWidth",
+        "description": "组件允许使用的最小宽度。",
+        "type": "number",
+        "defaultValue": "320"
+      },
+      {
+        "prop": "minHeight",
+        "description": "组件或工作区允许使用的最小高度。",
+        "type": "number",
+        "defaultValue": "200"
+      },
+      {
+        "prop": "resetGeometryOnClose",
+        "description": "关闭后是否恢复居中位置与 size 对应的初始尺寸。",
+        "type": "boolean",
+        "defaultValue": "true"
       }
     ],
     "relatedTypes": [
@@ -1316,6 +1358,46 @@ export default {
             "defaultValue": "弱化"
           }
         ]
+      },
+      {
+        "name": "DlDialogPosition",
+        "description": "Dialog 左上角相对视口的像素坐标。",
+        "rows": [
+          {
+            "prop": "x",
+            "description": "相对视口左侧的横向坐标。",
+            "type": "number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "y",
+            "description": "相对视口顶部的纵向坐标。",
+            "type": "number",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlDialogPosition"
+      },
+      {
+        "name": "DlDialogDimensions",
+        "description": "Dialog 调整后的像素尺寸。",
+        "rows": [
+          {
+            "prop": "width",
+            "description": "窗口或区域的宽度。",
+            "type": "number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "height",
+            "description": "窗口或区域的高度。",
+            "type": "number",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlDialogDimensions"
       }
     ]
   },
@@ -1932,7 +2014,7 @@ export default {
       },
       {
         "prop": "minHeight",
-        "description": "编辑器工作区的最小高度，接受任意合法 CSS 长度。",
+        "description": "组件或工作区允许使用的最小高度。",
         "type": "string",
         "defaultValue": "'28rem'"
       },
