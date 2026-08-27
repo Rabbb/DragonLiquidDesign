@@ -41,6 +41,7 @@ const familyOptions: DlSelectOption[] = [
 const maturityOptions: DlChoiceOption[] = [
   { value: 'all', label: '全部' },
   { value: 'custom', label: '自研' },
+  { value: 'native', label: '原生 HTML' },
   { value: 'stable', label: '稳定' },
   { value: 'alpha', label: 'Alpha' },
 ]
@@ -123,6 +124,7 @@ function resetFilters() {
 function maturityTone(value: string): DlTone {
   if (value === 'alpha') return 'warning'
   if (value === 'custom') return 'accent'
+  if (value === 'native') return 'muted'
   return 'success'
 }
 

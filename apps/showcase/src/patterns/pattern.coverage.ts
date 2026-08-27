@@ -1,5 +1,16 @@
 import type { ComponentDefinition } from '../catalog'
+import nativeInputTypes from '../native-inputs.json' with { type: 'json' }
 import type { PatternPageId } from './pattern.catalog'
+
+const nativeInputHomes = Object.fromEntries(nativeInputTypes.map(input => [
+  input.id,
+  input.type === 'search' ? 'library' : input.type === 'hidden' ? 'import' : 'create',
+])) as Record<string, PatternPageId>
+
+const nativeInputUsageLocations = Object.fromEntries(nativeInputTypes.map(input => [
+  input.id,
+  `原生表单中的 input[type="${input.type}"] 专用输入与提交场景`,
+])) as Record<string, string>
 
 export const coveragePageIds: PatternPageId[] = [
   'overview', 'library', 'create', 'detail', 'editor', 'import', 'settings', 'feedback', 'coverage',
@@ -11,7 +22,7 @@ export const componentHomes: Record<string, PatternPageId> = {
   badge: 'feedback',
   card: 'overview',
   'icon-button': 'feedback',
-  input: 'create',
+  ...nativeInputHomes,
   textarea: 'create',
   autocomplete: 'library',
   checkbox: 'create',
@@ -84,7 +95,7 @@ export const componentUsageLocations: Record<string, string> = {
   badge: '内容状态、任务状态、成熟度与六种语义色调标记',
   card: '指标、内容收藏、表单区块与工作台信息容器',
   'icon-button': '收藏卡快捷操作、重置筛选与编辑工具栏命令',
-  input: '收藏库检索、标题录入以及成功/警告/错误校验',
+  ...nativeInputUsageLocations,
   textarea: '作品简介、问题说明与编辑工作台长文本录入',
   autocomplete: '收藏库智能检索与制作公司建议选择',
   checkbox: '协议确认、收藏筛选、导入策略和设置联动',
@@ -157,7 +168,7 @@ const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
   badge: { basic: 'feedback', 'content-status': 'detail', 'active-filters': 'library' },
   card: { basic: 'overview', 'data-overview': 'overview', 'media-collection': 'library' },
   'icon-button': { basic: 'feedback', 'editor-toolbar': 'editor', 'card-actions': 'library' },
-  input: { basic: 'create', 'global-search': 'library', 'form-validation': 'create' },
+  ...Object.fromEntries(nativeInputTypes.map(input => [input.id, { basic: nativeInputHomes[input.id] }])),
   textarea: { basic: 'create', 'content-editor': 'editor', 'feedback-message': 'create' },
   select: { basic: 'create', 'catalog-filter': 'library', 'preference-level': 'settings' },
   'choice-portal': { basic: 'settings', 'grouped-search': 'settings', 'custom-value': 'settings' },

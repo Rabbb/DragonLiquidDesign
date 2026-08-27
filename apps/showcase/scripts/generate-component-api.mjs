@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 const showcaseRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const componentsRoot = resolve(showcaseRoot, '../../packages/vue/src/components')
 const outputFile = resolve(showcaseRoot, 'src/generated/component-api.generated.ts')
+const nativeInputTypes = JSON.parse(await readFile(resolve(showcaseRoot, 'src/native-inputs.json'), 'utf8'))
 
 const descriptions = {
   actionLabel: '操作按钮显示的文字；不传时不显示该操作。',
@@ -496,6 +497,84 @@ function relatedTypesForRows(rows, definitions) {
   })
 }
 
+const nativeAttributeDefinitions = {
+  accept: ['限制文件选择器可接受的文件类型。', 'string', '—'],
+  alpha: ['允许颜色值包含透明度通道；浏览器支持情况需要单独确认。', 'boolean attribute', 'false'],
+  alt: ['图像无法显示时使用的替代文字，也是图像按钮的可访问名称。', 'string', '—'],
+  autocomplete: ['提示浏览器该字段允许采用的自动填充语义。', 'string', '—'],
+  capture: ['在支持的移动设备上提示使用前置或后置媒体采集设备。', '"user" | "environment" | string', '—'],
+  checked: ['设置复选框或单选按钮的初始选中状态。', 'boolean attribute', 'false'],
+  colorspace: ['声明颜色选择器使用的颜色空间。', '"limited-srgb" | "display-p3"', '"limited-srgb"'],
+  disabled: ['禁止该输入接收焦点、交互或随表单提交。', 'boolean attribute', 'false'],
+  files: ['读取用户已经选择的文件集合；该值由浏览器维护。', 'FileList | null (readonly)', 'null'],
+  form: ['通过表单 id 把输入关联到其所属 form 元素。', 'string', '最近的祖先 form'],
+  formaction: ['覆盖所属表单的 action，仅对提交型输入生效。', 'URL string', 'form.action'],
+  formenctype: ['覆盖提交数据的编码方式，仅对提交型输入生效。', '"application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain"', 'form.enctype'],
+  formmethod: ['覆盖提交使用的 HTTP 方法，仅对提交型输入生效。', '"get" | "post" | "dialog"', 'form.method'],
+  formnovalidate: ['提交时跳过原生约束校验，仅对提交型输入生效。', 'boolean attribute', 'false'],
+  formtarget: ['覆盖提交结果打开的位置，仅对提交型输入生效。', 'string', 'form.target'],
+  height: ['设置图像提交按钮的固有显示高度。', 'number (CSS px)', '图片固有高度'],
+  list: ['关联 datalist 的 id，为输入提供原生建议值。', 'string', '—'],
+  max: ['设置允许输入的最大日期、时间或数值。', '与输入类型匹配的字符串', '—'],
+  maxlength: ['限制用户可输入的 UTF-16 代码单元最大数量。', 'non-negative integer', '—'],
+  min: ['设置允许输入的最小日期、时间或数值。', '与输入类型匹配的字符串', '—'],
+  minlength: ['要求输入至少包含指定数量的 UTF-16 代码单元。', 'non-negative integer', '—'],
+  multiple: ['允许输入接收多个邮箱地址或多个文件。', 'boolean attribute', 'false'],
+  name: ['定义表单提交时使用的字段名称。', 'string', '—'],
+  pattern: ['使用 JavaScript 正则表达式约束输入的完整值。', 'regular expression source', '—'],
+  placeholder: ['在空值时显示简短格式提示，不能替代 label。', 'string', '—'],
+  readonly: ['保留字段值和焦点能力，但禁止用户修改。', 'boolean attribute', 'false'],
+  required: ['要求该控件在表单提交前提供有效值或选择。', 'boolean attribute', 'false'],
+  size: ['设置文本输入大致可见的字符宽度。', 'positive integer', '20'],
+  src: ['指定图像提交按钮使用的图片资源地址。', 'URL string', '—'],
+  step: ['设置合法值之间的步进间隔；可使用 any 取消步进约束。', 'number | "any"', '类型默认值'],
+  type: ['固定该参考控件的原生输入类型，不通过运行时参数切换。', 'input type literal', '—'],
+  value: ['设置输入的初始值或提交值。', 'string', '""'],
+  width: ['设置图像提交按钮的固有显示宽度。', 'number (CSS px)', '图片固有宽度'],
+}
+
+const nativeAttributesByType = {
+  button: ['name', 'value', 'disabled', 'form'],
+  checkbox: ['name', 'value', 'checked', 'required', 'disabled', 'form'],
+  color: ['name', 'value', 'list', 'alpha', 'colorspace', 'disabled', 'form'],
+  date: ['name', 'value', 'min', 'max', 'step', 'list', 'readonly', 'required', 'disabled', 'form'],
+  'datetime-local': ['name', 'value', 'min', 'max', 'step', 'list', 'readonly', 'required', 'disabled', 'form'],
+  email: ['name', 'value', 'autocomplete', 'list', 'multiple', 'minlength', 'maxlength', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'disabled', 'form'],
+  file: ['name', 'accept', 'capture', 'multiple', 'required', 'files', 'disabled', 'form'],
+  hidden: ['name', 'value', 'form'],
+  image: ['name', 'src', 'alt', 'width', 'height', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'disabled', 'form'],
+  month: ['name', 'value', 'min', 'max', 'step', 'list', 'readonly', 'required', 'disabled', 'form'],
+  number: ['name', 'value', 'min', 'max', 'step', 'list', 'placeholder', 'readonly', 'required', 'disabled', 'form'],
+  password: ['name', 'value', 'autocomplete', 'minlength', 'maxlength', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'disabled', 'form'],
+  radio: ['name', 'value', 'checked', 'required', 'disabled', 'form'],
+  range: ['name', 'value', 'min', 'max', 'step', 'list', 'disabled', 'form'],
+  reset: ['name', 'value', 'disabled', 'form'],
+  search: ['name', 'value', 'autocomplete', 'list', 'minlength', 'maxlength', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'disabled', 'form'],
+  submit: ['name', 'value', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'disabled', 'form'],
+  tel: ['name', 'value', 'autocomplete', 'list', 'minlength', 'maxlength', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'disabled', 'form'],
+  text: ['name', 'value', 'autocomplete', 'list', 'minlength', 'maxlength', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'disabled', 'form'],
+  time: ['name', 'value', 'min', 'max', 'step', 'list', 'readonly', 'required', 'disabled', 'form'],
+  url: ['name', 'value', 'autocomplete', 'list', 'minlength', 'maxlength', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'disabled', 'form'],
+  week: ['name', 'value', 'min', 'max', 'step', 'list', 'readonly', 'required', 'disabled', 'form'],
+}
+
+function nativeInputApi(input) {
+  const attributes = nativeAttributesByType[input.type]
+  if (!attributes) throw new Error(`input[type="${input.type}"] 缺少专用属性 API。`)
+  const typeRow = {
+    prop: 'type',
+    description: nativeAttributeDefinitions.type[0],
+    type: JSON.stringify(input.type),
+    defaultValue: JSON.stringify(input.type),
+  }
+  const rows = attributes.map(prop => {
+    const definition = nativeAttributeDefinitions[prop]
+    if (!definition) throw new Error(`原生 input 属性 ${prop} 缺少 API 描述。`)
+    return { prop, description: definition[0], type: definition[1], defaultValue: definition[2] }
+  })
+  return { props: [typeRow, ...rows], relatedTypes: [] }
+}
+
 const filenames = (await readdir(componentsRoot))
   .filter(filename => /^Dl.+\.vue$/.test(filename))
   .sort((left, right) => left.localeCompare(right, 'en'))
@@ -524,6 +603,9 @@ for (const filename of filenames) {
     relatedTypes: relatedTypesForRows(rows, definitions),
   }
 }
+
+delete api.input
+for (const input of nativeInputTypes) api[input.id] = nativeInputApi(input)
 
 if (!api.toolbar.relatedTypes.some(type => type.title === 'DlMenuItem[]')) {
   throw new Error('Toolbar 缺少 DlMenuItem[] 数据结构 API。')

@@ -12,11 +12,7 @@ export function vueSfc(source: VueExampleSource) {
   const script = [imports.trimEnd(), source.script?.trim()].filter(Boolean).join('\n')
   const style = source.style?.trim()
 
-  return `<script setup lang="ts">
-${script}
-</script>
-
-<template>
+  return `${script ? `<script setup lang="ts">\n${script}\n</script>\n\n` : ''}<template>
 ${source.template.trim()}
 </template>${style ? `\n\n<style scoped>\n${style}\n</style>` : ''}`
 }

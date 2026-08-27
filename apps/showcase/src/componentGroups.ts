@@ -1,4 +1,5 @@
 import { componentCatalog, type ComponentDefinition } from './catalog.ts'
+import nativeInputTypes from './native-inputs.json' with { type: 'json' }
 
 export type ComponentGroupingMode = 'family' | 'purpose' | 'site' | 'flow' | 'data'
 
@@ -22,9 +23,15 @@ export const componentGroupingModes = [
   { value: 'data', label: '数据类型', description: '按控件处理或呈现的文本、数值、状态、日期和集合等数据形态组织。' },
 ] as const
 
+const nativeInputIds = nativeInputTypes.map(input => input.id)
+const nativeTextInputIds = nativeInputTypes
+  .filter(input => ['text', 'search', 'email', 'password', 'tel', 'url'].includes(input.type))
+  .map(input => input.id)
+
 const familyGroups: ComponentGroupDefinition[] = [
   group('actions', '操作按钮', 'ACTIONS', '执行主操作、快捷操作与组合命令。', ['button', 'split-button', 'icon-button', 'toggle', 'toggle-group']),
-  group('text-entry', '文本录入', 'TEXT ENTRY', '输入、编辑和维护短文本或长文本。', ['input', 'textarea', 'editable', 'label']),
+  group('native-inputs', 'HTML Input 类型', 'NATIVE INPUT TYPES', '按固定 type 区分的原生 HTML 输入控件。', nativeInputIds),
+  group('text-entry', '文本录入', 'TEXT ENTRY', '输入、编辑和维护短文本或长文本。', ['textarea', 'editable', 'label', ...nativeTextInputIds]),
   group('structured-entry', '结构化录入', 'STRUCTURED ENTRY', '录入数字、验证码与多个标签值。', ['number-field', 'pin-input', 'tags-input']),
   group('single-choice', '单项选择', 'SINGLE CHOICE', '搜索、浏览并选择一个候选值。', ['select', 'choice-portal', 'combobox', 'autocomplete', 'listbox', 'radio-group', 'segmented']),
   group('state-choice', '状态与多选', 'STATE & MULTI', '表达多个选择、互斥状态或即时开关。', ['multi-choice', 'checkbox', 'radio-group', 'segmented', 'toggle', 'toggle-group', 'switch']),
@@ -45,8 +52,9 @@ const familyGroups: ComponentGroupDefinition[] = [
 
 const purposeGroups: ComponentGroupDefinition[] = [
   group('execute', '执行操作', 'EXECUTE', '提交、切换或触发一条明确命令。', ['button', 'split-button', 'icon-button', 'toggle', 'toggle-group', 'switch', 'toolbar', 'dropdown-menu', 'context-menu', 'menubar']),
-  group('write', '文本与内容录入', 'WRITE', '输入、修改和组织文字内容。', ['input', 'textarea', 'editable', 'tags-input', 'mdx', 'label']),
-  group('precise-input', '数值与安全输入', 'PRECISE INPUT', '录入受约束数值、验证码和敏感步骤。', ['number-field', 'pin-input', 'input', 'slider']),
+  group('native-form-inputs', '原生输入任务', 'NATIVE INPUT', '按固定 HTML type 完成各类原生表单输入任务。', nativeInputIds),
+  group('write', '文本与内容录入', 'WRITE', '输入、修改和组织文字内容。', ['textarea', 'editable', 'tags-input', 'mdx', 'label', ...nativeTextInputIds]),
+  group('precise-input', '数值与安全输入', 'PRECISE INPUT', '录入受约束数值、验证码和敏感步骤。', ['number-field', 'pin-input', 'slider', 'input-number', 'input-password']),
   group('choose-filter', '选择与筛选', 'CHOOSE & FILTER', '从候选项中搜索、比较或筛选结果。', ['autocomplete', 'combobox', 'select', 'choice-portal', 'multi-choice', 'listbox', 'checkbox', 'radio-group', 'segmented', 'toggle-group', 'slider', 'rating', 'color-swatch-picker']),
   group('preference', '状态与偏好', 'PREFERENCE', '维护立即生效的布尔状态与显示偏好。', ['checkbox', 'radio-group', 'segmented', 'switch', 'toggle', 'toggle-group', 'select', 'color-swatch-picker']),
   group('schedule', '日期与排期', 'SCHEDULE', '选择日期、时间、周期和统计范围。', ['calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-wheel']),
@@ -60,23 +68,24 @@ const purposeGroups: ComponentGroupDefinition[] = [
 ]
 
 const siteGroups: ComponentGroupDefinition[] = [
-  group('admin', '管理后台', 'ADMIN CONSOLE', '高密度表单、数据管理、批量操作和权限配置。', ['button', 'split-button', 'icon-button', 'input', 'textarea', 'select', 'multi-choice', 'segmented', 'autocomplete', 'checkbox', 'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'radio-group', 'slider', 'switch', 'tags-input', 'toggle', 'toggle-group', 'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'alert-dialog', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'menubar', 'navigation-menu', 'pagination', 'progress', 'scroll-area', 'separator', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'tooltip', 'tree', 'virtual-list']),
-  group('productivity', '效率与待办', 'PRODUCTIVITY', '任务、日程、文档、项目工作台和个人效率产品。', ['button', 'split-button', 'icon-button', 'input', 'textarea', 'choice-portal', 'multi-choice', 'segmented', 'checkbox', 'editable', 'tags-input', 'toggle', 'switch', 'calendar', 'date-picker', 'date-range-picker', 'time-field', 'time-range-field', 'time-wheel', 'month-picker', 'year-picker', 'mdx', 'virtual-list', 'accordion', 'dialog', 'drawer', 'dropdown-menu', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'tooltip', 'tree']),
-  group('content-community', '内容与社区', 'CONTENT & COMMUNITY', '内容流、个人资料、评论、收藏和社区互动。', ['button', 'badge', 'card', 'icon-button', 'input', 'textarea', 'autocomplete', 'checkbox', 'editable', 'multi-choice', 'radio-group', 'rating', 'select', 'switch', 'tags-input', 'toggle', 'toggle-group', 'aspect-ratio', 'avatar', 'collapsible', 'dialog', 'drawer', 'dropdown-menu', 'hover-card', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'tabs', 'toast', 'tooltip']),
-  group('commerce', '电商与交易', 'COMMERCE', '商品搜索、规格选择、订单流程和交易反馈。', ['button', 'split-button', 'badge', 'card', 'icon-button', 'input', 'autocomplete', 'checkbox', 'combobox', 'number-field', 'radio-group', 'select', 'slider', 'switch', 'tags-input', 'color-swatch-picker', 'calendar', 'date-picker', 'alert-dialog', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'hover-card', 'navigation-menu', 'pagination', 'popover', 'progress', 'stepper', 'tabs', 'toast', 'tooltip', 'aspect-ratio']),
+  group('admin', '管理后台', 'ADMIN CONSOLE', '高密度表单、数据管理、批量操作和权限配置。', ['button', 'split-button', 'icon-button', ...nativeInputIds, 'textarea', 'select', 'multi-choice', 'segmented', 'autocomplete', 'checkbox', 'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'radio-group', 'slider', 'switch', 'tags-input', 'toggle', 'toggle-group', 'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'alert-dialog', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'menubar', 'navigation-menu', 'pagination', 'progress', 'scroll-area', 'separator', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'tooltip', 'tree', 'virtual-list']),
+  group('productivity', '效率与待办', 'PRODUCTIVITY', '任务、日程、文档、项目工作台和个人效率产品。', ['button', 'split-button', 'icon-button', ...nativeTextInputIds, 'textarea', 'choice-portal', 'multi-choice', 'segmented', 'checkbox', 'editable', 'tags-input', 'toggle', 'switch', 'calendar', 'date-picker', 'date-range-picker', 'time-field', 'time-range-field', 'time-wheel', 'month-picker', 'year-picker', 'mdx', 'virtual-list', 'accordion', 'dialog', 'drawer', 'dropdown-menu', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'tooltip', 'tree']),
+  group('content-community', '内容与社区', 'CONTENT & COMMUNITY', '内容流、个人资料、评论、收藏和社区互动。', ['button', 'badge', 'card', 'icon-button', ...nativeTextInputIds, 'textarea', 'autocomplete', 'checkbox', 'editable', 'multi-choice', 'radio-group', 'rating', 'select', 'switch', 'tags-input', 'toggle', 'toggle-group', 'aspect-ratio', 'avatar', 'collapsible', 'dialog', 'drawer', 'dropdown-menu', 'hover-card', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'tabs', 'toast', 'tooltip']),
+  group('commerce', '电商与交易', 'COMMERCE', '商品搜索、规格选择、订单流程和交易反馈。', ['button', 'split-button', 'badge', 'card', 'icon-button', ...nativeTextInputIds, 'input-number', 'input-range', 'input-color', 'autocomplete', 'checkbox', 'combobox', 'number-field', 'radio-group', 'select', 'slider', 'switch', 'tags-input', 'color-swatch-picker', 'calendar', 'date-picker', 'alert-dialog', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'hover-card', 'navigation-menu', 'pagination', 'popover', 'progress', 'stepper', 'tabs', 'toast', 'tooltip', 'aspect-ratio']),
   group('media', '影音与娱乐', 'MEDIA', '影音目录、播放设置、评分、进度和沉浸式选择。', ['button', 'badge', 'card', 'icon-button', 'choice-portal', 'segmented', 'slider', 'toggle-group', 'aspect-ratio', 'avatar', 'hover-card', 'navigation-menu', 'progress', 'tabs', 'tooltip', 'drawer', 'rating']),
-  group('knowledge', '知识与文档', 'KNOWLEDGE', '知识库、文档站、编辑器和层级内容导航。', ['button', 'split-button', 'badge', 'card', 'icon-button', 'input', 'textarea', 'autocomplete', 'checkbox', 'combobox', 'editable', 'listbox', 'multi-choice', 'select', 'tags-input', 'toggle-group', 'mdx', 'virtual-list', 'accordion', 'aspect-ratio', 'collapsible', 'context-menu', 'dialog', 'dropdown-menu', 'menubar', 'navigation-menu', 'pagination', 'popover', 'scroll-area', 'separator', 'splitter', 'tabs', 'toolbar', 'tooltip', 'tree']),
-  group('marketing', '品牌与营销', 'MARKETING', '官网、活动页、产品介绍和线索收集。', ['button', 'badge', 'card', 'icon-button', 'input', 'textarea', 'checkbox', 'radio-group', 'select', 'switch', 'aspect-ratio', 'avatar', 'accordion', 'dialog', 'drawer', 'navigation-menu', 'progress', 'separator', 'tabs', 'toast', 'tooltip']),
+  group('knowledge', '知识与文档', 'KNOWLEDGE', '知识库、文档站、编辑器和层级内容导航。', ['button', 'split-button', 'badge', 'card', 'icon-button', ...nativeTextInputIds, 'textarea', 'autocomplete', 'checkbox', 'combobox', 'editable', 'listbox', 'multi-choice', 'select', 'tags-input', 'toggle-group', 'mdx', 'virtual-list', 'accordion', 'aspect-ratio', 'collapsible', 'context-menu', 'dialog', 'dropdown-menu', 'menubar', 'navigation-menu', 'pagination', 'popover', 'scroll-area', 'separator', 'splitter', 'tabs', 'toolbar', 'tooltip', 'tree']),
+  group('marketing', '品牌与营销', 'MARKETING', '官网、活动页、产品介绍和线索收集。', ['button', 'badge', 'card', 'icon-button', ...nativeTextInputIds, 'textarea', 'checkbox', 'radio-group', 'select', 'switch', 'aspect-ratio', 'avatar', 'accordion', 'dialog', 'drawer', 'navigation-menu', 'progress', 'separator', 'tabs', 'toast', 'tooltip']),
   group('mobile', '移动应用与 H5', 'MOBILE & H5', '触控优先、底部抽屉和紧凑导航体验。', ['button', 'icon-button', 'choice-portal', 'multi-choice', 'segmented', 'time-wheel', 'checkbox', 'radio-group', 'slider', 'switch', 'toggle', 'toggle-group', 'drawer', 'navigation-menu', 'tabs', 'toast', 'tooltip', 'progress']),
   group('analytics', '数据与分析', 'ANALYTICS', '指标卡、时间范围、数据浏览和分析工作台。', ['badge', 'card', 'select', 'multi-choice', 'segmented', 'date-range-field', 'date-range-picker', 'range-calendar', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'progress', 'pagination', 'scroll-area', 'splitter', 'tabs', 'tooltip', 'tree', 'virtual-list', 'color-swatch']),
-  group('account', '账号与权限', 'ACCOUNT & AUTH', '登录、注册、验证、隐私和账号设置。', ['button', 'icon-button', 'input', 'checkbox', 'pin-input', 'radio-group', 'select', 'switch', 'alert-dialog', 'dialog', 'popover', 'toast', 'tooltip', 'avatar']),
-  group('booking', '预约与排期', 'BOOKING', '预约、会议、课程、酒店和资源排期。', ['button', 'input', 'select', 'multi-choice', 'segmented', 'checkbox', 'radio-group', 'switch', 'calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-wheel', 'dialog', 'drawer', 'popover', 'toast']),
-  group('design-tools', '设计与配置工具', 'DESIGN TOOLS', '主题编辑、组件文档、可视化配置和内部工具。', ['button', 'split-button', 'icon-button', 'input', 'textarea', 'number-field', 'label', 'select', 'segmented', 'slider', 'toggle', 'toggle-group', 'color-area', 'color-field', 'color-slider', 'color-swatch', 'color-swatch-picker', 'mdx', 'card', 'badge', 'aspect-ratio', 'separator', 'splitter', 'tabs', 'toolbar', 'tooltip', 'popover', 'dialog']),
+  group('account', '账号与权限', 'ACCOUNT & AUTH', '登录、注册、验证、隐私和账号设置。', ['button', 'icon-button', ...nativeTextInputIds, 'checkbox', 'pin-input', 'radio-group', 'select', 'switch', 'alert-dialog', 'dialog', 'popover', 'toast', 'tooltip', 'avatar']),
+  group('booking', '预约与排期', 'BOOKING', '预约、会议、课程、酒店和资源排期。', ['button', ...nativeTextInputIds, 'input-date', 'input-datetime-local', 'input-month', 'input-time', 'input-week', 'select', 'multi-choice', 'segmented', 'checkbox', 'radio-group', 'switch', 'calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-wheel', 'dialog', 'drawer', 'popover', 'toast']),
+  group('design-tools', '设计与配置工具', 'DESIGN TOOLS', '主题编辑、组件文档、可视化配置和内部工具。', ['button', 'split-button', 'icon-button', ...nativeInputIds, 'textarea', 'number-field', 'label', 'select', 'segmented', 'slider', 'toggle', 'toggle-group', 'color-area', 'color-field', 'color-slider', 'color-swatch', 'color-swatch-picker', 'mdx', 'card', 'badge', 'aspect-ratio', 'separator', 'splitter', 'tabs', 'toolbar', 'tooltip', 'popover', 'dialog']),
 ]
 
 const flowGroups: ComponentGroupDefinition[] = [
   group('discover-explore', '发现与浏览', 'DISCOVER', '搜索、预览并浏览可用内容和功能入口。', ['navigation-menu', 'menubar', 'tabs', 'tree', 'pagination', 'scroll-area', 'virtual-list', 'autocomplete', 'combobox', 'listbox', 'hover-card', 'card']),
-  group('capture-write', '录入与编辑', 'CAPTURE & WRITE', '创建或修改文本、数值、标签和结构化文档。', ['input', 'textarea', 'editable', 'number-field', 'pin-input', 'tags-input', 'mdx', 'label']),
+  group('native-input-flow', '原生输入流程', 'NATIVE INPUT FLOW', '按固定 type 完成录入、选择、提交和隐藏字段传递。', nativeInputIds),
+  group('capture-write', '录入与编辑', 'CAPTURE & WRITE', '创建或修改文本、数值、标签和结构化文档。', ['textarea', 'editable', 'number-field', 'pin-input', 'tags-input', 'mdx', 'label', ...nativeTextInputIds]),
   group('choose-decide', '选择与决策', 'CHOOSE & DECIDE', '比较候选项并确定单选、多选或连续范围。', ['select', 'choice-portal', 'multi-choice', 'checkbox', 'radio-group', 'segmented', 'toggle', 'toggle-group', 'switch', 'slider', 'rating', 'color-swatch-picker', 'listbox', 'autocomplete', 'combobox']),
   group('schedule-plan', '计划与排期', 'PLAN & SCHEDULE', '安排日期、周期、时间点和连续时间范围。', ['calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-wheel']),
   group('configure-customize', '配置与定制', 'CONFIGURE', '调整偏好、主题、颜色和立即生效的界面状态。', ['select', 'multi-choice', 'segmented', 'checkbox', 'radio-group', 'slider', 'switch', 'toggle', 'toggle-group', 'color-field', 'color-area', 'color-slider', 'color-swatch', 'color-swatch-picker', 'number-field']),
@@ -86,11 +95,12 @@ const flowGroups: ComponentGroupDefinition[] = [
   group('progress-track', '推进与跟踪', 'TRACK PROGRESS', '展示步骤、分页、进度和阶段完成情况。', ['progress', 'stepper', 'pagination', 'tabs', 'badge', 'toast', 'calendar', 'range-calendar']),
   group('confirm-protect', '确认与保护', 'CONFIRM & PROTECT', '在关键操作前确认意图并保护敏感步骤。', ['dialog', 'alert-dialog', 'drawer', 'popover', 'button', 'split-button', 'checkbox', 'pin-input', 'stepper']),
   group('communicate-feedback', '反馈与告知', 'COMMUNICATE', '传达状态、结果、风险和短期提示。', ['toast', 'tooltip', 'badge', 'progress', 'alert-dialog', 'dialog', 'hover-card', 'popover']),
-  group('recover-correct', '纠错与恢复', 'RECOVER', '修改错误输入、撤回选择或从失败操作中恢复。', ['alert-dialog', 'dialog', 'toast', 'input', 'textarea', 'editable', 'select', 'checkbox', 'stepper', 'context-menu', 'dropdown-menu']),
+  group('recover-correct', '纠错与恢复', 'RECOVER', '修改错误输入、撤回选择或从失败操作中恢复。', ['alert-dialog', 'dialog', 'toast', 'textarea', 'editable', 'select', 'checkbox', 'stepper', 'context-menu', 'dropdown-menu', ...nativeTextInputIds]),
 ]
 
 const dataGroups: ComponentGroupDefinition[] = [
-  group('plain-text', '文本与字符串', 'TEXT & STRING', '录入、选择、编辑或呈现文本字符串。', ['input', 'textarea', 'editable', 'label', 'autocomplete', 'combobox', 'select', 'choice-portal', 'tags-input', 'pin-input', 'mdx', 'badge', 'tooltip']),
+  group('native-input-data', 'HTML Input 数据', 'NATIVE INPUT DATA', '按固定 type 区分字符串、布尔、文件、数值、日期和命令数据。', nativeInputIds),
+  group('plain-text', '文本与字符串', 'TEXT & STRING', '录入、选择、编辑或呈现文本字符串。', ['textarea', 'editable', 'label', 'autocomplete', 'combobox', 'select', 'choice-portal', 'tags-input', 'pin-input', 'mdx', 'badge', 'tooltip', ...nativeTextInputIds]),
   group('numeric-value', '数值与范围', 'NUMBER & RANGE', '处理计数、步进、比例、评分和连续数值范围。', ['number-field', 'slider', 'rating', 'progress', 'pagination', 'stepper']),
   group('binary-state', '布尔与开关状态', 'BOOLEAN', '表达开启、关闭、选中和未选中状态。', ['checkbox', 'switch', 'toggle', 'toggle-group']),
   group('single-option', '单值与枚举', 'SINGLE VALUE', '从有限候选集合中确定一个值。', ['radio-group', 'segmented', 'select', 'choice-portal', 'combobox', 'autocomplete', 'listbox', 'tabs', 'rating', 'color-swatch-picker', 'calendar', 'date-picker', 'month-picker', 'year-picker']),

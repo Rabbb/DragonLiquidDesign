@@ -1,3 +1,5 @@
+import nativeInputTypes from './native-inputs.json' with { type: 'json' }
+
 export const componentCategories = [
   { id: 'foundation', label: '基础', english: 'FOUNDATION', summary: 'Dragon Liquid 的视觉与输入基础组件。' },
   { id: 'form', label: '表单', english: 'FORM', summary: '输入、选择、校验与表单状态。' },
@@ -8,7 +10,7 @@ export const componentCategories = [
 
 export type ComponentCategoryId = typeof componentCategories[number]['id']
 export type ImplementationStatus = 'ready' | 'planned'
-export type RekaMaturity = 'custom' | 'stable' | 'alpha'
+export type RekaMaturity = 'custom' | 'native' | 'stable' | 'alpha'
 
 export type ScenarioDefinition = {
   id: string
@@ -98,20 +100,17 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'card-actions', label: '卡片快捷操作', summary: '收藏、编辑与移除' },
     ],
   },
-  {
-    id: 'input',
-    name: 'Input 输入框',
-    category: 'form',
-    summary: '采集短文本、数值和搜索关键词。',
-    since: '0.1.0',
-    implementation: 'ready',
-    maturity: 'custom',
-    scenarios: [
-      { id: 'basic', label: '通用案例', summary: '尺寸、插槽和禁用态' },
-      { id: 'global-search', label: '全局搜索', summary: '快捷键与搜索提示' },
-      { id: 'form-validation', label: '表单校验', summary: '成功、警告与错误反馈' },
-    ],
-  },
+  ...nativeInputTypes.map(input => ({
+    id: input.id,
+    name: `input[type="${input.type}"] ${input.label}`,
+    category: 'form' as const,
+    summary: input.summary,
+    since: 'HTML',
+    implementation: 'ready' as const,
+    maturity: 'native' as const,
+    sourceUrl: `https://developer.mozilla.org/docs/Web/HTML/Reference/Elements/input/${input.type}`,
+    scenarios: [{ id: 'basic', label: '独立参考', summary: `${input.type} 专用属性、行为与案例` }],
+  })),
   {
     id: 'textarea',
     name: 'Textarea 文本域',

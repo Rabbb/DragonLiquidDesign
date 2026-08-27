@@ -25,7 +25,7 @@ function collectVueFiles(directory) {
 }
 
 const ids = componentCatalog.map(component => component.id)
-report(ids.length === 70, `组件目录应为 70 项，当前为 ${ids.length} 项。`)
+report(ids.length === 91, `组件目录应为 91 项，当前为 ${ids.length} 项。`)
 report(new Set(ids).size === ids.length, '组件目录存在重复 id。')
 
 for (const mode of componentGroupingModes) {

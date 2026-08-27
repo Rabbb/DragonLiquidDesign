@@ -1,3 +1,5 @@
+import nativeInputTypes from './native-inputs.json' with { type: 'json' }
+
 export type ComponentGuidance = {
   useWhen: readonly [string, string]
   avoidWhen: string
@@ -14,7 +16,17 @@ function guide(
   return { useWhen, avoidWhen, accessibility, example }
 }
 
+const nativeInputGuidance = Object.fromEntries(nativeInputTypes.map(input => [input.id, guide(
+  [`需要${input.summary.replace(/[。.]$/, '')}时。`, `需要浏览器原生 input[type="${input.type}"] 语义和行为时。`],
+  `不要用其他 input type 代替 ${input.type}；若产品需要更完整的复合交互，应选择对应的 Dragon Liquid 高阶控件。`,
+  input.type === 'hidden'
+    ? '隐藏输入不应承载需要用户确认的信息；提交前仍须在服务端验证其值。'
+    : '必须提供关联 label 或等价的可访问名称，并保留浏览器原生键盘、校验和焦点行为。',
+  `示例只使用固定的 input[type="${input.type}"]，并列出该类型真正生效的专用属性。`,
+)]))
+
 export const componentGuidance: Record<string, ComponentGuidance> = {
+  ...nativeInputGuidance,
   accordion: guide(
     ['长内容需要按主题逐段展开时。', '用户只需同时关注一个或少量内容区块时。'],
     '不要用它隐藏完成任务所必需的关键字段或错误信息。',
@@ -218,12 +230,6 @@ export const componentGuidance: Record<string, ComponentGuidance> = {
     '不熟悉或复杂动作应使用带文字的 Button。',
     '必须提供 label；Tooltip 只能补充说明，不能替代可访问名称。',
     '示例展示尺寸、变体、工具栏和卡片快捷操作。',
-  ),
-  input: guide(
-    ['短文本、搜索词或单行标识符输入时。', '需要前后置提示、尺寸和校验状态时。'],
-    '长说明使用 Textarea；固定选项使用选择类组件。',
-    '输入框需要关联 label，错误原因要用可读文本并与字段关联。',
-    '示例覆盖尺寸、插槽、搜索入口和完整校验反馈。',
   ),
   label: guide(
     ['任何需要可见字段名称的表单控件。', '需要通过点击文字把焦点移到输入控件时。'],
