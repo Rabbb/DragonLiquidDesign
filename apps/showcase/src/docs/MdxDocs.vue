@@ -206,7 +206,7 @@ const content = computed(() => {
     title: `官方注册 · ${officialLabels[category]}`,
     description: `该页面直接使用 main.ts 安装的官方注册表，按需展示 ${officialLabels[category]}，其中 Alpha 定义与稳定版遵循同一安全边界。`,
     code: officialExampleCode(category),
-    tips: ['createDlMdxOfficialRegistry() 包含组件库当前全部 64 个公开组件。', '组件按场景分组展示，避免一次渲染全部定义造成页面卡顿。'],
+    tips: ['createDlMdxOfficialRegistry() 包含组件库当前全部 65 个公开组件。', '组件按场景分组展示，避免一次渲染全部定义造成页面卡顿。'],
   }
   return ({
   basic: {

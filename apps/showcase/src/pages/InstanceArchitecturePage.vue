@@ -159,7 +159,7 @@ function scrollToSection(id: string) {
       <div class="instance-hero__copy">
         <div class="instance-kicker">
           <DlBadge tone="accent" variant="outline">ARCHITECTURE</DlBadge>
-          <DlBadge tone="success" variant="outline">64 MANAGED COMPONENTS</DlBadge>
+          <DlBadge tone="success" variant="outline">65 MANAGED COMPONENTS</DlBadge>
         </div>
         <h1>组件实例与行为体系</h1>
         <p>在 Vue 声明式数据流上增加一层可撤销、可监听、类型化的命令式控制。普通页面继续使用 props 与 v-model，复杂工作台则可以像桌面控件一样操作组件实例。</p>
@@ -169,7 +169,7 @@ function scrollToSection(id: string) {
         </div>
       </div>
       <div class="instance-hero__metrics" aria-label="实例体系概览">
-        <article><b>64</b><span>正式导出组件</span><small>统一 DlComponentRef</small></article>
+        <article><b>65</b><span>正式导出组件</span><small>统一 DlComponentRef</small></article>
         <article><b>3</b><span>状态来源层级</span><small>覆盖值 → Props → 默认值</small></article>
         <article><b>2</b><span>并行调用风格</span><small>声明式 + 命令式</small></article>
       </div>
@@ -209,7 +209,7 @@ function scrollToSection(id: string) {
           <pre class="code-panel"><code>{{ wrapperCode }}</code></pre>
           <div class="principle-grid">
             <DlCard padding="md"><b>兼容</b><p>现有组件属性、插槽和事件名保持不变。</p></DlCard>
-            <DlCard padding="md"><b>隔离</b><p>行为层不需要侵入重写 64 个组件。</p></DlCard>
+            <DlCard padding="md"><b>隔离</b><p>行为层不需要侵入重写 65 个组件。</p></DlCard>
             <DlCard padding="md"><b>扩展</b><p>新组件包装后自动继承通用实例能力。</p></DlCard>
           </div>
         </section>

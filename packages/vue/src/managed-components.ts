@@ -49,6 +49,7 @@ import RawDlScrollArea from './components/DlScrollArea.vue'
 import RawDlSelect from './components/DlSelect.vue'
 import RawDlSeparator from './components/DlSeparator.vue'
 import RawDlSlider from './components/DlSlider.vue'
+import RawDlSplitButton from './components/DlSplitButton.vue'
 import RawDlSplitter from './components/DlSplitter.vue'
 import RawDlStepper from './components/DlStepper.vue'
 import RawDlSwitch from './components/DlSwitch.vue'
@@ -271,6 +272,7 @@ export const DlScrollArea = managed(RawDlScrollArea, 'DlScrollArea')
 export const DlSelect = managed(RawDlSelect, 'DlSelect', { domEvents: fieldEvents })
 export const DlSeparator = managed(RawDlSeparator, 'DlSeparator')
 export const DlSlider = managed(RawDlSlider, 'DlSlider', { domEvents: fieldEvents })
+export const DlSplitButton = managed(RawDlSplitButton, 'DlSplitButton', { domEvents: actionEvents })
 export const DlSplitter = managed(RawDlSplitter, 'DlSplitter')
 export const DlStepper = managed(RawDlStepper, 'DlStepper', {
   methods: stepperMethods,

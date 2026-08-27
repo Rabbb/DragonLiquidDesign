@@ -3910,6 +3910,204 @@ export default {
       }
     ]
   },
+  "split-button": {
+    "props": [
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "DlMenuItem[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "variant",
+        "description": "设置控件的视觉变体。",
+        "type": "DlButtonVariant",
+        "defaultValue": "'secondary'"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "type",
+        "description": "设置组件的选择模式或原生类型。",
+        "type": "'button' | 'submit' | 'reset'",
+        "defaultValue": "'button'"
+      },
+      {
+        "prop": "block",
+        "description": "是否让控件占满父容器宽度。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "loading",
+        "description": "是否显示加载状态并阻止重复操作。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "mainDisabled",
+        "description": "设置 mainDisabled 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "menuDisabled",
+        "description": "设置 menuDisabled 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "menuLabel",
+        "description": "设置 menuLabel 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "side",
+        "description": "设置浮层相对触发器出现的方位。",
+        "type": "'top' | 'right' | 'bottom' | 'left'",
+        "defaultValue": "'bottom'"
+      },
+      {
+        "prop": "align",
+        "description": "设置浮层相对触发器的对齐方式。",
+        "type": "'start' | 'center' | 'end'",
+        "defaultValue": "'end'"
+      },
+      {
+        "prop": "modal",
+        "description": "是否启用模态交互与焦点限制。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "name": "DlMenuItem",
+        "description": "菜单、下拉菜单、上下文菜单与工具栏使用的命令项。",
+        "rows": [
+          {
+            "prop": "value",
+            "description": "表单提交或选择操作使用的值。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "label",
+            "description": "控件的显示标签或无障碍名称。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "shortcut",
+            "description": "菜单命令旁展示的键盘快捷键说明。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "disabled",
+            "description": "是否禁用控件及其交互。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "separator",
+            "description": "是否将该项目渲染为菜单分隔线。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMenuItem[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlButtonVariant",
+        "title": "DlButtonVariant",
+        "description": "DlButtonVariant 可用的枚举值。",
+        "rows": [
+          {
+            "prop": "primary",
+            "description": "DlButtonVariant 的 primary 选项。",
+            "type": "'primary'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "secondary",
+            "description": "DlButtonVariant 的 secondary 选项。",
+            "type": "'secondary'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "ghost",
+            "description": "DlButtonVariant 的 ghost 选项。",
+            "type": "'ghost'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "danger",
+            "description": "DlButtonVariant 的 danger 选项。",
+            "type": "'danger'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
   "splitter": {
     "props": [
       {

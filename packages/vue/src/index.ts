@@ -23,7 +23,7 @@ export {
   DlHoverCard, DlIconButton, DlInput, DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
   DlMonthPicker, DlMonthRangePicker, DlNavigationMenu, DlNumberField, DlPagination, DlPinInput,
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSelect,
-  DlSeparator, DlSlider, DlSplitter, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
+  DlSeparator, DlSlider, DlSplitButton, DlSplitter, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
   DlTimeField, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
   DlTree, DlYearPicker, DlYearRangePicker,
 } from './managed-components'

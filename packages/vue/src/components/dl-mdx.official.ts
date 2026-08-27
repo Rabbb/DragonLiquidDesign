@@ -47,6 +47,7 @@ import DlScrollArea from './DlScrollArea.vue'
 import DlSelect from './DlSelect.vue'
 import DlSeparator from './DlSeparator.vue'
 import DlSlider from './DlSlider.vue'
+import DlSplitButton from './DlSplitButton.vue'
 import DlSplitter from './DlSplitter.vue'
 import DlStepper from './DlStepper.vue'
 import DlSwitch from './DlSwitch.vue'
@@ -103,6 +104,7 @@ const menuItems = [
 
 export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('Button', DlButton, 'foundation', 'custom', { contentProp: 'text', defaultContent: '执行操作', description: '主要与次要操作。' }),
+  official('SplitButton', DlSplitButton, 'foundation', 'custom', { defaultProps: { label: '发布', items: menuItems }, description: '主操作与相关菜单操作。' }),
   official('Badge', DlBadge, 'foundation', 'custom', { contentProp: 'text', defaultContent: 'DRAGON', description: '状态与标签。' }),
   official('Card', DlCard, 'foundation', 'custom', { defaultProps: { padding: 'md' }, defaultContent: 'Dragon Liquid 内容卡片', description: '内容分组容器。' }),
   official('IconButton', DlIconButton, 'foundation', 'custom', { defaultProps: { label: '快捷操作' }, defaultContent: '✦', description: '紧凑图标操作。' }),

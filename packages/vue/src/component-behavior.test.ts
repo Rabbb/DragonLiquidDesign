@@ -115,11 +115,12 @@ describe('managed component instance behavior', () => {
   })
 
   it('publishes behavior metadata for all official components', () => {
-    expect(getDlComponentBehaviors()).toHaveLength(64)
+    expect(getDlComponentBehaviors()).toHaveLength(65)
     const pagination = getDlComponentBehavior('Pagination')
     expect(pagination?.valueProperty).toBe('page')
     expect(pagination?.methods.map(item => item.name)).toContain('goTo')
     expect(getDlComponentBehavior('Button')?.events.map(item => item.name)).toContain('ready')
     expect(getDlComponentBehavior('Button')?.events.map(item => item.name)).toContain('click')
+    expect(getDlComponentBehavior('SplitButton')?.events.map(item => item.name)).toContain('click')
   })
 })

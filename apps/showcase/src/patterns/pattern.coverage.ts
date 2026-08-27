@@ -7,6 +7,7 @@ export const coveragePageIds: PatternPageId[] = [
 
 export const componentHomes: Record<string, PatternPageId> = {
   button: 'feedback',
+  'split-button': 'feedback',
   badge: 'feedback',
   card: 'overview',
   'icon-button': 'feedback',
@@ -74,6 +75,7 @@ export const componentHomes: Record<string, PatternPageId> = {
 
 export const componentUsageLocations: Record<string, string> = {
   button: '页面主操作、表单提交、确认、恢复与危险动作',
+  'split-button': '任务中心批量执行主操作，以及重试和清理等相关菜单命令',
   badge: '内容状态、任务状态、成熟度与六种语义色调标记',
   card: '指标、内容收藏、表单区块与工作台信息容器',
   'icon-button': '收藏卡快捷操作、重置筛选与编辑工具栏命令',
@@ -141,6 +143,7 @@ export const componentUsageLocations: Record<string, string> = {
 
 const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
   button: { basic: 'feedback', 'form-submit': 'create', 'danger-zone': 'feedback', 'instance-api': 'feedback' },
+  'split-button': { basic: 'feedback' },
   badge: { basic: 'feedback', 'content-status': 'detail', 'active-filters': 'library' },
   card: { basic: 'overview', 'data-overview': 'overview', 'media-collection': 'library' },
   'icon-button': { basic: 'feedback', 'editor-toolbar': 'editor', 'card-actions': 'library' },

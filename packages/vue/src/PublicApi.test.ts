@@ -9,13 +9,13 @@ const componentNames = [
   'DlCollapsible', 'DlColorArea', 'DlColorField', 'DlColorSlider', 'DlColorSwatch', 'DlColorSwatchPicker', 'DlCombobox', 'DlContextMenu', 'DlDateField', 'DlDatePicker', 'DlDateRangeField', 'DlDateRangePicker', 'DlDialog', 'DlDrawer', 'DlDropdownMenu', 'DlEditable', 'DlHoverCard',
   'DlIconButton', 'DlInput', 'DlLabel', 'DlListbox', 'DlMdx', 'DlMenubar', 'DlNavigationMenu', 'DlNumberField',
   'DlMonthPicker', 'DlMonthRangePicker', 'DlPagination', 'DlPinInput', 'DlPopover', 'DlProgress', 'DlRadioGroup', 'DlRangeCalendar', 'DlRating', 'DlScrollArea', 'DlSelect',
-  'DlSeparator', 'DlSlider', 'DlSplitter', 'DlStepper', 'DlSwitch', 'DlTabs', 'DlTagsInput', 'DlTextarea', 'DlTimeField', 'DlTimeRangeField',
+  'DlSeparator', 'DlSlider', 'DlSplitButton', 'DlSplitter', 'DlStepper', 'DlSwitch', 'DlTabs', 'DlTagsInput', 'DlTextarea', 'DlTimeField', 'DlTimeRangeField',
   'DlToast', 'DlToggle', 'DlToggleGroup', 'DlToolbar', 'DlTooltip', 'DlTree', 'DlYearPicker', 'DlYearRangePicker',
 ]
 
 describe('public component API', () => {
   it('exports every stable catalog component', () => {
-    expect(componentNames).toHaveLength(64)
+    expect(componentNames).toHaveLength(65)
     for (const name of componentNames) expect(library).toHaveProperty(name)
   })
 

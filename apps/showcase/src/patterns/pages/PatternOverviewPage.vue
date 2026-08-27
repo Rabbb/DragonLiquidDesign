@@ -9,7 +9,7 @@ const stages = [
   { number: '05', title: '执行', text: '长任务展示阶段、进度、异常与恢复入口。', href: '/patterns/import', components: 'Stepper · Progress · Toast' },
   { number: '06', title: '偏好', text: '将持续生效的选择集中在设置页面管理。', href: '/patterns/settings', components: 'Color · Date · Preference' },
   { number: '07', title: '反馈', text: '统一管理全部语义色调、浮层和任务恢复。', href: '/patterns/feedback', components: 'Tone · Layer · Instance' },
-  { number: '08', title: '追踪', text: '从任何组件场景定位到可运行页面和源码。', href: '/patterns/coverage', components: '64 Components · 125 Scenes' },
+  { number: '08', title: '追踪', text: '从任何组件场景定位到可运行页面和源码。', href: '/patterns/coverage', components: '65 Components · 128 Scenes' },
 ]
 const navigationItems: DlNavigationItem[] = [
   { value: 'content', label: '内容工作流', children: [

@@ -45,6 +45,18 @@ const readyComponents: ComponentDefinition[] = [
     ],
   },
   {
+    id: 'split-button',
+    name: 'SplitButton 分裂按钮',
+    category: 'foundation',
+    summary: '保留一个直接主操作，并将相关次级命令收进同一控件的菜单。',
+    since: '0.6.0-alpha.11',
+    implementation: 'ready',
+    maturity: 'custom',
+    scenarios: [
+      { id: 'basic', label: '通用案例', summary: '尺寸、主动作禁用与菜单操作' },
+    ],
+  },
+  {
     id: 'badge',
     name: 'Badge 徽标',
     category: 'foundation',

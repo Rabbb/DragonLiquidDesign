@@ -36,6 +36,7 @@ if (missingGuidanceComponents.length) {
 
 const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   button: () => import('../docs/ButtonDocs.vue'),
+  'split-button': () => import('../docs/SplitButtonDocs.vue'),
   badge: () => import('../docs/BadgeDocs.vue'),
   card: () => import('../docs/CardDocs.vue'),
   'icon-button': () => import('../docs/IconButtonDocs.vue'),

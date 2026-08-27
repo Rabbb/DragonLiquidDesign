@@ -12,12 +12,14 @@ import {
   DlProgress,
   DlSelect,
   DlSeparator,
+  DlSplitButton,
   DlToast,
   DlToggleGroup,
   DlTooltip,
   type DlChoiceOption,
   type DlComponentEventSubscription,
   type DlComponentRef,
+  type DlMenuItem,
   type DlPropertyChangeEvent,
   type DlSelectOption,
   type DlTone,
@@ -59,10 +61,14 @@ const strategyOptions: DlSelectOption[] = [
   { value: 'remote', label: '使用远端版本' },
   { value: 'local', label: '保留本地版本' },
 ]
+const taskActions: DlMenuItem[] = [
+  { value: 'retry', label: '仅重试失败任务' },
+  { value: 'clear', label: '清理已完成记录' },
+]
 const tasks = [
   { title: '收藏元数据同步', helper: '后台任务正在继续', value: null, tone: 'default' as DlTone, status: 'default' as const },
   { title: '封面资源生成', helper: '高优先级当前任务', value: 62, tone: 'accent' as DlTone, status: 'default' as const },
-  { title: '索引构建完成', helper: '64 个组件已写入索引', value: 100, tone: 'success' as DlTone, status: 'success' as const },
+  { title: '索引构建完成', helper: '65 个组件已写入索引', value: 100, tone: 'success' as DlTone, status: 'success' as const },
   { title: '来源响应缓慢', helper: '任务仍在重试', value: 48, tone: 'warning' as DlTone, status: 'warning' as const },
   { title: '图片校验中断', helper: '需要重新选择文件', value: 31, tone: 'danger' as DlTone, status: 'danger' as const },
   { title: '历史日志压缩', helper: '无需持续关注', value: 78, tone: 'muted' as DlTone, status: 'default' as const },
@@ -140,7 +146,7 @@ onBeforeUnmount(() => stopPropertyChange?.())
 
         <DlCard class="feedback-section" padding="lg">
           <header><div><small>TRANSIENT FEEDBACK</small><h2>Toast 全部色调</h2></div><span>单击按钮触发真实通知</span></header>
-          <div class="tone-action-grid"><DlButton v-for="tone in tones" :key="tone" :variant="tone === 'danger' ? 'danger' : tone === 'accent' ? 'primary' : 'secondary'" @click="showToast(tone)">{{ toneLabels[tone] }}</DlButton></div>
+          <div class="tone-action-grid"><DlButton v-for="tone in tones" :key="tone" :variant="tone === 'danger' ? 'danger' : tone === 'accent' ? 'primary' : 'secondary'" @click="showToast(tone)">{{ toneLabels[tone] }}</DlButton><DlSplitButton label="执行全部" variant="primary" :items="taskActions" menu-label="批量任务操作" @click="showToast('accent')" @select="showToast($event === 'retry' ? 'warning' : 'muted')" /></div>
         </DlCard>
 
         <DlCard class="feedback-section" padding="lg">
