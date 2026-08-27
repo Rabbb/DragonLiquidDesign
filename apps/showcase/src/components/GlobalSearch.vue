@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { DlDialog } from '@dragon-liquid/vue'
 import { componentCatalog, componentRoute } from '../catalog'
+import { componentChoiceProfileFor, isRecommendedComponent } from '../componentChoices'
 import { primaryComponentGroup } from '../componentGroups'
 import { patternPages } from '../patterns/pattern.catalog'
 import CustomControlMark from './CustomControlMark.vue'
@@ -16,6 +17,7 @@ type SearchEntry = {
   href: string
   keywords: string
   custom?: boolean
+  recommended?: boolean
 }
 
 const open = ref(false)
@@ -40,14 +42,16 @@ const pageEntries: SearchEntry[] = [
 
 const componentEntries: SearchEntry[] = componentCatalog.flatMap(component => {
   const family = primaryComponentGroup('family', component.id)?.label ?? '组件'
+  const choiceProfile = componentChoiceProfileFor(component.id)
   const componentEntry: SearchEntry = {
     key: `component-${component.id}`,
     kind: '组件',
     title: component.name,
-    description: `${family} · ${component.summary}`,
+    description: `${choiceProfile.label} · ${family} · ${component.summary}`,
     href: componentRoute(component.id, component.scenarios[0]?.id),
     keywords: `${component.id} ${component.name} ${component.summary} ${family}`,
     custom: component.maturity === 'custom',
+    recommended: isRecommendedComponent(component),
   }
   const scenarios = component.scenarios.slice(1).map<SearchEntry>(scenario => ({
     key: `scenario-${component.id}-${scenario.id}`,
@@ -57,6 +61,7 @@ const componentEntries: SearchEntry[] = componentCatalog.flatMap(component => {
     href: componentRoute(component.id, scenario.id),
     keywords: `${component.id} ${scenario.id} ${component.name} ${scenario.label} ${scenario.summary}`,
     custom: component.maturity === 'custom',
+    recommended: isRecommendedComponent(component),
   }))
   return [componentEntry, ...scenarios]
 })
@@ -66,7 +71,7 @@ const featuredKeys = new Set([
   'page-components',
   'page-themes',
   'component-button',
-  'component-input',
+  'component-input-text',
   'component-date-picker',
   'component-date-range-picker',
   'pattern-overview',
@@ -86,7 +91,7 @@ function scoreEntry(entry: SearchEntry, terms: string[]) {
     if (title.startsWith(term)) return score + 8
     if (title.includes(term)) return score + 5
     return score + 2
-  }, entry.kind === '组件' ? 2 : 0)
+  }, (entry.kind === '组件' ? 2 : 0) + (entry.recommended ? 3 : 0))
 }
 
 const results = computed(() => {

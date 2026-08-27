@@ -11,6 +11,14 @@ import {
   type ComponentGroupingMode,
   type ResolvedComponentGroup,
 } from '../componentGroups'
+import {
+  componentCatalogScopes,
+  filterRecommendedComponents,
+  readComponentCatalogScope,
+  recommendedComponentCount,
+  saveComponentCatalogScope,
+  type ComponentCatalogScope,
+} from '../componentChoices'
 import CustomControlMark from '../components/CustomControlMark.vue'
 
 const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
@@ -20,9 +28,17 @@ const readyScenarioCount = computed(() => componentCatalog
   .reduce((total, component) => total + component.scenarios.length, 0))
 const groupingMode = ref<ComponentGroupingMode>(readComponentGroupingMode())
 const groupingModeOptions = componentGroupingModes.map(({ value, label }) => ({ value, label }))
-const activeGroups = computed(() => resolveComponentGroups(groupingMode.value))
+const catalogScope = ref<ComponentCatalogScope>(readComponentCatalogScope())
+const catalogScopeOptions = componentCatalogScopes.map(({ value, label }) => ({ value, label }))
+const activeGroups = computed(() => resolveComponentGroups(groupingMode.value)
+  .map(group => ({
+    ...group,
+    components: catalogScope.value === 'recommended' ? filterRecommendedComponents(group.components) : group.components,
+  }))
+  .filter(group => group.components.length))
 
 watch(groupingMode, saveComponentGroupingMode)
+watch(catalogScope, saveComponentCatalogScope)
 
 function previewFor(group: ResolvedComponentGroup) {
   return [...group.components]
@@ -124,13 +140,23 @@ function previewFor(group: ResolvedComponentGroup) {
     <section class="content-section catalog-intro">
       <div class="section-heading">
         <span>03 · CATALOG</span>
-        <div><h2>从组件目录开始查询</h2><p>可按组件族、用途、网站类型、用户流程或数据类型查找；名称旁的 ◆ 表示自研控件。</p></div>
+        <div><h2>先从推荐控件开始</h2><p>默认隐藏低频专用、底层积木与兼容封装，减少同一任务的平级答案；名称旁的 ◆ 表示自研控件。</p></div>
       </div>
       <div class="home-grouping-toolbar">
-        <div class="home-grouping-mode">
-          <DlSegmented v-model="groupingMode" :items="groupingModeOptions" size="md" aria-label="首页组件分组方式" />
+        <div class="home-catalog-controls">
+          <div class="home-catalog-scope">
+            <span>目录范围</span>
+            <DlSegmented v-model="catalogScope" :items="catalogScopeOptions" size="sm" aria-label="首页组件目录范围" />
+          </div>
+          <div class="home-grouping-mode">
+            <span>分组方式</span>
+            <DlSegmented v-model="groupingMode" :items="groupingModeOptions" size="md" aria-label="首页组件分组方式" />
+          </div>
         </div>
-        <p>{{ groupingModeDescription(groupingMode) }}</p>
+        <p>
+          {{ catalogScope === 'recommended' ? `${recommendedComponentCount} 个高频首选；需要底层或兼容能力时切换“全部”。` : `完整展示 ${componentCatalog.length} 个公开控件。` }}<br>
+          {{ groupingModeDescription(groupingMode) }}
+        </p>
       </div>
       <div class="home-catalog-grid">
         <DlCard v-for="group in activeGroups" :key="group.id" padding="lg" class="home-category-card">

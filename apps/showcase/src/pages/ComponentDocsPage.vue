@@ -13,6 +13,16 @@ import {
   type ComponentGroupingMode,
   type ResolvedComponentGroup,
 } from '../componentGroups'
+import {
+  componentCatalogScopes,
+  componentChoiceFamilyFor,
+  componentChoiceProfileFor,
+  isRecommendedComponent,
+  readComponentCatalogScope,
+  recommendedComponentCount,
+  saveComponentCatalogScope,
+  type ComponentCatalogScope,
+} from '../componentChoices'
 import { componentCatalog, componentRoute, resolveComponent } from '../catalog'
 
 const props = defineProps<{
@@ -25,10 +35,23 @@ const resolved = computed(() => resolveComponent(props.componentId, props.scenar
 const selectedComponent = computed(() => resolved.value.component)
 const selectedScenario = computed(() => resolved.value.scenario)
 const selectedGuidance = computed(() => componentGuidanceFor(selectedComponent.value.id))
+const selectedChoiceProfile = computed(() => componentChoiceProfileFor(selectedComponent.value.id))
+const selectedChoiceFamily = computed(() => componentChoiceFamilyFor(selectedComponent.value.id))
 const groupingMode = ref<ComponentGroupingMode>(readComponentGroupingMode())
 const groupingModeOptions = componentGroupingModes.map(({ value, label }) => ({ value, label }))
+const catalogScope = ref<ComponentCatalogScope>(readComponentCatalogScope())
+const catalogScopeOptions = componentCatalogScopes.map(({ value, label }) => ({ value, label }))
 const activeMode = computed(() => componentGroupingModes.find(mode => mode.value === groupingMode.value)!)
-const activeGroups = computed(() => resolveComponentGroups(groupingMode.value))
+const activeGroups = computed(() => resolveComponentGroups(groupingMode.value)
+  .map(group => ({
+    ...group,
+    components: group.components.filter(component => (
+      catalogScope.value === 'all'
+      || isRecommendedComponent(component)
+      || component.id === selectedComponent.value.id
+    )),
+  }))
+  .filter(group => group.components.length))
 const selectedGroup = computed(() => activeGroups.value.find(group => group.components.some(component => component.id === selectedComponent.value.id)) ?? activeGroups.value[0])
 const expandedGroups = ref<Set<string>>(new Set(selectedGroup.value ? [selectedGroup.value.id] : []))
 const groupedComponentSequence = computed(() => {
@@ -41,6 +64,7 @@ const groupedComponentSequence = computed(() => {
 })
 const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
 const plannedCount = computed(() => componentCatalog.length - readyCount.value)
+const componentById = new Map(componentCatalog.map(component => [component.id, component]))
 const missingApiComponents = componentsMissingApi(componentCatalog.map(component => component.id))
 if (missingApiComponents.length) {
   throw new Error(`以下组件缺少属性 API：${missingApiComponents.join(', ')}`)
@@ -165,6 +189,11 @@ watch(groupingMode, mode => {
   expandedGroups.value = new Set(selectedGroup.value ? [selectedGroup.value.id] : [])
 })
 
+watch(catalogScope, scope => {
+  saveComponentCatalogScope(scope)
+  expandedGroups.value = new Set(selectedGroup.value ? [selectedGroup.value.id] : [])
+})
+
 watch(() => [props.componentId, props.scenarioId], () => {
   if (selectedGroup.value) expandedGroups.value = new Set([...expandedGroups.value, selectedGroup.value.id])
   sidebarOpen.value = false
@@ -191,8 +220,19 @@ function toggleGroup(group: ResolvedComponentGroup) {
     <div class="sidebar-title">
       <span>COMPONENTS</span>
       <b>组件目录</b>
-      <small>{{ groupingModeDescription(groupingMode) }}</small>
+      <small>{{ catalogScope === 'recommended' ? '先显示高频首选，避免在近似控件中反复比较。' : '完整目录包含专用、基础积木与兼容封装。' }}</small>
+      <div class="sidebar-catalog-scope">
+        <span>目录范围</span>
+        <DlSegmented
+          v-model="catalogScope"
+          :items="catalogScopeOptions"
+          size="sm"
+          block
+          aria-label="组件目录范围"
+        />
+      </div>
       <div class="sidebar-grouping-mode">
+        <span>分组方式</span>
         <DlSegmented
           v-model="groupingMode"
           :items="groupingModeOptions"
@@ -224,6 +264,7 @@ function toggleGroup(group: ResolvedComponentGroup) {
               <span class="sidebar-component-copy">
                 <span>{{ item.name }}<CustomControlMark v-if="item.maturity === 'custom'" /></span>
                 <small>
+                  <em v-if="componentChoiceProfileFor(item.id).tier !== 'recommended'" class="choice-tier">{{ componentChoiceProfileFor(item.id).label }}</em>
                   <em v-if="item.implementation === 'planned'">ROADMAP</em>
                   <em v-if="item.maturity === 'alpha'" class="alpha">ALPHA</em>
                 </small>
@@ -246,7 +287,7 @@ function toggleGroup(group: ResolvedComponentGroup) {
     </nav>
     <div class="sidebar-foot">
       <DlBadge tone="success" variant="outline">● LAZY LOADED</DlBadge>
-      <small>{{ readyCount }} READY · {{ plannedCount }} ROADMAP · 允许跨组复用</small>
+      <small>{{ catalogScope === 'recommended' ? `${recommendedComponentCount} RECOMMENDED · ${componentCatalog.length} TOTAL` : `${readyCount} READY · ${plannedCount} ROADMAP` }} · 允许跨组复用</small>
     </div>
   </aside>
 
@@ -262,6 +303,9 @@ function toggleGroup(group: ResolvedComponentGroup) {
           </DlBadge>
           <DlBadge v-if="selectedComponent.maturity === 'alpha'" tone="warning" variant="outline">{{ selectedComponent.sourceUrl ? 'REKA ALPHA' : 'ALPHA' }}</DlBadge>
           <DlBadge v-if="selectedComponent.id.startsWith('input-')" tone="accent" variant="outline">PACKAGED INPUT</DlBadge>
+          <DlBadge :tone="selectedChoiceProfile.tier === 'recommended' ? 'success' : selectedChoiceProfile.tier === 'compatibility' ? 'warning' : 'muted'" variant="outline">
+            {{ selectedChoiceProfile.label }}
+          </DlBadge>
         </div>
         <h1>{{ selectedComponent.name }}<CustomControlMark v-if="selectedComponent.maturity === 'custom'" /></h1>
         <p>{{ selectedComponent.summary }}</p>
@@ -273,6 +317,37 @@ function toggleGroup(group: ResolvedComponentGroup) {
         <DlButton variant="secondary" size="sm">查看 npm 包 ↗</DlButton>
       </a>
     </header>
+
+    <section v-if="selectedChoiceFamily" class="component-choice-guide" aria-label="相似控件选择指南">
+      <header>
+        <span>CHOICE GUIDE</span>
+        <div>
+          <h2>{{ selectedChoiceFamily.question }}</h2>
+          <p>{{ selectedChoiceFamily.summary }}</p>
+        </div>
+      </header>
+      <nav :aria-label="`${selectedChoiceFamily.label}控件选择`">
+        <a
+          v-for="option in selectedChoiceFamily.options"
+          :key="option.id"
+          :href="componentRoute(option.id)"
+          :class="{
+            active: option.id === selectedComponent.id,
+            preferred: option.id === selectedChoiceFamily.preferredId,
+          }"
+        >
+          <span>
+            <b>{{ componentById.get(option.id)?.name }}</b>
+            <em v-if="option.id === selectedChoiceFamily.preferredId">常见首选</em>
+          </span>
+          <small>{{ option.useWhen }}</small>
+        </a>
+      </nav>
+      <footer v-if="selectedChoiceProfile.preferredId">
+        当前控件用于兼容特定 HTML 语义；新业务通常先使用
+        <a :href="componentRoute(selectedChoiceProfile.preferredId)">{{ componentById.get(selectedChoiceProfile.preferredId)?.name }}</a>。
+      </footer>
+    </section>
 
     <section class="component-guidance" aria-label="组件使用决策">
       <article>

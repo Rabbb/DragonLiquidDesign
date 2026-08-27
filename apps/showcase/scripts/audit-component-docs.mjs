@@ -3,6 +3,11 @@ import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { componentCatalog } from '../src/catalog.ts'
 import { componentGroupDefinitions, componentGroupingModes } from '../src/componentGroups.ts'
+import {
+  componentChoiceFamilies,
+  componentChoiceProfileFor,
+  recommendedComponentCount,
+} from '../src/componentChoices.ts'
 import { componentGuidance, componentsMissingGuidance } from '../src/componentGuidance.ts'
 import componentApi from '../src/generated/component-api.generated.ts'
 import inputControls from '../src/input-controls.json' with { type: 'json' }
@@ -29,6 +34,28 @@ function collectVueFiles(directory) {
 const ids = componentCatalog.map(component => component.id)
 report(ids.length === 91, `组件目录应为 91 项，当前为 ${ids.length} 项。`)
 report(new Set(ids).size === ids.length, '组件目录存在重复 id。')
+report(recommendedComponentCount >= 40 && recommendedComponentCount <= 65, `精简目录应收敛为 40–65 个高频控件，当前为 ${recommendedComponentCount} 个。`)
+
+const choiceFamilyIds = componentChoiceFamilies.map(family => family.id)
+report(new Set(choiceFamilyIds).size === choiceFamilyIds.length, '控件选择指南存在重复 family id。')
+for (const family of componentChoiceFamilies) {
+  const optionIds = family.options.map(option => option.id)
+  report(optionIds.length >= 4, `${family.id} 的选型比较项过少。`)
+  report(new Set(optionIds).size === optionIds.length, `${family.id} 的选型比较项存在重复控件。`)
+  report(optionIds.includes(family.preferredId), `${family.id} 的常见首选未包含在比较项中。`)
+  for (const option of family.options) {
+    report(ids.includes(option.id), `${family.id} 引用了未知控件 ${option.id}。`)
+    report(option.useWhen.trim().length >= 8, `${family.id}/${option.id} 缺少明确选择条件。`)
+  }
+}
+
+for (const id of ids) {
+  const profile = componentChoiceProfileFor(id)
+  report(Boolean(profile.label) && profile.summary.trim().length >= 8, `${id} 缺少目录层级说明。`)
+  if (profile.tier === 'compatibility') {
+    report(Boolean(profile.preferredId) && ids.includes(profile.preferredId), `${id} 兼容封装缺少有效的推荐替代项。`)
+  }
+}
 
 for (const mode of componentGroupingModes) {
   const groups = componentGroupDefinitions[mode.value]
