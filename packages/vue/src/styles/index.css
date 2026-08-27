@@ -582,6 +582,8 @@
 }
 
 .dl-mdx__list { display: grid; gap: 0.4rem; margin: 0; padding-left: 1.4rem; }
+.dl-mdx__list:not(.is-task-list) { list-style: disc outside; }
+.dl-mdx__list.is-ordered:not(.is-task-list) { list-style-type: decimal; }
 .dl-mdx__list li { padding-left: 0.12rem; }
 .dl-mdx__list li::marker { color: var(--dl-accent); font-weight: 700; }
 .dl-mdx__list.is-task-list { padding: 0; list-style: none; }

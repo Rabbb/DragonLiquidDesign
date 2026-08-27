@@ -42,7 +42,7 @@ export type DlMdxInlineToken =
   | { type: 'text'; value: string }
   | { type: 'break' }
   | { type: 'code'; value: string }
-  | { type: 'strong' | 'em' | 'strike'; children: DlMdxInlineToken[] }
+  | { type: 'strong' | 'em' | 'strike' | 'mark' | 'sub' | 'sup' | 'kbd'; children: DlMdxInlineToken[] }
   | { type: 'link'; href: string; title?: string; children: DlMdxInlineToken[] }
   | { type: 'image'; src: string; alt: string; title?: string }
 

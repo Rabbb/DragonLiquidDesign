@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: string]
   'selection-change': [selection: DlMdxSelection]
-  command: [action: 'bold' | 'italic']
+  command: [action: 'bold' | 'italic' | 'link']
   error: [error: Error]
 }>()
 
@@ -95,6 +95,7 @@ onMounted(async () => {
           loadedView.keymap.of([
             { key: 'Mod-b', run: () => { emit('command', 'bold'); return true } },
             { key: 'Mod-i', run: () => { emit('command', 'italic'); return true } },
+            { key: 'Mod-k', run: () => { emit('command', 'link'); return true } },
             ...commands.defaultKeymap,
             ...commands.historyKeymap,
             commands.indentWithTab,

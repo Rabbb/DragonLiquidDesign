@@ -57,7 +57,7 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
     />
   </blockquote>
 
-  <component :is="block.ordered ? 'ol' : 'ul'" v-else-if="block.type === 'list'" :start="block.ordered ? block.start : undefined" :class="['dl-mdx__list', { 'is-task-list': block.items.some(item => item.checked !== undefined) }]">
+  <component :is="block.ordered ? 'ol' : 'ul'" v-else-if="block.type === 'list'" :start="block.ordered ? block.start : undefined" :class="['dl-mdx__list', { 'is-ordered': block.ordered, 'is-task-list': block.items.some(item => item.checked !== undefined) }]">
     <li v-for="(item, itemIndex) in block.items" :key="`${item.sourceLine}-${itemIndex}`" :class="{ 'is-task': item.checked !== undefined, 'is-checked': item.checked }">
       <label v-if="item.checked !== undefined" class="dl-mdx__task">
         <input type="checkbox" :checked="item.checked" :disabled="!taskInteractive" :aria-label="`${item.checked ? '标记未完成' : '标记完成'}：任务 ${itemIndex + 1}`" @change="emit('toggle-task', item.sourceLine)">

@@ -79,7 +79,7 @@ const toolbarLabels: Record<DlMdxToolbarAction, { symbol: string; label: string;
   italic: { symbol: 'I', label: '斜体', shortcut: 'Ctrl+I' },
   strike: { symbol: 'S', label: '删除线' },
   'inline-code': { symbol: '<>', label: '行内代码' },
-  link: { symbol: '↗', label: '链接' },
+  link: { symbol: '↗', label: '链接', shortcut: 'Ctrl+K' },
   heading: { symbol: 'H2', label: '二级标题' },
   blockquote: { symbol: '❯', label: '引用' },
   'unordered-list': { symbol: '•', label: '无序列表' },

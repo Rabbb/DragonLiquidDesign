@@ -9,7 +9,9 @@ import type { DlMdxSecurityPolicy } from './dl-mdx.security'
 
 type SourceLine = { text: string; number: number }
 
-const blockStart = /^(?:\s*$|#{1,6}\s+|```|~~~|>\s?|\s*(?:[-+*]|\d+[.)])\s+|\s*(?:-{3,}|\*{3,}|_{3,})\s*$|\+\+\+component:)/
+const htmlBlockStart = /^\s*<(?:h[1-6]|p|div|blockquote|ul|ol|pre|hr)(?:\s|>|\/)/i
+const inlineHtmlTag = /<\/?(?:strong|b|em|i|del|s|strike|code|br|a|img|mark|sub|sup|kbd|span)(?:\s|>|\/)/i
+const blockStart = /^(?:\s*$|#{1,6}\s+|```|~~~|>\s?|\s*(?:[-+*]|\d+[.)])\s+|\s*(?:-{3,}|\*{3,}|_{3,})\s*$|\+\+\+component:|\s*<(?:h[1-6]|p|div|blockquote|ul|ol|pre|hr)(?:\s|>|\/))/i
 const listLine = /^(\s*)([-+*]|\d+[.)])\s+(?:\[([ xX])\]\s+)?(.*)$/
 const dividerLine = /^\s*(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$/
 const tableDividerCell = /^:?-{3,}:?$/
@@ -18,7 +20,7 @@ function textToken(value: string): DlMdxInlineToken[] {
   return value ? [{ type: 'text', value }] : []
 }
 
-export function parseDlMdxInline(source: string): DlMdxInlineToken[] {
+function parseMarkdownInline(source: string): DlMdxInlineToken[] {
   const tokens: DlMdxInlineToken[] = []
   let rest = source
 
@@ -54,6 +56,41 @@ export function parseDlMdxInline(source: string): DlMdxInlineToken[] {
     rest = rest.slice(match[0].length)
   }
   return tokens
+}
+
+function htmlNodeToInline(node: Node): DlMdxInlineToken[] {
+  if (node.nodeType === 3) return parseMarkdownInline(node.textContent ?? '')
+  if (node.nodeType !== 1) return []
+
+  const element = node as Element
+  const tag = element.tagName.toLowerCase()
+  const children = () => Array.from(element.childNodes).flatMap(htmlNodeToInline)
+  if (tag === 'strong' || tag === 'b') return [{ type: 'strong', children: children() }]
+  if (tag === 'em' || tag === 'i') return [{ type: 'em', children: children() }]
+  if (tag === 'del' || tag === 's' || tag === 'strike') return [{ type: 'strike', children: children() }]
+  if (tag === 'mark' || tag === 'sub' || tag === 'sup' || tag === 'kbd') return [{ type: tag, children: children() }]
+  if (tag === 'code') return [{ type: 'code', value: element.textContent ?? '' }]
+  if (tag === 'br') return [{ type: 'break' }]
+  if (tag === 'span') return children()
+  if (tag === 'a') {
+    const href = element.getAttribute('href')?.trim()
+    return href ? [{ type: 'link', href, title: element.getAttribute('title') ?? undefined, children: children() }] : children()
+  }
+  if (tag === 'img') {
+    const src = element.getAttribute('src')?.trim()
+    return src ? [{ type: 'image', src, alt: element.getAttribute('alt') ?? '', title: element.getAttribute('title') ?? undefined }] : []
+  }
+  return textToken(element.outerHTML)
+}
+
+function parseHtmlInline(source: string): DlMdxInlineToken[] | undefined {
+  if (typeof DOMParser === 'undefined') return undefined
+  const document = new DOMParser().parseFromString(`<body>${source}</body>`, 'text/html')
+  return Array.from(document.body.childNodes).flatMap(htmlNodeToInline)
+}
+
+export function parseDlMdxInline(source: string): DlMdxInlineToken[] {
+  return inlineHtmlTag.test(source) ? parseHtmlInline(source) ?? parseMarkdownInline(source) : parseMarkdownInline(source)
 }
 
 function splitTableRow(line: string): string[] {
@@ -114,6 +151,91 @@ function stripIndent(lines: SourceLine[], amount: number): SourceLine[] {
   return lines.map(line => ({ ...line, text: line.text.slice(Math.min(amount, line.text.match(/^\s*/)?.[0].length ?? 0)) }))
 }
 
+function htmlElementToBlocks(element: Element, sourceLine: number, slugCounts: Map<string, number>): DlMdxBlock[] {
+  const tag = element.tagName.toLowerCase()
+  const blockTags = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'blockquote', 'ul', 'ol', 'pre', 'hr'])
+  const inlineChildren = () => Array.from(element.childNodes).flatMap(htmlNodeToInline)
+  const nestedBlocks = () => Array.from(element.childNodes).flatMap((child) => {
+    if (child.nodeType === 3) {
+      const value = child.textContent?.trim()
+      return value ? [{ type: 'paragraph', tokens: parseDlMdxInline(value) } as DlMdxBlock] : []
+    }
+    return child.nodeType === 1 ? htmlElementToBlocks(child as Element, sourceLine, slugCounts) : []
+  })
+
+  if (/^h[1-6]$/.test(tag)) {
+    const level = Number(tag[1])
+    const headingText = element.textContent?.trim() ?? ''
+    const rawSlug = headingText.toLowerCase().replace(/[`*_~]/g, '').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'section'
+    const count = slugCounts.get(rawSlug) ?? 0
+    slugCounts.set(rawSlug, count + 1)
+    return [{ type: 'heading', level, id: count ? `${rawSlug}-${count + 1}` : rawSlug, tokens: inlineChildren() }]
+  }
+  if (tag === 'p') return [{ type: 'paragraph', tokens: inlineChildren() }]
+  if (tag === 'div' || tag === 'blockquote') {
+    const hasBlockChild = Array.from(element.children).some(child => blockTags.has(child.tagName.toLowerCase()))
+    const blocks = hasBlockChild ? nestedBlocks() : [{ type: 'paragraph', tokens: inlineChildren() } as DlMdxBlock]
+    return tag === 'blockquote' ? [{ type: 'blockquote', blocks }] : blocks
+  }
+  if (tag === 'ul' || tag === 'ol') {
+    const ordered = tag === 'ol'
+    const parsedStart = Number.parseInt(element.getAttribute('start') ?? '1', 10)
+    const items = Array.from(element.children)
+      .filter(child => child.tagName.toLowerCase() === 'li')
+      .map((item) => {
+        const tokens: DlMdxInlineToken[] = []
+        const children: DlMdxBlock[] = []
+        for (const child of Array.from(item.childNodes)) {
+          if (child.nodeType === 1 && ['ul', 'ol', 'blockquote', 'pre', 'div'].includes((child as Element).tagName.toLowerCase())) {
+            children.push(...htmlElementToBlocks(child as Element, sourceLine, slugCounts))
+          } else if (child.nodeType === 1 && (child as Element).tagName.toLowerCase() === 'p') {
+            tokens.push(...Array.from(child.childNodes).flatMap(htmlNodeToInline))
+          } else {
+            tokens.push(...htmlNodeToInline(child))
+          }
+        }
+        return { tokens, sourceLine, children }
+      })
+    return items.length ? [{ type: 'list', ordered, start: Number.isFinite(parsedStart) && parsedStart > 0 ? parsedStart : 1, items }] : []
+  }
+  if (tag === 'pre') {
+    const code = element.querySelector(':scope > code')
+    const language = code?.getAttribute('class')?.match(/(?:^|\s)language-([\w+-]+)/i)?.[1]?.toLowerCase() ?? 'text'
+    return [{ type: 'code', language, value: code?.textContent ?? element.textContent ?? '', id: `code-${sourceLine}` }]
+  }
+  if (tag === 'hr') return [{ type: 'divider' }]
+  return [{ type: 'paragraph', tokens: textToken(element.outerHTML) }]
+}
+
+function parseHtmlBlocks(source: string, sourceLine: number, slugCounts: Map<string, number>): DlMdxBlock[] | undefined {
+  if (typeof DOMParser === 'undefined') return undefined
+  const document = new DOMParser().parseFromString(`<body>${source}</body>`, 'text/html')
+  return Array.from(document.body.childNodes).flatMap((node) => {
+    if (node.nodeType === 3) {
+      const value = node.textContent?.trim()
+      return value ? [{ type: 'paragraph', tokens: parseDlMdxInline(value) } as DlMdxBlock] : []
+    }
+    return node.nodeType === 1 ? htmlElementToBlocks(node as Element, sourceLine, slugCounts) : []
+  })
+}
+
+function collectHtmlBlock(lines: SourceLine[], start: number): { source: string; end: number } {
+  const tag = lines[start].text.match(/^\s*<([A-Za-z][\w-]*)\b/)?.[1]?.toLowerCase()
+  if (!tag || tag === 'hr') return { source: lines[start].text, end: start + 1 }
+  const opening = new RegExp(`<${tag}(?:\\s|>)`, 'gi')
+  const closing = new RegExp(`</${tag}\\s*>`, 'gi')
+  let depth = 0
+  let cursor = start
+  const collected: string[] = []
+  do {
+    const value = lines[cursor].text
+    collected.push(value)
+    depth += (value.match(opening) ?? []).length - (value.match(closing) ?? []).length
+    cursor += 1
+  } while (cursor < lines.length && depth > 0)
+  return { source: collected.join('\n'), end: cursor }
+}
+
 function parseBlocks(lines: SourceLine[], slugCounts: Map<string, number>): DlMdxBlock[] {
   const blocks: DlMdxBlock[] = []
   let index = 0
@@ -157,6 +279,16 @@ function parseBlocks(lines: SourceLine[], slugCounts: Map<string, number>): DlMd
       blocks.push({ type: 'code', language: (fence[2] || 'text').toLowerCase(), value: body.join('\n'), id: `code-${line.number}` })
       index = cursor < lines.length ? cursor + 1 : cursor
       continue
+    }
+
+    if (htmlBlockStart.test(line.text)) {
+      const html = collectHtmlBlock(lines, index)
+      const htmlBlocks = parseHtmlBlocks(html.source, line.number, slugCounts)
+      if (htmlBlocks?.length) {
+        blocks.push(...htmlBlocks)
+        index = html.end
+        continue
+      }
     }
 
     const heading = line.text.match(/^\s*(#{1,6})\s+(.+?)\s*#*\s*$/)

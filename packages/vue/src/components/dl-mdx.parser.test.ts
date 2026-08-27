@@ -48,6 +48,30 @@ tone = "accent"
     if (list.type === 'list') expect(list.items[0].children[0]).toMatchObject({ type: 'list' })
   })
 
+  it('converts allowlisted HTML lists and inline tags into safe document nodes', () => {
+    const document = parseDlMdx(`<ul>
+  <li><strong>第一项</strong></li>
+  <li>第二项<ul><li><em>嵌套项</em></li></ul></li>
+</ul>`)
+
+    expect(document.blocks).toHaveLength(1)
+    expect(document.blocks[0]).toMatchObject({
+      type: 'list',
+      ordered: false,
+      items: [
+        { tokens: [{ type: 'strong' }] },
+        { children: [{ type: 'list', items: [{ tokens: [{ type: 'em' }] }] }] },
+      ],
+    })
+  })
+
+  it('keeps executable HTML inert while parsing supported inline HTML', () => {
+    const tokens = parseDlMdxInline('<strong>安全</strong><script>window.pwned = true</script>')
+
+    expect(tokens[0]).toMatchObject({ type: 'strong' })
+    expect(tokens.some(token => token.type === 'text' && token.value.includes('<script>'))).toBe(true)
+  })
+
   it('tokenizes inline styles, links and images as data', () => {
     const tokens = parseDlMdxInline('**粗体**、[链接](https://example.com) 与 ![封面](/cover.webp)')
     expect(tokens.some(token => token.type === 'strong')).toBe(true)

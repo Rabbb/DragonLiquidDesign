@@ -35,6 +35,17 @@ describe('DlMdx', () => {
     expect(wrapper.text()).toContain('<script>window.pwned = true</script>')
   })
 
+  it('renders safe HTML lists as semantic Vue nodes without copying event attributes', () => {
+    const wrapper = mount(DlMdx, {
+      props: { modelValue: '<ol start="3"><li onclick="alert(1)"><strong>第三项</strong></li><li>第四项</li></ol>', mode: 'preview', debounce: 0 },
+    })
+
+    expect(wrapper.get('ol').attributes('start')).toBe('3')
+    expect(wrapper.findAll('li')).toHaveLength(2)
+    expect(wrapper.get('strong').text()).toBe('第三项')
+    expect(wrapper.get('li').attributes('onclick')).toBeUndefined()
+  })
+
   it('blocks dangerous links in the rendered preview', () => {
     const wrapper = mount(DlMdx, {
       props: { modelValue: '[危险链接](javascript:alert(1))', mode: 'preview', debounce: 0 },

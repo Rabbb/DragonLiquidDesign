@@ -28,6 +28,10 @@ function isExternal(href: string) { return /^https?:\/\//i.test(href) }
     <strong v-else-if="token.type === 'strong'"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></strong>
     <em v-else-if="token.type === 'em'"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></em>
     <del v-else-if="token.type === 'strike'"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></del>
+    <mark v-else-if="token.type === 'mark'"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></mark>
+    <sub v-else-if="token.type === 'sub'"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></sub>
+    <sup v-else-if="token.type === 'sup'"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></sup>
+    <kbd v-else-if="token.type === 'kbd'"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></kbd>
     <template v-else-if="token.type === 'link'">
       <a
         v-if="linkHref(token)"
