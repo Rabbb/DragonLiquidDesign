@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<{
   open?: boolean
   modelValue?: string
   placeholder?: string
+  granularity?: 'hour' | 'minute'
   minuteStep?: number
   overlay?: DlChoicePortalOverlay
   clearable?: boolean
@@ -36,6 +37,7 @@ const props = withDefaults(defineProps<{
   open: undefined,
   modelValue: '',
   placeholder: '选择时间',
+  granularity: 'minute',
   minuteStep: 5,
   overlay: 'auto',
   clearable: false,
@@ -60,8 +62,8 @@ const hourWheel = ref<HTMLElement | null>(null)
 const minuteWheel = ref<HTMLElement | null>(null)
 const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
 const hours = Array.from({ length: 24 }, (_, value) => value)
-const steppedMinutes = computed(() => buildDlTimeWheelMinutes(props.minuteStep))
-const minutes = computed(() => [...new Set([...steppedMinutes.value, draftMinute.value])].sort((left, right) => left - right))
+const steppedMinutes = computed(() => props.granularity === 'hour' ? [0] : buildDlTimeWheelMinutes(props.minuteStep))
+const minutes = computed(() => props.granularity === 'hour' ? [0] : [...new Set([...steppedMinutes.value, draftMinute.value])].sort((left, right) => left - right))
 const resolvedOpen = computed(() => props.open ?? internalOpen.value)
 const draftValue = computed(() => formatDlTimeWheelValue(draftHour.value, draftMinute.value))
 const draftDisabled = computed(() => props.disabledTime?.(draftValue.value) ?? false)
@@ -121,7 +123,9 @@ function initializeDraft() {
   const parsed = parseDlTimeWheelValue(props.modelValue)
   const now = new Date()
   draftHour.value = parsed?.hour ?? now.getHours()
-  draftMinute.value = clampDlTimeWheelMinute(parsed?.minute ?? now.getMinutes(), props.minuteStep)
+  draftMinute.value = props.granularity === 'hour'
+    ? 0
+    : parsed?.minute ?? clampDlTimeWheelMinute(now.getMinutes(), props.minuteStep)
 }
 
 function closeWheel() {
@@ -240,7 +244,7 @@ function endDrag(event: PointerEvent) {
 function applyShortcut() {
   const shortcut = parseDlTimeWheelValue(props.shortcutValue)
   if (!shortcut) return
-  const minute = clampDlTimeWheelMinute(shortcut.minute, props.minuteStep)
+  const minute = props.granularity === 'hour' ? 0 : shortcut.minute
   if (isDisabled(shortcut.hour, minute)) return
   draftHour.value = shortcut.hour
   draftMinute.value = minute
@@ -309,7 +313,7 @@ onBeforeUnmount(() => {
           <small v-if="draftDisabled">该时间不可用</small>
         </div>
 
-        <div class="dl-time-wheel__columns">
+        <div class="dl-time-wheel__columns" :data-granularity="granularity">
           <section><h3>小时</h3><span class="dl-time-wheel__band" aria-hidden="true" />
             <div ref="hourWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="小时" tabindex="0" @scroll.passive="handleScroll('hour')" @pointerdown.capture="beginDrag('hour', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
               <button v-for="item in virtualHours" :key="item.key" type="button" role="option" :aria-selected="item.value === draftHour" :data-cycle="item.cycle" :data-wheel-value="item.value" :tabindex="item.cycle === 2 ? 0 : -1" :class="{ 'is-selected': item.value === draftHour }" :disabled="hourDisabled(item.value)" @click="selectClicked('hour', item.value)">{{ item.value }}</button>
@@ -319,8 +323,8 @@ onBeforeUnmount(() => {
               <button type="button" aria-label="小时减少 1" :disabled="!canNudge('hour', -1)" @click="nudgeTime('hour', -1)">▼</button>
             </span>
           </section>
-          <i aria-hidden="true">:</i>
-          <section><h3>分钟</h3><span class="dl-time-wheel__band" aria-hidden="true" />
+          <i v-if="granularity === 'minute'" aria-hidden="true">:</i>
+          <section v-if="granularity === 'minute'"><h3>分钟</h3><span class="dl-time-wheel__band" aria-hidden="true" />
             <div ref="minuteWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="分钟" tabindex="0" @scroll.passive="handleScroll('minute')" @pointerdown.capture="beginDrag('minute', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
               <button v-for="item in virtualMinutes" :key="item.key" type="button" role="option" :aria-selected="item.value === draftMinute" :data-cycle="item.cycle" :data-wheel-value="item.value" :tabindex="item.cycle === 2 ? 0 : -1" :class="{ 'is-selected': item.value === draftMinute }" :disabled="isDisabled(draftHour, item.value)" @click="selectClicked('minute', item.value)">{{ String(item.value).padStart(2, '0') }}</button>
             </div>
@@ -363,6 +367,7 @@ onBeforeUnmount(() => {
 .dl-time-wheel__summary small { position: absolute; top: 11px; right: 16px; color: #d84d57; font-size: .65rem; }
 .dl-time-wheel__summary[data-disabled] { border-color: color-mix(in srgb, #d84d57 48%, var(--dl-border)); }
 .dl-time-wheel__columns { display: grid; min-height: 0; grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr); align-items: center; gap: 12px; }
+.dl-time-wheel__columns[data-granularity='hour'] { width: min(100%, 240px); grid-template-columns: minmax(0, 1fr); justify-self: center; }
 .dl-time-wheel__columns > section { position: relative; display: grid; min-width: 0; gap: 7px; overflow: hidden; }
 .dl-time-wheel__columns h3 { z-index: 2; margin: 0; color: var(--dl-text-faint); font-size: .64rem; text-align: center; }
 .dl-time-wheel__columns > i { display: grid; place-items: center; color: var(--dl-accent-text); font: 900 1.45rem/1 monospace; }

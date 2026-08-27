@@ -79,6 +79,28 @@ const resolvedOpen = computed({
 const stringValue = computed(() => props.modelValue ? `${String(props.modelValue.hour).padStart(2, '0')}:${String(props.modelValue.minute).padStart(2, '0')}` : '')
 const displayValue = computed(() => stringValue.value || props.placeholder)
 
+function toMinute(value: TimeValue) {
+  return value.hour * 60 + value.minute
+}
+
+function isTimeDisabled(value: string) {
+  const parsed = parseDlTimeWheelValue(value)
+  if (!parsed)
+    return true
+  const minute = parsed.hour * 60 + parsed.minute
+  if (props.minValue && minute < toMinute(props.minValue))
+    return true
+  if (props.maxValue && minute > toMinute(props.maxValue))
+    return true
+  return props.disabledTime?.(value) ?? false
+}
+
+function openWheel() {
+  if (props.disabled || props.readonly)
+    return
+  resolvedOpen.value = true
+}
+
 function updateField(value: TimeValue | undefined) {
   emit('update:modelValue', value)
   emit('change', value)
@@ -116,25 +138,35 @@ function clearValue() {
       :name="name"
       :id="id"
       class="w-full"
-      @focusin="resolvedOpen = true"
       @update:model-value="updateField"
       @clear="emit('clear')"
     >
-      <template #trailing><span class="ml-auto pl-2 text-[var(--dl-accent)]" aria-hidden="true">◷</span></template>
+      <template #trailing>
+        <button
+          type="button"
+          data-slot="time-picker-trigger"
+          class="dl-structured-field__action dl-time-picker__toggle"
+          aria-label="打开时间选择器"
+          :aria-expanded="resolvedOpen"
+          :disabled="disabled || readonly"
+          @click="openWheel"
+        >◷</button>
+      </template>
     </DlTimeField>
-    <PickerTriggerButton v-else :value="modelValue ? displayValue : ''" :placeholder="placeholder" icon="◷" :size="size" :status="status" :disabled="disabled" @click="resolvedOpen = true" />
+    <PickerTriggerButton v-else :value="modelValue ? displayValue : ''" :placeholder="placeholder" icon="◷" :size="size" :status="status" :disabled="disabled || readonly" @click="openWheel" />
   </div>
 
   <TimeWheelPanel
     v-model:open="resolvedOpen"
     :model-value="stringValue"
     :placeholder="placeholder"
+    :granularity="granularity"
     :minute-step="minuteStep"
     :overlay="overlay"
     :clearable="clearable"
     :shortcut-value="shortcutValue"
     :shortcut-label="shortcutLabel"
-    :disabled-time="disabledTime"
+    :disabled-time="isTimeDisabled"
     :disabled="disabled || readonly"
     :z-index="zIndex"
     @update:model-value="updateWheel"
@@ -146,4 +178,5 @@ function clearValue() {
 <style scoped>
 .dl-time-picker { width: 100%; min-width: 0; }
 .dl-time-picker[data-disabled] { opacity: .5; }
+.dl-time-picker__toggle { color: var(--dl-accent); }
 </style>

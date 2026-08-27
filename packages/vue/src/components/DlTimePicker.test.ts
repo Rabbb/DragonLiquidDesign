@@ -31,6 +31,58 @@ describe('DlTimePicker', () => {
     expect(document.body.querySelector('[data-slot="time-wheel"]')).toBeNull()
   })
 
+  it('keeps keyboard editing available and opens the wheel only from its trigger', async () => {
+    const wrapper = mount(DlTimePicker, {
+      attachTo: document.body,
+      props: { modelValue: new Time(20, 30) },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    await wrapper.find('[data-slot="time-field"]').trigger('focusin')
+    expect(document.body.querySelector('[data-slot="time-wheel-panel"]')).toBeNull()
+
+    await wrapper.find('[data-slot="time-picker-trigger"]').trigger('click')
+    await nextTick()
+    expect(document.body.querySelector('[data-slot="time-wheel-panel"]')).not.toBeNull()
+  })
+
+  it('preserves exact minutes and applies field range constraints to the wheel', async () => {
+    const wrapper = mount(DlTimePicker, {
+      attachTo: document.body,
+      props: {
+        modelValue: new Time(9, 33),
+        minValue: new Time(9, 30),
+        maxValue: new Time(18),
+        minuteStep: 5,
+        open: true,
+      },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    expect(document.body.querySelector('[aria-label="分钟"] [data-cycle="2"][data-wheel-value="33"]')?.getAttribute('aria-selected')).toBe('true')
+    expect(document.body.querySelector<HTMLButtonElement>('[aria-label="小时"] [data-cycle="2"][data-wheel-value="8"]')?.disabled).toBe(true)
+    expect(document.body.querySelector<HTMLButtonElement>('[aria-label="分钟"] [data-cycle="2"][data-wheel-value="35"]')?.disabled).toBe(false)
+
+    const hour18 = document.body.querySelector<HTMLButtonElement>('[aria-label="小时"] [data-cycle="2"][data-wheel-value="18"]')
+    hour18?.click()
+    await nextTick()
+    expect(document.body.querySelector<HTMLButtonElement>('[aria-label="分钟"] [data-cycle="2"][data-wheel-value="35"]')?.disabled).toBe(true)
+  })
+
+  it('uses an hour-only wheel when field granularity is hour', async () => {
+    const wrapper = mount(DlTimePicker, {
+      attachTo: document.body,
+      props: { modelValue: new Time(9), granularity: 'hour', open: true },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    expect(document.body.querySelector('[aria-label="小时"]')).not.toBeNull()
+    expect(document.body.querySelector('[aria-label="分钟"]')).toBeNull()
+  })
+
   it('supports a compact button presentation without duplicating wheel logic', async () => {
     const wrapper = mount(DlTimePicker, {
       attachTo: document.body,

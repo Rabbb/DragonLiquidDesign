@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
           </select>
         </label>
         <DlBadge tone="success" variant="outline" size="md">
-          <span class="live-dot" /> v0.6.0-alpha.20 · ALPHA
+          <span class="live-dot" /> v0.6.0-alpha.21 · ALPHA
         </DlBadge>
       </div>
     </header>
