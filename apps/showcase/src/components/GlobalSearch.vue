@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { DlDialog } from '@dragon-liquid/vue'
 import { componentCatalog, componentCategories, componentRoute } from '../catalog'
 import { patternPages } from '../patterns/pattern.catalog'
+import CustomControlMark from './CustomControlMark.vue'
 
 type SearchKind = '页面' | '组件' | '示例'
 
@@ -13,6 +14,7 @@ type SearchEntry = {
   description: string
   href: string
   keywords: string
+  custom?: boolean
 }
 
 const open = ref(false)
@@ -45,6 +47,7 @@ const componentEntries: SearchEntry[] = componentCatalog.flatMap(component => {
     description: `${category} · ${component.summary}`,
     href: componentRoute(component.id, component.scenarios[0]?.id),
     keywords: `${component.id} ${component.name} ${component.summary} ${category}`,
+    custom: component.maturity === 'custom',
   }
   const scenarios = component.scenarios.slice(1).map<SearchEntry>(scenario => ({
     key: `scenario-${component.id}-${scenario.id}`,
@@ -53,6 +56,7 @@ const componentEntries: SearchEntry[] = componentCatalog.flatMap(component => {
     description: scenario.summary,
     href: componentRoute(component.id, scenario.id),
     keywords: `${component.id} ${scenario.id} ${component.name} ${scenario.label} ${scenario.summary}`,
+    custom: component.maturity === 'custom',
   }))
   return [componentEntry, ...scenarios]
 })
@@ -197,7 +201,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleGlobalKeydown)
           @click.prevent="activate(entry)"
         >
           <span class="global-search-kind">{{ entry.kind }}</span>
-          <span class="global-search-copy"><b>{{ entry.title }}</b><small>{{ entry.description }}</small></span>
+          <span class="global-search-copy"><b>{{ entry.title }}<CustomControlMark v-if="entry.custom" /></b><small>{{ entry.description }}</small></span>
           <i aria-hidden="true">↗</i>
         </a>
       </nav>

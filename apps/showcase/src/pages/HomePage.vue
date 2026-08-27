@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { DlBadge, DlButton, DlCard } from '@dragon-liquid/vue'
 import { componentCatalog, componentCategories, componentRoute } from '../catalog'
+import CustomControlMark from '../components/CustomControlMark.vue'
 
 const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
 const roadmapCount = computed(() => componentCatalog.length - readyCount.value)
@@ -113,7 +114,7 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
     <section class="content-section catalog-intro">
       <div class="section-heading">
         <span>03 · CATALOG</span>
-        <div><h2>从组件目录开始查询</h2><p>组件文档按类别、组件和实际场景分层，只加载正在阅读的内容。</p></div>
+        <div><h2>从组件目录开始查询</h2><p>组件文档按类别、组件和实际场景分层；名称旁的 ◆ 表示自研控件。</p></div>
       </div>
       <div class="home-catalog-grid">
         <DlCard v-for="category in componentCategories" :key="category.id" padding="lg" class="home-category-card">
@@ -123,7 +124,7 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
             :key="item.id"
             :href="componentRoute(item.id)"
           >
-            <b>{{ item.name }} <em :class="{ alpha: item.maturity === 'alpha' }">{{ item.maturity === 'alpha' ? 'ALPHA' : item.implementation === 'ready' ? 'READY' : 'ROADMAP' }}</em></b>
+            <b>{{ item.name }}<CustomControlMark v-if="item.maturity === 'custom'" /> <em :class="{ alpha: item.maturity === 'alpha' }">{{ item.maturity === 'alpha' ? 'ALPHA' : item.implementation === 'ready' ? 'READY' : 'ROADMAP' }}</em></b>
             <small>{{ item.summary }}</small><i>→</i>
           </a>
           <a class="home-category-more" :href="componentRoute(componentsFor(category.id)[0].id)">

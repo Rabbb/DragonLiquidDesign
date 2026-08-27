@@ -17,6 +17,7 @@ import { VxeColumn, VxeTable } from 'vxe-table'
 import 'vxe-pc-ui/es/style.css'
 import 'vxe-table/es/style.css'
 import { componentCatalog, componentCategories, componentRoute } from '../../catalog'
+import CustomControlMark from '../../components/CustomControlMark.vue'
 import { componentHomes, componentUsageLocations, scenarioCoverage } from '../pattern.coverage'
 import { patternPages } from '../pattern.catalog'
 
@@ -184,7 +185,7 @@ function treeRowClassName({ row }: { row: { kind: string } }) {
           <VxeColumn field="component.name" title="控件 / 场景" tree-node min-width="330">
             <template #default="{ row }">
               <div v-if="row.kind === 'component'" class="coverage-tree-component">
-                <strong>{{ row.component.name }}</strong>
+                <strong>{{ row.component.name }}<CustomControlMark v-if="row.component.maturity === 'custom'" /></strong>
                 <span>{{ row.component.summary }}</span>
               </div>
               <div v-else class="coverage-tree-scenario">

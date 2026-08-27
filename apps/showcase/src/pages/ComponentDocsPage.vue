@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent, ref, watch, type Component } from 'vue'
 import { DlBadge, DlButton } from '@dragon-liquid/vue'
 import { componentsMissingApi } from '../api/componentApi'
 import { componentGuidanceFor, componentsMissingGuidance } from '../componentGuidance'
+import CustomControlMark from '../components/CustomControlMark.vue'
 import {
   componentCatalog,
   componentCategories,
@@ -149,7 +150,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
     <div class="sidebar-title">
       <span>COMPONENTS</span>
       <b>组件目录</b>
-      <small>按组件与场景加载案例</small>
+      <small>按组件与场景加载案例 · ◆ 自研</small>
     </div>
 
     <nav aria-label="组件大纲">
@@ -170,7 +171,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
               :class="{ active: selectedComponent.id === item.id, planned: item.implementation === 'planned' }"
             >
               <span class="sidebar-component-copy">
-                <span>{{ item.name }}</span>
+                <span>{{ item.name }}<CustomControlMark v-if="item.maturity === 'custom'" /></span>
                 <small>
                   <em v-if="item.implementation === 'planned'">ROADMAP</em>
                   <em v-if="item.maturity === 'alpha'" class="alpha">ALPHA</em>
@@ -210,7 +211,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
           </DlBadge>
           <DlBadge v-if="selectedComponent.maturity === 'alpha'" tone="warning" variant="outline">{{ selectedComponent.sourceUrl ? 'REKA ALPHA' : 'ALPHA' }}</DlBadge>
         </div>
-        <h1>{{ selectedComponent.name }}</h1>
+        <h1>{{ selectedComponent.name }}<CustomControlMark v-if="selectedComponent.maturity === 'custom'" /></h1>
         <p>{{ selectedComponent.summary }}</p>
       </div>
       <a href="https://www.npmjs.com/package/@dragon-liquid/vue" target="_blank" rel="noreferrer">
