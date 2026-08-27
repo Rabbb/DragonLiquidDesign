@@ -1,18 +1,61 @@
 <script setup lang="ts">
-import { useAttrs } from 'vue'
+import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
+import { computed, ref, useAttrs } from 'vue'
+import type { DateValue } from 'reka-ui'
 import type { DlSize } from '../types'
-import InputFieldShell from './InputFieldShell.vue'
+import DlDatePicker from './DlDatePicker.vue'
+import DlTimeWheel from './DlTimeWheel.vue'
 
 defineOptions({ inheritAttrs: false })
-const props = withDefaults(defineProps<{ modelValue?: string | null; size?: DlSize; status?: 'default' | 'success' | 'warning' | 'error'; disabled?: boolean }>(), { modelValue: '', size: 'md', status: 'default', disabled: false })
-const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+const props = withDefaults(defineProps<{
+  modelValue?: string | null
+  min?: string
+  max?: string
+  step?: number
+  locale?: string
+  size?: DlSize
+  status?: 'default' | 'success' | 'warning' | 'error'
+  disabled?: boolean
+  readonly?: boolean
+  clearable?: boolean
+  nowShortcut?: boolean
+}>(), {
+  modelValue: '', min: undefined, max: undefined, step: 300, locale: 'zh-CN', size: 'md',
+  status: 'default', disabled: false, readonly: false, clearable: true, nowShortcut: true,
+})
+const emit = defineEmits<{ 'update:modelValue': [value: string]; clear: []; shortcut: [value: string] }>()
 const attrs = useAttrs()
+const dateOpen = ref(false)
+const datePart = computed(() => props.modelValue?.split('T')[0] ?? '')
+const timePart = computed(() => props.modelValue?.split('T')[1]?.slice(0, 5) ?? '')
+const dateValue = computed(() => { try { return datePart.value ? parseDate(datePart.value) : undefined } catch { return undefined } })
+const minuteStep = computed(() => Math.max(1, Math.round(props.step / 60)))
+const now = computed(() => { const date = new Date(); return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}` })
+function normalize(value: string) {
+  if (props.min && value < props.min) return props.min
+  if (props.max && value > props.max) return props.max
+  return value
+}
+function updateDate(value: DateValue | undefined) { emit('update:modelValue', value ? normalize(`${value.toString()}T${timePart.value || '09:00'}`) : '') }
+function updateTime(value: string) { emit('update:modelValue', value ? normalize(`${datePart.value || today(getLocalTimeZone()).toString()}T${value}`) : '') }
+function useNow() { const value = normalize(`${today(getLocalTimeZone()).toString()}T${now.value}`); emit('update:modelValue', value); emit('shortcut', value) }
+function clear() { emit('update:modelValue', ''); emit('clear') }
+function disabledTime(value: string) {
+  const date = datePart.value || today(getLocalTimeZone()).toString()
+  return Boolean((props.min && `${date}T${value}` < props.min) || (props.max && `${date}T${value}` > props.max))
+}
 </script>
 
 <template>
-  <InputFieldShell data-dl data-slot="input-datetime-local" :size="size" :status="status" :disabled="disabled">
-    <template v-if="$slots.leading" #leading><slot name="leading" /></template>
-    <input v-bind="attrs" type="datetime-local" :value="modelValue ?? ''" :disabled="disabled" :aria-invalid="status === 'error' || undefined" class="min-w-0 flex-1 border-0 bg-transparent text-inherit outline-none" @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)">
-    <template v-if="$slots.trailing" #trailing><slot name="trailing" /></template>
-  </InputFieldShell>
+  <div data-dl data-slot="input-datetime-local" class="dl-input-date-control" :data-size="size" :data-status="status">
+    <input v-bind="attrs" type="datetime-local" :value="modelValue ?? ''" :min="min" :max="max" :step="step" :disabled="disabled" :readonly="readonly" class="dl-input-native" @focus="dateOpen = true">
+    <div class="dl-input-datetime">
+      <DlDatePicker v-model:open="dateOpen" :model-value="dateValue" placeholder="选择日期" :locale="locale" :disabled="disabled || readonly" @update:model-value="updateDate" />
+      <DlTimeWheel :model-value="timePart" placeholder="选择时间" :minute-step="minuteStep" :size="size" :status="status" :shortcut-value="nowShortcut ? now : undefined" shortcut-label="当前时间" :disabled-time="disabledTime" :disabled="disabled || readonly" @update:model-value="updateTime" />
+    </div>
+    <span class="dl-input-date-control__actions">
+      <button v-if="nowShortcut && !readonly" type="button" class="dl-input-field__action" aria-label="选择现在" title="现在" :disabled="disabled" @click="useNow">今</button>
+      <button v-if="clearable && modelValue && !readonly" type="button" class="dl-input-field__action" aria-label="清空日期时间" :disabled="disabled" @click="clear">×</button>
+    </span>
+  </div>
 </template>

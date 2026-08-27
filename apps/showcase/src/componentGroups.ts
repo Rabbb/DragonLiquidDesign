@@ -84,7 +84,7 @@ const siteGroups: ComponentGroupDefinition[] = [
 
 const flowGroups: ComponentGroupDefinition[] = [
   group('discover-explore', '发现与浏览', 'DISCOVER', '搜索、预览并浏览可用内容和功能入口。', ['navigation-menu', 'menubar', 'tabs', 'tree', 'pagination', 'scroll-area', 'virtual-list', 'autocomplete', 'combobox', 'listbox', 'hover-card', 'card']),
-  group('native-input-flow', '原生输入流程', 'NATIVE INPUT FLOW', '按固定 type 完成录入、选择、提交和隐藏字段传递。', inputControlIds),
+  group('native-input-flow', '类型化输入流程', 'PACKAGED INPUT FLOW', '按固定数据语义使用经过交互增强的录入、选择与提交控件。', inputControlIds),
   group('capture-write', '录入与编辑', 'CAPTURE & WRITE', '创建或修改文本、数值、标签和结构化文档。', ['textarea', 'editable', 'number-field', 'pin-input', 'tags-input', 'mdx', 'label', ...textInputControlIds]),
   group('choose-decide', '选择与决策', 'CHOOSE & DECIDE', '比较候选项并确定单选、多选或连续范围。', ['select', 'choice-portal', 'multi-choice', 'checkbox', 'radio-group', 'segmented', 'toggle', 'toggle-group', 'switch', 'slider', 'rating', 'color-swatch-picker', 'listbox', 'autocomplete', 'combobox']),
   group('schedule-plan', '计划与排期', 'PLAN & SCHEDULE', '安排日期、周期、时间点和连续时间范围。', ['calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-wheel']),
@@ -99,7 +99,7 @@ const flowGroups: ComponentGroupDefinition[] = [
 ]
 
 const dataGroups: ComponentGroupDefinition[] = [
-  group('native-input-data', 'HTML Input 数据', 'NATIVE INPUT DATA', '按固定 type 区分字符串、布尔、文件、数值、日期和命令数据。', inputControlIds),
+  group('native-input-data', '类型化表单数据', 'PACKAGED INPUT DATA', '按数据类型区分字符串、布尔、文件、数值、日期和命令，并提供相应便捷逻辑。', inputControlIds),
   group('plain-text', '文本与字符串', 'TEXT & STRING', '录入、选择、编辑或呈现文本字符串。', ['textarea', 'editable', 'label', 'autocomplete', 'combobox', 'select', 'choice-portal', 'tags-input', 'pin-input', 'mdx', 'badge', 'tooltip', ...textInputControlIds]),
   group('numeric-value', '数值与范围', 'NUMBER & RANGE', '处理计数、步进、比例、评分和连续数值范围。', ['number-field', 'slider', 'rating', 'progress', 'pagination', 'stepper']),
   group('binary-state', '布尔与开关状态', 'BOOLEAN', '表达开启、关闭、选中和未选中状态。', ['checkbox', 'switch', 'toggle', 'toggle-group']),

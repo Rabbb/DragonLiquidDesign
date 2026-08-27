@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { useAttrs } from 'vue'
+import type { DlSize } from '../types'
 
 defineOptions({ inheritAttrs: false })
-const props = withDefaults(defineProps<{ value?: string; disabled?: boolean }>(), { value: '重置', disabled: false })
+withDefaults(defineProps<{ value?: string; size?: DlSize; disabled?: boolean }>(), { value: '重置', size: 'md', disabled: false })
 const attrs = useAttrs()
 </script>
 
 <template>
-  <input v-bind="attrs" data-dl data-slot="input-reset" type="reset" :value="value" :disabled="disabled" class="min-h-10 cursor-pointer rounded-[var(--dl-button-radius)] border border-[var(--dl-button-secondary-border)] bg-[var(--dl-button-secondary-bg)] px-4 font-semibold text-[var(--dl-button-secondary-text)] shadow-[var(--dl-button-secondary-shadow)] transition hover:border-[var(--dl-button-secondary-border-hover)] hover:bg-[var(--dl-button-secondary-bg-hover)] disabled:cursor-not-allowed disabled:opacity-50">
+  <span data-dl data-slot="input-reset">
+    <input type="reset" :value="value" class="dl-input-native" tabindex="-1" aria-hidden="true">
+    <button v-bind="attrs" type="reset" class="dl-input-action" :data-size="size" :disabled="disabled"><slot>{{ value }}</slot></button>
+  </span>
 </template>

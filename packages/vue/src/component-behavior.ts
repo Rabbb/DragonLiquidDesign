@@ -278,7 +278,7 @@ export function createDlManagedComponent<TComponent extends Component>(
         return result
       }
 
-      const focusTarget = () => targetElement(element(), 'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), button:not(:disabled), [tabindex]:not([tabindex="-1"])')
+      const focusTarget = () => targetElement(element(), 'input:not(.dl-input-native):not(:disabled), textarea:not(:disabled), select:not(:disabled), button:not(:disabled), [tabindex]:not([tabindex="-1"])')
       const clickableTarget = () => targetElement(element(), 'button:not(:disabled), [role="button"], input[type="button"], input[type="submit"]')
 
       const methods: Record<string, (...args: any[]) => unknown> = {
@@ -303,7 +303,7 @@ export function createDlManagedComponent<TComponent extends Component>(
         },
         async select() {
           await nextTick()
-          const target = targetElement(element(), 'input, textarea') as HTMLInputElement | HTMLTextAreaElement | null
+          const target = targetElement(element(), 'input:not(.dl-input-native), textarea') as HTMLInputElement | HTMLTextAreaElement | null
           target?.select()
           return Boolean(target)
         },

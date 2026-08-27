@@ -17,12 +17,12 @@ function guide(
 }
 
 const inputControlGuidance = Object.fromEntries(inputControls.map(input => [input.id, guide(
-  [`需要${input.summary.replace(/[。.]$/, '')}时。`, `需要固定封装 input[type="${input.type}"] 的独立 Dragon Liquid 控件时。`],
-  `不要通过 type 属性把该控件切换成其他输入类型；复合交互应选择对应的 Dragon Liquid 高阶控件。`,
+  [`需要${input.summary.replace(/[。.]$/, '')}时。`, `需要针对 input[type="${input.type}"] 语义优化过的独立 DL 交互时。`],
+  `不要通过 type 属性切换输入语义；应直接选择对应的 DlInputXxx，并使用它提供的便捷逻辑。`,
   input.type === 'hidden'
     ? '隐藏输入不应承载需要用户确认的信息；提交前仍须在服务端验证其值。'
-    : '必须提供关联 label 或等价的可访问名称，并保留浏览器原生键盘、校验和焦点行为。',
-  `示例直接使用对应的独立 DlInputXxx 控件，并列出该类型真正生效的组件属性与原生属性。`,
+    : '必须提供关联 label 或等价的可访问名称；DL 快捷动作需要保留键盘、焦点和状态反馈。',
+  `示例使用对应的独立 DlInputXxx，观察它在原生表单语义上增加的格式化、快捷动作和反馈。`,
 )]))
 
 export const componentGuidance: Record<string, ComponentGuidance> = {

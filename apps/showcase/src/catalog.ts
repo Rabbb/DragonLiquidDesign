@@ -109,7 +109,7 @@ const readyComponents: ComponentDefinition[] = [
     implementation: 'ready' as const,
     maturity: 'custom' as const,
     sourceUrl: `https://developer.mozilla.org/docs/Web/HTML/Reference/Elements/input/${input.type}`,
-    scenarios: [{ id: 'basic', label: '独立控件', summary: `${input.type} 固定语义、专用属性与案例` }],
+    scenarios: [{ id: 'basic', label: '类型化控件', summary: `${input.type} 数据语义、便捷逻辑与交互反馈` }],
   })),
   {
     id: 'textarea',

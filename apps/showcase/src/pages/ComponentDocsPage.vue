@@ -261,7 +261,7 @@ function toggleGroup(group: ResolvedComponentGroup) {
             {{ activeMode.label }} · {{ selectedGroup?.label }} · {{ selectedComponent.implementation === 'ready' ? `SINCE ${selectedComponent.since}` : 'ROADMAP' }}
           </DlBadge>
           <DlBadge v-if="selectedComponent.maturity === 'alpha'" tone="warning" variant="outline">{{ selectedComponent.sourceUrl ? 'REKA ALPHA' : 'ALPHA' }}</DlBadge>
-          <DlBadge v-if="selectedComponent.id.startsWith('input-')" tone="accent" variant="outline">FIXED INPUT TYPE</DlBadge>
+          <DlBadge v-if="selectedComponent.id.startsWith('input-')" tone="accent" variant="outline">PACKAGED INPUT</DlBadge>
         </div>
         <h1>{{ selectedComponent.name }}<CustomControlMark v-if="selectedComponent.maturity === 'custom'" /></h1>
         <p>{{ selectedComponent.summary }}</p>

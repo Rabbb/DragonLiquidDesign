@@ -1910,6 +1910,18 @@ export default {
         "defaultValue": "'执行操作'"
       },
       {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "loading",
+        "description": "是否显示加载状态并阻止重复操作。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -1928,7 +1940,34 @@ export default {
         "defaultValue": "最近的祖先 form"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "input-checkbox": {
     "props": [
@@ -1943,6 +1982,18 @@ export default {
         "description": "表单提交或选择操作使用的值。",
         "type": "string",
         "defaultValue": "'on'"
+      },
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "description",
+        "description": "补充说明文字；不传时隐藏说明区域。",
+        "type": "string",
+        "defaultValue": "undefined"
       },
       {
         "prop": "disabled",
@@ -1980,6 +2031,12 @@ export default {
         "defaultValue": "'#000000'"
       },
       {
+        "prop": "defaultValue",
+        "description": "设置 defaultValue 属性。",
+        "type": "string",
+        "defaultValue": "'#000000'"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -1996,6 +2053,24 @@ export default {
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "copyable",
+        "description": "设置 copyable 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "resettable",
+        "description": "设置 resettable 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
       },
       {
         "prop": "name",
@@ -2066,6 +2141,30 @@ export default {
         "defaultValue": "''"
       },
       {
+        "prop": "min",
+        "description": "允许的最小值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "max",
+        "description": "允许的最大值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择日期'"
+      },
+      {
+        "prop": "locale",
+        "description": "日期、时间或数字格式使用的区域语言。",
+        "type": "string",
+        "defaultValue": "'zh-CN'"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -2084,21 +2183,27 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "todayShortcut",
+        "description": "设置 todayShortcut 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
         "defaultValue": "—"
       },
       {
@@ -2112,12 +2217,6 @@ export default {
         "description": "关联 datalist 的 id，为输入提供原生建议值。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -2170,6 +2269,30 @@ export default {
         "defaultValue": "''"
       },
       {
+        "prop": "min",
+        "description": "允许的最小值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "max",
+        "description": "允许的最大值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "step",
+        "description": "每次操作改变的数值步长。",
+        "type": "number",
+        "defaultValue": "300"
+      },
+      {
+        "prop": "locale",
+        "description": "日期、时间或数字格式使用的区域语言。",
+        "type": "string",
+        "defaultValue": "'zh-CN'"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -2188,40 +2311,34 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "nowShortcut",
+        "description": "设置 nowShortcut 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
         "defaultValue": "—"
       },
       {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
         "prop": "list",
         "description": "关联 datalist 的 id，为输入提供原生建议值。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -2292,6 +2409,30 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "normalizeOnBlur",
+        "description": "设置 normalizeOnBlur 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showValidation",
+        "description": "设置 showValidation 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
@@ -2338,12 +2479,6 @@ export default {
         "description": "在空值时显示简短格式提示，不能替代 label。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -2418,6 +2553,24 @@ export default {
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "maxFiles",
+        "description": "设置 maxFiles 属性。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxFileSize",
+        "description": "设置 maxFileSize 属性。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "prompt",
+        "description": "设置 prompt 属性。",
+        "type": "string",
+        "defaultValue": "'拖放文件到这里，或点击选择'"
       },
       {
         "prop": "name",
@@ -2543,6 +2696,30 @@ export default {
         "defaultValue": "''"
       },
       {
+        "prop": "min",
+        "description": "允许的最小值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "max",
+        "description": "允许的最大值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择月份'"
+      },
+      {
+        "prop": "locale",
+        "description": "日期、时间或数字格式使用的区域语言。",
+        "type": "string",
+        "defaultValue": "'zh-CN'"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -2561,21 +2738,27 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "currentShortcut",
+        "description": "设置 currentShortcut 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
         "defaultValue": "—"
       },
       {
@@ -2589,12 +2772,6 @@ export default {
         "description": "关联 datalist 的 id，为输入提供原生建议值。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -2647,6 +2824,36 @@ export default {
         "defaultValue": "null"
       },
       {
+        "prop": "min",
+        "description": "允许的最小值。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "max",
+        "description": "允许的最大值。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "step",
+        "description": "每次操作改变的数值步长。",
+        "type": "number",
+        "defaultValue": "1"
+      },
+      {
+        "prop": "precision",
+        "description": "设置 precision 属性。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "unit",
+        "description": "设置 unit 属性。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -2665,28 +2872,28 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "clampOnBlur",
+        "description": "设置 clampOnBlur 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
       },
       {
         "prop": "list",
@@ -2699,12 +2906,6 @@ export default {
         "description": "在空值时显示简短格式提示，不能替代 label。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -2775,6 +2976,30 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "revealable",
+        "description": "设置 revealable 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showStrength",
+        "description": "设置 showStrength 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
@@ -2809,12 +3034,6 @@ export default {
         "description": "在空值时显示简短格式提示，不能替代 label。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -2873,6 +3092,18 @@ export default {
         "defaultValue": "—"
       },
       {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "description",
+        "description": "补充说明文字；不传时隐藏说明区域。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -2908,6 +3139,24 @@ export default {
         "defaultValue": "50"
       },
       {
+        "prop": "min",
+        "description": "允许的最小值。",
+        "type": "number",
+        "defaultValue": "0"
+      },
+      {
+        "prop": "max",
+        "description": "允许的最大值。",
+        "type": "number",
+        "defaultValue": "100"
+      },
+      {
+        "prop": "step",
+        "description": "每次操作改变的数值步长。",
+        "type": "number",
+        "defaultValue": "1"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -2926,28 +3175,34 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "showValue",
+        "description": "是否显示格式化后的当前数值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "minLabel",
+        "description": "设置 minLabel 属性。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxLabel",
+        "description": "设置 maxLabel 属性。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "formatValue",
+        "description": "设置 formatValue 属性。",
+        "type": "(value: number) => string",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
       },
       {
         "prop": "list",
@@ -3000,6 +3255,12 @@ export default {
         "defaultValue": "'重置'"
       },
       {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -3018,7 +3279,34 @@ export default {
         "defaultValue": "最近的祖先 form"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "input-search": {
     "props": [
@@ -3045,6 +3333,36 @@ export default {
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "submitButton",
+        "description": "设置 submitButton 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "searchOnInput",
+        "description": "设置 searchOnInput 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "debounce",
+        "description": "源文本变化后等待多少毫秒再刷新预览；设为 0 时同步解析。",
+        "type": "number",
+        "defaultValue": "250"
       },
       {
         "prop": "name",
@@ -3087,12 +3405,6 @@ export default {
         "description": "在空值时显示简短格式提示，不能替代 label。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -3145,6 +3457,18 @@ export default {
         "defaultValue": "'提交'"
       },
       {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "loading",
+        "description": "是否显示加载状态并阻止重复操作。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -3193,7 +3517,34 @@ export default {
         "defaultValue": "最近的祖先 form"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "input-tel": {
     "props": [
@@ -3220,6 +3571,24 @@ export default {
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "format",
+        "description": "设置 format 属性。",
+        "type": "'none' | 'cn-mobile'",
+        "defaultValue": "'none'"
       },
       {
         "prop": "name",
@@ -3262,12 +3631,6 @@ export default {
         "description": "在空值时显示简短格式提示，不能替代 label。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -3338,6 +3701,36 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showCount",
+        "description": "设置 showCount 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "trimOnBlur",
+        "description": "设置 trimOnBlur 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "selectOnFocus",
+        "description": "设置 selectOnFocus 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
@@ -3378,12 +3771,6 @@ export default {
         "description": "在空值时显示简短格式提示，不能替代 label。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -3436,6 +3823,30 @@ export default {
         "defaultValue": "''"
       },
       {
+        "prop": "min",
+        "description": "允许的最小值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "max",
+        "description": "允许的最大值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "step",
+        "description": "每次操作改变的数值步长。",
+        "type": "number",
+        "defaultValue": "300"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择时间'"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -3454,40 +3865,34 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "nowShortcut",
+        "description": "设置 nowShortcut 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
         "defaultValue": "—"
       },
       {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
         "prop": "list",
         "description": "关联 datalist 的 id，为输入提供原生建议值。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -3558,6 +3963,30 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "normalizeOnBlur",
+        "description": "设置 normalizeOnBlur 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "openable",
+        "description": "设置 openable 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
@@ -3598,12 +4027,6 @@ export default {
         "description": "在空值时显示简短格式提示，不能替代 label。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",
@@ -3656,6 +4079,18 @@ export default {
         "defaultValue": "''"
       },
       {
+        "prop": "min",
+        "description": "允许的最小值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "max",
+        "description": "允许的最大值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -3674,21 +4109,27 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "currentShortcut",
+        "description": "设置 currentShortcut 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "name",
         "description": "定义表单提交时使用的字段名称。",
         "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
         "defaultValue": "—"
       },
       {
@@ -3702,12 +4143,6 @@ export default {
         "description": "关联 datalist 的 id，为输入提供原生建议值。",
         "type": "string",
         "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
       },
       {
         "prop": "required",

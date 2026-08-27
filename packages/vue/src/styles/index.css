@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../components/input-control.css";
 @source "../components";
 
 :root {

@@ -278,28 +278,80 @@ export const DlEditable = managed(RawDlEditable, 'DlEditable', {
 })
 export const DlHoverCard = managed(RawDlHoverCard, 'DlHoverCard')
 export const DlIconButton = managed(RawDlIconButton, 'DlIconButton', { domEvents: actionEvents })
-export const DlInputButton = managed(RawDlInputButton, 'DlInputButton', { domEvents: actionEvents })
-export const DlInputCheckbox = managed(RawDlInputCheckbox, 'DlInputCheckbox', { domEvents: fieldEvents })
+export const DlInputButton = managed(RawDlInputButton, 'DlInputButton', {
+  domEvents: actionEvents,
+  methods: { startLoading: context => context.set('loading', true), stopLoading: context => context.set('loading', false) },
+  methodDefinitions: [method('startLoading / stopLoading', '控制异步按钮状态，避免操作被重复触发。', '()')],
+})
+export const DlInputCheckbox = managed(RawDlInputCheckbox, 'DlInputCheckbox', {
+  domEvents: fieldEvents,
+  methods: { check: context => context.set('modelValue', true), uncheck: context => context.set('modelValue', false) },
+  methodDefinitions: [method('check / uncheck', '显式选中或取消当前复选输入。', '()')],
+})
 export const DlInputColor = managed(RawDlInputColor, 'DlInputColor', { domEvents: fieldEvents })
-export const DlInputDate = managed(RawDlInputDate, 'DlInputDate', { domEvents: fieldEvents })
-export const DlInputDatetimeLocal = managed(RawDlInputDatetimeLocal, 'DlInputDatetimeLocal', { domEvents: fieldEvents })
+export const DlInputDate = managed(RawDlInputDate, 'DlInputDate', {
+  domEvents: fieldEvents,
+  methods: { today: context => { (context.element?.querySelector('[aria-label="选择今天"]') as HTMLElement | null)?.click(); return true } },
+  methodDefinitions: [method('today', '选择当前日期，并遵守 min/max 范围。', '()')],
+})
+export const DlInputDatetimeLocal = managed(RawDlInputDatetimeLocal, 'DlInputDatetimeLocal', {
+  domEvents: fieldEvents,
+  methods: { now: context => { (context.element?.querySelector('[aria-label="选择现在"]') as HTMLElement | null)?.click(); return true } },
+  methodDefinitions: [method('now', '填入当前本地日期时间。', '()')],
+})
 export const DlInputEmail = managed(RawDlInputEmail, 'DlInputEmail', { domEvents: fieldEvents })
 export const DlInputFile = managed(RawDlInputFile, 'DlInputFile', { domEvents: fieldEvents })
 export const DlInputHidden = managed(RawDlInputHidden, 'DlInputHidden', { domEvents: fieldEvents })
 export const DlInputImage = managed(RawDlInputImage, 'DlInputImage', { domEvents: actionEvents })
-export const DlInputMonth = managed(RawDlInputMonth, 'DlInputMonth', { domEvents: fieldEvents })
-export const DlInputNumber = managed(RawDlInputNumber, 'DlInputNumber', { domEvents: fieldEvents })
-export const DlInputPassword = managed(RawDlInputPassword, 'DlInputPassword', { domEvents: fieldEvents })
+export const DlInputMonth = managed(RawDlInputMonth, 'DlInputMonth', {
+  domEvents: fieldEvents,
+  methods: { current: context => { (context.element?.querySelector('[aria-label="选择本月"]') as HTMLElement | null)?.click(); return true } },
+  methodDefinitions: [method('current', '选择当前月份，并遵守 min/max 范围。', '()')],
+})
+export const DlInputNumber = managed(RawDlInputNumber, 'DlInputNumber', {
+  domEvents: fieldEvents,
+  methods: numberMethods,
+  methodDefinitions: [method('increment / decrement', '按 step 或传入步长增减数值，并遵守 min/max。', '(amount?: number)')],
+})
+export const DlInputPassword = managed(RawDlInputPassword, 'DlInputPassword', {
+  domEvents: fieldEvents,
+  methods: { toggleVisibility: context => { (context.element?.querySelector('[aria-label="显示密码"], [aria-label="隐藏密码"]') as HTMLElement | null)?.click(); return true } },
+  methodDefinitions: [method('toggleVisibility', '切换密码明文与遮蔽显示。', '()')],
+})
 export const DlInputRadio = managed(RawDlInputRadio, 'DlInputRadio', { domEvents: fieldEvents })
-export const DlInputRange = managed(RawDlInputRange, 'DlInputRange', { domEvents: fieldEvents })
+export const DlInputRange = managed(RawDlInputRange, 'DlInputRange', {
+  domEvents: fieldEvents,
+  methods: numberMethods,
+  methodDefinitions: [method('increment / decrement', '按 step 调整数值，并遵守范围。', '(amount?: number)')],
+})
 export const DlInputReset = managed(RawDlInputReset, 'DlInputReset', { domEvents: actionEvents })
-export const DlInputSearch = managed(RawDlInputSearch, 'DlInputSearch', { domEvents: fieldEvents })
-export const DlInputSubmit = managed(RawDlInputSubmit, 'DlInputSubmit', { domEvents: actionEvents })
+export const DlInputSearch = managed(RawDlInputSearch, 'DlInputSearch', {
+  domEvents: fieldEvents,
+  methods: { search: context => { (context.element?.querySelector('[aria-label="执行搜索"]') as HTMLElement | null)?.click(); return true } },
+  methodDefinitions: [method('search', '立即提交当前检索词，不等待防抖计时。', '()')],
+})
+export const DlInputSubmit = managed(RawDlInputSubmit, 'DlInputSubmit', {
+  domEvents: actionEvents,
+  methods: { startLoading: context => context.set('loading', true), stopLoading: context => context.set('loading', false) },
+  methodDefinitions: [method('startLoading / stopLoading', '控制提交中的禁用与忙碌状态。', '()')],
+})
 export const DlInputTel = managed(RawDlInputTel, 'DlInputTel', { domEvents: fieldEvents })
 export const DlInputText = managed(RawDlInputText, 'DlInputText', { domEvents: fieldEvents })
 export const DlInputTime = managed(RawDlInputTime, 'DlInputTime', { domEvents: fieldEvents })
-export const DlInputUrl = managed(RawDlInputUrl, 'DlInputUrl', { domEvents: fieldEvents })
-export const DlInputWeek = managed(RawDlInputWeek, 'DlInputWeek', { domEvents: fieldEvents })
+export const DlInputUrl = managed(RawDlInputUrl, 'DlInputUrl', {
+  domEvents: fieldEvents,
+  methods: { open: context => { (context.element?.querySelector('[aria-label="打开网址"]') as HTMLElement | null)?.click(); return true } },
+  methodDefinitions: [method('open', '在新窗口安全打开规范化后的网址。', '()')],
+})
+export const DlInputWeek = managed(RawDlInputWeek, 'DlInputWeek', {
+  domEvents: fieldEvents,
+  methods: {
+    previous: context => { (context.element?.querySelector('[aria-label="上一周"]') as HTMLElement | null)?.click(); return true },
+    next: context => { (context.element?.querySelector('[aria-label="下一周"]') as HTMLElement | null)?.click(); return true },
+    current: context => { (context.element?.querySelector('[aria-label="选择本周"]') as HTMLElement | null)?.click(); return true },
+  },
+  methodDefinitions: [method('previous / next / current', '按周导航或回到本周，并遵守 min/max。', '()')],
+})
 export const DlLabel = managed(RawDlLabel, 'DlLabel', { domEvents: ['click'] })
 export const DlListbox = managed(RawDlListbox, 'DlListbox', { domEvents: fieldEvents })
 export const DlMdx = managed(RawDlMdx, 'DlMdx', {

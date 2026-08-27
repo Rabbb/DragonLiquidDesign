@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { tv } from 'tailwind-variants'
 import type { DlSize } from '../types'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   size?: DlSize
   status?: 'default' | 'success' | 'warning' | 'error'
   disabled?: boolean
@@ -13,34 +11,12 @@ const props = withDefaults(defineProps<{
   disabled: false,
 })
 
-const field = tv({
-  base: 'flex items-center gap-2 rounded-[var(--dl-radius-sm)] border bg-[var(--dl-surface)] px-3 text-[var(--dl-text)] shadow-[inset_0_1px_0_rgba(255,255,255,.06),0_8px_24px_rgba(0,0,0,.08)] backdrop-blur-xl transition focus-within:[box-shadow:var(--dl-focus)]',
-  variants: {
-    size: {
-      sm: 'min-h-9 text-[0.82rem]',
-      md: 'min-h-11 text-sm',
-      lg: 'min-h-[3.25rem] px-4 text-base',
-    },
-    status: {
-      default: 'border-[var(--dl-border)] focus-within:border-[var(--dl-border-focus)]',
-      success: 'border-emerald-300/40 focus-within:border-emerald-200/70',
-      warning: 'border-amber-300/40 focus-within:border-amber-200/70',
-      error: 'border-red-300/45 focus-within:border-red-200/75',
-    },
-    disabled: {
-      true: 'cursor-not-allowed opacity-50',
-      false: '',
-    },
-  },
-})
-
-const classes = computed(() => field({ size: props.size, status: props.status, disabled: props.disabled }))
 </script>
 
 <template>
-  <div :class="classes">
-    <span v-if="$slots.leading" class="text-[var(--dl-text-faint)]"><slot name="leading" /></span>
+  <div class="dl-input-field" :data-size="size" :data-status="status" :data-disabled="disabled || undefined">
+    <span v-if="$slots.leading" class="dl-input-field__leading"><slot name="leading" /></span>
     <slot />
-    <span v-if="$slots.trailing" class="text-[var(--dl-text-faint)]"><slot name="trailing" /></span>
+    <span v-if="$slots.trailing" class="dl-input-field__trailing"><slot name="trailing" /></span>
   </div>
 </template>

@@ -13,5 +13,8 @@ const attrs = useAttrs()
 </script>
 
 <template>
-  <input v-bind="attrs" data-dl data-slot="input-image" type="image" :src="src" :alt="alt" :width="width" :height="height" :disabled="disabled" class="cursor-pointer rounded-[var(--dl-radius-sm)] outline-none focus:[box-shadow:var(--dl-focus)] disabled:cursor-not-allowed disabled:opacity-50">
+  <span data-dl data-slot="input-image">
+    <input type="image" :src="src" :alt="alt" class="dl-input-native" tabindex="-1" aria-hidden="true">
+    <button v-bind="attrs" type="submit" class="dl-input-action" :disabled="disabled" :aria-label="alt"><img :src="src" :alt="alt" :width="width" :height="height"></button>
+  </span>
 </template>

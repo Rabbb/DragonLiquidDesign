@@ -3,6 +3,8 @@ import { nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import {
   DlButton,
+  DlInputNumber,
+  DlInputSearch,
   DlInputText,
   DlPagination,
   DlPopover,
@@ -78,6 +80,18 @@ describe('managed component instance behavior', () => {
     await nextTick()
     expect(wrapper.get('input').element.value).toBe('')
     wrapper.unmount()
+  })
+
+  it('exposes the packaged input conveniences through instance methods', async () => {
+    const numberUpdate = vi.fn()
+    const number = mount(DlInputNumber, { props: { modelValue: 9, max: 10, step: 2, 'onUpdate:modelValue': numberUpdate } })
+    expect(control(number).invoke('increment')).toBe(true)
+    expect(numberUpdate).toHaveBeenLastCalledWith(10)
+
+    const searchEvent = vi.fn()
+    const search = mount(DlInputSearch, { props: { modelValue: 'liquid', onSearch: searchEvent } })
+    expect(control(search).invoke('search')).toBe(true)
+    expect(searchEvent).toHaveBeenLastCalledWith('liquid')
   })
 
   it('runs component-specific navigation methods and emits v-model updates', async () => {

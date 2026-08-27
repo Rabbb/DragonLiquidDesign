@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { useAttrs } from 'vue'
+import type { DlSize } from '../types'
 
 defineOptions({ inheritAttrs: false })
-const props = withDefaults(defineProps<{ value?: string; disabled?: boolean }>(), { value: '执行操作', disabled: false })
+withDefaults(defineProps<{ value?: string; size?: DlSize; loading?: boolean; disabled?: boolean }>(), { value: '执行操作', size: 'md', loading: false, disabled: false })
 const attrs = useAttrs()
 </script>
 
 <template>
-  <input v-bind="attrs" data-dl data-slot="input-button" type="button" :value="value" :disabled="disabled" class="min-h-10 cursor-pointer rounded-[var(--dl-button-radius)] border border-[var(--dl-button-secondary-border)] bg-[var(--dl-button-secondary-bg)] px-4 font-semibold text-[var(--dl-button-secondary-text)] shadow-[var(--dl-button-secondary-shadow)] transition hover:border-[var(--dl-button-secondary-border-hover)] hover:bg-[var(--dl-button-secondary-bg-hover)] disabled:cursor-not-allowed disabled:opacity-50">
+  <span data-dl data-slot="input-button">
+    <input type="button" :value="value" class="dl-input-native" tabindex="-1" aria-hidden="true">
+    <button v-bind="attrs" type="button" class="dl-input-action" :data-size="size" :disabled="disabled || loading" :aria-busy="loading || undefined"><span v-if="loading" class="dl-input-action__spinner" aria-hidden="true" /><slot>{{ value }}</slot></button>
+  </span>
 </template>

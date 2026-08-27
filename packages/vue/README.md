@@ -135,6 +135,7 @@ createApp(App).use(mdxSecurity).mount('#app')
 
 - 69 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.19` 将 22 个 `DlInputXxx` 从原生外观薄封装升级为 DL 交互控件：文本规范化、搜索提交、密码反馈、数值步进、日期时间面板、拖放文件和自绘选择等逻辑由组件负责，原生字段退回表单兼容层。
 - `0.6.0-alpha.18` 为 `DlChoicePortal` 增加逐字段检索高亮，并在隐藏关键词或值命中时展示匹配依据。
 - `0.6.0-alpha.17` 将 22 种 HTML input type 拆成独立 `DlInputXxx` 控件，删除通用 `DlInput` 与公开 `type` 属性。
 - `0.6.0-alpha.16` 为推荐控件补齐实例 API 元数据，并发布不可变的最终本地包。
