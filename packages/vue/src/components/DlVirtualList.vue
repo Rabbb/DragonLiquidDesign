@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 
 type ItemKey = string | ((item: unknown, index: number) => string | number)
 type ScrollAlignment = 'start' | 'center' | 'end' | 'auto'
@@ -11,16 +11,27 @@ const props = withDefaults(defineProps<{
   overscan?: number
   itemKey?: ItemKey
   ariaLabel?: string
+  activeIndex?: number
+  keyboardNavigation?: boolean
 }>(), {
   estimatedItemHeight: 56,
   viewportHeight: 320,
   overscan: 4,
   itemKey: undefined,
   ariaLabel: '虚拟列表',
+  activeIndex: undefined,
+  keyboardNavigation: true,
 })
+const emit = defineEmits<{
+  'update:activeIndex': [index: number]
+  'active-change': [item: unknown, index: number]
+  activate: [item: unknown, index: number, event: KeyboardEvent | MouseEvent]
+}>()
 
 const viewport = ref<HTMLElement | null>(null)
 const scrollTop = ref(0)
+const internalActiveIndex = ref(Math.max(0, props.activeIndex ?? 0))
+const listId = `dl-virtual-list-${useId().replace(/:/g, '')}`
 const itemHeight = computed(() => Math.max(1, Number(props.estimatedItemHeight) || 56))
 const height = computed(() => Math.max(itemHeight.value, Number(props.viewportHeight) || 320))
 const safeOverscan = computed(() => Math.max(0, Math.floor(props.overscan)))
@@ -33,6 +44,7 @@ const visibleItems = computed(() => props.items.slice(startIndex.value, endIndex
   return { item, index, key: resolveKey(item, index) }
 }))
 const offsetY = computed(() => startIndex.value * itemHeight.value)
+const resolvedActiveIndex = computed(() => Math.max(0, Math.min(props.items.length - 1, props.activeIndex ?? internalActiveIndex.value)))
 
 function resolveKey(item: unknown, index: number) {
   if (typeof props.itemKey === 'function') return props.itemKey(item, index)
@@ -68,11 +80,49 @@ function scrollToTop() {
   scrollTop.value = 0
 }
 
+function setActiveIndex(index: number) {
+  if (!props.items.length) return
+  const next = Math.max(0, Math.min(props.items.length - 1, index))
+  internalActiveIndex.value = next
+  emit('update:activeIndex', next)
+  emit('active-change', props.items[next], next)
+  scrollToIndex(next)
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (!props.keyboardNavigation || event.target !== event.currentTarget) return
+  const page = Math.max(1, visibleCount.value - 1)
+  const next = event.key === 'ArrowDown' ? resolvedActiveIndex.value + 1
+    : event.key === 'ArrowUp' ? resolvedActiveIndex.value - 1
+      : event.key === 'PageDown' ? resolvedActiveIndex.value + page
+        : event.key === 'PageUp' ? resolvedActiveIndex.value - page
+          : event.key === 'Home' ? 0
+            : event.key === 'End' ? props.items.length - 1
+              : null
+  if (next !== null) {
+    event.preventDefault()
+    setActiveIndex(next)
+  }
+  else if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    emit('activate', props.items[resolvedActiveIndex.value], resolvedActiveIndex.value, event)
+  }
+}
+
+function activateItem(index: number, event: MouseEvent) {
+  if (!props.keyboardNavigation) return
+  setActiveIndex(index)
+  emit('activate', props.items[index], index, event)
+}
+
 watch([totalHeight, height], () => {
   const maximum = Math.max(0, totalHeight.value - height.value)
   if (scrollTop.value <= maximum) return
   scrollTop.value = maximum
   if (viewport.value) viewport.value.scrollTop = maximum
+})
+watch(() => props.activeIndex, value => {
+  if (value !== undefined) internalActiveIndex.value = Math.max(0, value)
 })
 
 defineExpose({ scrollToIndex, scrollToTop })
@@ -88,7 +138,9 @@ defineExpose({ scrollToIndex, scrollToTop })
       :style="{ height: `${height}px` }"
       role="list"
       :aria-label="ariaLabel"
+      :aria-activedescendant="keyboardNavigation && items.length ? `${listId}-${resolvedActiveIndex}` : undefined"
       tabindex="0"
+      @keydown="handleKeydown"
       @scroll.passive="handleScroll"
     >
       <div class="dl-virtual-list__spacer" :style="{ height: `${totalHeight}px` }">
@@ -98,10 +150,13 @@ defineExpose({ scrollToIndex, scrollToTop })
             :key="entry.key"
             data-slot="virtual-list-item"
             class="dl-virtual-list__item"
+            :class="{ 'is-active': keyboardNavigation && entry.index === resolvedActiveIndex }"
+            :id="`${listId}-${entry.index}`"
             :style="{ height: `${itemHeight}px` }"
             role="listitem"
             :aria-posinset="entry.index + 1"
             :aria-setsize="items.length"
+            @click="activateItem(entry.index, $event)"
           >
             <slot name="item" :item="entry.item" :index="entry.index">{{ entry.item }}</slot>
           </div>
@@ -119,6 +174,6 @@ defineExpose({ scrollToIndex, scrollToTop })
 .dl-virtual-list__spacer { position: relative; width: 100%; }
 .dl-virtual-list__window { position: absolute; inset: 0 0 auto; will-change: transform; }
 .dl-virtual-list__item { box-sizing: border-box; width: 100%; overflow: hidden; border-bottom: 1px solid var(--dl-border); }
+.dl-virtual-list__item.is-active { background: var(--dl-accent-surface); box-shadow: inset 3px 0 var(--dl-accent); }
 .dl-virtual-list__empty { display: grid; min-height: 130px; place-items: center; padding: 24px; color: var(--dl-text-faint); font-size: .82rem; text-align: center; }
 </style>
-

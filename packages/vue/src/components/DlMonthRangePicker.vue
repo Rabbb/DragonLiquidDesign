@@ -2,13 +2,19 @@
 import { endOfYear, getLocalTimeZone, startOfYear, today } from '@internationalized/date'
 import { computed, ref, shallowRef, watch } from 'vue'
 import type { DateRange, DateValue } from 'reka-ui'
+import { dlClipboardText, parseDlPastedMonthRange } from './date-time-paste'
 import DlPopover from './DlPopover.vue'
 import MonthPickerPanel from './MonthPickerPanel.vue'
 import YearPickerPanel from './YearPickerPanel.vue'
 import './date-picker-panel.css'
 
 const props = withDefaults(defineProps<{ open?: boolean; modelValue?: DateRange | null; placeholder?: string; locale?: string; disabled?: boolean; readonly?: boolean; zIndex?: number }>(), { open: undefined, modelValue: null, placeholder: '选择月份范围', locale: 'zh-CN', disabled: false, readonly: false, zIndex: undefined })
-const emit = defineEmits<{ 'update:open': [value: boolean]; 'update:modelValue': [value: DateRange] }>()
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+  'update:modelValue': [value: DateRange]
+  paste: [value: DateRange, source: string]
+  'paste-error': [source: string]
+}>()
 type Panel = 'month' | 'year'
 
 const localOpen = ref(props.open ?? false)
@@ -127,11 +133,25 @@ function selectMonth(value: DateValue | DateValue[] | undefined) {
   emit('update:modelValue', { start, end })
   resolvedOpen.value = false
 }
+
+function handlePaste(event: ClipboardEvent) {
+  if (props.disabled || props.readonly) return
+  const source = dlClipboardText(event)
+  const value = parseDlPastedMonthRange(source)
+  if (!value) {
+    emit('paste-error', source)
+    return
+  }
+  event.preventDefault()
+  emit('update:modelValue', value)
+  emit('paste', value, source)
+  resolvedOpen.value = false
+}
 </script>
 
 <template>
   <DlPopover v-model:open="resolvedOpen" tone="subtle" align="start" :arrow="false" :side-offset="0" content-class="dl-date-picker-panel" :z-index="zIndex">
-    <template #trigger><button data-dl data-slot="month-range-picker" type="button" :disabled="disabled" class="flex min-h-11 w-full items-center justify-between gap-3 rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-[var(--dl-surface)] px-3 text-left text-sm text-[var(--dl-text)] outline-none transition hover:border-[var(--dl-border-strong)] focus-visible:[box-shadow:var(--dl-focus)] disabled:opacity-45"><span :class="!modelValue?.start && 'text-[var(--dl-text-faint)]'">{{ valueText }}</span><span class="text-[var(--dl-accent)]" aria-hidden="true">▦</span></button></template>
+    <template #trigger><button data-dl data-slot="month-range-picker" type="button" :disabled="disabled || readonly" class="flex min-h-11 w-full items-center justify-between gap-3 rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-[var(--dl-surface)] px-3 text-left text-sm text-[var(--dl-text)] outline-none transition hover:border-[var(--dl-border-strong)] focus-visible:[box-shadow:var(--dl-focus)] disabled:opacity-45" @keydown.alt.down.prevent="resolvedOpen = true" @paste="handlePaste"><span :class="!modelValue?.start && 'text-[var(--dl-text-faint)]'">{{ valueText }}</span><span class="text-[var(--dl-accent)]" aria-hidden="true">▦</span></button></template>
     <div class="dl-independent-range-panels flex flex-wrap gap-4">
       <section v-for="(viewDate, index) in viewDates" :key="index" data-slot="month-range-picker-panel" :data-panel-index="index" :class="index > 0 && 'dl-range-picker-panel--divided'">
         <MonthPickerPanel v-if="panels[index] === 'month'" :model-value="null" :placeholder="viewDate" :locale="locale" :disabled="disabled" :readonly="readonly" :min-value="getPanelMinValue(index)" :max-value="getPanelMaxValue(index)" :range-start="previewRange.start" :range-end="previewRange.end" class="border-0 bg-transparent p-0 shadow-none" @hover="hoverDate = $event" @update:model-value="selectMonth" @update:placeholder="updateViewDate(index, $event)">

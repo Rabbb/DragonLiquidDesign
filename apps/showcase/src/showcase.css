@@ -1598,6 +1598,11 @@ kbd {
   line-height: 1.7;
 }
 
+.component-guidance__keyboard { grid-column: 1 / -1; }
+.component-guidance__keyboard > div { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.component-guidance__keyboard kbd { padding: 5px 8px; border: 1px solid var(--dl-border); border-radius: 7px; background: var(--dl-night-soft); color: var(--dl-text); font: 0.66rem/1.3 "Cascadia Code", Consolas, monospace; }
+.component-guidance__keyboard small { display: block; margin-top: 10px; color: var(--dl-accent-text); font-size: 0.68rem; line-height: 1.6; }
+
 .component-guidance ul {
   display: grid;
   gap: 4px;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import {
   DialogContent,
   DialogDescription,
@@ -60,6 +60,7 @@ const draftHour = ref(9)
 const draftMinute = ref(0)
 const hourWheel = ref<HTMLElement | null>(null)
 const minuteWheel = ref<HTMLElement | null>(null)
+const wheelId = useId()
 const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
 const hours = Array.from({ length: 24 }, (_, value) => value)
 const steppedMinutes = computed(() => props.granularity === 'hour' ? [0] : buildDlTimeWheelMinutes(props.minuteStep))
@@ -170,6 +171,51 @@ function nudgeTime(kind: WheelKind, direction: -1 | 1) {
   draftHour.value = target.hour
   draftMinute.value = target.minute
   syncWheels()
+}
+
+function nudgeMany(kind: WheelKind, amount: number) {
+  const direction: -1 | 1 = amount < 0 ? -1 : 1
+  for (let index = 0; index < Math.abs(amount); index++) {
+    const target = nudgeTarget(kind, direction)
+    if (isDisabled(target.hour, target.minute)) break
+    draftHour.value = target.hour
+    draftMinute.value = target.minute
+  }
+  syncWheels()
+}
+
+function selectEdge(kind: WheelKind, edge: 'first' | 'last') {
+  const values = valuesFor(kind)
+  const ordered = edge === 'first' ? values : [...values].reverse()
+  const value = ordered.find(candidate => kind === 'hour'
+    ? !isDisabled(candidate, draftMinute.value)
+    : !isDisabled(draftHour.value, candidate))
+  if (value !== undefined) selectValue(kind, value, false)
+}
+
+function handleWheelKeydown(kind: WheelKind, event: KeyboardEvent) {
+  if (props.disabled) return
+  if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+    event.preventDefault()
+    nudgeTime(kind, event.key === 'ArrowUp' ? -1 : 1)
+  }
+  else if (event.key === 'PageUp' || event.key === 'PageDown') {
+    event.preventDefault()
+    const direction = event.key === 'PageUp' ? -1 : 1
+    nudgeMany(kind, direction * (kind === 'hour' ? 4 : 5))
+  }
+  else if (event.key === 'Home' || event.key === 'End') {
+    event.preventDefault()
+    selectEdge(kind, event.key === 'Home' ? 'first' : 'last')
+  }
+  else if (event.key === 'Enter' && event.target === event.currentTarget) {
+    event.preventDefault()
+    commitValue()
+  }
+  else if (event.key === 'Escape') {
+    event.preventDefault()
+    closeWheel()
+  }
 }
 
 function centeredValue(kind: WheelKind) {
@@ -315,8 +361,8 @@ onBeforeUnmount(() => {
 
         <div class="dl-time-wheel__columns" :data-granularity="granularity">
           <section><h3>小时</h3><span class="dl-time-wheel__band" aria-hidden="true" />
-            <div ref="hourWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="小时" tabindex="0" @scroll.passive="handleScroll('hour')" @pointerdown.capture="beginDrag('hour', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
-              <button v-for="item in virtualHours" :key="item.key" type="button" role="option" :aria-selected="item.value === draftHour" :data-cycle="item.cycle" :data-wheel-value="item.value" :tabindex="item.cycle === 2 ? 0 : -1" :class="{ 'is-selected': item.value === draftHour }" :disabled="hourDisabled(item.value)" @click="selectClicked('hour', item.value)">{{ item.value }}</button>
+            <div ref="hourWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="小时" :aria-activedescendant="`${wheelId}-hour-${draftHour}`" aria-keyshortcuts="ArrowUp ArrowDown PageUp PageDown Home End Enter Escape" tabindex="0" @keydown="handleWheelKeydown('hour', $event)" @scroll.passive="handleScroll('hour')" @pointerdown.capture="beginDrag('hour', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
+              <button v-for="item in virtualHours" :id="item.cycle === 2 ? `${wheelId}-hour-${item.value}` : undefined" :key="item.key" type="button" :role="item.cycle === 2 ? 'option' : 'presentation'" :aria-hidden="item.cycle === 2 ? undefined : true" :aria-selected="item.cycle === 2 ? item.value === draftHour : undefined" :data-cycle="item.cycle" :data-wheel-value="item.value" tabindex="-1" :class="{ 'is-selected': item.value === draftHour }" :disabled="hourDisabled(item.value)" @click="selectClicked('hour', item.value)">{{ item.value }}</button>
             </div>
             <span class="dl-time-wheel__stepper" data-slot="time-wheel-hour-stepper">
               <button type="button" aria-label="小时增加 1" :disabled="!canNudge('hour', 1)" @click="nudgeTime('hour', 1)">▲</button>
@@ -325,8 +371,8 @@ onBeforeUnmount(() => {
           </section>
           <i v-if="granularity === 'minute'" aria-hidden="true">:</i>
           <section v-if="granularity === 'minute'"><h3>分钟</h3><span class="dl-time-wheel__band" aria-hidden="true" />
-            <div ref="minuteWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="分钟" tabindex="0" @scroll.passive="handleScroll('minute')" @pointerdown.capture="beginDrag('minute', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
-              <button v-for="item in virtualMinutes" :key="item.key" type="button" role="option" :aria-selected="item.value === draftMinute" :data-cycle="item.cycle" :data-wheel-value="item.value" :tabindex="item.cycle === 2 ? 0 : -1" :class="{ 'is-selected': item.value === draftMinute }" :disabled="isDisabled(draftHour, item.value)" @click="selectClicked('minute', item.value)">{{ String(item.value).padStart(2, '0') }}</button>
+            <div ref="minuteWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="分钟" :aria-activedescendant="`${wheelId}-minute-${draftMinute}`" aria-keyshortcuts="ArrowUp ArrowDown PageUp PageDown Home End Enter Escape" tabindex="0" @keydown="handleWheelKeydown('minute', $event)" @scroll.passive="handleScroll('minute')" @pointerdown.capture="beginDrag('minute', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
+              <button v-for="item in virtualMinutes" :id="item.cycle === 2 ? `${wheelId}-minute-${item.value}` : undefined" :key="item.key" type="button" :role="item.cycle === 2 ? 'option' : 'presentation'" :aria-hidden="item.cycle === 2 ? undefined : true" :aria-selected="item.cycle === 2 ? item.value === draftMinute : undefined" :data-cycle="item.cycle" :data-wheel-value="item.value" tabindex="-1" :class="{ 'is-selected': item.value === draftMinute }" :disabled="isDisabled(draftHour, item.value)" @click="selectClicked('minute', item.value)">{{ String(item.value).padStart(2, '0') }}</button>
             </div>
             <span class="dl-time-wheel__stepper" data-slot="time-wheel-minute-stepper">
               <button type="button" aria-label="分钟增加 1" :disabled="!canNudge('minute', 1)" @click="nudgeTime('minute', 1)">▲</button>

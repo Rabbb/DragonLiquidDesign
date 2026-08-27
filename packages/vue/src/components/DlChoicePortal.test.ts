@@ -12,6 +12,11 @@ globalThis.ResizeObserver = ResizeObserverMock
 HTMLElement.prototype.scrollIntoView = () => {}
 
 const wrappers: ReturnType<typeof mount>[] = []
+function paste(element: Element, value: string) {
+  const event = new Event('paste', { bubbles: true, cancelable: true })
+  Object.defineProperty(event, 'clipboardData', { value: { getData: () => value } })
+  element.dispatchEvent(event)
+}
 afterEach(() => {
   wrappers.splice(0).forEach(wrapper => wrapper.unmount())
   document.body.innerHTML = ''
@@ -116,5 +121,13 @@ describe('DlChoicePortal', () => {
     expect(custom?.textContent).toContain('nightly')
     custom?.click()
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['nightly'])
+  })
+
+  it('selects an exact pasted label from the closed trigger', async () => {
+    const wrapper = mount(DlChoicePortal, { props: { options: [{ value: 'vue', label: 'Vue 3' }, { value: 'react', label: 'React' }] } })
+    paste(wrapper.get('.dl-choice-portal__trigger').element, 'React')
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['react'])
+    expect(wrapper.emitted('paste')?.at(-1)).toEqual(['React', 'react'])
   })
 })

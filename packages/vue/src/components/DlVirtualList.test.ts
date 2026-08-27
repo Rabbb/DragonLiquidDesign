@@ -25,4 +25,15 @@ describe('DlVirtualList', () => {
     const wrapper = mount(DlVirtualList, { props: { items: [] }, slots: { empty: '没有结果' } })
     expect(wrapper.get('[data-slot="virtual-list-empty"]').text()).toBe('没有结果')
   })
+
+  it('navigates and activates virtual items without a pointer', async () => {
+    const items = Array.from({ length: 20 }, (_, index) => `Item ${index}`)
+    const wrapper = mount(DlVirtualList, { props: { items, estimatedItemHeight: 20, viewportHeight: 100 } })
+    const viewport = wrapper.get('[data-slot="virtual-list-viewport"]')
+
+    await viewport.trigger('keydown', { key: 'End' })
+    expect(wrapper.emitted('update:activeIndex')?.at(-1)).toEqual([19])
+    await viewport.trigger('keydown', { key: 'Enter' })
+    expect(wrapper.emitted('activate')?.at(-1)?.slice(0, 2)).toEqual(['Item 19', 19])
+  })
 })

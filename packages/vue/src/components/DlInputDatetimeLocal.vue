@@ -5,6 +5,7 @@ import type { DateValue, TimeValue } from 'reka-ui'
 import type { DlSize } from '../types'
 import DlDatePicker from './DlDatePicker.vue'
 import DlTimePicker from './DlTimePicker.vue'
+import { dlClipboardText, parseDlPastedDateTimeLocal } from './date-time-paste'
 import { parseDlTimeWheelValue } from './time-wheel.utils'
 
 defineOptions({ inheritAttrs: false })
@@ -24,7 +25,13 @@ const props = withDefaults(defineProps<{
   modelValue: '', min: undefined, max: undefined, step: 300, locale: 'zh-CN', size: 'md',
   status: 'default', disabled: false, readonly: false, clearable: true, nowShortcut: true,
 })
-const emit = defineEmits<{ 'update:modelValue': [value: string]; clear: []; shortcut: [value: string] }>()
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+  clear: []
+  shortcut: [value: string]
+  paste: [value: string, source: string]
+  'paste-error': [source: string]
+}>()
 const attrs = useAttrs()
 const dateOpen = ref(false)
 const datePart = computed(() => props.modelValue?.split('T')[0] ?? '')
@@ -52,14 +59,30 @@ function disabledTime(value: string) {
   const date = datePart.value || today(getLocalTimeZone()).toString()
   return Boolean((props.min && `${date}T${value}` < props.min) || (props.max && `${date}T${value}` > props.max))
 }
+function updateNative(event: Event) {
+  emit('update:modelValue', normalize((event.target as HTMLInputElement).value))
+}
+function handlePaste(event: ClipboardEvent, reportError = true) {
+  if (props.disabled || props.readonly) return
+  const source = dlClipboardText(event)
+  const value = parseDlPastedDateTimeLocal(source)
+  if (!value) {
+    if (reportError) emit('paste-error', source)
+    return
+  }
+  event.preventDefault()
+  const normalized = normalize(value)
+  emit('update:modelValue', normalized)
+  emit('paste', normalized, source)
+}
 </script>
 
 <template>
-  <div data-dl data-slot="input-datetime-local" class="dl-input-date-control" :data-size="size" :data-status="status">
-    <input v-bind="attrs" type="datetime-local" :value="modelValue ?? ''" :min="min" :max="max" :step="step" :disabled="disabled" :readonly="readonly" class="dl-input-native" @focus="dateOpen = true">
+  <div data-dl data-slot="input-datetime-local" class="dl-input-date-control" :data-size="size" :data-status="status" @paste.capture="handlePaste($event, false)">
+    <input v-bind="attrs" type="datetime-local" :value="modelValue ?? ''" :min="min" :max="max" :step="step" :disabled="disabled" :readonly="readonly" class="dl-input-native" tabindex="-1" aria-hidden="true" @input="updateNative" @change="updateNative" @paste="handlePaste">
     <div class="dl-input-datetime">
-      <DlDatePicker v-model:open="dateOpen" :model-value="dateValue" placeholder="选择日期" :locale="locale" :disabled="disabled || readonly" @update:model-value="updateDate" />
-      <DlTimePicker :model-value="timeValue" presentation="button" placeholder="选择时间" :minute-step="minuteStep" :size="size" :status="status" :shortcut-value="nowShortcut ? now : undefined" shortcut-label="当前时间" :disabled-time="disabledTime" :disabled="disabled" :readonly="readonly" @update:model-value="updateTime" />
+      <DlDatePicker v-model:open="dateOpen" :model-value="dateValue" presentation="field" placeholder="选择日期" :locale="locale" :disabled="disabled || readonly" @update:model-value="updateDate" />
+      <DlTimePicker :model-value="timeValue" presentation="field" placeholder="选择时间" :minute-step="minuteStep" :size="size" :status="status" :shortcut-value="nowShortcut ? now : undefined" shortcut-label="当前时间" :disabled-time="disabledTime" :disabled="disabled" :readonly="readonly" @update:model-value="updateTime" />
     </div>
     <span class="dl-input-date-control__actions">
       <button v-if="nowShortcut && !readonly" type="button" class="dl-input-field__action" aria-label="选择现在" title="现在" :disabled="disabled" @click="useNow">今</button>

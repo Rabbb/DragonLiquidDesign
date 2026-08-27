@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { PopoverArrow, PopoverClose, PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
+import { PopoverAnchor, PopoverArrow, PopoverClose, PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
 import { useDlPopoverLayer } from '../composables/useDlLayer'
 import { DlOverlaySide, type DlOverlayBaseSide, type DlPopoverTone } from '../types'
 import { popoverStyles, resolveDlOverlayPlacement } from './overlay.styles'
@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<{
   arrow?: boolean
   sideOffset?: number
   contentClass?: string
+  manualTrigger?: boolean
   zIndex?: number
 }>(), {
   open: undefined,
@@ -28,6 +29,7 @@ const props = withDefaults(defineProps<{
   arrow: true,
   sideOffset: undefined,
   contentClass: undefined,
+  manualTrigger: false,
   zIndex: undefined,
 })
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
@@ -38,7 +40,10 @@ const resolvedPlacement = computed(() => resolveDlOverlayPlacement(props.side, p
 
 <template>
   <PopoverRoot :open="open" :modal="modal" @update:open="emit('update:open', $event)">
-    <PopoverTrigger as-child>
+    <PopoverAnchor v-if="manualTrigger" as-child>
+      <slot name="trigger" />
+    </PopoverAnchor>
+    <PopoverTrigger v-else as-child>
       <slot name="trigger">
         <button type="button" class="rounded-xl border border-[var(--dl-border)] bg-[var(--dl-surface)] px-3 py-2 text-sm text-[var(--dl-text)]">打开</button>
       </slot>

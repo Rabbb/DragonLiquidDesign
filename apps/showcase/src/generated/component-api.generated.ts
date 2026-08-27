@@ -621,6 +621,12 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "padding",
         "description": "设置内容区域的内边距尺寸。",
         "type": "'none' | 'sm' | 'md' | 'lg'",
@@ -5652,6 +5658,12 @@ export default {
         "defaultValue": "undefined"
       },
       {
+        "prop": "manualTrigger",
+        "description": "设置 manualTrigger 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "zIndex",
         "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
         "type": "number",
@@ -8267,6 +8279,18 @@ export default {
         "description": "提供给辅助技术读取的控件名称。",
         "type": "string",
         "defaultValue": "'虚拟列表'"
+      },
+      {
+        "prop": "activeIndex",
+        "description": "设置 activeIndex 属性。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "keyboardNavigation",
+        "description": "设置 keyboardNavigation 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
       }
     ],
     "relatedTypes": []

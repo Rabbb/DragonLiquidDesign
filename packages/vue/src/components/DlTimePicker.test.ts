@@ -12,6 +12,11 @@ class ResizeObserverMock {
 globalThis.ResizeObserver = ResizeObserverMock
 
 const wrappers: ReturnType<typeof mount>[] = []
+function paste(element: Element, value: string) {
+  const event = new Event('paste', { bubbles: true, cancelable: true })
+  Object.defineProperty(event, 'clipboardData', { value: { getData: () => value } })
+  element.dispatchEvent(event)
+}
 afterEach(() => {
   wrappers.splice(0).forEach(wrapper => wrapper.unmount())
   document.body.innerHTML = ''
@@ -98,5 +103,13 @@ describe('DlTimePicker', () => {
     await nextTick()
     expect(wrapper.emitted('update:modelValue')).toEqual([[undefined]])
     expect(wrapper.emitted('clear')).toEqual([[]])
+  })
+
+  it('accepts a whole pasted time on the compact trigger', async () => {
+    const wrapper = mount(DlTimePicker, { props: { presentation: 'button', minValue: new Time(9), maxValue: new Time(18) } })
+    wrappers.push(wrapper)
+    paste(wrapper.get('[data-slot="picker-trigger"]').element, '下午 3:25')
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]?.toString()).toBe('15:25:00')
   })
 })

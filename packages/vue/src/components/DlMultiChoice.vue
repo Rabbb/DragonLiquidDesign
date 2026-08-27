@@ -50,6 +50,7 @@ const emit = defineEmits<{
   change: [value: string[]]
   clear: []
   search: [value: string]
+  paste: [source: string, matchedValues: string[]]
 }>()
 
 const internalOpen = ref(false)
@@ -133,6 +134,46 @@ function updateSearch(value: string) {
   emit('search', value)
 }
 
+function handleTriggerKeydown(event: KeyboardEvent) {
+  if (event.key === 'ArrowDown') {
+    event.preventDefault()
+    setOpen(true)
+    return
+  }
+  if (event.key === 'Backspace' && props.modelValue.length) {
+    event.preventDefault()
+    const next = props.modelValue.slice(0, -1)
+    emit('update:modelValue', next)
+    emit('change', next)
+    return
+  }
+  if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey || !resolvedSearchable.value) return
+  event.preventDefault()
+  setOpen(true)
+  nextTick(() => updateSearch(event.key))
+}
+
+function handleTriggerPaste(event: ClipboardEvent) {
+  if (props.disabled) return
+  const source = event.clipboardData?.getData('text/plain').normalize('NFKC').trim() ?? ''
+  if (!source) return
+  event.preventDefault()
+  const candidates = source.split(/[\n,，;；]+/).map(value => value.trim().toLocaleLowerCase()).filter(Boolean)
+  const matched = indexedOptions.value.filter(option => !option.disabled && candidates.some(candidate =>
+    option.value.normalize('NFKC').toLocaleLowerCase() === candidate
+    || option.label.normalize('NFKC').toLocaleLowerCase() === candidate))
+  const values = [...new Set([...props.modelValue, ...matched.map(option => option.value)])]
+  if (matched.length) {
+    emit('update:modelValue', values)
+    emit('change', values)
+  }
+  else {
+    setOpen(true)
+    nextTick(() => updateSearch(source))
+  }
+  emit('paste', source, matched.map(option => option.value))
+}
+
 function scrollHighlightedIntoView() {
   nextTick(() => list.value?.querySelector<HTMLElement>(`[data-choice-value="${safeId(highlightedValue.value ?? '')}"]`)?.scrollIntoView({ block: 'nearest' }))
 }
@@ -153,6 +194,9 @@ function handlePanelKeydown(event: KeyboardEvent) {
     event.preventDefault()
     highlightedValue.value = event.key === 'Home' ? enabledOptions.value[0]?.value ?? null : enabledOptions.value.at(-1)?.value ?? null
     scrollHighlightedIntoView()
+  } else if (event.key === 'PageDown' || event.key === 'PageUp') {
+    event.preventDefault()
+    moveHighlight(event.key === 'PageDown' ? 5 : -5)
   } else if ((event.key === 'Enter' || event.key === ' ') && highlightedValue.value && (event.target === searchInput.value || event.target === panel.value)) {
     event.preventDefault()
     toggleValue(highlightedValue.value)
@@ -187,7 +231,7 @@ watch(filteredOptions, options => {
 <template>
   <div data-dl data-slot="multi-choice" class="dl-multi-choice" :data-size="size" :data-status="status" :data-disabled="disabled || undefined">
     <span v-if="$slots.prefix" class="dl-multi-choice__prefix"><slot name="prefix" /></span>
-    <button type="button" class="dl-multi-choice__trigger" :class="{ 'is-placeholder': !selectedOptions.length }" :disabled="disabled" aria-haspopup="dialog" :aria-expanded="resolvedOpen" @click="setOpen(true)">
+    <button type="button" class="dl-multi-choice__trigger" :class="{ 'is-placeholder': !selectedOptions.length }" :disabled="disabled" aria-haspopup="dialog" :aria-expanded="resolvedOpen" @click="setOpen(true)" @keydown="handleTriggerKeydown" @paste="handleTriggerPaste">
       <span v-if="selectedOptions.length" class="dl-multi-choice__tags">
         <span v-for="option in visibleTags" :key="option.value">{{ option.label }}</span><em v-if="hiddenTagCount">+{{ hiddenTagCount }}</em>
       </span>

@@ -135,6 +135,7 @@ createApp(App).use(mdxSecurity).mount('#app')
 
 - 69 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.22` 将键盘提升为全库一等交互：日期时间支持整段粘贴与格式归一化，选择器支持键盘打开，日历、滚轮、虚拟列表和分段控件补齐网格/列表导航，并为拖拽和右键菜单提供键盘替代路径。
 - `0.6.0-alpha.21` 修复 TimePicker 抢占字段焦点、滚轮忽略时间范围和精确分钟被取整的问题，并让小时粒度使用对应的单列滚轮。
 - `0.6.0-alpha.20` 保留 Field 与 Picker 两个清晰入口，让 Picker 复用 Field 的值、范围、状态和清除能力；TimeWheel 收进 TimePicker 作为内部选择面板，删除重复的 InputDate / InputTime / InputMonth 入口，并新增支持事项滚动、创建和拖动的业务月历。
 - `0.6.0-alpha.19` 将 22 个 `DlInputXxx` 从原生外观薄封装升级为 DL 交互控件：文本规范化、搜索提交、密码反馈、数值步进、日期时间面板、拖放文件和自绘选择等逻辑由组件负责，原生字段退回表单兼容层。

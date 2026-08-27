@@ -11,6 +11,11 @@ class ResizeObserverMock {
 globalThis.ResizeObserver = ResizeObserverMock
 
 const wrappers: ReturnType<typeof mount>[] = []
+function paste(element: Element, value: string) {
+  const event = new Event('paste', { bubbles: true, cancelable: true })
+  Object.defineProperty(event, 'clipboardData', { value: { getData: () => value } })
+  element.dispatchEvent(event)
+}
 afterEach(() => {
   wrappers.splice(0).forEach(wrapper => wrapper.unmount())
   document.body.innerHTML = ''
@@ -50,5 +55,11 @@ describe('DlMultiChoice', () => {
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[]])
     expect(wrapper.emitted('clear')).toHaveLength(1)
   })
-})
 
+  it('adds multiple exact labels from one clipboard operation', async () => {
+    const wrapper = mount(DlMultiChoice, { props: { modelValue: ['vue'], options } })
+    paste(wrapper.get('.dl-multi-choice__trigger').element, 'Solid, .NET')
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([['vue', 'solid', 'dotnet']])
+  })
+})

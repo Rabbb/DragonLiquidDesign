@@ -3,9 +3,10 @@ import { DateRangeFieldInput, DateRangeFieldRoot, type DateRange } from 'reka-ui
 import type { DateValue } from 'reka-ui'
 import type { DlSize } from '../types'
 import { dlDateFieldClass, dlDateSegmentClass } from './date.styles'
+import { dlClipboardText, parseDlPastedDateRange } from './date-time-paste'
 import './date-time-field.css'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   modelValue?: DateRange | null
   locale?: string
   granularity?: 'day' | 'hour' | 'minute' | 'second'
@@ -34,7 +35,12 @@ withDefaults(defineProps<{
   readonly: false,
   name: undefined,
 })
-const emit = defineEmits<{ 'update:modelValue': [value: DateRange | undefined]; clear: [] }>()
+const emit = defineEmits<{
+  'update:modelValue': [value: DateRange | undefined]
+  clear: []
+  paste: [value: DateRange, source: string]
+  'paste-error': [source: string]
+}>()
 
 function clearValue(event: MouseEvent) {
   event.preventDefault()
@@ -42,10 +48,28 @@ function clearValue(event: MouseEvent) {
   emit('update:modelValue', undefined)
   emit('clear')
 }
+
+function handlePaste(event: ClipboardEvent) {
+  if (props.disabled || props.readonly) return
+  const source = dlClipboardText(event)
+  const value = parseDlPastedDateRange(source, props.granularity)
+  const unavailable = value && [value.start, value.end].some(date =>
+    (props.minValue && date.compare(props.minValue) < 0)
+    || (props.maxValue && date.compare(props.maxValue) > 0)
+    || props.isDateUnavailable?.(date),
+  )
+  if (!value || unavailable) {
+    emit('paste-error', source)
+    return
+  }
+  event.preventDefault()
+  emit('update:modelValue', value)
+  emit('paste', value, source)
+}
 </script>
 
 <template>
-  <DateRangeFieldRoot v-slot="{ segments }" data-dl data-slot="date-range-field" :data-size="size" :data-status="status" :model-value="modelValue" :locale="locale" :granularity="granularity" :hour-cycle="hourCycle" :min-value="minValue" :max-value="maxValue" :is-date-unavailable="isDateUnavailable" :disabled="disabled" :readonly="readonly" :name="name" :class="[dlDateFieldClass, 'dl-structured-field']" @update:model-value="emit('update:modelValue', $event)">
+  <DateRangeFieldRoot v-slot="{ segments }" data-dl data-slot="date-range-field" :data-size="size" :data-status="status" :model-value="modelValue" :locale="locale" :granularity="granularity" :hour-cycle="hourCycle" :min-value="minValue" :max-value="maxValue" :is-date-unavailable="isDateUnavailable" :disabled="disabled" :readonly="readonly" :name="name" :class="[dlDateFieldClass, 'dl-structured-field']" @paste="handlePaste" @update:model-value="emit('update:modelValue', $event)">
     <slot name="leading" />
     <DateRangeFieldInput v-for="segment in segments.start" :key="`start-${segment.part}`" type="start" :part="segment.part" :class="dlDateSegmentClass">{{ segment.value }}</DateRangeFieldInput>
     <span class="px-1 text-[var(--dl-text-faint)]" aria-hidden="true">—</span>

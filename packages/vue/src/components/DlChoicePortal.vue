@@ -72,6 +72,7 @@ const emit = defineEmits<{
   change: [value: string]
   clear: []
   search: [value: string]
+  paste: [source: string, matchedValue?: string]
 }>()
 
 const internalOpen = ref(false)
@@ -260,6 +261,36 @@ function openPortal() {
   if (!props.disabled) setOpen(true)
 }
 
+function handleTriggerKeydown(event: KeyboardEvent) {
+  if (event.key === 'ArrowDown') {
+    event.preventDefault()
+    openPortal()
+    return
+  }
+  if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey || !resolvedSearchable.value) return
+  event.preventDefault()
+  openPortal()
+  nextTick(() => updateSearch(event.key))
+}
+
+function handleTriggerPaste(event: ClipboardEvent) {
+  if (props.disabled) return
+  const source = event.clipboardData?.getData('text/plain').normalize('NFKC').trim() ?? ''
+  if (!source) return
+  event.preventDefault()
+  const normalized = normalizeSearch(source)
+  const exact = indexedOptions.value.find(option => !option.disabled
+    && [option.value, option.label].some(value => normalizeSearch(value) === normalized))
+  if (exact) {
+    choose(exact.value)
+    emit('paste', source, exact.value)
+    return
+  }
+  openPortal()
+  nextTick(() => updateSearch(source))
+  emit('paste', source)
+}
+
 function closePortal() {
   setOpen(false)
 }
@@ -316,6 +347,9 @@ function handlePanelKeydown(event: KeyboardEvent) {
     event.preventDefault()
     highlightedValue.value = enabledOptions.value.at(-1)?.value ?? null
     scrollHighlightedIntoView()
+  } else if (event.key === 'PageDown' || event.key === 'PageUp') {
+    event.preventDefault()
+    moveHighlight(event.key === 'PageDown' ? 5 : -5)
   } else if (event.key === 'Enter' && (event.target === searchInput.value || event.target === panel.value)) {
     event.preventDefault()
     if (highlightedValue.value) choose(highlightedValue.value)
@@ -359,6 +393,8 @@ watch(filteredOptions, options => {
       aria-haspopup="dialog"
       :aria-expanded="resolvedOpen"
       @click="openPortal"
+      @keydown="handleTriggerKeydown"
+      @paste="handleTriggerPaste"
     >{{ displayLabel }}</button>
     <span class="dl-choice-portal__actions">
       <button v-if="clearable && modelValue && !disabled" type="button" class="dl-choice-portal__clear" aria-label="清除当前选择" @click="clearValue">×</button>

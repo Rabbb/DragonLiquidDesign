@@ -99,4 +99,22 @@ describe('TimeWheelPanel', () => {
       .find(button => button.textContent === '应用')
     expect(apply?.disabled).toBe(true)
   })
+
+  it('supports complete listbox navigation from the keyboard', async () => {
+    const wrapper = mount(TimeWheelPanel, {
+      attachTo: document.body,
+      props: { open: true, modelValue: '09:30', minuteStep: 5 },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    const hour = document.body.querySelector<HTMLElement>('[aria-label="小时"]')!
+    hour.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+    await nextTick()
+    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('10:30')
+
+    hour.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }))
+    await nextTick()
+    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('23:30')
+  })
 })

@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent, ref, watch, type Component } from 'vue'
 import { DlBadge, DlButton, DlSegmented } from '@dragon-liquid/vue'
 import { componentsMissingApi } from '../api/componentApi'
 import { componentGuidanceFor, componentsMissingGuidance } from '../componentGuidance'
+import { componentKeyboardGuidanceFor, componentsMissingKeyboardGuidance } from '../componentKeyboard'
 import CustomControlMark from '../components/CustomControlMark.vue'
 import {
   componentGroupingModes,
@@ -35,6 +36,7 @@ const resolved = computed(() => resolveComponent(props.componentId, props.scenar
 const selectedComponent = computed(() => resolved.value.component)
 const selectedScenario = computed(() => resolved.value.scenario)
 const selectedGuidance = computed(() => componentGuidanceFor(selectedComponent.value.id))
+const selectedKeyboardGuidance = computed(() => componentKeyboardGuidanceFor(selectedComponent.value.id))
 const selectedChoiceProfile = computed(() => componentChoiceProfileFor(selectedComponent.value.id))
 const selectedChoiceFamily = computed(() => componentChoiceFamilyFor(selectedComponent.value.id))
 const groupingMode = ref<ComponentGroupingMode>(readComponentGroupingMode())
@@ -163,6 +165,10 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   drawer: () => import('../docs/AlphaGeneralDocs.vue'),
   tree: () => import('../docs/AlphaGeneralDocs.vue'),
   'virtual-list': () => import('../docs/RecommendedControlDocs.vue'),
+}
+const missingKeyboardComponents = componentsMissingKeyboardGuidance(componentCatalog.map(component => component.id))
+if (missingKeyboardComponents.length) {
+  throw new Error(`以下组件缺少键盘场景说明：${missingKeyboardComponents.join(', ')}`)
 }
 
 const sharedDocIds = new Set([
@@ -363,6 +369,13 @@ function toggleGroup(group: ResolvedComponentGroup) {
         <span>ACCESSIBILITY</span>
         <h2>无障碍要求</h2>
         <p>{{ selectedGuidance.accessibility }}</p>
+      </article>
+      <article class="component-guidance__keyboard">
+        <span>KEYBOARD</span>
+        <h2>键盘操作</h2>
+        <p>{{ selectedKeyboardGuidance.summary }}</p>
+        <div><kbd v-for="key in selectedKeyboardGuidance.keys" :key="key">{{ key }}</kbd></div>
+        <small v-if="selectedKeyboardGuidance.paste">{{ selectedKeyboardGuidance.paste }}</small>
       </article>
     </section>
 

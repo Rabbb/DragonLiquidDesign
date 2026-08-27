@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import type { DlCalendarDay, DlCalendarItem } from './calendar.types'
 
 const props = withDefaults(defineProps<{
@@ -47,12 +47,15 @@ const emit = defineEmits<{
   'item-drop': [item: DlCalendarItem, day: DlCalendarDay, event: DragEvent]
   'item-drag-start': [item: DlCalendarItem, event: DragEvent]
   'item-drag-end': [item: DlCalendarItem, event: DragEvent]
+  'item-move': [item: DlCalendarItem, from: DlCalendarDay, to: DlCalendarDay, event: KeyboardEvent]
 }>()
 
 const currentMonth = monthKey(new Date())
 const internalView = ref(normalizeMonth(props.viewValue) ?? currentMonth)
 const draggingId = ref('')
 const dropTarget = ref('')
+const calendarRoot = ref<HTMLElement | null>(null)
+const focusedDayKey = ref('')
 
 watch(() => props.viewValue, (value) => {
   const normalized = normalizeMonth(value)
@@ -112,6 +115,15 @@ const calendarStyle = computed(() => ({
   height: typeof props.height === 'number' ? `${props.height}px` : props.height,
 }))
 
+watch([days, () => props.modelValue], ([visibleDays, selected]) => {
+  if (visibleDays.some(day => day.key === focusedDayKey.value)) return
+  focusedDayKey.value = visibleDays.find(day => day.key === selected)?.key
+    ?? visibleDays.find(day => day.isToday)?.key
+    ?? visibleDays.find(day => day.inCurrentMonth)?.key
+    ?? visibleDays[0]?.key
+    ?? ''
+}, { immediate: true })
+
 function normalizeMonth(value?: string) {
   const match = value?.match(/^(\d{4})-(0[1-9]|1[0-2])$/)
   return match ? value : undefined
@@ -146,14 +158,59 @@ function goToday() {
 function selectDay(day: DlCalendarDay, event: MouseEvent | KeyboardEvent) {
   if (props.disabled || (!props.showOutsideDays && !day.inCurrentMonth)) return
   emit('update:modelValue', day.key)
+  focusedDayKey.value = day.key
   emit('day-click', day, event)
   if (!day.inCurrentMonth) setView(day.date.getFullYear(), day.date.getMonth() + 1)
 }
 
 function handleDayKeydown(day: DlCalendarDay, event: KeyboardEvent) {
-  if (event.key !== 'Enter' && event.key !== ' ') return
-  event.preventDefault()
-  selectDay(day, event)
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    selectDay(day, event)
+    return
+  }
+  const movement = event.key === 'ArrowLeft' ? -1
+    : event.key === 'ArrowRight' ? 1
+      : event.key === 'ArrowUp' ? -7
+        : event.key === 'ArrowDown' ? 7
+          : 0
+  if (movement) {
+    event.preventDefault()
+    moveDayFocus(day.date, movement)
+    return
+  }
+  if (event.key === 'Home' || event.key === 'End') {
+    event.preventDefault()
+    const index = days.value.findIndex(candidate => candidate.key === day.key)
+    const offset = index % 7
+    moveDayFocus(day.date, event.key === 'Home' ? -offset : 6 - offset)
+    return
+  }
+  if (event.key === 'PageUp' || event.key === 'PageDown') {
+    event.preventDefault()
+    moveDayFocusByMonth(day.date, (event.key === 'PageUp' ? -1 : 1) * (event.shiftKey ? 12 : 1))
+  }
+}
+
+function focusDay(value: Date) {
+  const key = dateKey(value)
+  focusedDayKey.value = key
+  if (monthKey(value) !== resolvedView.value)
+    setView(value.getFullYear(), value.getMonth() + 1)
+  nextTick(() => calendarRoot.value?.querySelector<HTMLElement>(`[data-day-key="${key}"]`)?.focus())
+}
+
+function moveDayFocus(value: Date, amount: number) {
+  const next = new Date(value)
+  next.setDate(next.getDate() + amount)
+  focusDay(next)
+}
+
+function moveDayFocusByMonth(value: Date, amount: number) {
+  const targetMonth = new Date(value.getFullYear(), value.getMonth() + amount, 1)
+  const lastDay = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate()
+  targetMonth.setDate(Math.min(value.getDate(), lastDay))
+  focusDay(targetMonth)
 }
 
 function createForDay(day: DlCalendarDay, event: MouseEvent) {
@@ -164,6 +221,35 @@ function createForDay(day: DlCalendarDay, event: MouseEvent) {
 function clickItem(item: DlCalendarItem, day: DlCalendarDay, event: MouseEvent) {
   event.stopPropagation()
   if (!props.disabled && !item.disabled) emit('item-click', item, day, event)
+}
+
+function dayForDate(value: Date): DlCalendarDay {
+  const key = dateKey(value)
+  const [year, month] = viewParts.value
+  return {
+    key,
+    date: value,
+    day: value.getDate(),
+    inCurrentMonth: value.getFullYear() === year && value.getMonth() === month - 1,
+    isToday: key === todayKey.value,
+    isSelected: key === props.modelValue,
+    items: itemsByDate.value.get(key) ?? [],
+  }
+}
+
+function moveItemByKeyboard(item: DlCalendarItem, day: DlCalendarDay, event: KeyboardEvent) {
+  if (!event.altKey || !itemDraggable(item)) return
+  const amount = event.key === 'ArrowLeft' ? -1
+    : event.key === 'ArrowRight' ? 1
+      : event.key === 'ArrowUp' ? -7
+        : event.key === 'ArrowDown' ? 7
+          : 0
+  if (!amount) return
+  event.preventDefault()
+  event.stopPropagation()
+  const targetDate = new Date(day.date)
+  targetDate.setDate(targetDate.getDate() + amount)
+  emit('item-move', item, day, dayForDate(targetDate), event)
 }
 
 function itemDraggable(item: DlCalendarItem) {
@@ -205,7 +291,7 @@ function dropItem(day: DlCalendarDay, event: DragEvent) {
 </script>
 
 <template>
-  <section data-dl data-slot="calendar" class="dl-calendar" :data-disabled="disabled || undefined" :style="calendarStyle">
+  <section ref="calendarRoot" data-dl data-slot="calendar" class="dl-calendar" :data-disabled="disabled || undefined" :style="calendarStyle">
     <header v-if="showToolbar" class="dl-calendar__toolbar">
       <slot name="toolbar" :view-value="resolvedView" :heading="heading" :previous="() => changeMonth(-1)" :next="() => changeMonth(1)" :today="goToday">
         <button type="button" class="dl-calendar__nav" aria-label="上个月" :disabled="disabled" @click="changeMonth(-1)">‹</button>
@@ -231,11 +317,14 @@ function dropItem(day: DlCalendarDay, event: DragEvent) {
             'is-blank': !showOutsideDays && !day.inCurrentMonth,
           }"
           :data-drop-target="dropTarget === day.key || undefined"
+          :data-day-key="day.key"
           role="gridcell"
           :aria-label="day.key"
           :aria-selected="day.isSelected"
-          :tabindex="disabled || (!showOutsideDays && !day.inCurrentMonth) ? -1 : 0"
+          :aria-current="day.isToday ? 'date' : undefined"
+          :tabindex="disabled || (!showOutsideDays && !day.inCurrentMonth) || day.key !== focusedDayKey ? -1 : 0"
           @click="selectDay(day, $event)"
+          @focus="focusedDayKey = day.key"
           @keydown="handleDayKeydown(day, $event)"
           @dragenter="markDropTarget(day, $event)"
           @dragover="markDropTarget(day, $event)"
@@ -258,8 +347,10 @@ function dropItem(day: DlCalendarDay, event: DragEvent) {
                 :data-dragging="draggingId === String(item.id) || undefined"
                 :disabled="disabled || item.disabled"
                 :draggable="itemDraggable(item)"
+                :aria-keyshortcuts="itemDraggable(item) ? 'Alt+ArrowLeft Alt+ArrowRight Alt+ArrowUp Alt+ArrowDown' : undefined"
                 :style="{ '--dl-calendar-item-color': item.color || 'var(--dl-accent)' }"
                 @click="clickItem(item, day, $event)"
+                @keydown="moveItemByKeyboard(item, day, $event)"
                 @dragstart="startDrag(item, $event)"
                 @dragend="endDrag(item, $event)"
               >

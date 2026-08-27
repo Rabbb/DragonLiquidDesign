@@ -54,7 +54,7 @@ function createCalendarItem(day: DlCalendarDay) {
 <template>
   <DocExampleShell v-bind="content">
     <div class="alpha-date-demo">
-      <DlCalendar v-if="componentDefinition.id === 'calendar'" v-model="calendarDate" v-model:view-value="calendarView" :items="calendarItems" :height="scenario === 'adaptive' ? 420 : 520" :show-create="scenario !== 'basic'" locale="zh-CN" @item-drop="moveCalendarItem" @create="createCalendarItem" />
+      <DlCalendar v-if="componentDefinition.id === 'calendar'" v-model="calendarDate" v-model:view-value="calendarView" :items="calendarItems" :height="scenario === 'adaptive' ? 420 : 520" :show-create="scenario !== 'basic'" locale="zh-CN" @item-drop="moveCalendarItem" @item-move="moveCalendarItem" @create="createCalendarItem" />
       <DlDateField v-else-if="componentDefinition.id === 'date-field'" v-model="date" locale="zh-CN" aria-label="日期" />
       <DlDatePicker v-else-if="componentDefinition.id === 'date-picker'" v-model="date" locale="zh-CN" aria-label="日期" />
       <DlDateRangeField v-else-if="componentDefinition.id === 'date-range-field'" v-model="dateRange" locale="zh-CN" aria-label="日期范围" />

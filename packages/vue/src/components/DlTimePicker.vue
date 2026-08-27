@@ -6,6 +6,7 @@ import type { DlSize } from '../types'
 import DlTimeField from './DlTimeField.vue'
 import TimeWheelPanel from './TimeWheelPanel.vue'
 import PickerTriggerButton from './PickerTriggerButton.vue'
+import { dlClipboardText, parseDlPastedTime } from './date-time-paste'
 import { parseDlTimeWheelValue } from './time-wheel.utils'
 
 export type DlTimePickerPresentation = 'field' | 'button'
@@ -65,6 +66,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: TimeValue | undefined]
   change: [value: TimeValue | undefined]
   clear: []
+  paste: [value: TimeValue, source: string]
+  'paste-error': [source: string]
 }>()
 
 const localOpen = ref(props.open ?? false)
@@ -118,6 +121,22 @@ function clearValue() {
   emit('change', undefined)
   emit('clear')
 }
+
+function handleTriggerPaste(event: ClipboardEvent) {
+  if (props.disabled || props.readonly) return
+  const source = dlClipboardText(event)
+  const value = parseDlPastedTime(source, props.granularity)
+  const normalized = value ? `${String(value.hour).padStart(2, '0')}:${String(value.minute).padStart(2, '0')}` : ''
+  if (!value || isTimeDisabled(normalized)) {
+    emit('paste-error', source)
+    return
+  }
+  event.preventDefault()
+  emit('update:modelValue', value)
+  emit('change', value)
+  emit('paste', value, source)
+  resolvedOpen.value = false
+}
 </script>
 
 <template>
@@ -140,6 +159,8 @@ function clearValue() {
       class="w-full"
       @update:model-value="updateField"
       @clear="emit('clear')"
+      @paste="(value, source) => emit('paste', value, source)"
+      @paste-error="emit('paste-error', $event)"
     >
       <template #trailing>
         <button
@@ -150,10 +171,11 @@ function clearValue() {
           :aria-expanded="resolvedOpen"
           :disabled="disabled || readonly"
           @click="openWheel"
+          @keydown.alt.down.prevent="openWheel"
         >◷</button>
       </template>
     </DlTimeField>
-    <PickerTriggerButton v-else :value="modelValue ? displayValue : ''" :placeholder="placeholder" icon="◷" :size="size" :status="status" :disabled="disabled || readonly" @click="openWheel" />
+    <PickerTriggerButton v-else :value="modelValue ? displayValue : ''" :placeholder="placeholder" icon="◷" :size="size" :status="status" :disabled="disabled || readonly" @click="openWheel" @keydown.alt.down.prevent="openWheel" @paste="handleTriggerPaste" />
   </div>
 
   <TimeWheelPanel

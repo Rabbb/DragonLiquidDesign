@@ -95,7 +95,7 @@ export const componentGuidance: Record<string, ComponentGuidance> = {
   ),
   'time-picker': guide(
     ['同一个时间字段既要支持键盘精确输入，也要支持触控滚轮选择时。', '分钟步长、常用时间和不可用时段需要在同一浮层表达时。'],
-    '高密度后台只需直接键入精确时间时应使用 TimeField；旧字符串表单才使用 InputTime。',
+    '高密度后台只需直接键入精确时间时应使用 TimeField；字符串存储应在业务边界显式转换 TimeValue。',
     '字段和滚轮必须共享同一值与约束，滚轮需要列表语义、清晰选中态和确认操作。',
     '示例展示字段与滚轮复用同一时间值，并切换为按钮触发形式而不改变选择逻辑。',
   ),

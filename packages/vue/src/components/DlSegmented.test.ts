@@ -25,5 +25,12 @@ describe('DlSegmented', () => {
     expect(document.activeElement?.getAttribute('data-segment-value')).toBe('list')
     wrapper.unmount()
   })
-})
 
+  it('supports Home and End for direct keyboard jumps', async () => {
+    const wrapper = mount(DlSegmented, { props: { modelValue: 'board', items } })
+    await wrapper.get('[data-segment-value="board"]').trigger('keydown', { key: 'Home' })
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['list'])
+    await wrapper.get('[data-segment-value="list"]').trigger('keydown', { key: 'End' })
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['board'])
+  })
+})

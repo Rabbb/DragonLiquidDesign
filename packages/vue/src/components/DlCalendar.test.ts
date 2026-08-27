@@ -47,4 +47,28 @@ describe('DlCalendar', () => {
     expect(dropped?.[0]).toMatchObject({ id: 'move-me' })
     expect(dropped?.[1]).toMatchObject({ key: '2026-08-04' })
   })
+
+  it('uses a roving day focus and provides a keyboard alternative to dragging', async () => {
+    const wrapper = mount(DlCalendar, {
+      attachTo: document.body,
+      props: {
+        modelValue: '2026-08-28',
+        viewValue: '2026-08',
+        items: [{ id: 'move-me', date: '2026-08-28', title: '移动事项' }],
+      },
+    })
+    const selected = wrapper.get('[data-day-key="2026-08-28"]')
+    expect(selected.attributes('tabindex')).toBe('0')
+    expect(wrapper.findAll('.dl-calendar__day[tabindex="0"]')).toHaveLength(1)
+
+    await selected.trigger('keydown', { key: 'ArrowRight' })
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(document.activeElement?.getAttribute('data-day-key')).toBe('2026-08-29')
+
+    await wrapper.get('.dl-calendar__item').trigger('keydown', { key: 'ArrowDown', altKey: true })
+    const moved = wrapper.emitted('item-move')?.at(-1)
+    expect(moved?.[1]).toMatchObject({ key: '2026-08-28' })
+    expect(moved?.[2]).toMatchObject({ key: '2026-09-04' })
+    wrapper.unmount()
+  })
 })

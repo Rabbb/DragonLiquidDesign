@@ -38,10 +38,11 @@ function handleKeydown(event: KeyboardEvent, value: string) {
   const previousKeys = props.orientation === 'horizontal' ? ['ArrowLeft'] : ['ArrowUp']
   const nextKeys = props.orientation === 'horizontal' ? ['ArrowRight'] : ['ArrowDown']
   const direction = previousKeys.includes(event.key) ? -1 : nextKeys.includes(event.key) ? 1 : 0
-  if (!direction || !enabledItems.value.length) return
+  const edge = event.key === 'Home' ? 0 : event.key === 'End' ? enabledItems.value.length - 1 : -1
+  if ((!direction && edge < 0) || !enabledItems.value.length) return
   event.preventDefault()
   const current = enabledItems.value.findIndex(item => item.value === value)
-  const next = (Math.max(0, current) + direction + enabledItems.value.length) % enabledItems.value.length
+  const next = edge >= 0 ? edge : (Math.max(0, current) + direction + enabledItems.value.length) % enabledItems.value.length
   const target = enabledItems.value[next]
   if (!target) return
   select(target.value)

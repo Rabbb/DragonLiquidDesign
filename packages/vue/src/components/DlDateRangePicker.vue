@@ -3,6 +3,7 @@ import { endOfMonth, getLocalTimeZone, isSameMonth, startOfMonth, today } from '
 import { computed, ref, shallowRef, watch } from 'vue'
 import type { DateRange, DateValue } from 'reka-ui'
 import type { DlSize } from '../types'
+import { dlClipboardText, parseDlPastedDateRange } from './date-time-paste'
 import DlDateRangeField from './DlDateRangeField.vue'
 import DlPopover from './DlPopover.vue'
 import PickerTriggerButton from './PickerTriggerButton.vue'
@@ -50,7 +51,13 @@ const props = withDefaults(defineProps<{
   numberOfMonths: 2,
   zIndex: undefined,
 })
-const emit = defineEmits<{ 'update:open': [value: boolean]; 'update:modelValue': [value: DateRange | undefined]; clear: [] }>()
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+  'update:modelValue': [value: DateRange | undefined]
+  clear: []
+  paste: [value: DateRange, source: string]
+  'paste-error': [source: string]
+}>()
 const localOpen = ref(props.open ?? false)
 const draftStart = shallowRef<DateValue | undefined>(props.modelValue?.start)
 const draftEnd = shallowRef<DateValue | undefined>(props.modelValue?.end)
@@ -206,10 +213,34 @@ function clearValue() {
   emit('clear')
   resolvedOpen.value = false
 }
+
+function openPicker() {
+  if (!props.disabled && !props.readonly)
+    resolvedOpen.value = true
+}
+
+function handleTriggerPaste(event: ClipboardEvent) {
+  if (props.disabled || props.readonly) return
+  const source = dlClipboardText(event)
+  const value = parseDlPastedDateRange(source, props.granularity)
+  const unavailable = value && [value.start, value.end].some(date =>
+    (props.minValue && date.compare(props.minValue) < 0)
+    || (props.maxValue && date.compare(props.maxValue) > 0)
+    || props.isDateUnavailable?.(date),
+  )
+  if (!value || unavailable) {
+    emit('paste-error', source)
+    return
+  }
+  event.preventDefault()
+  emit('update:modelValue', value)
+  emit('paste', value, source)
+  resolvedOpen.value = false
+}
 </script>
 
 <template>
-  <DlPopover v-model:open="resolvedOpen" tone="subtle" align="start" :arrow="false" :side-offset="0" content-class="dl-date-picker-panel" :z-index="zIndex">
+  <DlPopover v-model:open="resolvedOpen" tone="subtle" align="start" :arrow="false" :side-offset="0" content-class="dl-date-picker-panel" :manual-trigger="presentation === 'field'" :z-index="zIndex">
     <template #trigger>
       <DlDateRangeField
         v-if="presentation === 'field'"
@@ -227,13 +258,15 @@ function clearValue() {
         :readonly="readonly"
         :name="name"
         class="w-full"
-        @focusin="resolvedOpen = true"
+        @keydown.alt.down.prevent="openPicker"
         @update:model-value="updateField"
         @clear="emit('clear')"
+        @paste="(value, source) => emit('paste', value, source)"
+        @paste-error="emit('paste-error', $event)"
       >
-        <template #trailing><span class="ml-auto pl-2 text-[var(--dl-accent)]" aria-hidden="true">▦</span></template>
+        <template #trailing><button type="button" data-slot="date-range-picker-trigger" class="dl-structured-field__action text-[var(--dl-accent)]" aria-label="打开日期范围选择器" :aria-expanded="resolvedOpen" :disabled="disabled || readonly" @click="openPicker">▦</button></template>
       </DlDateRangeField>
-      <PickerTriggerButton v-else data-slot="date-range-picker" data-presentation="button" :value="modelValue?.start ? valueText : ''" :placeholder="placeholder" :size="size" :status="status" :disabled="disabled" />
+      <PickerTriggerButton v-else data-slot="date-range-picker" data-presentation="button" :value="modelValue?.start ? valueText : ''" :placeholder="placeholder" :size="size" :status="status" :disabled="disabled || readonly" @keydown.alt.down.prevent="openPicker" @paste="handleTriggerPaste" />
     </template>
     <div class="dl-independent-range-panels flex flex-wrap gap-4">
       <section v-for="(viewDate, index) in viewDates" :key="index" data-slot="range-picker-panel" :data-panel-index="index" :class="index > 0 && 'dl-range-picker-panel--divided'">

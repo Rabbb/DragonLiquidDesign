@@ -3,6 +3,7 @@ import { getLocalTimeZone, today } from '@internationalized/date'
 import { computed, ref, shallowRef, watch } from 'vue'
 import type { DateValue } from 'reka-ui'
 import type { DlSize } from '../types'
+import { dlClipboardText, parseDlPastedDate } from './date-time-paste'
 import DatePickerCalendarPanel from './DatePickerCalendarPanel.vue'
 import DlDateField from './DlDateField.vue'
 import MonthPickerPanel from './MonthPickerPanel.vue'
@@ -56,7 +57,13 @@ const props = withDefaults(defineProps<{
   id: undefined,
   zIndex: undefined,
 })
-const emit = defineEmits<{ 'update:open': [value: boolean]; 'update:modelValue': [value: DateValue | undefined]; clear: [] }>()
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+  'update:modelValue': [value: DateValue | undefined]
+  clear: []
+  paste: [value: DateValue, source: string]
+  'paste-error': [source: string]
+}>()
 type Panel = 'day' | 'month' | 'year'
 
 const localOpen = ref(props.open ?? false)
@@ -124,10 +131,35 @@ function clearValue() {
   emit('clear')
   resolvedOpen.value = false
 }
+
+function openPicker() {
+  if (!props.disabled && !props.readonly)
+    resolvedOpen.value = true
+}
+
+function handleTriggerPaste(event: ClipboardEvent) {
+  if (props.disabled || props.readonly) return
+  const source = dlClipboardText(event)
+  const value = parseDlPastedDate(source, props.granularity)
+  const unavailable = value && (
+    (props.minValue && value.compare(props.minValue) < 0)
+    || (props.maxValue && value.compare(props.maxValue) > 0)
+    || props.isDateDisabled?.(value)
+    || props.isDateUnavailable?.(value)
+  )
+  if (!value || unavailable) {
+    emit('paste-error', source)
+    return
+  }
+  event.preventDefault()
+  emit('update:modelValue', value)
+  emit('paste', value, source)
+  resolvedOpen.value = false
+}
 </script>
 
 <template>
-  <DlPopover v-model:open="resolvedOpen" tone="subtle" align="start" :arrow="false" :side-offset="0" content-class="dl-date-picker-panel" :z-index="zIndex">
+  <DlPopover v-model:open="resolvedOpen" tone="subtle" align="start" :arrow="false" :side-offset="0" content-class="dl-date-picker-panel" :manual-trigger="presentation === 'field'" :z-index="zIndex">
     <template #trigger>
       <DlDateField
         v-if="presentation === 'field'"
@@ -146,13 +178,15 @@ function clearValue() {
         :name="name"
         :id="id"
         class="w-full"
-        @focusin="resolvedOpen = true"
+        @keydown.alt.down.prevent="openPicker"
         @update:model-value="updateField"
         @clear="emit('clear')"
+        @paste="(value, source) => emit('paste', value, source)"
+        @paste-error="emit('paste-error', $event)"
       >
-        <template #trailing><span class="ml-auto pl-2 text-[var(--dl-accent)]" aria-hidden="true">▦</span></template>
+        <template #trailing><button type="button" data-slot="date-picker-trigger" class="dl-structured-field__action text-[var(--dl-accent)]" aria-label="打开日期选择器" :aria-expanded="resolvedOpen" :disabled="disabled || readonly" @click="openPicker">▦</button></template>
       </DlDateField>
-      <PickerTriggerButton v-else data-slot="date-picker" data-presentation="button" :value="modelValue ? valueText : ''" :placeholder="placeholder" :size="size" :status="status" :disabled="disabled" />
+      <PickerTriggerButton v-else data-slot="date-picker" data-presentation="button" :value="modelValue ? valueText : ''" :placeholder="placeholder" :size="size" :status="status" :disabled="disabled || readonly" @keydown.alt.down.prevent="openPicker" @paste="handleTriggerPaste" />
     </template>
     <DatePickerCalendarPanel v-if="panel === 'day'" :model-value="modelValue" :placeholder="viewDate" :locale="locale" :week-starts-on="weekStartsOn" :min-value="minValue" :max-value="maxValue" :is-date-disabled="isDateDisabled" :is-date-unavailable="isDateUnavailable" :disabled="disabled" :readonly="readonly" class="border-0 bg-transparent p-0 shadow-none" @update:model-value="update" @update:placeholder="viewDate = $event">
       <template #heading="{ date }">

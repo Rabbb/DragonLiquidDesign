@@ -9,6 +9,7 @@ import {
   recommendedComponentCount,
 } from '../src/componentChoices.ts'
 import { componentGuidance, componentsMissingGuidance } from '../src/componentGuidance.ts'
+import { componentKeyboardGuidance, componentsMissingKeyboardGuidance } from '../src/componentKeyboard.ts'
 import componentApi from '../src/generated/component-api.generated.ts'
 import inputControls from '../src/input-controls.json' with { type: 'json' }
 
@@ -90,6 +91,13 @@ for (const component of componentCatalog) {
 }
 
 for (const id of componentsMissingGuidance(ids)) errors.push(`${id} 缺少使用决策说明。`)
+for (const id of componentsMissingKeyboardGuidance(ids)) errors.push(`${id} 缺少键盘场景说明。`)
+for (const id of ids) {
+  const keyboard = componentKeyboardGuidance[id]
+  if (!keyboard) continue
+  report(keyboard.summary.trim().length >= 8, `${id} 缺少键盘行为摘要。`)
+  report(keyboard.keys.length > 0, `${id} 缺少键盘按键说明。`)
+}
 for (const id of ids) {
   const guidance = componentGuidance[id]
   if (!guidance) continue
@@ -167,4 +175,4 @@ if (errors.length) {
 }
 
 const scenarioCount = componentCatalog.reduce((total, component) => total + component.scenarios.length, 0)
-console.log(`组件文档审计通过：${ids.length} 个组件、${scenarioCount} 个按需案例、${apiIds.length} 份 API、${Object.keys(componentGuidance).length} 份使用决策说明、${componentGroupingModes.length} 套目录分组。`)
+console.log(`组件文档审计通过：${ids.length} 个组件、${scenarioCount} 个按需案例、${apiIds.length} 份 API、${Object.keys(componentGuidance).length} 份使用决策说明、${Object.keys(componentKeyboardGuidance).length} 份键盘说明、${componentGroupingModes.length} 套目录分组。`)
