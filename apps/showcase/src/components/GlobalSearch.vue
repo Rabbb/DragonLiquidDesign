@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { DlDialog } from '@dragon-liquid/vue'
-import { componentCatalog, componentCategories, componentRoute } from '../catalog'
+import { componentCatalog, componentRoute } from '../catalog'
+import { primaryComponentGroup } from '../componentGroups'
 import { patternPages } from '../patterns/pattern.catalog'
 import CustomControlMark from './CustomControlMark.vue'
 
@@ -22,7 +23,6 @@ const query = ref('')
 const activeIndex = ref(0)
 const input = ref<HTMLInputElement>()
 
-const categoryNames = new Map(componentCategories.map(category => [category.id, category.label]))
 const pageEntries: SearchEntry[] = [
   { key: 'page-home', kind: '页面', title: '首页', description: 'Dragon Liquid Design 组件库概览', href: '/', keywords: 'home 首页 开始' },
   { key: 'page-components', kind: '页面', title: '组件目录', description: '浏览全部组件和使用场景', href: '/components/button/basic', keywords: 'components api 组件 文档' },
@@ -39,14 +39,14 @@ const pageEntries: SearchEntry[] = [
 ]
 
 const componentEntries: SearchEntry[] = componentCatalog.flatMap(component => {
-  const category = categoryNames.get(component.category) ?? component.category
+  const family = primaryComponentGroup('family', component.id)?.label ?? '组件'
   const componentEntry: SearchEntry = {
     key: `component-${component.id}`,
     kind: '组件',
     title: component.name,
-    description: `${category} · ${component.summary}`,
+    description: `${family} · ${component.summary}`,
     href: componentRoute(component.id, component.scenarios[0]?.id),
-    keywords: `${component.id} ${component.name} ${component.summary} ${category}`,
+    keywords: `${component.id} ${component.name} ${component.summary} ${family}`,
     custom: component.maturity === 'custom',
   }
   const scenarios = component.scenarios.slice(1).map<SearchEntry>(scenario => ({

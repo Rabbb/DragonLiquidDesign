@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { componentCatalog } from '../src/catalog.ts'
+import { componentGroupDefinitions, componentGroupingModes } from '../src/componentGroups.ts'
 import { componentGuidance, componentsMissingGuidance } from '../src/componentGuidance.ts'
 import componentApi from '../src/generated/component-api.generated.ts'
 
@@ -26,6 +27,27 @@ function collectVueFiles(directory) {
 const ids = componentCatalog.map(component => component.id)
 report(ids.length === 70, `组件目录应为 70 项，当前为 ${ids.length} 项。`)
 report(new Set(ids).size === ids.length, '组件目录存在重复 id。')
+
+for (const mode of componentGroupingModes) {
+  const groups = componentGroupDefinitions[mode.value]
+  const groupIds = groups.map(group => group.id)
+  const placements = groups.flatMap(group => group.componentIds)
+  const placementCounts = new Map(ids.map(id => [id, placements.filter(placement => placement === id).length]))
+
+  report(groups.length >= 10, `${mode.label}分组过粗，当前只有 ${groups.length} 组。`)
+  report(new Set(groupIds).size === groupIds.length, `${mode.label}存在重复分组 id。`)
+  for (const group of groups) {
+    report(Boolean(group.label.trim()) && Boolean(group.english.trim()), `${mode.label}/${group.id} 缺少中英文名称。`)
+    report(group.summary.trim().length >= 8, `${mode.label}/${group.id} 缺少分组说明。`)
+    report(group.componentIds.length > 0, `${mode.label}/${group.id} 是空分组。`)
+    report(new Set(group.componentIds).size === group.componentIds.length, `${mode.label}/${group.id} 内存在重复控件。`)
+    for (const id of group.componentIds) report(ids.includes(id), `${mode.label}/${group.id} 引用了未知控件 ${id}。`)
+  }
+  for (const [id, count] of placementCounts) {
+    report(count > 0, `${id} 未进入${mode.label}分组。`)
+  }
+  report(placements.length > new Set(placements).size, `${mode.label}应允许并实际包含跨组复用控件。`)
+}
 
 for (const component of componentCatalog) {
   report(Boolean(component.name.trim()), `${component.id} 缺少名称。`)
@@ -102,4 +124,4 @@ if (errors.length) {
 }
 
 const scenarioCount = componentCatalog.reduce((total, component) => total + component.scenarios.length, 0)
-console.log(`组件文档审计通过：${ids.length} 个组件、${scenarioCount} 个按需案例、${apiIds.length} 份 API、${Object.keys(componentGuidance).length} 份使用决策说明。`)
+console.log(`组件文档审计通过：${ids.length} 个组件、${scenarioCount} 个按需案例、${apiIds.length} 份 API、${Object.keys(componentGuidance).length} 份使用决策说明、3 套目录分组。`)

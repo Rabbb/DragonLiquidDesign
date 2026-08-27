@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref, watch, type Component } from 'vue'
-import { DlBadge, DlButton } from '@dragon-liquid/vue'
+import { DlBadge, DlButton, DlSegmented } from '@dragon-liquid/vue'
 import { componentsMissingApi } from '../api/componentApi'
 import { componentGuidanceFor, componentsMissingGuidance } from '../componentGuidance'
 import CustomControlMark from '../components/CustomControlMark.vue'
 import {
-  componentCatalog,
-  componentCategories,
-  componentRoute,
-  resolveComponent,
-  type ComponentCategoryId,
-} from '../catalog'
+  componentGroupingModes,
+  groupingModeDescription,
+  readComponentGroupingMode,
+  resolveComponentGroups,
+  saveComponentGroupingMode,
+  type ComponentGroupingMode,
+  type ResolvedComponentGroup,
+} from '../componentGroups'
+import { componentCatalog, componentRoute, resolveComponent } from '../catalog'
 
 const props = defineProps<{
   componentId: string
@@ -22,8 +25,20 @@ const resolved = computed(() => resolveComponent(props.componentId, props.scenar
 const selectedComponent = computed(() => resolved.value.component)
 const selectedScenario = computed(() => resolved.value.scenario)
 const selectedGuidance = computed(() => componentGuidanceFor(selectedComponent.value.id))
-const selectedCategory = computed(() => componentCategories.find(category => category.id === selectedComponent.value.category)!)
-const expandedCategories = ref<Set<ComponentCategoryId>>(new Set([selectedComponent.value.category]))
+const groupingMode = ref<ComponentGroupingMode>(readComponentGroupingMode())
+const groupingModeOptions = componentGroupingModes.map(({ value, label }) => ({ value, label }))
+const activeMode = computed(() => componentGroupingModes.find(mode => mode.value === groupingMode.value)!)
+const activeGroups = computed(() => resolveComponentGroups(groupingMode.value))
+const selectedGroup = computed(() => activeGroups.value.find(group => group.components.some(component => component.id === selectedComponent.value.id)) ?? activeGroups.value[0])
+const expandedGroups = ref<Set<string>>(new Set(selectedGroup.value ? [selectedGroup.value.id] : []))
+const groupedComponentSequence = computed(() => {
+  const seen = new Set<string>()
+  return activeGroups.value.flatMap(group => group.components).filter(component => {
+    if (seen.has(component.id)) return false
+    seen.add(component.id)
+    return true
+  })
+})
 const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
 const plannedCount = computed(() => componentCatalog.length - readyCount.value)
 const missingApiComponents = componentsMissingApi(componentCatalog.map(component => component.id))
@@ -124,23 +139,24 @@ const activeDoc = computed(() => defineAsyncComponent({
 }))
 const ComponentApiTable = defineAsyncComponent(() => import('../components/ComponentApiTable.vue'))
 
+watch(groupingMode, mode => {
+  saveComponentGroupingMode(mode)
+  expandedGroups.value = new Set(selectedGroup.value ? [selectedGroup.value.id] : [])
+})
+
 watch(() => [props.componentId, props.scenarioId], () => {
-  expandedCategories.value = new Set([...expandedCategories.value, selectedComponent.value.category])
+  if (selectedGroup.value) expandedGroups.value = new Set([...expandedGroups.value, selectedGroup.value.id])
   sidebarOpen.value = false
 })
 
-function componentsFor(category: typeof componentCategories[number]) {
-  return componentCatalog.filter(component => component.category === category.id)
+function groupExpanded(group: ResolvedComponentGroup) {
+  return expandedGroups.value.has(group.id)
 }
 
-function categoryExpanded(category: typeof componentCategories[number]) {
-  return expandedCategories.value.has(category.id)
-}
-
-function toggleCategory(category: typeof componentCategories[number]) {
-  const next = new Set(expandedCategories.value)
-  next.has(category.id) ? next.delete(category.id) : next.add(category.id)
-  expandedCategories.value = next
+function toggleGroup(group: ResolvedComponentGroup) {
+  const next = new Set(expandedGroups.value)
+  next.has(group.id) ? next.delete(group.id) : next.add(group.id)
+  expandedGroups.value = next
 }
 </script>
 
@@ -154,22 +170,31 @@ function toggleCategory(category: typeof componentCategories[number]) {
     <div class="sidebar-title">
       <span>COMPONENTS</span>
       <b>组件目录</b>
-      <small>按组件与场景加载案例 · ◆ 自研</small>
+      <small>{{ groupingModeDescription(groupingMode) }}</small>
+      <DlSegmented
+        v-model="groupingMode"
+        class="sidebar-grouping-mode"
+        :items="groupingModeOptions"
+        size="sm"
+        block
+        aria-label="组件目录分组方式"
+      />
     </div>
 
     <nav aria-label="组件大纲">
-      <section v-for="category in componentCategories" :key="category.id" class="sidebar-group" :class="{ open: categoryExpanded(category) }">
+      <section v-for="group in activeGroups" :key="group.id" class="sidebar-group" :class="{ open: groupExpanded(group) }">
         <button
           type="button"
           class="sidebar-group-trigger"
-          :aria-expanded="categoryExpanded(category)"
-          @click="toggleCategory(category)"
+          :aria-expanded="groupExpanded(group)"
+          :title="group.summary"
+          @click="toggleGroup(group)"
         >
-          <span><b>{{ category.label }}</b><small>{{ category.english }} · {{ componentsFor(category).length }}</small></span>
-          <i>{{ categoryExpanded(category) ? '−' : '+' }}</i>
+          <span><b>{{ group.label }}</b><small>{{ group.english }} · {{ group.components.length }}</small></span>
+          <i>{{ groupExpanded(group) ? '−' : '+' }}</i>
         </button>
-        <div v-show="categoryExpanded(category)" class="sidebar-group-content">
-          <div v-for="item in componentsFor(category)" :key="item.id" class="sidebar-component">
+        <div v-show="groupExpanded(group)" class="sidebar-group-content">
+          <div v-for="item in group.components" :key="`${group.id}-${item.id}`" class="sidebar-component">
             <a
               :href="componentRoute(item.id)"
               :class="{ active: selectedComponent.id === item.id, planned: item.implementation === 'planned' }"
@@ -199,7 +224,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
     </nav>
     <div class="sidebar-foot">
       <DlBadge tone="success" variant="outline">● LAZY LOADED</DlBadge>
-      <small>{{ readyCount }} READY · {{ plannedCount }} ROADMAP · 当前只渲染选中场景</small>
+      <small>{{ readyCount }} READY · {{ plannedCount }} ROADMAP · 允许跨组复用</small>
     </div>
   </aside>
 
@@ -211,7 +236,7 @@ function toggleCategory(category: typeof componentCategories[number]) {
       <div>
         <div class="component-kicker">
           <DlBadge :tone="selectedComponent.implementation === 'ready' ? 'muted' : 'accent'" variant="outline">
-            {{ selectedCategory.label }} · {{ selectedComponent.implementation === 'ready' ? `SINCE ${selectedComponent.since}` : 'ROADMAP' }}
+            {{ activeMode.label }} · {{ selectedGroup?.label }} · {{ selectedComponent.implementation === 'ready' ? `SINCE ${selectedComponent.since}` : 'ROADMAP' }}
           </DlBadge>
           <DlBadge v-if="selectedComponent.maturity === 'alpha'" tone="warning" variant="outline">{{ selectedComponent.sourceUrl ? 'REKA ALPHA' : 'ALPHA' }}</DlBadge>
         </div>
@@ -267,13 +292,13 @@ function toggleCategory(category: typeof componentCategories[number]) {
     <ComponentApiTable :component-id="selectedComponent.id" :component-name="selectedComponent.name" />
 
     <nav class="docs-pagination" aria-label="组件翻页">
-      <template v-for="(item, index) in componentCatalog" :key="item.id">
-        <a v-if="item.id === selectedComponent.id && index > 0" :href="componentRoute(componentCatalog[index - 1].id)">
-          <small>上一个</small><b>← {{ componentCatalog[index - 1].name }}</b>
+      <template v-for="(item, index) in groupedComponentSequence" :key="item.id">
+        <a v-if="item.id === selectedComponent.id && index > 0" :href="componentRoute(groupedComponentSequence[index - 1].id)">
+          <small>上一个</small><b>← {{ groupedComponentSequence[index - 1].name }}</b>
         </a>
         <span v-else-if="item.id === selectedComponent.id" />
-        <a v-if="item.id === selectedComponent.id && index < componentCatalog.length - 1" :href="componentRoute(componentCatalog[index + 1].id)">
-          <small>下一个</small><b>{{ componentCatalog[index + 1].name }} →</b>
+        <a v-if="item.id === selectedComponent.id && index < groupedComponentSequence.length - 1" :href="componentRoute(groupedComponentSequence[index + 1].id)">
+          <small>下一个</small><b>{{ groupedComponentSequence[index + 1].name }} →</b>
         </a>
       </template>
     </nav>

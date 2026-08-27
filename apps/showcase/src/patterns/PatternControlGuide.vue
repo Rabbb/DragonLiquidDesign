@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { DlBadge, DlButton, DlProgress, type DlTone } from '@dragon-liquid/vue'
-import { componentCatalog, componentCategories, componentRoute, type ComponentDefinition } from '../catalog'
+import { componentCatalog, componentRoute, type ComponentDefinition } from '../catalog'
+import { primaryComponentGroup } from '../componentGroups'
 
 type GuideTarget = {
   id: string
@@ -29,7 +30,6 @@ const activeTabIndex = ref(-1)
 const tabCount = ref(0)
 const guideTabs = ref<Array<{ index: number; label: string }>>([])
 const autoTriggerActiveId = ref('')
-const categoryById = new Map(componentCategories.map(item => [item.id, item.label]))
 const slotAliases: Record<string, string> = {
   'select-trigger': 'select',
   'select-content': 'select',
@@ -640,7 +640,7 @@ onBeforeUnmount(() => {
         </header>
         <div class="dl-control-guide__badges">
           <DlBadge :tone="toneFor(current.component)" variant="outline" size="sm">{{ current.component.maturity }}</DlBadge>
-          <DlBadge tone="muted" variant="outline" size="sm">{{ categoryById.get(current.component.category) }}</DlBadge>
+          <DlBadge tone="muted" variant="outline" size="sm">{{ primaryComponentGroup('family', current.component.id)?.label }}</DlBadge>
           <span>当前分区 {{ current.instances }} 个实例</span>
           <span>{{ current.tabValue ? `Tab：${activeTabLabel}` : '公共区域' }}</span>
         </div>

@@ -16,13 +16,14 @@ import {
 import { VxeColumn, VxeTable } from 'vxe-table'
 import 'vxe-pc-ui/es/style.css'
 import 'vxe-table/es/style.css'
-import { componentCatalog, componentCategories, componentRoute } from '../../catalog'
+import { componentCatalog, componentRoute } from '../../catalog'
+import { resolveComponentGroups } from '../../componentGroups'
 import CustomControlMark from '../../components/CustomControlMark.vue'
 import { componentHomes, componentUsageLocations, scenarioCoverage } from '../pattern.coverage'
 import { patternPages } from '../pattern.catalog'
 
 const query = ref('')
-const category = ref('all')
+const family = ref('all')
 const maturity = ref('all')
 const demoPage = ref('all')
 const listPage = ref(1)
@@ -32,9 +33,10 @@ const treeConfig = { childrenField: 'children', rowField: 'key', trigger: 'cell'
 const columnConfig = { resizable: true }
 const rowConfig = { keyField: 'key', isHover: true }
 
-const categoryOptions: DlSelectOption[] = [
-  { value: 'all', label: '全部分类' },
-  ...componentCategories.map(item => ({ value: item.id, label: item.label, description: item.summary })),
+const familyGroups = resolveComponentGroups('family')
+const familyOptions: DlSelectOption[] = [
+  { value: 'all', label: '全部组件族' },
+  ...familyGroups.map(item => ({ value: item.id, label: item.label, description: item.summary })),
 ]
 const maturityOptions: DlChoiceOption[] = [
   { value: 'all', label: '全部' },
@@ -49,7 +51,11 @@ const demoPageOptions: DlSelectOption[] = [
     .map(item => ({ value: item.id, label: item.label, description: item.description })),
 ]
 const pageById = new Map(patternPages.map(item => [item.id, item]))
-const categoryById = new Map(componentCategories.map(item => [item.id, item.label]))
+const familyMembership = new Map(familyGroups.map(group => [group.id, new Set(group.components.map(component => component.id))]))
+const familyLabelsByComponentId = new Map(componentCatalog.map(component => [
+  component.id,
+  familyGroups.filter(group => group.components.some(item => item.id === component.id)).map(group => group.label),
+]))
 
 const rows = componentCatalog.flatMap(component => {
   const scenarioPages = scenarioCoverage(component)
@@ -80,7 +86,7 @@ const filtered = computed(() => {
     ].some(value => value.toLocaleLowerCase().includes(keyword))
 
     return matchesText
-      && (category.value === 'all' || row.component.category === category.value)
+      && (family.value === 'all' || familyMembership.get(family.value)?.has(row.component.id))
       && (maturity.value === 'all' || row.component.maturity === maturity.value)
       && (demoPage.value === 'all' || row.page.id === demoPage.value)
   })
@@ -105,11 +111,11 @@ const visible = computed(() => filteredTree.value.slice((listPage.value - 1) * p
 const filteredComponentCount = computed(() => filteredTree.value.length)
 const visibleScenarioCount = computed(() => visible.value.reduce((total, row) => total + row.children.length, 0))
 
-watch([query, category, maturity, demoPage], () => { listPage.value = 1 })
+watch([query, family, maturity, demoPage], () => { listPage.value = 1 })
 
 function resetFilters() {
   query.value = ''
-  category.value = 'all'
+  family.value = 'all'
   maturity.value = 'all'
   demoPage.value = 'all'
 }
@@ -152,7 +158,7 @@ function treeRowClassName({ row }: { row: { kind: string } }) {
         <template #leading>⌕</template>
         <template #trailing><kbd>/</kbd></template>
       </DlInput>
-      <DlSelect v-model="category" :options="categoryOptions" />
+      <DlSelect v-model="family" :options="familyOptions" />
       <DlSelect v-model="demoPage" :options="demoPageOptions" />
       <DlToggleGroup v-model="maturity" type="single" :items="maturityOptions" />
       <DlButton variant="secondary" @click="resetFilters">重置</DlButton>
@@ -194,10 +200,10 @@ function treeRowClassName({ row }: { row: { kind: string } }) {
               </div>
             </template>
           </VxeColumn>
-          <VxeColumn title="分类与状态" width="155">
+          <VxeColumn title="组件族与状态" width="155">
             <template #default="{ row }">
               <div v-if="row.kind === 'component'" class="coverage-tree-meta">
-                <span>{{ categoryById.get(row.component.category) }} · {{ row.component.since }}</span>
+                <span>{{ familyLabelsByComponentId.get(row.component.id)?.join(' / ') }} · {{ row.component.since }}</span>
                 <DlBadge :tone="maturityTone(row.component.maturity)" variant="outline" size="sm">{{ row.component.maturity }}</DlBadge>
               </div>
               <span v-else class="coverage-tree-child-mark">SCENARIO</span>
@@ -248,7 +254,7 @@ function treeRowClassName({ row }: { row: { kind: string } }) {
 
     <DlCard v-else class="coverage-empty" padding="lg">
       <b>没有匹配项</b>
-      <p>清除关键词，或者切换分类、成熟度与业务演示页。</p>
+      <p>清除关键词，或者切换组件族、成熟度与业务演示页。</p>
       <DlButton variant="primary" @click="resetFilters">查看全部控件场景</DlButton>
     </DlCard>
   </section>

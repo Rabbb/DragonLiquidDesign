@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { DlBadge, DlButton, DlCard } from '@dragon-liquid/vue'
-import { componentCatalog, componentCategories, componentRoute } from '../catalog'
+import { computed, ref, watch } from 'vue'
+import { DlBadge, DlButton, DlCard, DlSegmented } from '@dragon-liquid/vue'
+import { componentCatalog, componentRoute } from '../catalog'
+import {
+  componentGroupingModes,
+  groupingModeDescription,
+  readComponentGroupingMode,
+  resolveComponentGroups,
+  saveComponentGroupingMode,
+  type ComponentGroupingMode,
+  type ResolvedComponentGroup,
+} from '../componentGroups'
 import CustomControlMark from '../components/CustomControlMark.vue'
 
 const readyCount = computed(() => componentCatalog.filter(component => component.implementation === 'ready').length)
@@ -9,13 +18,14 @@ const roadmapCount = computed(() => componentCatalog.length - readyCount.value)
 const readyScenarioCount = computed(() => componentCatalog
   .filter(component => component.implementation === 'ready')
   .reduce((total, component) => total + component.scenarios.length, 0))
+const groupingMode = ref<ComponentGroupingMode>(readComponentGroupingMode())
+const groupingModeOptions = componentGroupingModes.map(({ value, label }) => ({ value, label }))
+const activeGroups = computed(() => resolveComponentGroups(groupingMode.value))
 
-function componentsFor(categoryId: typeof componentCategories[number]['id']) {
-  return componentCatalog.filter(component => component.category === categoryId)
-}
+watch(groupingMode, saveComponentGroupingMode)
 
-function previewFor(categoryId: typeof componentCategories[number]['id']) {
-  return [...componentsFor(categoryId)]
+function previewFor(group: ResolvedComponentGroup) {
+  return [...group.components]
     .sort((left, right) => Number(right.implementation === 'ready') - Number(left.implementation === 'ready'))
     .slice(0, 4)
 }
@@ -114,21 +124,25 @@ function previewFor(categoryId: typeof componentCategories[number]['id']) {
     <section class="content-section catalog-intro">
       <div class="section-heading">
         <span>03 · CATALOG</span>
-        <div><h2>从组件目录开始查询</h2><p>组件文档按类别、组件和实际场景分层；名称旁的 ◆ 表示自研控件。</p></div>
+        <div><h2>从组件目录开始查询</h2><p>可按组件族、用途或网站类型查找；名称旁的 ◆ 表示自研控件。</p></div>
+      </div>
+      <div class="home-grouping-toolbar">
+        <DlSegmented v-model="groupingMode" :items="groupingModeOptions" size="md" aria-label="首页组件分组方式" />
+        <p>{{ groupingModeDescription(groupingMode) }}</p>
       </div>
       <div class="home-catalog-grid">
-        <DlCard v-for="category in componentCategories" :key="category.id" padding="lg" class="home-category-card">
-          <header><span>{{ category.label }} <small>{{ category.english }}</small></span><DlBadge tone="muted">{{ componentsFor(category.id).length }} ITEMS</DlBadge></header>
+        <DlCard v-for="group in activeGroups" :key="group.id" padding="lg" class="home-category-card">
+          <header><span>{{ group.label }} <small>{{ group.english }}</small></span><DlBadge tone="muted">{{ group.components.length }} ITEMS</DlBadge></header>
           <a
-            v-for="item in previewFor(category.id)"
-            :key="item.id"
+            v-for="item in previewFor(group)"
+            :key="`${group.id}-${item.id}`"
             :href="componentRoute(item.id)"
           >
             <b>{{ item.name }}<CustomControlMark v-if="item.maturity === 'custom'" /> <em :class="{ alpha: item.maturity === 'alpha' }">{{ item.maturity === 'alpha' ? 'ALPHA' : item.implementation === 'ready' ? 'READY' : 'ROADMAP' }}</em></b>
             <small>{{ item.summary }}</small><i>→</i>
           </a>
-          <a class="home-category-more" :href="componentRoute(componentsFor(category.id)[0].id)">
-            <b>浏览 {{ category.label }}完整目录</b><small>{{ category.summary }}</small><i>＋{{ Math.max(componentsFor(category.id).length - 4, 0) }}</i>
+          <a class="home-category-more" :href="componentRoute(group.components[0].id)">
+            <b>浏览 {{ group.label }}完整目录</b><small>{{ group.summary }}</small><i>＋{{ Math.max(group.components.length - 4, 0) }}</i>
           </a>
         </DlCard>
       </div>
