@@ -34,14 +34,21 @@ function openComponentSwitcher() {
         <h1>少移动鼠标，<br><em>让操作保持连续</em></h1>
         <span>从页面移动、整段粘贴到跨组件切换，这套教程覆盖 Dragon Liquid 的统一键盘模型。</span>
         <div class="keyboard-hero-actions">
-          <DlButton variant="primary" @click="openComponentSwitcher">打开组件切换器</DlButton>
+          <DlButton variant="primary" @click="openComponentSwitcher">打开控件文档</DlButton>
           <span><kbd>Alt</kbd><b>+</b><kbd>K</kbd></span>
         </div>
       </div>
-      <aside aria-label="组件切换器操作示意">
-        <div class="switcher-mini-card muted">DateField</div>
-        <div class="switcher-mini-card active">TimePicker</div>
-        <div class="switcher-mini-card muted">Calendar</div>
+      <aside aria-label="分组控件文档切换器操作示意">
+        <div class="switcher-mini-groups">
+          <section>
+            <header><b>日期与日历</b><span>6</span></header>
+            <div><i>Calendar</i><i>DateField</i><i>DatePicker</i></div>
+          </section>
+          <section>
+            <header><b>时间控件</b><span>3</span></header>
+            <div><i>TimeField</i><i class="active">TimePicker</i><i>TimeRange</i></div>
+          </section>
+        </div>
         <small>按住 Alt · 方向键选择 · 松开 Alt 打开</small>
       </aside>
     </section>
@@ -58,7 +65,7 @@ function openComponentSwitcher() {
     </section>
 
     <section class="keyboard-guide-section switcher-tutorial">
-      <header><span>02</span><div><small>ALT+TAB STYLE</small><h2>像切换窗口一样切换控件</h2><p>组件切换不再要求返回目录，也不打断当前浏览节奏。</p></div></header>
+      <header><span>02</span><div><small>ALT+TAB STYLE</small><h2>在分组列表中切换控件文档</h2><p>组件族清晰分区，组内控件随可用宽度自动换行。</p></div></header>
       <div class="tutorial-steps">
         <article><b>1</b><div><h3>按住 <kbd>Alt</kbd>，按 <kbd>K</kbd></h3><p>打开蒙版并预选当前控件的下一项；继续按 K 可连续向前。</p></div></article>
         <article><b>2</b><div><h3>使用四个方向键</h3><p>左右或上下均可调整选择，Home 与 End 可直接跳到组件目录首尾。</p></div></article>
@@ -145,10 +152,14 @@ function openComponentSwitcher() {
 .keyboard-hero-actions { display: flex; align-items: center; gap: 15px; }
 .keyboard-hero-actions > span { display: flex; align-items: center; gap: 6px; color: var(--dl-text-faint); }
 kbd { display: inline-grid; min-width: 27px; min-height: 25px; place-items: center; padding: 3px 7px; border: 1px solid var(--dl-border-strong); border-bottom-width: 3px; border-radius: 7px; color: var(--dl-text); background: var(--dl-surface-strong); box-shadow: 0 2px 5px rgba(15,23,42,.08); font: 750 .64rem/1 "Cascadia Code", Consolas, monospace; }
-.keyboard-guide-hero aside { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; min-height: 270px; padding: 30px; overflow: hidden; border: 1px solid var(--dl-border); border-radius: 30px; background: color-mix(in srgb, var(--dl-night) 88%, transparent); box-shadow: 0 30px 80px rgba(15,23,42,.22); }
-.switcher-mini-card { display: grid; place-items: end start; width: 126px; height: 130px; padding: 14px; border: 1px solid color-mix(in srgb, white 14%, transparent); border-radius: 17px; color: white; background: color-mix(in srgb, white 8%, transparent); font-size: .7rem; font-weight: 800; }
-.switcher-mini-card.active { border-color: var(--dl-accent); background: color-mix(in srgb, var(--dl-accent) 24%, transparent); box-shadow: 0 12px 34px color-mix(in srgb, var(--dl-accent) 22%, transparent); transform: translateY(-8px); }
-.switcher-mini-card.muted { opacity: .42; transform: scale(.9); }
+.keyboard-guide-hero aside { position: relative; display: grid; align-items: center; min-width: 0; min-height: 270px; padding: 26px 26px 48px; overflow: hidden; border: 1px solid var(--dl-border); border-radius: 30px; background: color-mix(in srgb, var(--dl-night) 88%, transparent); box-shadow: 0 30px 80px rgba(15,23,42,.22); }
+.switcher-mini-groups { display: grid; gap: 15px; width: 100%; }
+.switcher-mini-groups section { display: grid; gap: 7px; }
+.switcher-mini-groups header { display: flex; justify-content: space-between; color: color-mix(in srgb, white 76%, transparent); font-size: .58rem; }
+.switcher-mini-groups header span { color: color-mix(in srgb, white 42%, transparent); font-family: "Cascadia Code", Consolas, monospace; }
+.switcher-mini-groups section > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; }
+.switcher-mini-groups i { min-width: 0; padding: 10px; overflow: hidden; border: 1px solid color-mix(in srgb, white 12%, transparent); border-radius: 9px; color: color-mix(in srgb, white 62%, transparent); background: color-mix(in srgb, white 6%, transparent); font: normal 700 .55rem "Cascadia Code", Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.switcher-mini-groups i.active { border-color: var(--dl-accent); color: white; background: color-mix(in srgb, var(--dl-accent) 24%, transparent); box-shadow: inset 3px 0 var(--dl-accent); }
 .keyboard-guide-hero aside > small { position: absolute; right: 24px; bottom: 18px; left: 24px; color: color-mix(in srgb, white 58%, transparent); font-size: .6rem; text-align: center; }
 .keyboard-guide-section { display: grid; gap: 26px; padding: 66px 0; border-top: 1px solid var(--dl-border); }
 .keyboard-guide-section > header { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 15px; align-items: start; }
@@ -194,5 +205,5 @@ kbd { display: inline-grid; min-width: 27px; min-height: 25px; place-items: cent
 .quick-reference dd { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 0; color: var(--dl-text-faint); font-size: .7rem; }
 .quick-reference dd b { color: var(--dl-text); }
 @media (max-width: 900px) { .keyboard-guide-hero { grid-template-columns: 1fr; padding-top: 30px; } .shortcut-grid, .tutorial-steps { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-@media (max-width: 620px) { .keyboard-guide-page { width: min(100% - 24px, 1180px); padding-top: 34px; } .keyboard-guide-hero aside { min-height: 220px; padding-inline: 12px; } .switcher-mini-card { width: 96px; height: 108px; } .shortcut-grid, .tutorial-steps, .paste-playground { grid-template-columns: 1fr; } .focus-navigator-demo { grid-template-columns: 105px minmax(0,1fr); } .focus-navigator-demo article { grid-template-columns: 1fr; } .focus-navigator-actions { align-items: flex-start; flex-wrap: wrap; } .focus-navigator-actions > small { width: 100%; } .quick-reference dl > div, .quick-reference dd { grid-template-columns: 1fr; gap: 10px; } }
+@media (max-width: 620px) { .keyboard-guide-page { width: min(100% - 24px, 1180px); padding-top: 34px; } .keyboard-guide-hero aside { min-height: 220px; padding-inline: 16px; } .switcher-mini-groups section > div { grid-template-columns: repeat(auto-fit, minmax(82px, 1fr)); } .shortcut-grid, .tutorial-steps, .paste-playground { grid-template-columns: 1fr; } .focus-navigator-demo { grid-template-columns: 105px minmax(0,1fr); } .focus-navigator-demo article { grid-template-columns: 1fr; } .focus-navigator-actions { align-items: flex-start; flex-wrap: wrap; } .focus-navigator-actions > small { width: 100%; } .quick-reference dl > div, .quick-reference dd { grid-template-columns: 1fr; gap: 10px; } }
 </style>
