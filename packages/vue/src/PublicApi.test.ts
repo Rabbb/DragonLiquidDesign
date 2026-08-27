@@ -7,15 +7,15 @@ import DlNumberField from './components/DlNumberField.vue'
 const componentNames = [
   'DlAccordion', 'DlAlertDialog', 'DlAspectRatio', 'DlAutocomplete', 'DlAvatar', 'DlBadge', 'DlButton', 'DlCalendar', 'DlCard', 'DlCheckbox',
   'DlChoicePortal', 'DlCollapsible', 'DlColorArea', 'DlColorField', 'DlColorSlider', 'DlColorSwatch', 'DlColorSwatchPicker', 'DlCombobox', 'DlContextMenu', 'DlDateField', 'DlDatePicker', 'DlDateRangeField', 'DlDateRangePicker', 'DlDialog', 'DlDrawer', 'DlDropdownMenu', 'DlEditable', 'DlHoverCard',
-  'DlIconButton', 'DlInput', 'DlLabel', 'DlListbox', 'DlMdx', 'DlMenubar', 'DlNavigationMenu', 'DlNumberField',
-  'DlMonthPicker', 'DlMonthRangePicker', 'DlPagination', 'DlPinInput', 'DlPopover', 'DlProgress', 'DlRadioGroup', 'DlRangeCalendar', 'DlRating', 'DlScrollArea', 'DlSelect',
+  'DlIconButton', 'DlInput', 'DlLabel', 'DlListbox', 'DlMdx', 'DlMenubar', 'DlMultiChoice', 'DlNavigationMenu', 'DlNumberField',
+  'DlMonthPicker', 'DlMonthRangePicker', 'DlPagination', 'DlPinInput', 'DlPopover', 'DlProgress', 'DlRadioGroup', 'DlRangeCalendar', 'DlRating', 'DlScrollArea', 'DlSegmented', 'DlSelect',
   'DlSeparator', 'DlSlider', 'DlSplitButton', 'DlSplitter', 'DlStepper', 'DlSwitch', 'DlTabs', 'DlTagsInput', 'DlTextarea', 'DlTimeField', 'DlTimeRangeField', 'DlTimeWheel',
-  'DlToast', 'DlToggle', 'DlToggleGroup', 'DlToolbar', 'DlTooltip', 'DlTree', 'DlYearPicker', 'DlYearRangePicker',
+  'DlToast', 'DlToggle', 'DlToggleGroup', 'DlToolbar', 'DlTooltip', 'DlTree', 'DlVirtualList', 'DlYearPicker', 'DlYearRangePicker',
 ]
 
 describe('public component API', () => {
   it('exports every stable catalog component', () => {
-    expect(componentNames).toHaveLength(67)
+    expect(componentNames).toHaveLength(70)
     for (const name of componentNames) expect(library).toHaveProperty(name)
   })
 

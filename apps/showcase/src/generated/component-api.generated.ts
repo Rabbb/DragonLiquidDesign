@@ -2872,6 +2872,134 @@ export default {
     ],
     "relatedTypes": []
   },
+  "multi-choice": {
+    "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "options",
+        "description": "可供用户选择的选项列表。",
+        "type": "DlMultiChoiceEntry[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'请选择多项'"
+      },
+      {
+        "prop": "searchPlaceholder",
+        "description": "搜索输入框为空时显示的提示文字。",
+        "type": "string",
+        "defaultValue": "'搜索名称、值或关键词'"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "MultiChoiceStatus",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "overlay",
+        "description": "设置浮层固定为模态面板、底部抽屉或按视口自动适配。",
+        "type": "DlChoicePortalOverlay",
+        "defaultValue": "'auto'"
+      },
+      {
+        "prop": "searchable",
+        "description": "是否始终显示选项搜索框；不传时根据选项数量自动判断。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "searchThreshold",
+        "description": "自动启用搜索框所需的最少选项数量。",
+        "type": "number",
+        "defaultValue": "8"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "maxTagCount",
+        "description": "触发器中直接展示的已选标签数量，更多结果合并为计数。",
+        "type": "number",
+        "defaultValue": "3"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "required",
+        "description": "是否标记为表单必填项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
   "navigation-menu": {
     "props": [
       {
@@ -3810,6 +3938,112 @@ export default {
       }
     ],
     "relatedTypes": []
+  },
+  "segmented": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "DlChoiceOption[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "orientation",
+        "description": "设置控件的水平或垂直方向。",
+        "type": "'horizontal' | 'vertical'",
+        "defaultValue": "'horizontal'"
+      },
+      {
+        "prop": "block",
+        "description": "是否让控件占满父容器宽度。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "name": "DlChoiceOption",
+        "description": "列表、组合框或切换组使用的通用选择项。",
+        "rows": [
+          {
+            "prop": "value",
+            "description": "表单提交或选择操作使用的值。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "label",
+            "description": "控件的显示标签或无障碍名称。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "disabled",
+            "description": "是否禁用控件及其交互。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlChoiceOption[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "select": {
     "props": [
@@ -5562,6 +5796,47 @@ export default {
         "title": "DlTreeNode[]"
       }
     ]
+  },
+  "virtual-list": {
+    "props": [
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "unknown[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "estimatedItemHeight",
+        "description": "虚拟列表每个等高项目使用的预估像素高度。",
+        "type": "number",
+        "defaultValue": "56"
+      },
+      {
+        "prop": "viewportHeight",
+        "description": "虚拟列表可滚动视口的像素高度。",
+        "type": "number",
+        "defaultValue": "320"
+      },
+      {
+        "prop": "overscan",
+        "description": "可见窗口上下额外渲染的项目数量，用于避免快速滚动露白。",
+        "type": "number",
+        "defaultValue": "4"
+      },
+      {
+        "prop": "itemKey",
+        "description": "从项目读取或计算稳定渲染键的字段名或函数。",
+        "type": "ItemKey",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "ariaLabel",
+        "description": "提供给辅助技术读取的控件名称。",
+        "type": "string",
+        "defaultValue": "'虚拟列表'"
+      }
+    ],
+    "relatedTypes": []
   },
   "year-picker": {
     "props": [

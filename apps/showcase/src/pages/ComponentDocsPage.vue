@@ -44,6 +44,8 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   input: () => import('../docs/InputDocs.vue'),
   select: () => import('../docs/SelectDocs.vue'),
   'choice-portal': () => import('../docs/ChoicePortalDocs.vue'),
+  'multi-choice': () => import('../docs/RecommendedControlDocs.vue'),
+  segmented: () => import('../docs/RecommendedControlDocs.vue'),
   'time-wheel': () => import('../docs/TimeWheelDocs.vue'),
   textarea: () => import('../docs/TextareaDocs.vue'),
   dialog: () => import('../docs/DialogDocs.vue'),
@@ -103,6 +105,7 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   'year-range-picker': () => import('../docs/AlphaDateDocs.vue'),
   drawer: () => import('../docs/AlphaGeneralDocs.vue'),
   tree: () => import('../docs/AlphaGeneralDocs.vue'),
+  'virtual-list': () => import('../docs/RecommendedControlDocs.vue'),
 }
 
 const sharedDocIds = new Set([
@@ -111,6 +114,7 @@ const sharedDocIds = new Set([
   'alert-dialog', 'aspect-ratio', 'context-menu', 'dropdown-menu', 'hover-card', 'menubar', 'navigation-menu', 'pagination', 'scroll-area', 'splitter', 'stepper', 'toast', 'toolbar',
   'autocomplete', 'rating', 'color-area', 'color-field', 'color-slider', 'color-swatch', 'color-swatch-picker',
   'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree',
+  'multi-choice', 'segmented', 'virtual-list',
 ])
 
 const activeDoc = computed(() => defineAsyncComponent({

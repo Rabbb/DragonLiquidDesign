@@ -25,6 +25,8 @@ export const componentHomes: Record<string, PatternPageId> = {
   rating: 'create',
   select: 'create',
   'choice-portal': 'settings',
+  'multi-choice': 'settings',
+  segmented: 'settings',
   slider: 'create',
   switch: 'create',
   'tags-input': 'create',
@@ -73,6 +75,7 @@ export const componentHomes: Record<string, PatternPageId> = {
   toolbar: 'editor',
   tooltip: 'feedback',
   tree: 'editor',
+  'virtual-list': 'library',
 }
 
 export const componentUsageLocations: Record<string, string> = {
@@ -95,6 +98,8 @@ export const componentUsageLocations: Record<string, string> = {
   rating: '收藏卡只读评分、详情评分与创建时交互评分',
   select: '目录过滤、偏好等级以及 Dialog 内嵌选择',
   'choice-portal': '设置页内容来源的分组检索与沉浸式选择',
+  'multi-choice': '设置页同时启用多个摘要内容来源并紧凑回显',
+  segmented: '设置页摘要频率的少量互斥选项即时切换',
   slider: '最低评分筛选、个人评分与数值区间控制',
   switch: '创建后继续录入、预览播放及内容偏好开关',
   'tags-input': '创建与编辑工作台中的分类标签维护',
@@ -143,6 +148,7 @@ export const componentUsageLocations: Record<string, string> = {
   toolbar: '编辑工作台格式化、保存和预览命令组',
   tooltip: '图标按钮解释、风险提示及嵌套层级验证',
   tree: '编辑工作台文档章节大纲与选择状态',
+  'virtual-list': '收藏库大量同步记录预览的局部窗口渲染',
 }
 
 const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
@@ -155,6 +161,9 @@ const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
   textarea: { basic: 'create', 'content-editor': 'editor', 'feedback-message': 'create' },
   select: { basic: 'create', 'catalog-filter': 'library', 'preference-level': 'settings' },
   'choice-portal': { basic: 'settings', 'grouped-search': 'settings', 'custom-value': 'settings' },
+  'multi-choice': { basic: 'settings', 'grouped-search': 'settings', 'tag-overflow': 'settings' },
+  segmented: { basic: 'settings', sizes: 'settings', disabled: 'settings' },
+  'virtual-list': { basic: 'library', 'large-data': 'library', empty: 'library' },
   'time-wheel': { basic: 'settings', 'minute-step': 'settings', 'disabled-time': 'settings' },
   dialog: {
     basic: 'feedback', 'tone-gallery': 'feedback', 'create-record': 'create', 'featured-preview': 'library',

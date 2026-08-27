@@ -21,6 +21,7 @@ import {
   DlSlider,
   DlToggleGroup,
   DlTooltip,
+  DlVirtualList,
   type DlChoiceOption,
   type DlMenuItem,
   type DlSelectOption,
@@ -41,6 +42,11 @@ const visibleItems = computed(() => filteredItems.value.filter(item =>
   (!favoritesOnly.value || favoriteIds.value.includes(item.id)) && item.rating >= ratingRange.value[0],
 ))
 const searchSuggestions = computed(() => [...new Set(items.value.flatMap(item => [item.title, item.originalTitle, item.studio, ...item.tags]))])
+const syncRecords = Array.from({ length: 120 }, (_, index) => ({ id: index + 1, label: `同步记录 ${String(index + 1).padStart(3, '0')}` }))
+
+function syncRecordLabel(item: unknown) {
+  return (item as { label: string }).label
+}
 
 const statusOptions: DlSelectOption[] = [
   { value: 'all', label: '全部进度' },
@@ -92,6 +98,9 @@ function handleAction(action: string, item: ArchiveItem) {
           <div class="filter-popover">
             <DlCheckbox v-model="favoritesOnly" label="只看收藏" description="仅展示标记星标的作品" />
             <DlSlider v-model="ratingRange" :min="0" :max="5" :step="0.5" show-value label="最低评分" />
+            <DlVirtualList :items="syncRecords" item-key="id" :estimated-item-height="34" :viewport-height="136" aria-label="最近同步记录">
+              <template #item="{ item, index }"><span>{{ syncRecordLabel(item) }}</span><small>#{{ index + 1 }}</small></template>
+            </DlVirtualList>
             <DlButton variant="secondary" block @click="favoritesOnly = false; ratingRange = [0]">清除高级筛选</DlButton>
           </div>
         </DlPopover>

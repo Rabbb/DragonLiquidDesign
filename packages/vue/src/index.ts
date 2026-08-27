@@ -21,11 +21,11 @@ export {
   DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContextMenu, DlDateField, DlDatePicker,
   DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
   DlHoverCard, DlIconButton, DlInput, DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
-  DlMonthPicker, DlMonthRangePicker, DlNavigationMenu, DlNumberField, DlPagination, DlPinInput,
-  DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSelect,
+  DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPinInput,
+  DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSegmented, DlSelect,
   DlSeparator, DlSlider, DlSplitButton, DlSplitter, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
   DlTimeField, DlTimeRangeField, DlTimeWheel, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
-  DlTree, DlYearPicker, DlYearRangePicker,
+  DlTree, DlVirtualList, DlYearPicker, DlYearRangePicker,
 } from './managed-components'
 
 export { createDlManagedComponent, getDlComponentBehavior, getDlComponentBehaviors } from './component-behavior'
@@ -67,6 +67,7 @@ export type {
   DlChoicePortalOption,
   DlChoicePortalOverlay,
 } from './components/choice-portal.types'
+export type { DlMultiChoiceEntry, DlMultiChoiceGroup, DlMultiChoiceOption } from './components/multi-choice.types'
 export type { DlTimeWheelValue } from './components/time-wheel.utils'
 export { buildDlTimeWheelMinutes, clampDlTimeWheelMinute, formatDlTimeWheelValue, parseDlTimeWheelValue } from './components/time-wheel.utils'
 export type { DlDialogDimensions, DlDialogPosition } from './components/dialog.types'

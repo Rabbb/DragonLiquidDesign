@@ -35,6 +35,7 @@ import DlMdx from './DlMdx.vue'
 import DlMenubar from './DlMenubar.vue'
 import DlMonthPicker from './DlMonthPicker.vue'
 import DlMonthRangePicker from './DlMonthRangePicker.vue'
+import DlMultiChoice from './DlMultiChoice.vue'
 import DlNavigationMenu from './DlNavigationMenu.vue'
 import DlNumberField from './DlNumberField.vue'
 import DlPagination from './DlPagination.vue'
@@ -45,6 +46,7 @@ import DlRadioGroup from './DlRadioGroup.vue'
 import DlRangeCalendar from './DlRangeCalendar.vue'
 import DlRating from './DlRating.vue'
 import DlScrollArea from './DlScrollArea.vue'
+import DlSegmented from './DlSegmented.vue'
 import DlSelect from './DlSelect.vue'
 import DlSeparator from './DlSeparator.vue'
 import DlSlider from './DlSlider.vue'
@@ -64,6 +66,7 @@ import DlToggleGroup from './DlToggleGroup.vue'
 import DlToolbar from './DlToolbar.vue'
 import DlTooltip from './DlTooltip.vue'
 import DlTree from './DlTree.vue'
+import DlVirtualList from './DlVirtualList.vue'
 import DlYearPicker from './DlYearPicker.vue'
 import DlYearRangePicker from './DlYearRangePicker.vue'
 import {
@@ -120,10 +123,12 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('Editable', DlEditable, 'form', 'stable', { defaultProps: { modelValue: '可编辑标题' } }),
   official('Label', DlLabel, 'form', 'stable', { defaultContent: '作品标题' }),
   official('Listbox', DlListbox, 'form', 'stable', { defaultProps: { options: choices } }),
+  official('MultiChoice', DlMultiChoice, 'form', 'custom', { defaultProps: { options: choices, modelValue: ['anime'], placeholder: '选择内容类型' } }),
   official('NumberField', DlNumberField, 'form', 'stable', { defaultProps: { modelValue: 12, min: 0, max: 24 } }),
   official('PinInput', DlPinInput, 'form', 'stable', { defaultProps: { length: 6 } }),
   official('RadioGroup', DlRadioGroup, 'form', 'stable', { defaultProps: { options: choices, modelValue: 'anime' } }),
   official('Rating', DlRating, 'form', 'alpha', { defaultProps: { modelValue: 4, max: 5 } }),
+  official('Segmented', DlSegmented, 'form', 'custom', { defaultProps: { items: choices, modelValue: 'anime' } }),
   official('Select', DlSelect, 'form', 'stable', { defaultProps: { options: choices, modelValue: 'anime' } }),
   official('Slider', DlSlider, 'form', 'stable', { defaultProps: { modelValue: [68], min: 0, max: 100 } }),
   official('Switch', DlSwitch, 'form', 'stable', { defaultProps: { label: '自动同步', modelValue: true } }),
@@ -176,6 +181,7 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('Toolbar', DlToolbar, 'general', 'stable', { defaultProps: { items: menuItems } }),
   official('Tooltip', DlTooltip, 'general', 'stable', { defaultProps: { text: '由官方注册表渲染', tone: 'accent' }, defaultContent: '悬停查看提示' }),
   official('Tree', DlTree, 'general', 'alpha', { defaultProps: { items: [{ id: 'season', label: '季度', children: [{ id: 'spring', label: '春季番' }] }] } }),
+  official('VirtualList', DlVirtualList, 'general', 'custom', { defaultProps: { items: ['动画', '漫画', '轻小说'], estimatedItemHeight: 48, viewportHeight: 144 } }),
 ]
 
 export function createDlMdxOfficialRegistry(extensions: DlMdxComponentDefinition[] = []): DlMdxRegistry {

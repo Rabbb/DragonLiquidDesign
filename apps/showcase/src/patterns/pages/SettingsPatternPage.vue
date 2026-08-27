@@ -23,11 +23,13 @@ import {
   DlLabel,
   DlMonthPicker,
   DlMonthRangePicker,
+  DlMultiChoice,
   DlNumberField,
   DlPinInput,
   DlRadioGroup,
   DlRangeCalendar,
   DlSelect,
+  DlSegmented,
   DlSeparator,
   DlSwitch,
   DlTabs,
@@ -39,6 +41,8 @@ import {
   type DateRange,
   type DlRadioOption,
   type DlChoicePortalEntry,
+  type DlMultiChoiceEntry,
+  type DlChoiceOption,
   type DlSelectOption,
   type DlTabItem,
 } from '@dragon-liquid/vue'
@@ -49,6 +53,8 @@ const tab = ref('appearance')
 const reminderTime = shallowRef(new Time(20, 30))
 const reminderWheel = ref('20:30')
 const contentSource = ref('all')
+const enabledSources = ref(['local', 'bangumi', 'anilist'])
+const digestFrequency = ref('weekly')
 const digestDate = shallowRef(new CalendarDate(2026, 8, 9))
 const calendarDate = shallowRef(new CalendarDate(2026, 8, 9))
 const reportRange = shallowRef<DateRange>({ start: new CalendarDate(2026, 8, 1), end: new CalendarDate(2026, 8, 31) })
@@ -84,6 +90,8 @@ const componentGuideTabs: Record<string, string> = {
   'time-field': 'behavior',
   select: 'behavior',
   'choice-portal': 'behavior',
+  'multi-choice': 'behavior',
+  segmented: 'behavior',
   'time-wheel': 'behavior',
   'date-field': 'schedule',
   'time-range-field': 'schedule',
@@ -123,6 +131,21 @@ const contentSourceOptions: DlChoicePortalEntry[] = [
     { value: 'bangumi', label: 'Bangumi', description: '使用 Bangumi 收藏目录', keywords: ['bgm'] },
     { value: 'anilist', label: 'AniList', description: '使用 AniList 媒体清单', keywords: ['al'] },
   ] },
+]
+const enabledSourceOptions: DlMultiChoiceEntry[] = [
+  { label: '本地内容', options: [
+    { value: 'local', label: '本地收藏', description: '浏览器内维护的收藏与进度', keywords: ['local'] },
+    { value: 'history', label: '观看历史', description: '最近播放和暂停的记录', keywords: ['history'] },
+  ] },
+  { label: '同步服务', options: [
+    { value: 'bangumi', label: 'Bangumi', description: '同步 Bangumi 收藏目录', keywords: ['bgm'] },
+    { value: 'anilist', label: 'AniList', description: '同步 AniList 媒体清单', keywords: ['al'] },
+  ] },
+]
+const digestFrequencyOptions: DlChoiceOption[] = [
+  { value: 'daily', label: '每日' },
+  { value: 'weekly', label: '每周' },
+  { value: 'monthly', label: '每月' },
 ]
 
 function saveSettings() {
@@ -202,6 +225,7 @@ onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleG
               <DlSeparator />
               <div class="settings-grid"><div class="settings-field"><DlLabel>每周摘要日期</DlLabel><DlDatePicker v-model="digestDate" /></div><div class="settings-field"><DlLabel>提醒时间</DlLabel><DlTimeField v-model="reminderTime" /></div></div>
               <div class="settings-grid"><div class="settings-field"><DlLabel>内容来源</DlLabel><DlChoicePortal v-model="contentSource" :options="contentSourceOptions" searchable clearable placeholder="选择收藏来源" /></div><div class="settings-field"><DlLabel>触控提醒时间</DlLabel><DlTimeWheel v-model="reminderWheel" :minute-step="5" shortcut-value="20:30" shortcut-label="晚间摘要" clearable /></div></div>
+              <div class="settings-grid"><div class="settings-field"><DlLabel>摘要包含来源</DlLabel><DlMultiChoice v-model="enabledSources" :options="enabledSourceOptions" searchable clearable :max-tag-count="2" placeholder="选择多个内容来源" /></div><div class="settings-field"><DlLabel>摘要频率</DlLabel><DlSegmented v-model="digestFrequency" :items="digestFrequencyOptions" block /></div></div>
               <div class="settings-field"><DlLabel>收藏库分页</DlLabel><DlSelect v-model="settings.pageSize" :options="pageSizeOptions" /></div>
             </div>
           </template>

@@ -37,6 +37,7 @@ import RawDlMdx from './components/DlMdx.vue'
 import RawDlMenubar from './components/DlMenubar.vue'
 import RawDlMonthPicker from './components/DlMonthPicker.vue'
 import RawDlMonthRangePicker from './components/DlMonthRangePicker.vue'
+import RawDlMultiChoice from './components/DlMultiChoice.vue'
 import RawDlNavigationMenu from './components/DlNavigationMenu.vue'
 import RawDlNumberField from './components/DlNumberField.vue'
 import RawDlPagination from './components/DlPagination.vue'
@@ -47,6 +48,7 @@ import RawDlRadioGroup from './components/DlRadioGroup.vue'
 import RawDlRangeCalendar from './components/DlRangeCalendar.vue'
 import RawDlRating from './components/DlRating.vue'
 import RawDlScrollArea from './components/DlScrollArea.vue'
+import RawDlSegmented from './components/DlSegmented.vue'
 import RawDlSelect from './components/DlSelect.vue'
 import RawDlSeparator from './components/DlSeparator.vue'
 import RawDlSlider from './components/DlSlider.vue'
@@ -66,6 +68,7 @@ import RawDlToggleGroup from './components/DlToggleGroup.vue'
 import RawDlToolbar from './components/DlToolbar.vue'
 import RawDlTooltip from './components/DlTooltip.vue'
 import RawDlTree from './components/DlTree.vue'
+import RawDlVirtualList from './components/DlVirtualList.vue'
 import RawDlYearPicker from './components/DlYearPicker.vue'
 import RawDlYearRangePicker from './components/DlYearRangePicker.vue'
 
@@ -152,6 +155,33 @@ const tagsMethods = {
   remove(context: DlComponentBehaviorContext, value: string) {
     const current = Array.isArray(context.get('modelValue')) ? context.get('modelValue') as string[] : []
     return context.set('modelValue', current.filter(item => item !== value))
+  },
+}
+
+const multiChoiceMethods = {
+  select(context: DlComponentBehaviorContext, value: string) {
+    const current = Array.isArray(context.get('modelValue')) ? context.get('modelValue') as string[] : []
+    return current.includes(value) ? false : context.set('modelValue', [...current, value])
+  },
+  deselect(context: DlComponentBehaviorContext, value: string) {
+    const current = Array.isArray(context.get('modelValue')) ? context.get('modelValue') as string[] : []
+    return context.set('modelValue', current.filter(item => item !== value))
+  },
+  clear(context: DlComponentBehaviorContext) { return context.set('modelValue', []) },
+}
+
+const virtualListMethods = {
+  scrollToIndex(context: DlComponentBehaviorContext, index: number, alignment?: 'start' | 'center' | 'end' | 'auto') {
+    const action = (context.inner as { scrollToIndex?: (value: number, mode?: typeof alignment) => void } | null)?.scrollToIndex
+    if (!action) return false
+    action(index, alignment)
+    return true
+  },
+  scrollToTop(context: DlComponentBehaviorContext) {
+    const action = (context.inner as { scrollToTop?: () => void } | null)?.scrollToTop
+    if (!action) return false
+    action()
+    return true
   },
 }
 
@@ -245,6 +275,15 @@ export const DlMarkdownX = DlMdx
 export const DlMenubar = managed(RawDlMenubar, 'DlMenubar')
 export const DlMonthPicker = managed(RawDlMonthPicker, 'DlMonthPicker', { domEvents: fieldEvents })
 export const DlMonthRangePicker = managed(RawDlMonthRangePicker, 'DlMonthRangePicker', { domEvents: fieldEvents })
+export const DlMultiChoice = managed(RawDlMultiChoice, 'DlMultiChoice', {
+  domEvents: fieldEvents,
+  methods: multiChoiceMethods,
+  methodDefinitions: [
+    method('select', '添加一个尚未选中的值。', '(value: string)'),
+    method('deselect', '移除一个已经选中的值。', '(value: string)'),
+    method('clear', '清除全部选择。', '()'),
+  ],
+})
 export const DlNavigationMenu = managed(RawDlNavigationMenu, 'DlNavigationMenu')
 export const DlNumberField = managed(RawDlNumberField, 'DlNumberField', {
   domEvents: fieldEvents,
@@ -272,6 +311,11 @@ export const DlRadioGroup = managed(RawDlRadioGroup, 'DlRadioGroup', { domEvents
 export const DlRangeCalendar = managed(RawDlRangeCalendar, 'DlRangeCalendar', { domEvents: fieldEvents })
 export const DlRating = managed(RawDlRating, 'DlRating', { domEvents: fieldEvents })
 export const DlScrollArea = managed(RawDlScrollArea, 'DlScrollArea')
+export const DlSegmented = managed(RawDlSegmented, 'DlSegmented', {
+  domEvents: fieldEvents,
+  methods: { select: (context, value: string) => context.set('modelValue', value) },
+  methodDefinitions: [method('select', '激活指定分段。', '(value: string)')],
+})
 export const DlSelect = managed(RawDlSelect, 'DlSelect', { domEvents: fieldEvents })
 export const DlSeparator = managed(RawDlSeparator, 'DlSeparator')
 export const DlSlider = managed(RawDlSlider, 'DlSlider', { domEvents: fieldEvents })
@@ -324,6 +368,13 @@ export const DlTree = managed(RawDlTree, 'DlTree', {
   methodDefinitions: [
     method('expand / collapse', '展开或折叠指定节点。', '(value: string)'),
     method('collapseAll', '折叠全部节点。', '()'),
+  ],
+})
+export const DlVirtualList = managed(RawDlVirtualList, 'DlVirtualList', {
+  methods: virtualListMethods,
+  methodDefinitions: [
+    method('scrollToIndex', '把指定索引滚动到视口内。', "(index: number, alignment?: 'start' | 'center' | 'end' | 'auto')"),
+    method('scrollToTop', '滚动到列表起点。', '()'),
   ],
 })
 export const DlYearPicker = managed(RawDlYearPicker, 'DlYearPicker', { domEvents: fieldEvents })
