@@ -1,6 +1,6 @@
 import { componentCatalog, type ComponentDefinition } from './catalog.ts'
 
-export type ComponentGroupingMode = 'family' | 'purpose' | 'site'
+export type ComponentGroupingMode = 'family' | 'purpose' | 'site' | 'flow' | 'data'
 
 export interface ComponentGroupDefinition {
   id: string
@@ -18,6 +18,8 @@ export const componentGroupingModes = [
   { value: 'family', label: '组件族', description: '按结构与交互亲缘关系细分，组合型控件可以同时属于多个组件族。' },
   { value: 'purpose', label: '用途', description: '按用户要完成的任务分组，同一控件可以服务多个用途。' },
   { value: 'site', label: '网站类型', description: '按常见网站和产品类型组织，同一控件可以跨站点复用。' },
+  { value: 'flow', label: '用户流程', description: '按用户从发现、录入到执行、反馈和恢复的任务阶段组织。' },
+  { value: 'data', label: '数据类型', description: '按控件处理或呈现的文本、数值、状态、日期和集合等数据形态组织。' },
 ] as const
 
 const familyGroups: ComponentGroupDefinition[] = [
@@ -72,10 +74,44 @@ const siteGroups: ComponentGroupDefinition[] = [
   group('design-tools', '设计与配置工具', 'DESIGN TOOLS', '主题编辑、组件文档、可视化配置和内部工具。', ['button', 'split-button', 'icon-button', 'input', 'textarea', 'number-field', 'label', 'select', 'segmented', 'slider', 'toggle', 'toggle-group', 'color-area', 'color-field', 'color-slider', 'color-swatch', 'color-swatch-picker', 'mdx', 'card', 'badge', 'aspect-ratio', 'separator', 'splitter', 'tabs', 'toolbar', 'tooltip', 'popover', 'dialog']),
 ]
 
+const flowGroups: ComponentGroupDefinition[] = [
+  group('discover-explore', '发现与浏览', 'DISCOVER', '搜索、预览并浏览可用内容和功能入口。', ['navigation-menu', 'menubar', 'tabs', 'tree', 'pagination', 'scroll-area', 'virtual-list', 'autocomplete', 'combobox', 'listbox', 'hover-card', 'card']),
+  group('capture-write', '录入与编辑', 'CAPTURE & WRITE', '创建或修改文本、数值、标签和结构化文档。', ['input', 'textarea', 'editable', 'number-field', 'pin-input', 'tags-input', 'mdx', 'label']),
+  group('choose-decide', '选择与决策', 'CHOOSE & DECIDE', '比较候选项并确定单选、多选或连续范围。', ['select', 'choice-portal', 'multi-choice', 'checkbox', 'radio-group', 'segmented', 'toggle', 'toggle-group', 'switch', 'slider', 'rating', 'color-swatch-picker', 'listbox', 'autocomplete', 'combobox']),
+  group('schedule-plan', '计划与排期', 'PLAN & SCHEDULE', '安排日期、周期、时间点和连续时间范围。', ['calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-wheel']),
+  group('configure-customize', '配置与定制', 'CONFIGURE', '调整偏好、主题、颜色和立即生效的界面状态。', ['select', 'multi-choice', 'segmented', 'checkbox', 'radio-group', 'slider', 'switch', 'toggle', 'toggle-group', 'color-field', 'color-area', 'color-slider', 'color-swatch', 'color-swatch-picker', 'number-field']),
+  group('invoke-command', '执行与命令', 'EXECUTE', '触发主操作、快捷命令和上下文动作。', ['button', 'split-button', 'icon-button', 'dropdown-menu', 'context-menu', 'toolbar', 'menubar', 'toggle', 'toggle-group', 'switch']),
+  group('reveal-inspect', '查看与展开', 'REVEAL & INSPECT', '按需展开、预览或查看补充信息。', ['card', 'badge', 'avatar', 'aspect-ratio', 'label', 'separator', 'accordion', 'collapsible', 'popover', 'hover-card', 'tooltip', 'drawer', 'dialog']),
+  group('compose-organize', '编排与组织', 'COMPOSE', '组织内容区块、文档、层级和可调布局。', ['card', 'splitter', 'scroll-area', 'virtual-list', 'tree', 'tabs', 'accordion', 'collapsible', 'separator', 'aspect-ratio', 'mdx', 'toolbar']),
+  group('progress-track', '推进与跟踪', 'TRACK PROGRESS', '展示步骤、分页、进度和阶段完成情况。', ['progress', 'stepper', 'pagination', 'tabs', 'badge', 'toast', 'calendar', 'range-calendar']),
+  group('confirm-protect', '确认与保护', 'CONFIRM & PROTECT', '在关键操作前确认意图并保护敏感步骤。', ['dialog', 'alert-dialog', 'drawer', 'popover', 'button', 'split-button', 'checkbox', 'pin-input', 'stepper']),
+  group('communicate-feedback', '反馈与告知', 'COMMUNICATE', '传达状态、结果、风险和短期提示。', ['toast', 'tooltip', 'badge', 'progress', 'alert-dialog', 'dialog', 'hover-card', 'popover']),
+  group('recover-correct', '纠错与恢复', 'RECOVER', '修改错误输入、撤回选择或从失败操作中恢复。', ['alert-dialog', 'dialog', 'toast', 'input', 'textarea', 'editable', 'select', 'checkbox', 'stepper', 'context-menu', 'dropdown-menu']),
+]
+
+const dataGroups: ComponentGroupDefinition[] = [
+  group('plain-text', '文本与字符串', 'TEXT & STRING', '录入、选择、编辑或呈现文本字符串。', ['input', 'textarea', 'editable', 'label', 'autocomplete', 'combobox', 'select', 'choice-portal', 'tags-input', 'pin-input', 'mdx', 'badge', 'tooltip']),
+  group('numeric-value', '数值与范围', 'NUMBER & RANGE', '处理计数、步进、比例、评分和连续数值范围。', ['number-field', 'slider', 'rating', 'progress', 'pagination', 'stepper']),
+  group('binary-state', '布尔与开关状态', 'BOOLEAN', '表达开启、关闭、选中和未选中状态。', ['checkbox', 'switch', 'toggle', 'toggle-group']),
+  group('single-option', '单值与枚举', 'SINGLE VALUE', '从有限候选集合中确定一个值。', ['radio-group', 'segmented', 'select', 'choice-portal', 'combobox', 'autocomplete', 'listbox', 'tabs', 'rating', 'color-swatch-picker', 'calendar', 'date-picker', 'month-picker', 'year-picker']),
+  group('multi-values', '多值与集合选择', 'MULTI VALUE', '维护多个值、标签、区间或批量选择结果。', ['multi-choice', 'checkbox', 'tags-input', 'listbox', 'toggle-group', 'range-calendar', 'date-range-field', 'date-range-picker', 'month-range-picker', 'year-range-picker', 'time-range-field']),
+  group('date-value', '日期与日期范围', 'DATE', '处理具体日期和连续日期范围。', ['calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker']),
+  group('period-time', '周期与时间', 'PERIOD & TIME', '处理月份、年份、时刻和时间范围。', ['month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-wheel']),
+  group('color-value', '颜色与色彩通道', 'COLOR', '处理颜色值、色彩通道和预设色板。', ['color-field', 'color-area', 'color-slider', 'color-swatch', 'color-swatch-picker']),
+  group('identity-media', '身份与媒体', 'IDENTITY & MEDIA', '呈现人物身份、图片、媒体比例和摘要卡片。', ['avatar', 'aspect-ratio', 'card', 'hover-card', 'badge']),
+  group('command-event', '命令与事件', 'COMMAND & EVENT', '产生操作事件而非直接维护业务字段值。', ['button', 'split-button', 'icon-button', 'dropdown-menu', 'context-menu', 'toolbar', 'menubar', 'navigation-menu', 'toggle']),
+  group('collection-tree', '列表、集合与层级', 'COLLECTION & TREE', '呈现列表、分页集合、菜单和层级节点。', ['listbox', 'accordion', 'collapsible', 'tabs', 'tree', 'pagination', 'scroll-area', 'virtual-list', 'navigation-menu', 'dropdown-menu', 'context-menu', 'menubar', 'toolbar']),
+  group('document-content', '文档与富内容', 'DOCUMENT & CONTENT', '承载文档、长文本、内容区块和补充说明。', ['mdx', 'textarea', 'editable', 'card', 'label', 'badge', 'separator', 'tooltip', 'popover', 'drawer', 'dialog', 'hover-card']),
+  group('status-message', '状态与消息', 'STATUS & MESSAGE', '呈现进度、状态、警告和瞬时消息。', ['badge', 'progress', 'toast', 'tooltip', 'alert-dialog', 'stepper', 'switch', 'checkbox', 'dialog']),
+  group('layout-geometry', '布局与几何', 'LAYOUT & GEOMETRY', '维护尺寸、比例、滚动边界和空间分割。', ['splitter', 'scroll-area', 'aspect-ratio', 'separator', 'drawer', 'popover', 'card']),
+]
+
 export const componentGroupDefinitions: Record<ComponentGroupingMode, ComponentGroupDefinition[]> = {
   family: familyGroups,
   purpose: purposeGroups,
   site: siteGroups,
+  flow: flowGroups,
+  data: dataGroups,
 }
 
 const componentById = new Map(componentCatalog.map(component => [component.id, component]))

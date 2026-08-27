@@ -124,10 +124,12 @@ function previewFor(group: ResolvedComponentGroup) {
     <section class="content-section catalog-intro">
       <div class="section-heading">
         <span>03 · CATALOG</span>
-        <div><h2>从组件目录开始查询</h2><p>可按组件族、用途或网站类型查找；名称旁的 ◆ 表示自研控件。</p></div>
+        <div><h2>从组件目录开始查询</h2><p>可按组件族、用途、网站类型、用户流程或数据类型查找；名称旁的 ◆ 表示自研控件。</p></div>
       </div>
       <div class="home-grouping-toolbar">
-        <DlSegmented v-model="groupingMode" :items="groupingModeOptions" size="md" aria-label="首页组件分组方式" />
+        <div class="home-grouping-mode">
+          <DlSegmented v-model="groupingMode" :items="groupingModeOptions" size="md" aria-label="首页组件分组方式" />
+        </div>
         <p>{{ groupingModeDescription(groupingMode) }}</p>
       </div>
       <div class="home-catalog-grid">

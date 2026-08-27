@@ -171,14 +171,15 @@ function toggleGroup(group: ResolvedComponentGroup) {
       <span>COMPONENTS</span>
       <b>组件目录</b>
       <small>{{ groupingModeDescription(groupingMode) }}</small>
-      <DlSegmented
-        v-model="groupingMode"
-        class="sidebar-grouping-mode"
-        :items="groupingModeOptions"
-        size="sm"
-        block
-        aria-label="组件目录分组方式"
-      />
+      <div class="sidebar-grouping-mode">
+        <DlSegmented
+          v-model="groupingMode"
+          :items="groupingModeOptions"
+          size="sm"
+          block
+          aria-label="组件目录分组方式"
+        />
+      </div>
     </div>
 
     <nav aria-label="组件大纲">

@@ -124,4 +124,4 @@ if (errors.length) {
 }
 
 const scenarioCount = componentCatalog.reduce((total, component) => total + component.scenarios.length, 0)
-console.log(`组件文档审计通过：${ids.length} 个组件、${scenarioCount} 个按需案例、${apiIds.length} 份 API、${Object.keys(componentGuidance).length} 份使用决策说明、3 套目录分组。`)
+console.log(`组件文档审计通过：${ids.length} 个组件、${scenarioCount} 个按需案例、${apiIds.length} 份 API、${Object.keys(componentGuidance).length} 份使用决策说明、${componentGroupingModes.length} 套目录分组。`)
