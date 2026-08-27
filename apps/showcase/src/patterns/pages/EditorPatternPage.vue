@@ -8,7 +8,7 @@ import {
   DlColorSwatchPicker,
   DlDatePicker,
   DlDialog,
-  DlInput,
+  DlInputText,
   DlLabel,
   DlMenubar,
   DlMdx,
@@ -145,7 +145,7 @@ function publish() {
         <template #panel-metadata>
           <aside class="editor-panel metadata-panel">
             <header><small>INSPECTOR</small><b>条目属性</b></header>
-            <div class="form-field"><DlLabel for="archive-title">显示标题</DlLabel><DlInput id="archive-title" v-model="title" /></div>
+            <div class="form-field"><DlLabel for="archive-title">显示标题</DlLabel><DlInputText id="archive-title" v-model="title" /></div>
             <div class="form-field"><DlLabel for="archive-summary">内容简介</DlLabel><DlTextarea id="archive-summary" v-model="summary" /></div>
             <div class="form-field"><DlLabel>分类标签</DlLabel><DlTagsInput v-model="tags" :max="8" /></div>
             <div class="form-field"><DlLabel>观看状态</DlLabel><DlSelect v-model="status" :options="statusOptions" /></div>

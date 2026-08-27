@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlBadge, DlButton, DlCard, DlInput, type DlComponentRef, type DlPropertyChangeEvent } from '@dragon-liquid/vue'
+import { DlBadge, DlButton, DlCard, DlInputText, type DlComponentRef, type DlPropertyChangeEvent } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
@@ -97,7 +97,7 @@ function runBehavior() {
 
     <DlCard v-else-if="scenario === 'form-submit'" padding="lg" class="scenario-form-card">
       <div class="scenario-card-heading"><span>01</span><div><b>项目设置</b><small>修改项目的显示名称</small></div></div>
-      <label class="scenario-field"><span>项目名称</span><DlInput v-model="projectName" /></label>
+      <label class="scenario-field"><span>项目名称</span><DlInputText v-model="projectName" /></label>
       <div class="scenario-actions"><DlButton variant="ghost">取消</DlButton><DlButton variant="primary" :loading="loading" @click="save">{{ loading ? '正在保存' : '保存项目' }}</DlButton></div>
     </DlCard>
 

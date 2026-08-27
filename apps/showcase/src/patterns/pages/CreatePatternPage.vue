@@ -13,7 +13,7 @@ import {
   DlDatePicker,
   DlDialog,
   DlDrawer,
-  DlInput,
+  DlInputText,
   DlLabel,
   DlNumberField,
   DlPopover,
@@ -156,13 +156,13 @@ function createRecord() {
             <div class="create-grid">
               <div class="form-field">
                 <DlLabel for="create-title">中文标题 *</DlLabel>
-                <DlInput id="create-title" v-model="title" :status="titleStatus" placeholder="例如：葬送的芙莉莲">
+                <DlInputText id="create-title" v-model="title" :status="titleStatus" placeholder="例如：葬送的芙莉莲">
                   <template #leading>⌕</template><template #trailing><DlBadge v-if="titleStatus !== 'default'" :tone="titleStatus === 'error' ? 'danger' : titleStatus">{{ titleStatus }}</DlBadge></template>
-                </DlInput>
+                </DlInputText>
                 <small v-if="titleStatus === 'error'" class="field-message field-message--error">标题不能为空。</small>
                 <small v-else-if="titleStatus === 'warning'" class="field-message field-message--warning">收藏库中已有同名作品，可以继续创建不同版本。</small>
               </div>
-              <div class="form-field"><DlLabel for="create-original">原始标题</DlLabel><DlInput id="create-original" v-model="originalTitle" placeholder="Sousou no Frieren" /></div>
+              <div class="form-field"><DlLabel for="create-original">原始标题</DlLabel><DlInputText id="create-original" v-model="originalTitle" placeholder="Sousou no Frieren" /></div>
               <div class="form-field"><DlLabel>制作公司 *</DlLabel><DlAutocomplete v-model="studio" :suggestions="studioSuggestions" placeholder="输入或选择制作公司" /></div>
               <div class="form-field"><DlLabel>原始语言</DlLabel><DlSelect v-model="sourceLanguage" :options="languageOptions" /></div>
             </div>

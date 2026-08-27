@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlBadge, DlButton, DlDialog, DlInput, DlSelect, type DlSelectOption, type DlTone } from '@dragon-liquid/vue'
+import { DlBadge, DlButton, DlDialog, DlInputText, DlSelect, type DlSelectOption, type DlTone } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
@@ -121,7 +121,7 @@ function showTone(tone: DlTone) {
   'create-record': {
     title: '创建收藏记录',
     description: '适合字段较少、上下文明确的小型创建流程。',
-    code: vueSfc({ imports: ['DlButton', 'DlDialog', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('')\nconst status = ref('planned')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n]`, template: `  <DlButton variant="primary" @click="open = true">收录新作品</DlButton>\n  <DlDialog v-model:open="open" title="收录新作品" size="md">\n    <div class="form">\n      <DlInput v-model="title" placeholder="作品标题" />\n      <DlSelect v-model="status" :options="statusOptions" />\n    </div>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton variant="primary" @click="open = false">确认收录</DlButton>\n    </template>\n  </DlDialog>`, style: `.form { display: grid; gap: 12px; }` }),
+    code: vueSfc({ imports: ['DlButton', 'DlDialog', 'DlInputText', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('')\nconst status = ref('planned')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n]`, template: `  <DlButton variant="primary" @click="open = true">收录新作品</DlButton>\n  <DlDialog v-model:open="open" title="收录新作品" size="md">\n    <div class="form">\n      <DlInputText v-model="title" placeholder="作品标题" />\n      <DlSelect v-model="status" :options="statusOptions" />\n    </div>\n    <template #footer>\n      <DlButton variant="ghost" @click="open = false">取消</DlButton>\n      <DlButton variant="primary" @click="open = false">确认收录</DlButton>\n    </template>\n  </DlDialog>`, style: `.form { display: grid; gap: 12px; }` }),
     tips: ['表单内容超过一个屏幕时优先使用独立页面。', '提交成功后关闭浮层，并在原页面提供结果反馈。'],
   },
   'featured-preview': {
@@ -235,7 +235,7 @@ function showTone(tone: DlTone) {
     </div>
 
     <div v-else-if="scenario === 'create-record'" class="center-trigger"><DlButton variant="primary" size="lg" @click="createOpen = true"><template #leading>＋</template>收录新作品</DlButton>
-      <DlDialog v-model:open="createOpen" title="收录新作品" description="填写最基本的信息，之后可以继续完善资料。" size="md"><div class="dialog-form"><label class="scenario-field"><span>作品标题</span><DlInput v-model="title" /></label><label class="scenario-field"><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></div><template #footer><DlButton variant="ghost" @click="createOpen = false">取消</DlButton><DlButton variant="primary" @click="createOpen = false">确认收录</DlButton></template></DlDialog>
+      <DlDialog v-model:open="createOpen" title="收录新作品" description="填写最基本的信息，之后可以继续完善资料。" size="md"><div class="dialog-form"><label class="scenario-field"><span>作品标题</span><DlInputText v-model="title" /></label><label class="scenario-field"><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></div><template #footer><DlButton variant="ghost" @click="createOpen = false">取消</DlButton><DlButton variant="primary" @click="createOpen = false">确认收录</DlButton></template></DlDialog>
     </div>
 
     <div v-else-if="scenario === 'featured-preview'" class="center-trigger"><DlButton variant="primary" size="lg" @click="featuredOpen = true">查看本周推荐</DlButton>

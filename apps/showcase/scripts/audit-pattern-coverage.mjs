@@ -2,12 +2,12 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { componentCatalog } from '../src/catalog.ts'
-import nativeInputTypes from '../src/native-inputs.json' with { type: 'json' }
+import inputControls from '../src/input-controls.json' with { type: 'json' }
 import { componentHomes, componentUsageLocations, coveragePageIds, scenarioCoverage } from '../src/patterns/pattern.coverage.ts'
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url))
 const patternRoot = resolve(scriptDirectory, '../src/patterns')
-const nativeInputDocsSource = readFileSync(resolve(scriptDirectory, '../src/docs/NativeInputDocs.vue'), 'utf8')
+const inputControlDocsSource = readFileSync(resolve(scriptDirectory, '../src/docs/InputControlDocs.vue'), 'utf8')
 const errors = []
 
 function collectVueFiles(directory) {
@@ -35,11 +35,12 @@ for (const component of componentCatalog) {
 
   if (!componentUsageLocations[component.id]) errors.push(`${component.id} 没有详细的实景位置说明。`)
 
-  if (component.maturity === 'native') {
-    const nativeInput = nativeInputTypes.find(input => input.id === component.id)
-    if (!nativeInput) errors.push(`${component.id} 缺少原生 input 类型定义。`)
-    else if (!new RegExp(`<input\\b[^>]*\\btype=["']${nativeInput.type}["']`).test(nativeInputDocsSource)) {
-      errors.push(`${component.id} 没有用固定的 input[type="${nativeInput.type}"] 渲染独立案例。`)
+  if (component.id.startsWith('input-')) {
+    const inputControl = inputControls.find(input => input.id === component.id)
+    const tag = componentTag(component.id)
+    if (!inputControl) errors.push(`${component.id} 缺少独立 input 控件定义。`)
+    else if (!new RegExp(`<${tag}\\b`).test(inputControlDocsSource)) {
+      errors.push(`${component.id} 没有使用独立控件 ${tag} 渲染案例。`)
     }
   } else {
     const tag = componentTag(component.id)

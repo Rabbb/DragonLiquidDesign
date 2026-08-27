@@ -140,7 +140,7 @@ function previewFor(group: ResolvedComponentGroup) {
             :key="`${group.id}-${item.id}`"
             :href="componentRoute(item.id)"
           >
-            <b>{{ item.name }}<CustomControlMark v-if="item.maturity === 'custom'" /> <em :class="{ alpha: item.maturity === 'alpha', native: item.maturity === 'native' }">{{ item.maturity === 'native' ? 'NATIVE' : item.maturity === 'alpha' ? 'ALPHA' : item.implementation === 'ready' ? 'READY' : 'ROADMAP' }}</em></b>
+            <b>{{ item.name }}<CustomControlMark v-if="item.maturity === 'custom'" /> <em :class="{ alpha: item.maturity === 'alpha' }">{{ item.maturity === 'alpha' ? 'ALPHA' : item.implementation === 'ready' ? 'READY' : 'ROADMAP' }}</em></b>
             <small>{{ item.summary }}</small><i>→</i>
           </a>
           <a class="home-category-more" :href="componentRoute(group.components[0].id)">

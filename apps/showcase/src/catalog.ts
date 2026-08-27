@@ -1,4 +1,4 @@
-import nativeInputTypes from './native-inputs.json' with { type: 'json' }
+import inputControls from './input-controls.json' with { type: 'json' }
 
 export const componentCategories = [
   { id: 'foundation', label: '基础', english: 'FOUNDATION', summary: 'Dragon Liquid 的视觉与输入基础组件。' },
@@ -10,7 +10,7 @@ export const componentCategories = [
 
 export type ComponentCategoryId = typeof componentCategories[number]['id']
 export type ImplementationStatus = 'ready' | 'planned'
-export type RekaMaturity = 'custom' | 'native' | 'stable' | 'alpha'
+export type RekaMaturity = 'custom' | 'stable' | 'alpha'
 
 export type ScenarioDefinition = {
   id: string
@@ -100,16 +100,16 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'card-actions', label: '卡片快捷操作', summary: '收藏、编辑与移除' },
     ],
   },
-  ...nativeInputTypes.map(input => ({
+  ...inputControls.map(input => ({
     id: input.id,
-    name: `input[type="${input.type}"] ${input.label}`,
+    name: `${input.type === 'datetime-local' ? 'DlInputDatetimeLocal' : `DlInput${input.type[0].toUpperCase()}${input.type.slice(1)}`} ${input.label}`,
     category: 'form' as const,
     summary: input.summary,
-    since: 'HTML',
+    since: '0.6.0-alpha.17',
     implementation: 'ready' as const,
-    maturity: 'native' as const,
+    maturity: 'custom' as const,
     sourceUrl: `https://developer.mozilla.org/docs/Web/HTML/Reference/Elements/input/${input.type}`,
-    scenarios: [{ id: 'basic', label: '独立参考', summary: `${input.type} 专用属性、行为与案例` }],
+    scenarios: [{ id: 'basic', label: '独立控件', summary: `${input.type} 固定语义、专用属性与案例` }],
   })),
   {
     id: 'textarea',

@@ -6,7 +6,7 @@ import {
   DlCard,
   DlCheckbox,
   DlDialog,
-  DlInput,
+  DlInputText,
   DlListbox,
   DlProgress,
   DlRadioGroup,
@@ -95,7 +95,7 @@ function reset() {
       <main>
         <DlCard v-if="step === 1" class="import-panel" padding="lg">
           <small>STEP 01 · SOURCE</small><h2>选择数据来源</h2><p>真实项目中可由文件选择器读取 JSON；这里使用文件名和固定数据演示完整交互。</p>
-          <div class="import-file-row"><span>JSON</span><DlInput v-model="fileName" placeholder="收藏文件名" /><DlButton variant="primary" :disabled="!fileName.trim()" @click="analyze">分析文件</DlButton></div>
+          <div class="import-file-row"><span>JSON</span><DlInputText v-model="fileName" placeholder="收藏文件名" /><DlButton variant="primary" :disabled="!fileName.trim()" @click="analyze">分析文件</DlButton></div>
           <div class="import-dropzone"><b>把收藏导出文件拖到这里</b><span>支持 JSON · 最大 10 MB · 所有处理均在本地完成</span></div>
         </DlCard>
 

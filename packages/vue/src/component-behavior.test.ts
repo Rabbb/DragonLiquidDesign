@@ -3,7 +3,7 @@ import { nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import {
   DlButton,
-  DlInput,
+  DlInputText,
   DlPagination,
   DlPopover,
   getDlComponentBehavior,
@@ -65,7 +65,7 @@ describe('managed component instance behavior', () => {
   })
 
   it('focuses and selects native fields through the component instance', async () => {
-    const wrapper = mount(DlInput, { attachTo: document.body, props: { modelValue: 'Dragon Liquid' } })
+    const wrapper = mount(DlInputText, { attachTo: document.body, props: { modelValue: 'Dragon Liquid' } })
     const instance = control(wrapper)
     const input = wrapper.get('input').element as HTMLInputElement
 
@@ -115,7 +115,7 @@ describe('managed component instance behavior', () => {
   })
 
   it('publishes behavior metadata for all official components', () => {
-    expect(getDlComponentBehaviors()).toHaveLength(70)
+    expect(getDlComponentBehaviors()).toHaveLength(91)
     const pagination = getDlComponentBehavior('Pagination')
     expect(pagination?.valueProperty).toBe('page')
     expect(pagination?.methods.map(item => item.name)).toContain('goTo')

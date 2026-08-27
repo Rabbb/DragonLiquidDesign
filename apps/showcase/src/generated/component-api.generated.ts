@@ -1901,6 +1901,1856 @@ export default {
       }
     ]
   },
+  "input-button": {
+    "props": [
+      {
+        "prop": "value",
+        "description": "表单提交或选择操作使用的值。",
+        "type": "string",
+        "defaultValue": "'执行操作'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-checkbox": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "value",
+        "description": "表单提交或选择操作使用的值。",
+        "type": "string",
+        "defaultValue": "'on'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-color": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "'#000000'"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "alpha",
+        "description": "允许颜色值包含透明度通道；浏览器支持情况需要单独确认。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "colorspace",
+        "description": "声明颜色选择器使用的颜色空间。",
+        "type": "\"limited-srgb\" | \"display-p3\"",
+        "defaultValue": "\"limited-srgb\""
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-date": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "min",
+        "description": "设置允许输入的最小日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "max",
+        "description": "设置允许输入的最大日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "step",
+        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
+        "type": "number | \"any\"",
+        "defaultValue": "类型默认值"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-datetime-local": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "min",
+        "description": "设置允许输入的最小日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "max",
+        "description": "设置允许输入的最大日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "step",
+        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
+        "type": "number | \"any\"",
+        "defaultValue": "类型默认值"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-email": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "autocomplete",
+        "description": "提示浏览器该字段允许采用的自动填充语义。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "multiple",
+        "description": "允许输入接收多个邮箱地址或多个文件。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "minlength",
+        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "maxlength",
+        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "pattern",
+        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
+        "type": "regular expression source",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "在空值时显示简短格式提示，不能替代 label。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-file": {
+    "props": [
+      {
+        "prop": "accept",
+        "description": "设置 accept 属性。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "capture",
+        "description": "设置 capture 属性。",
+        "type": "'user' | 'environment'",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "multiple",
+        "description": "是否允许同时选择多个值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "是否标记为表单必填项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-hidden": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | number | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-image": {
+    "props": [
+      {
+        "prop": "src",
+        "description": "要加载的图片资源地址。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "alt",
+        "description": "图片无法展示时使用的替代文本。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "width",
+        "description": "窗口或区域的宽度。",
+        "type": "number | string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "height",
+        "description": "窗口或区域的高度。",
+        "type": "number | string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "formaction",
+        "description": "覆盖所属表单的 action，仅对提交型输入生效。",
+        "type": "URL string",
+        "defaultValue": "form.action"
+      },
+      {
+        "prop": "formenctype",
+        "description": "覆盖提交数据的编码方式，仅对提交型输入生效。",
+        "type": "\"application/x-www-form-urlencoded\" | \"multipart/form-data\" | \"text/plain\"",
+        "defaultValue": "form.enctype"
+      },
+      {
+        "prop": "formmethod",
+        "description": "覆盖提交使用的 HTTP 方法，仅对提交型输入生效。",
+        "type": "\"get\" | \"post\" | \"dialog\"",
+        "defaultValue": "form.method"
+      },
+      {
+        "prop": "formnovalidate",
+        "description": "提交时跳过原生约束校验，仅对提交型输入生效。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "formtarget",
+        "description": "覆盖提交结果打开的位置，仅对提交型输入生效。",
+        "type": "string",
+        "defaultValue": "form.target"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-month": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "min",
+        "description": "设置允许输入的最小日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "max",
+        "description": "设置允许输入的最大日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "step",
+        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
+        "type": "number | \"any\"",
+        "defaultValue": "类型默认值"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-number": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "number | null",
+        "defaultValue": "null"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "min",
+        "description": "设置允许输入的最小日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "max",
+        "description": "设置允许输入的最大日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "step",
+        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
+        "type": "number | \"any\"",
+        "defaultValue": "类型默认值"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "在空值时显示简短格式提示，不能替代 label。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-password": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "autocomplete",
+        "description": "提示浏览器该字段允许采用的自动填充语义。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "minlength",
+        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "maxlength",
+        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "pattern",
+        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
+        "type": "regular expression source",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "在空值时显示简短格式提示，不能替代 label。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-radio": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | number | null",
+        "defaultValue": "null"
+      },
+      {
+        "prop": "value",
+        "description": "表单提交或选择操作使用的值。",
+        "type": "string | number",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-range": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "number | null",
+        "defaultValue": "50"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "min",
+        "description": "设置允许输入的最小日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "max",
+        "description": "设置允许输入的最大日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "step",
+        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
+        "type": "number | \"any\"",
+        "defaultValue": "类型默认值"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-reset": {
+    "props": [
+      {
+        "prop": "value",
+        "description": "表单提交或选择操作使用的值。",
+        "type": "string",
+        "defaultValue": "'重置'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-search": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "autocomplete",
+        "description": "提示浏览器该字段允许采用的自动填充语义。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "minlength",
+        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "maxlength",
+        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "pattern",
+        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
+        "type": "regular expression source",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "在空值时显示简短格式提示，不能替代 label。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-submit": {
+    "props": [
+      {
+        "prop": "value",
+        "description": "表单提交或选择操作使用的值。",
+        "type": "string",
+        "defaultValue": "'提交'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "formaction",
+        "description": "覆盖所属表单的 action，仅对提交型输入生效。",
+        "type": "URL string",
+        "defaultValue": "form.action"
+      },
+      {
+        "prop": "formenctype",
+        "description": "覆盖提交数据的编码方式，仅对提交型输入生效。",
+        "type": "\"application/x-www-form-urlencoded\" | \"multipart/form-data\" | \"text/plain\"",
+        "defaultValue": "form.enctype"
+      },
+      {
+        "prop": "formmethod",
+        "description": "覆盖提交使用的 HTTP 方法，仅对提交型输入生效。",
+        "type": "\"get\" | \"post\" | \"dialog\"",
+        "defaultValue": "form.method"
+      },
+      {
+        "prop": "formnovalidate",
+        "description": "提交时跳过原生约束校验，仅对提交型输入生效。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "formtarget",
+        "description": "覆盖提交结果打开的位置，仅对提交型输入生效。",
+        "type": "string",
+        "defaultValue": "form.target"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "input-tel": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "autocomplete",
+        "description": "提示浏览器该字段允许采用的自动填充语义。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "minlength",
+        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "maxlength",
+        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "pattern",
+        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
+        "type": "regular expression source",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "在空值时显示简短格式提示，不能替代 label。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-text": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "autocomplete",
+        "description": "提示浏览器该字段允许采用的自动填充语义。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "minlength",
+        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "maxlength",
+        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "pattern",
+        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
+        "type": "regular expression source",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "在空值时显示简短格式提示，不能替代 label。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-time": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "min",
+        "description": "设置允许输入的最小日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "max",
+        "description": "设置允许输入的最大日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "step",
+        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
+        "type": "number | \"any\"",
+        "defaultValue": "类型默认值"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-url": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "autocomplete",
+        "description": "提示浏览器该字段允许采用的自动填充语义。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "minlength",
+        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "maxlength",
+        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
+        "type": "non-negative integer",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "pattern",
+        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
+        "type": "regular expression source",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "在空值时显示简短格式提示，不能替代 label。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "input-week": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string | null",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "定义表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "min",
+        "description": "设置允许输入的最小日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "max",
+        "description": "设置允许输入的最大日期、时间或数值。",
+        "type": "与输入类型匹配的字符串",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "step",
+        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
+        "type": "number | \"any\"",
+        "defaultValue": "类型默认值"
+      },
+      {
+        "prop": "list",
+        "description": "关联 datalist 的 id，为输入提供原生建议值。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "readonly",
+        "description": "保留字段值和焦点能力，但禁止用户修改。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "要求该控件在表单提交前提供有效值或选择。",
+        "type": "boolean attribute",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "form",
+        "description": "通过表单 id 把输入关联到其所属 form 元素。",
+        "type": "string",
+        "defaultValue": "最近的祖先 form"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
   "label": {
     "props": [
       {
@@ -5878,1484 +7728,6 @@ export default {
         "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
         "type": "number",
         "defaultValue": "undefined"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-button": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"button\"",
-        "defaultValue": "\"button\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-checkbox": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"checkbox\"",
-        "defaultValue": "\"checkbox\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "checked",
-        "description": "设置复选框或单选按钮的初始选中状态。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-color": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"color\"",
-        "defaultValue": "\"color\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "alpha",
-        "description": "允许颜色值包含透明度通道；浏览器支持情况需要单独确认。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "colorspace",
-        "description": "声明颜色选择器使用的颜色空间。",
-        "type": "\"limited-srgb\" | \"display-p3\"",
-        "defaultValue": "\"limited-srgb\""
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-date": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"date\"",
-        "defaultValue": "\"date\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-datetime-local": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"datetime-local\"",
-        "defaultValue": "\"datetime-local\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-email": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"email\"",
-        "defaultValue": "\"email\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "autocomplete",
-        "description": "提示浏览器该字段允许采用的自动填充语义。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "multiple",
-        "description": "允许输入接收多个邮箱地址或多个文件。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "minlength",
-        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "maxlength",
-        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "pattern",
-        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
-        "type": "regular expression source",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "placeholder",
-        "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "size",
-        "description": "设置文本输入大致可见的字符宽度。",
-        "type": "positive integer",
-        "defaultValue": "20"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-file": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"file\"",
-        "defaultValue": "\"file\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "accept",
-        "description": "限制文件选择器可接受的文件类型。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "capture",
-        "description": "在支持的移动设备上提示使用前置或后置媒体采集设备。",
-        "type": "\"user\" | \"environment\" | string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "multiple",
-        "description": "允许输入接收多个邮箱地址或多个文件。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "files",
-        "description": "读取用户已经选择的文件集合；该值由浏览器维护。",
-        "type": "FileList | null (readonly)",
-        "defaultValue": "null"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-hidden": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"hidden\"",
-        "defaultValue": "\"hidden\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-image": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"image\"",
-        "defaultValue": "\"image\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "src",
-        "description": "指定图像提交按钮使用的图片资源地址。",
-        "type": "URL string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "alt",
-        "description": "图像无法显示时使用的替代文字，也是图像按钮的可访问名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "width",
-        "description": "设置图像提交按钮的固有显示宽度。",
-        "type": "number (CSS px)",
-        "defaultValue": "图片固有宽度"
-      },
-      {
-        "prop": "height",
-        "description": "设置图像提交按钮的固有显示高度。",
-        "type": "number (CSS px)",
-        "defaultValue": "图片固有高度"
-      },
-      {
-        "prop": "formaction",
-        "description": "覆盖所属表单的 action，仅对提交型输入生效。",
-        "type": "URL string",
-        "defaultValue": "form.action"
-      },
-      {
-        "prop": "formenctype",
-        "description": "覆盖提交数据的编码方式，仅对提交型输入生效。",
-        "type": "\"application/x-www-form-urlencoded\" | \"multipart/form-data\" | \"text/plain\"",
-        "defaultValue": "form.enctype"
-      },
-      {
-        "prop": "formmethod",
-        "description": "覆盖提交使用的 HTTP 方法，仅对提交型输入生效。",
-        "type": "\"get\" | \"post\" | \"dialog\"",
-        "defaultValue": "form.method"
-      },
-      {
-        "prop": "formnovalidate",
-        "description": "提交时跳过原生约束校验，仅对提交型输入生效。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "formtarget",
-        "description": "覆盖提交结果打开的位置，仅对提交型输入生效。",
-        "type": "string",
-        "defaultValue": "form.target"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-month": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"month\"",
-        "defaultValue": "\"month\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-number": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"number\"",
-        "defaultValue": "\"number\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "placeholder",
-        "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-password": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"password\"",
-        "defaultValue": "\"password\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "autocomplete",
-        "description": "提示浏览器该字段允许采用的自动填充语义。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "minlength",
-        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "maxlength",
-        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "pattern",
-        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
-        "type": "regular expression source",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "placeholder",
-        "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "size",
-        "description": "设置文本输入大致可见的字符宽度。",
-        "type": "positive integer",
-        "defaultValue": "20"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-radio": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"radio\"",
-        "defaultValue": "\"radio\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "checked",
-        "description": "设置复选框或单选按钮的初始选中状态。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-range": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"range\"",
-        "defaultValue": "\"range\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-reset": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"reset\"",
-        "defaultValue": "\"reset\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-search": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"search\"",
-        "defaultValue": "\"search\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "autocomplete",
-        "description": "提示浏览器该字段允许采用的自动填充语义。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "minlength",
-        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "maxlength",
-        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "pattern",
-        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
-        "type": "regular expression source",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "placeholder",
-        "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "size",
-        "description": "设置文本输入大致可见的字符宽度。",
-        "type": "positive integer",
-        "defaultValue": "20"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-submit": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"submit\"",
-        "defaultValue": "\"submit\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "formaction",
-        "description": "覆盖所属表单的 action，仅对提交型输入生效。",
-        "type": "URL string",
-        "defaultValue": "form.action"
-      },
-      {
-        "prop": "formenctype",
-        "description": "覆盖提交数据的编码方式，仅对提交型输入生效。",
-        "type": "\"application/x-www-form-urlencoded\" | \"multipart/form-data\" | \"text/plain\"",
-        "defaultValue": "form.enctype"
-      },
-      {
-        "prop": "formmethod",
-        "description": "覆盖提交使用的 HTTP 方法，仅对提交型输入生效。",
-        "type": "\"get\" | \"post\" | \"dialog\"",
-        "defaultValue": "form.method"
-      },
-      {
-        "prop": "formnovalidate",
-        "description": "提交时跳过原生约束校验，仅对提交型输入生效。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "formtarget",
-        "description": "覆盖提交结果打开的位置，仅对提交型输入生效。",
-        "type": "string",
-        "defaultValue": "form.target"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-tel": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"tel\"",
-        "defaultValue": "\"tel\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "autocomplete",
-        "description": "提示浏览器该字段允许采用的自动填充语义。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "minlength",
-        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "maxlength",
-        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "pattern",
-        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
-        "type": "regular expression source",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "placeholder",
-        "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "size",
-        "description": "设置文本输入大致可见的字符宽度。",
-        "type": "positive integer",
-        "defaultValue": "20"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-text": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"text\"",
-        "defaultValue": "\"text\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "autocomplete",
-        "description": "提示浏览器该字段允许采用的自动填充语义。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "minlength",
-        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "maxlength",
-        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "pattern",
-        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
-        "type": "regular expression source",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "placeholder",
-        "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "size",
-        "description": "设置文本输入大致可见的字符宽度。",
-        "type": "positive integer",
-        "defaultValue": "20"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-time": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"time\"",
-        "defaultValue": "\"time\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-url": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"url\"",
-        "defaultValue": "\"url\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "autocomplete",
-        "description": "提示浏览器该字段允许采用的自动填充语义。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "minlength",
-        "description": "要求输入至少包含指定数量的 UTF-16 代码单元。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "maxlength",
-        "description": "限制用户可输入的 UTF-16 代码单元最大数量。",
-        "type": "non-negative integer",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "pattern",
-        "description": "使用 JavaScript 正则表达式约束输入的完整值。",
-        "type": "regular expression source",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "placeholder",
-        "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "size",
-        "description": "设置文本输入大致可见的字符宽度。",
-        "type": "positive integer",
-        "defaultValue": "20"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": []
-  },
-  "input-week": {
-    "props": [
-      {
-        "prop": "type",
-        "description": "固定该参考控件的原生输入类型，不通过运行时参数切换。",
-        "type": "\"week\"",
-        "defaultValue": "\"week\""
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "value",
-        "description": "设置输入的初始值或提交值。",
-        "type": "string",
-        "defaultValue": "\"\""
-      },
-      {
-        "prop": "min",
-        "description": "设置允许输入的最小日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "max",
-        "description": "设置允许输入的最大日期、时间或数值。",
-        "type": "与输入类型匹配的字符串",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "readonly",
-        "description": "保留字段值和焦点能力，但禁止用户修改。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "disabled",
-        "description": "禁止该输入接收焦点、交互或随表单提交。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
       }
     ],
     "relatedTypes": []

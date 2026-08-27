@@ -18,13 +18,13 @@
 Dragon Liquid Design 的 Vue 3 组件包，使用 Reka UI、Tailwind CSS 与 Tailwind Variants 构建。
 
 ```ts
-import { DlButton, DlCard, DlCheckbox, DlDialog, DlInput, DlTabs } from '@dragon-liquid/vue'
+import { DlButton, DlCard, DlCheckbox, DlDialog, DlInputSearch, DlTabs } from '@dragon-liquid/vue'
 import '@dragon-liquid/vue/style.css'
 ```
 
 ```vue
 <DlCard interactive>
-  <DlInput v-model="keyword" placeholder="搜索收藏" />
+  <DlInputSearch v-model="keyword" placeholder="搜索收藏" />
   <DlButton>确认</DlButton>
 </DlCard>
 ```
@@ -131,10 +131,11 @@ createApp(App).use(mdxSecurity).mount('#app')
 
 配置在创建时会被规范化、深度冻结并隐藏在闭包中，内嵌 WASM 模块在每次 URL 校验前核对白名单完整性指纹；异常时默认拒绝。WASM 不能阻止拥有页面控制权的人替换整个前端程序，因此生产环境仍需使用服务端 URL 校验和 CSP 作为真正的安全边界。
 
-当前公共组件共 70 个：
+当前公共组件共 91 个：
 
-- 48 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈。
+- 69 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.17` 将 22 种 HTML input type 拆成独立 `DlInputXxx` 控件，删除通用 `DlInput` 与公开 `type` 属性。
 - `0.6.0-alpha.16` 为推荐控件补齐实例 API 元数据，并发布不可变的最终本地包。
 - `0.6.0-alpha.15` 从 TodoMoe 推荐控件中迁移 `DlMultiChoice`、`DlSegmented` 与 `DlVirtualList`，补充分组多选、互斥分段和等高长列表窗口化渲染。
 - `0.6.0-alpha.12` 将 TodoMoe 原版 Select 与 TimePicker 迁移为独立命名的 `DlChoicePortal`、`DlTimeWheel`，保留分组检索、自定义值、自适应抽屉、双滚轮、分钟步长与禁用时段。

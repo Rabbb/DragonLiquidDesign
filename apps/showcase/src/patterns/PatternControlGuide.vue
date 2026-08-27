@@ -556,7 +556,6 @@ function switchGuideTab(direction: 1 | -1) {
 function toneFor(component: ComponentDefinition): DlTone {
   if (component.maturity === 'alpha') return 'warning'
   if (component.maturity === 'custom') return 'accent'
-  if (component.maturity === 'native') return 'muted'
   return 'success'
 }
 

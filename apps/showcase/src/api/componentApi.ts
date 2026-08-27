@@ -40,18 +40,18 @@ export function componentApiTables(componentId: string, componentName: string): 
   if (!definition) throw new Error(`组件 ${componentId} 缺少属性 API 元数据。`)
 
   const behavior = getDlComponentBehavior(componentName)
-  const isNativeInput = componentId.startsWith('input-')
+  const isInputControl = componentId.startsWith('input-')
 
   return [
     {
       key: `${componentId}-props`,
       eyebrow: 'API',
-      title: isNativeInput ? '原生属性' : '属性',
-      description: isNativeInput
-        ? `${componentName} 真正适用的 HTML 属性与默认行为。`
+      title: isInputControl ? '组件与原生属性' : '属性',
+      description: isInputControl
+        ? `${componentName} 的公开 Props，以及该固定输入语义真正适用的 HTML 属性。`
         : `${componentName} 的公开 Props、类型与默认值。`,
-      badge: `${componentName} · ${definition.props.length} ${isNativeInput ? 'ATTRIBUTES' : 'PROPS'}`,
-      firstColumnTitle: isNativeInput ? 'HTML 属性' : '属性',
+      badge: `${componentName} · ${definition.props.length} ${isInputControl ? 'API ENTRIES' : 'PROPS'}`,
+      firstColumnTitle: '属性',
       thirdColumnTitle: '类型',
       lastColumnTitle: '默认值',
       rows: definition.props,

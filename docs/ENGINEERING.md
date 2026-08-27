@@ -49,7 +49,7 @@
 
 - `DlButton`
 - `DlIconButton`
-- `DlInput`
+- `DlInputText`（`0.6.0-alpha.17` 起扩展为 22 个固定类型的 `DlInputXxx` 独立控件）
 - `DlTextarea`
 - `DlSelect`
 - `DlBadge`

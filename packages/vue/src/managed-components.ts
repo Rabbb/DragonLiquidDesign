@@ -30,7 +30,28 @@ import RawDlDropdownMenu from './components/DlDropdownMenu.vue'
 import RawDlEditable from './components/DlEditable.vue'
 import RawDlHoverCard from './components/DlHoverCard.vue'
 import RawDlIconButton from './components/DlIconButton.vue'
-import RawDlInput from './components/DlInput.vue'
+import RawDlInputButton from './components/DlInputButton.vue'
+import RawDlInputCheckbox from './components/DlInputCheckbox.vue'
+import RawDlInputColor from './components/DlInputColor.vue'
+import RawDlInputDate from './components/DlInputDate.vue'
+import RawDlInputDatetimeLocal from './components/DlInputDatetimeLocal.vue'
+import RawDlInputEmail from './components/DlInputEmail.vue'
+import RawDlInputFile from './components/DlInputFile.vue'
+import RawDlInputHidden from './components/DlInputHidden.vue'
+import RawDlInputImage from './components/DlInputImage.vue'
+import RawDlInputMonth from './components/DlInputMonth.vue'
+import RawDlInputNumber from './components/DlInputNumber.vue'
+import RawDlInputPassword from './components/DlInputPassword.vue'
+import RawDlInputRadio from './components/DlInputRadio.vue'
+import RawDlInputRange from './components/DlInputRange.vue'
+import RawDlInputReset from './components/DlInputReset.vue'
+import RawDlInputSearch from './components/DlInputSearch.vue'
+import RawDlInputSubmit from './components/DlInputSubmit.vue'
+import RawDlInputTel from './components/DlInputTel.vue'
+import RawDlInputText from './components/DlInputText.vue'
+import RawDlInputTime from './components/DlInputTime.vue'
+import RawDlInputUrl from './components/DlInputUrl.vue'
+import RawDlInputWeek from './components/DlInputWeek.vue'
 import RawDlLabel from './components/DlLabel.vue'
 import RawDlListbox from './components/DlListbox.vue'
 import RawDlMdx from './components/DlMdx.vue'
@@ -257,7 +278,28 @@ export const DlEditable = managed(RawDlEditable, 'DlEditable', {
 })
 export const DlHoverCard = managed(RawDlHoverCard, 'DlHoverCard')
 export const DlIconButton = managed(RawDlIconButton, 'DlIconButton', { domEvents: actionEvents })
-export const DlInput = managed(RawDlInput, 'DlInput', { domEvents: fieldEvents })
+export const DlInputButton = managed(RawDlInputButton, 'DlInputButton', { domEvents: actionEvents })
+export const DlInputCheckbox = managed(RawDlInputCheckbox, 'DlInputCheckbox', { domEvents: fieldEvents })
+export const DlInputColor = managed(RawDlInputColor, 'DlInputColor', { domEvents: fieldEvents })
+export const DlInputDate = managed(RawDlInputDate, 'DlInputDate', { domEvents: fieldEvents })
+export const DlInputDatetimeLocal = managed(RawDlInputDatetimeLocal, 'DlInputDatetimeLocal', { domEvents: fieldEvents })
+export const DlInputEmail = managed(RawDlInputEmail, 'DlInputEmail', { domEvents: fieldEvents })
+export const DlInputFile = managed(RawDlInputFile, 'DlInputFile', { domEvents: fieldEvents })
+export const DlInputHidden = managed(RawDlInputHidden, 'DlInputHidden', { domEvents: fieldEvents })
+export const DlInputImage = managed(RawDlInputImage, 'DlInputImage', { domEvents: actionEvents })
+export const DlInputMonth = managed(RawDlInputMonth, 'DlInputMonth', { domEvents: fieldEvents })
+export const DlInputNumber = managed(RawDlInputNumber, 'DlInputNumber', { domEvents: fieldEvents })
+export const DlInputPassword = managed(RawDlInputPassword, 'DlInputPassword', { domEvents: fieldEvents })
+export const DlInputRadio = managed(RawDlInputRadio, 'DlInputRadio', { domEvents: fieldEvents })
+export const DlInputRange = managed(RawDlInputRange, 'DlInputRange', { domEvents: fieldEvents })
+export const DlInputReset = managed(RawDlInputReset, 'DlInputReset', { domEvents: actionEvents })
+export const DlInputSearch = managed(RawDlInputSearch, 'DlInputSearch', { domEvents: fieldEvents })
+export const DlInputSubmit = managed(RawDlInputSubmit, 'DlInputSubmit', { domEvents: actionEvents })
+export const DlInputTel = managed(RawDlInputTel, 'DlInputTel', { domEvents: fieldEvents })
+export const DlInputText = managed(RawDlInputText, 'DlInputText', { domEvents: fieldEvents })
+export const DlInputTime = managed(RawDlInputTime, 'DlInputTime', { domEvents: fieldEvents })
+export const DlInputUrl = managed(RawDlInputUrl, 'DlInputUrl', { domEvents: fieldEvents })
+export const DlInputWeek = managed(RawDlInputWeek, 'DlInputWeek', { domEvents: fieldEvents })
 export const DlLabel = managed(RawDlLabel, 'DlLabel', { domEvents: ['click'] })
 export const DlListbox = managed(RawDlListbox, 'DlListbox', { domEvents: fieldEvents })
 export const DlMdx = managed(RawDlMdx, 'DlMdx', {

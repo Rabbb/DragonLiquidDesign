@@ -8,7 +8,7 @@ import {
   DlCollapsible,
   DlDialog,
   DlIconButton,
-  DlInput,
+  DlInputText,
   DlOverlaySide,
   DlPopover,
   DlProgress,
@@ -186,14 +186,14 @@ const open = ref(false)`, template: `  <DlPopover
     </template>
     显示箭头时默认保留 6px 间距；隐藏箭头后 sideOffset 自动归零，也可显式传入自定义间距。
   </DlPopover>` }),
-    'application-flow': vueSfc({ imports: ['DlButton', 'DlInput', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst note = ref('适合周末继续观看')`, template: `  <DlPopover v-model:open="open" title="快捷编辑笔记" tone="accent" align="start">
+    'application-flow': vueSfc({ imports: ['DlButton', 'DlInputText', 'DlPopover'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst note = ref('适合周末继续观看')`, template: `  <DlPopover v-model:open="open" title="快捷编辑笔记" tone="accent" align="start">
     <template #trigger>
       <DlButton variant="primary">编辑个人笔记</DlButton>
     </template>
     <form class="quick-edit" @submit.prevent="open = false">
       <label>
         <span>收藏笔记</span>
-        <DlInput v-model="note" />
+        <DlInputText v-model="note" />
       </label>
       <footer>
         <DlButton type="button" variant="ghost" @click="open = false">取消</DlButton>
@@ -450,7 +450,7 @@ const content = computed(() => ({
         </DlPopover>
         <DlPopover v-else-if="scenario === 'application-flow'" v-model:open="popoverOpen" title="快捷编辑笔记" tone="accent" align="start">
           <template #trigger><DlButton variant="primary">编辑个人笔记</DlButton></template>
-          <form class="popover-quick-edit" @submit.prevent="popoverOpen = false"><label><span>收藏笔记</span><DlInput v-model="note" /></label><footer><DlButton type="button" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton variant="primary" type="submit">保存</DlButton></footer></form>
+          <form class="popover-quick-edit" @submit.prevent="popoverOpen = false"><label><span>收藏笔记</span><DlInputText v-model="note" /></label><footer><DlButton type="button" variant="ghost" @click="popoverOpen = false">取消</DlButton><DlButton variant="primary" type="submit">保存</DlButton></footer></form>
         </DlPopover>
         <template v-else-if="scenario === 'nested-composition'">
           <DlButton variant="primary" @click="dialogOpen = true">打开编辑对话框</DlButton>

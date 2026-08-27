@@ -56,28 +56,28 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   badge: () => import('../docs/BadgeDocs.vue'),
   card: () => import('../docs/CardDocs.vue'),
   'icon-button': () => import('../docs/IconButtonDocs.vue'),
-  'input-button': () => import('../docs/NativeInputDocs.vue'),
-  'input-checkbox': () => import('../docs/NativeInputDocs.vue'),
-  'input-color': () => import('../docs/NativeInputDocs.vue'),
-  'input-date': () => import('../docs/NativeInputDocs.vue'),
-  'input-datetime-local': () => import('../docs/NativeInputDocs.vue'),
-  'input-email': () => import('../docs/NativeInputDocs.vue'),
-  'input-file': () => import('../docs/NativeInputDocs.vue'),
-  'input-hidden': () => import('../docs/NativeInputDocs.vue'),
-  'input-image': () => import('../docs/NativeInputDocs.vue'),
-  'input-month': () => import('../docs/NativeInputDocs.vue'),
-  'input-number': () => import('../docs/NativeInputDocs.vue'),
-  'input-password': () => import('../docs/NativeInputDocs.vue'),
-  'input-radio': () => import('../docs/NativeInputDocs.vue'),
-  'input-range': () => import('../docs/NativeInputDocs.vue'),
-  'input-reset': () => import('../docs/NativeInputDocs.vue'),
-  'input-search': () => import('../docs/NativeInputDocs.vue'),
-  'input-submit': () => import('../docs/NativeInputDocs.vue'),
-  'input-tel': () => import('../docs/NativeInputDocs.vue'),
-  'input-text': () => import('../docs/NativeInputDocs.vue'),
-  'input-time': () => import('../docs/NativeInputDocs.vue'),
-  'input-url': () => import('../docs/NativeInputDocs.vue'),
-  'input-week': () => import('../docs/NativeInputDocs.vue'),
+  'input-button': () => import('../docs/InputControlDocs.vue'),
+  'input-checkbox': () => import('../docs/InputControlDocs.vue'),
+  'input-color': () => import('../docs/InputControlDocs.vue'),
+  'input-date': () => import('../docs/InputControlDocs.vue'),
+  'input-datetime-local': () => import('../docs/InputControlDocs.vue'),
+  'input-email': () => import('../docs/InputControlDocs.vue'),
+  'input-file': () => import('../docs/InputControlDocs.vue'),
+  'input-hidden': () => import('../docs/InputControlDocs.vue'),
+  'input-image': () => import('../docs/InputControlDocs.vue'),
+  'input-month': () => import('../docs/InputControlDocs.vue'),
+  'input-number': () => import('../docs/InputControlDocs.vue'),
+  'input-password': () => import('../docs/InputControlDocs.vue'),
+  'input-radio': () => import('../docs/InputControlDocs.vue'),
+  'input-range': () => import('../docs/InputControlDocs.vue'),
+  'input-reset': () => import('../docs/InputControlDocs.vue'),
+  'input-search': () => import('../docs/InputControlDocs.vue'),
+  'input-submit': () => import('../docs/InputControlDocs.vue'),
+  'input-tel': () => import('../docs/InputControlDocs.vue'),
+  'input-text': () => import('../docs/InputControlDocs.vue'),
+  'input-time': () => import('../docs/InputControlDocs.vue'),
+  'input-url': () => import('../docs/InputControlDocs.vue'),
+  'input-week': () => import('../docs/InputControlDocs.vue'),
   select: () => import('../docs/SelectDocs.vue'),
   'choice-portal': () => import('../docs/ChoicePortalDocs.vue'),
   'multi-choice': () => import('../docs/RecommendedControlDocs.vue'),
@@ -226,7 +226,6 @@ function toggleGroup(group: ResolvedComponentGroup) {
                 <small>
                   <em v-if="item.implementation === 'planned'">ROADMAP</em>
                   <em v-if="item.maturity === 'alpha'" class="alpha">ALPHA</em>
-                  <em v-if="item.maturity === 'native'" class="native">NATIVE</em>
                 </small>
               </span>
               <i v-if="item.scenarios.length > 1">{{ selectedComponent.id === item.id ? '−' : '+' }}</i>
@@ -262,12 +261,12 @@ function toggleGroup(group: ResolvedComponentGroup) {
             {{ activeMode.label }} · {{ selectedGroup?.label }} · {{ selectedComponent.implementation === 'ready' ? `SINCE ${selectedComponent.since}` : 'ROADMAP' }}
           </DlBadge>
           <DlBadge v-if="selectedComponent.maturity === 'alpha'" tone="warning" variant="outline">{{ selectedComponent.sourceUrl ? 'REKA ALPHA' : 'ALPHA' }}</DlBadge>
-          <DlBadge v-if="selectedComponent.maturity === 'native'" tone="muted" variant="outline">NATIVE HTML</DlBadge>
+          <DlBadge v-if="selectedComponent.id.startsWith('input-')" tone="accent" variant="outline">FIXED INPUT TYPE</DlBadge>
         </div>
         <h1>{{ selectedComponent.name }}<CustomControlMark v-if="selectedComponent.maturity === 'custom'" /></h1>
         <p>{{ selectedComponent.summary }}</p>
       </div>
-      <a v-if="selectedComponent.maturity === 'native'" :href="selectedComponent.sourceUrl" target="_blank" rel="noreferrer">
+      <a v-if="selectedComponent.id.startsWith('input-')" :href="selectedComponent.sourceUrl" target="_blank" rel="noreferrer">
         <DlButton variant="secondary" size="sm">查看 MDN 参考 ↗</DlButton>
       </a>
       <a v-else href="https://www.npmjs.com/package/@dragon-liquid/vue" target="_blank" rel="noreferrer">
@@ -308,7 +307,7 @@ function toggleGroup(group: ResolvedComponentGroup) {
       <component
         :is="activeDoc"
         :scenario="selectedScenario.id"
-        v-bind="selectedComponent.implementation === 'planned' || selectedComponent.maturity === 'native' || sharedDocIds.has(selectedComponent.id) ? { componentDefinition: selectedComponent } : {}"
+        v-bind="selectedComponent.implementation === 'planned' || selectedComponent.id.startsWith('input-') || sharedDocIds.has(selectedComponent.id) ? { componentDefinition: selectedComponent } : {}"
         :key="selectedComponent.id"
       />
       <template #fallback>

@@ -5,10 +5,12 @@ import { componentCatalog } from '../src/catalog.ts'
 import { componentGroupDefinitions, componentGroupingModes } from '../src/componentGroups.ts'
 import { componentGuidance, componentsMissingGuidance } from '../src/componentGuidance.ts'
 import componentApi from '../src/generated/component-api.generated.ts'
+import inputControls from '../src/input-controls.json' with { type: 'json' }
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url))
 const showcaseRoot = resolve(scriptDirectory, '..')
 const docsPagePath = resolve(showcaseRoot, 'src/pages/ComponentDocsPage.vue')
+const packageComponentsRoot = resolve(showcaseRoot, '../../packages/vue/src/components')
 const docsPageSource = readFileSync(docsPagePath, 'utf8')
 const errors = []
 
@@ -68,6 +70,20 @@ for (const id of ids) {
   report(guidance.avoidWhen.trim().length >= 8, `${id} 缺少误用边界。`)
   report(guidance.accessibility.trim().length >= 8, `${id} 缺少无障碍说明。`)
   report(guidance.example.trim().length >= 8, `${id} 缺少案例观察重点。`)
+}
+
+for (const input of inputControls) {
+  const componentName = input.type === 'datetime-local'
+    ? 'DlInputDatetimeLocal'
+    : `DlInput${input.type[0].toUpperCase()}${input.type.slice(1)}`
+  const sourcePath = resolve(packageComponentsRoot, `${componentName}.vue`)
+  report(existsSync(sourcePath), `${componentName} 缺少独立组件源码。`)
+  if (existsSync(sourcePath)) {
+    const source = readFileSync(sourcePath, 'utf8')
+    report(new RegExp(`<input\\b[^>]*\\btype=["']${input.type}["']`).test(source), `${componentName} 没有固定 input[type="${input.type}"]。`)
+    report(!/\btype\s*\??\s*:/.test(source), `${componentName} 不应公开 type 属性。`)
+  }
+  report(!componentApi[input.id]?.props.some(prop => prop.prop === 'type'), `${input.id} 的 API 不应包含 type 属性。`)
 }
 
 for (const vuePath of collectVueFiles(resolve(showcaseRoot, 'src'))) {

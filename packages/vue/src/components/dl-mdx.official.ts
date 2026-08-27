@@ -28,7 +28,28 @@ import DlDropdownMenu from './DlDropdownMenu.vue'
 import DlEditable from './DlEditable.vue'
 import DlHoverCard from './DlHoverCard.vue'
 import DlIconButton from './DlIconButton.vue'
-import DlInput from './DlInput.vue'
+import DlInputButton from './DlInputButton.vue'
+import DlInputCheckbox from './DlInputCheckbox.vue'
+import DlInputColor from './DlInputColor.vue'
+import DlInputDate from './DlInputDate.vue'
+import DlInputDatetimeLocal from './DlInputDatetimeLocal.vue'
+import DlInputEmail from './DlInputEmail.vue'
+import DlInputFile from './DlInputFile.vue'
+import DlInputHidden from './DlInputHidden.vue'
+import DlInputImage from './DlInputImage.vue'
+import DlInputMonth from './DlInputMonth.vue'
+import DlInputNumber from './DlInputNumber.vue'
+import DlInputPassword from './DlInputPassword.vue'
+import DlInputRadio from './DlInputRadio.vue'
+import DlInputRange from './DlInputRange.vue'
+import DlInputReset from './DlInputReset.vue'
+import DlInputSearch from './DlInputSearch.vue'
+import DlInputSubmit from './DlInputSubmit.vue'
+import DlInputTel from './DlInputTel.vue'
+import DlInputText from './DlInputText.vue'
+import DlInputTime from './DlInputTime.vue'
+import DlInputUrl from './DlInputUrl.vue'
+import DlInputWeek from './DlInputWeek.vue'
 import DlLabel from './DlLabel.vue'
 import DlListbox from './DlListbox.vue'
 import DlMdx from './DlMdx.vue'
@@ -113,7 +134,28 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('Badge', DlBadge, 'foundation', 'custom', { contentProp: 'text', defaultContent: 'DRAGON', description: '状态与标签。' }),
   official('Card', DlCard, 'foundation', 'custom', { defaultProps: { padding: 'md' }, defaultContent: 'Dragon Liquid 内容卡片', description: '内容分组容器。' }),
   official('IconButton', DlIconButton, 'foundation', 'custom', { defaultProps: { label: '快捷操作' }, defaultContent: '✦', description: '紧凑图标操作。' }),
-  official('Input', DlInput, 'foundation', 'custom', { defaultProps: { modelValue: 'Dragon Liquid' }, description: '单行文本输入。' }),
+  official('InputButton', DlInputButton, 'form', 'custom', { defaultProps: { value: '执行操作' }, description: '固定为 button 的输入按钮。' }),
+  official('InputCheckbox', DlInputCheckbox, 'form', 'custom', { defaultProps: { modelValue: true }, description: '固定为 checkbox 的布尔输入。' }),
+  official('InputColor', DlInputColor, 'form', 'custom', { defaultProps: { modelValue: '#2f80ed' }, description: '固定为 color 的颜色输入。' }),
+  official('InputDate', DlInputDate, 'form', 'custom', { defaultProps: { modelValue: '2026-08-28' }, description: '固定为 date 的日期输入。' }),
+  official('InputDatetimeLocal', DlInputDatetimeLocal, 'form', 'custom', { defaultProps: { modelValue: '2026-08-28T09:30' }, description: '固定为 datetime-local 的本地日期时间输入。' }),
+  official('InputEmail', DlInputEmail, 'form', 'custom', { defaultProps: { modelValue: 'designer@dragon.dev' }, description: '固定为 email 的邮箱输入。' }),
+  official('InputFile', DlInputFile, 'form', 'custom', { description: '固定为 file 的文件选择输入。' }),
+  official('InputHidden', DlInputHidden, 'form', 'custom', { defaultProps: { modelValue: 'record-20260828' }, description: '固定为 hidden 的隐藏表单字段。' }),
+  official('InputImage', DlInputImage, 'form', 'custom', { defaultProps: { src: '/input-image-submit.svg', alt: '提交表单' }, description: '固定为 image 的图像提交输入。' }),
+  official('InputMonth', DlInputMonth, 'form', 'custom', { defaultProps: { modelValue: '2026-08' }, description: '固定为 month 的月份输入。' }),
+  official('InputNumber', DlInputNumber, 'form', 'custom', { defaultProps: { modelValue: 42 }, description: '固定为 number 的数值输入。' }),
+  official('InputPassword', DlInputPassword, 'form', 'custom', { defaultProps: { modelValue: 'dragon-secret' }, description: '固定为 password 的密码输入。' }),
+  official('InputRadio', DlInputRadio, 'form', 'custom', { defaultProps: { value: 'stable', modelValue: 'stable' }, description: '固定为 radio 的单选输入。' }),
+  official('InputRange', DlInputRange, 'form', 'custom', { defaultProps: { modelValue: 68 }, description: '固定为 range 的范围输入。' }),
+  official('InputReset', DlInputReset, 'form', 'custom', { defaultProps: { value: '重置' }, description: '固定为 reset 的表单重置输入。' }),
+  official('InputSearch', DlInputSearch, 'form', 'custom', { defaultProps: { modelValue: '液态玻璃组件' }, description: '固定为 search 的搜索输入。' }),
+  official('InputSubmit', DlInputSubmit, 'form', 'custom', { defaultProps: { value: '提交' }, description: '固定为 submit 的表单提交输入。' }),
+  official('InputTel', DlInputTel, 'form', 'custom', { defaultProps: { modelValue: '138 0000 0000' }, description: '固定为 tel 的电话输入。' }),
+  official('InputText', DlInputText, 'form', 'custom', { defaultProps: { modelValue: 'Dragon Liquid' }, description: '固定为 text 的单行文本输入。' }),
+  official('InputTime', DlInputTime, 'form', 'custom', { defaultProps: { modelValue: '09:30' }, description: '固定为 time 的时间输入。' }),
+  official('InputUrl', DlInputUrl, 'form', 'custom', { defaultProps: { modelValue: 'https://todo.moe' }, description: '固定为 url 的网址输入。' }),
+  official('InputWeek', DlInputWeek, 'form', 'custom', { defaultProps: { modelValue: '2026-W35' }, description: '固定为 week 的周输入。' }),
   official('Textarea', DlTextarea, 'foundation', 'custom', { defaultProps: { modelValue: '在这里记录内容。' }, description: '多行文本输入。' }),
 
   official('Autocomplete', DlAutocomplete, 'form', 'alpha', { defaultProps: { suggestions: ['Frieren', 'Fern', 'Stark'], placeholder: '搜索角色' } }),

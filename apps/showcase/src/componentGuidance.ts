@@ -1,4 +1,4 @@
-import nativeInputTypes from './native-inputs.json' with { type: 'json' }
+import inputControls from './input-controls.json' with { type: 'json' }
 
 export type ComponentGuidance = {
   useWhen: readonly [string, string]
@@ -16,17 +16,17 @@ function guide(
   return { useWhen, avoidWhen, accessibility, example }
 }
 
-const nativeInputGuidance = Object.fromEntries(nativeInputTypes.map(input => [input.id, guide(
-  [`需要${input.summary.replace(/[。.]$/, '')}时。`, `需要浏览器原生 input[type="${input.type}"] 语义和行为时。`],
-  `不要用其他 input type 代替 ${input.type}；若产品需要更完整的复合交互，应选择对应的 Dragon Liquid 高阶控件。`,
+const inputControlGuidance = Object.fromEntries(inputControls.map(input => [input.id, guide(
+  [`需要${input.summary.replace(/[。.]$/, '')}时。`, `需要固定封装 input[type="${input.type}"] 的独立 Dragon Liquid 控件时。`],
+  `不要通过 type 属性把该控件切换成其他输入类型；复合交互应选择对应的 Dragon Liquid 高阶控件。`,
   input.type === 'hidden'
     ? '隐藏输入不应承载需要用户确认的信息；提交前仍须在服务端验证其值。'
     : '必须提供关联 label 或等价的可访问名称，并保留浏览器原生键盘、校验和焦点行为。',
-  `示例只使用固定的 input[type="${input.type}"]，并列出该类型真正生效的专用属性。`,
+  `示例直接使用对应的独立 DlInputXxx 控件，并列出该类型真正生效的组件属性与原生属性。`,
 )]))
 
 export const componentGuidance: Record<string, ComponentGuidance> = {
-  ...nativeInputGuidance,
+  ...inputControlGuidance,
   accordion: guide(
     ['长内容需要按主题逐段展开时。', '用户只需同时关注一个或少量内容区块时。'],
     '不要用它隐藏完成任务所必需的关键字段或错误信息。',

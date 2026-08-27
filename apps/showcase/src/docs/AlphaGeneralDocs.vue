@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlButton, DlDrawer, DlInput, DlSelect, DlSwitch, DlTree, type DlSelectOption, type DlTone, type DlTreeNode } from '@dragon-liquid/vue'
+import { DlButton, DlDrawer, DlInputText, DlSelect, DlSwitch, DlTree, type DlSelectOption, type DlTone, type DlTreeNode } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
 import { componentGuidanceFor } from '../componentGuidance'
 import DocExampleShell from '../components/DocExampleShell.vue'
@@ -73,10 +73,10 @@ function showTone(tone: DlTone) {
     <p>当前 Drawer 正在展示 <code>{{ activeTone }}</code> 的完整视觉。</p>
     <template #footer><DlButton variant="primary" @click="open = false">关闭预览</DlButton></template>
   </DlDrawer>`, style: `.tone-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }` }),
-  'edit-record': vueSfc({ imports: ['DlButton', 'DlDrawer', 'DlInput', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('来自深渊')\nconst status = ref('watching')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n  { value: 'completed', label: '已经看完' },\n]`, template: `  <DlButton variant="primary" @click="open = true">编辑收藏</DlButton>
+  'edit-record': vueSfc({ imports: ['DlButton', 'DlDrawer', 'DlInputText', 'DlSelect', 'type DlSelectOption'], script: `import { ref } from 'vue'\n\nconst open = ref(false)\nconst title = ref('来自深渊')\nconst status = ref('watching')\nconst statusOptions: DlSelectOption[] = [\n  { value: 'planned', label: '计划观看' },\n  { value: 'watching', label: '正在观看' },\n  { value: 'completed', label: '已经看完' },\n]`, template: `  <DlButton variant="primary" @click="open = true">编辑收藏</DlButton>
   <DlDrawer v-model:open="open" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent">
     <form class="drawer-form" @submit.prevent="open = false">
-      <label><span>作品标题</span><DlInput v-model="title" /></label>
+      <label><span>作品标题</span><DlInputText v-model="title" /></label>
       <label><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label>
     </form>
     <template #footer>
@@ -184,7 +184,7 @@ function showDrawer(next: 'right' | 'bottom' | 'left') {
       </template>
       <template v-else-if="scenario === 'edit-record'">
         <DlButton variant="primary" @click="drawerOpen = true">编辑收藏</DlButton>
-        <DlDrawer v-model:open="drawerOpen" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent"><form class="drawer-form" @submit.prevent="drawerOpen = false"><label><span>作品标题</span><DlInput v-model="title" /></label><label><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></form><template #footer><DlButton variant="ghost" @click="drawerOpen = false">取消</DlButton><DlButton variant="primary" @click="drawerOpen = false">保存修改</DlButton></template></DlDrawer>
+        <DlDrawer v-model:open="drawerOpen" title="编辑收藏" description="修改作品标题与观看状态" placement="right" size="sm" tone="accent"><form class="drawer-form" @submit.prevent="drawerOpen = false"><label><span>作品标题</span><DlInputText v-model="title" /></label><label><span>观看状态</span><DlSelect v-model="status" :options="statusOptions" /></label></form><template #footer><DlButton variant="ghost" @click="drawerOpen = false">取消</DlButton><DlButton variant="primary" @click="drawerOpen = false">保存修改</DlButton></template></DlDrawer>
       </template>
       <template v-else-if="scenario === 'import-success'">
         <DlButton variant="primary" @click="drawerOpen = true">查看导入结果</DlButton>

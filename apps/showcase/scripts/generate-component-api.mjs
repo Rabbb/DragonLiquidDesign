@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 const showcaseRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const componentsRoot = resolve(showcaseRoot, '../../packages/vue/src/components')
 const outputFile = resolve(showcaseRoot, 'src/generated/component-api.generated.ts')
-const nativeInputTypes = JSON.parse(await readFile(resolve(showcaseRoot, 'src/native-inputs.json'), 'utf8'))
+const inputControls = JSON.parse(await readFile(resolve(showcaseRoot, 'src/input-controls.json'), 'utf8'))
 
 const descriptions = {
   actionLabel: '操作按钮显示的文字；不传时不显示该操作。',
@@ -528,7 +528,6 @@ const nativeAttributeDefinitions = {
   size: ['设置文本输入大致可见的字符宽度。', 'positive integer', '20'],
   src: ['指定图像提交按钮使用的图片资源地址。', 'URL string', '—'],
   step: ['设置合法值之间的步进间隔；可使用 any 取消步进约束。', 'number | "any"', '类型默认值'],
-  type: ['固定该参考控件的原生输入类型，不通过运行时参数切换。', 'input type literal', '—'],
   value: ['设置输入的初始值或提交值。', 'string', '""'],
   width: ['设置图像提交按钮的固有显示宽度。', 'number (CSS px)', '图片固有宽度'],
 }
@@ -558,21 +557,19 @@ const nativeAttributesByType = {
   week: ['name', 'value', 'min', 'max', 'step', 'list', 'readonly', 'required', 'disabled', 'form'],
 }
 
-function nativeInputApi(input) {
+function inputControlApi(input, componentDefinition) {
   const attributes = nativeAttributesByType[input.type]
   if (!attributes) throw new Error(`input[type="${input.type}"] 缺少专用属性 API。`)
-  const typeRow = {
-    prop: 'type',
-    description: nativeAttributeDefinitions.type[0],
-    type: JSON.stringify(input.type),
-    defaultValue: JSON.stringify(input.type),
-  }
-  const rows = attributes.map(prop => {
+  if (!componentDefinition) throw new Error(`${input.id} 缺少独立 Vue 控件实现。`)
+  const componentPropNames = new Set(componentDefinition.props.map(prop => prop.prop))
+  const rows = attributes
+    .filter(prop => !componentPropNames.has(prop) && prop !== 'checked' && prop !== 'files' && prop !== 'value')
+    .map(prop => {
     const definition = nativeAttributeDefinitions[prop]
     if (!definition) throw new Error(`原生 input 属性 ${prop} 缺少 API 描述。`)
     return { prop, description: definition[0], type: definition[1], defaultValue: definition[2] }
   })
-  return { props: [typeRow, ...rows], relatedTypes: [] }
+  return { props: [...componentDefinition.props, ...rows], relatedTypes: componentDefinition.relatedTypes }
 }
 
 const filenames = (await readdir(componentsRoot))
@@ -605,7 +602,7 @@ for (const filename of filenames) {
 }
 
 delete api.input
-for (const input of nativeInputTypes) api[input.id] = nativeInputApi(input)
+for (const input of inputControls) api[input.id] = inputControlApi(input, api[input.id])
 
 if (!api.toolbar.relatedTypes.some(type => type.title === 'DlMenuItem[]')) {
   throw new Error('Toolbar 缺少 DlMenuItem[] 数据结构 API。')

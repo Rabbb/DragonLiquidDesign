@@ -4,7 +4,7 @@ import {
   DlBadge,
   DlButton,
   DlCard,
-  DlInput,
+  DlInputSearch,
   DlPagination,
   DlProgress,
   DlSelect,
@@ -41,7 +41,6 @@ const familyOptions: DlSelectOption[] = [
 const maturityOptions: DlChoiceOption[] = [
   { value: 'all', label: '全部' },
   { value: 'custom', label: '自研' },
-  { value: 'native', label: '原生 HTML' },
   { value: 'stable', label: '稳定' },
   { value: 'alpha', label: 'Alpha' },
 ]
@@ -124,7 +123,6 @@ function resetFilters() {
 function maturityTone(value: string): DlTone {
   if (value === 'alpha') return 'warning'
   if (value === 'custom') return 'accent'
-  if (value === 'native') return 'muted'
   return 'success'
 }
 
@@ -156,10 +154,10 @@ function treeRowClassName({ row }: { row: { kind: string } }) {
     </div>
 
     <DlCard class="coverage-toolbar" padding="md">
-      <DlInput v-model="query" placeholder="搜索控件、场景、业务页或用途">
+      <DlInputSearch v-model="query" placeholder="搜索控件、场景、业务页或用途">
         <template #leading>⌕</template>
         <template #trailing><kbd>/</kbd></template>
-      </DlInput>
+      </DlInputSearch>
       <DlSelect v-model="family" :options="familyOptions" />
       <DlSelect v-model="demoPage" :options="demoPageOptions" />
       <DlToggleGroup v-model="maturity" type="single" :items="maturityOptions" />

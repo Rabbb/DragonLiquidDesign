@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import {
-  DlCombobox, DlEditable, DlInput, DlLabel, DlListbox, DlNumberField, DlPinInput, DlTagsInput, DlToggle, DlToggleGroup,
+  DlCombobox, DlEditable, DlInputText, DlLabel, DlListbox, DlNumberField, DlPinInput, DlTagsInput, DlToggle, DlToggleGroup,
   type DlChoiceOption,
 } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
@@ -80,11 +80,11 @@ const episodes = ref(12)`, template: `  <section class="example">
     <output>当前：{{ episodes }} 集</output>
   </section>`, style: `.example { display: grid; gap: 10px; max-width: 360px; }
 output { color: #a9b9b0; }` }),
-  label: vueSfc({ imports: ['DlInput', 'DlLabel'], script: `import { ref } from 'vue'
+  label: vueSfc({ imports: ['DlInputText', 'DlLabel'], script: `import { ref } from 'vue'
 
 const title = ref('')`, template: `  <div class="field">
     <DlLabel for="title" required>作品标题</DlLabel>
-    <DlInput id="title" v-model="title" placeholder="例如：葬送的芙莉莲" />
+    <DlInputText id="title" v-model="title" placeholder="例如：葬送的芙莉莲" />
     <small>点击标签会把焦点移到输入框。</small>
     <output>当前值：{{ title || '尚未填写' }}</output>
   </div>`, style: `.field { display: grid; gap: 8px; max-width: 480px; }
@@ -142,7 +142,7 @@ const content = computed(() => ({
       <DlEditable v-else-if="componentDefinition.id === 'editable'" v-model="text" placeholder="双击编辑作品名" />
       <DlListbox v-else-if="componentDefinition.id === 'listbox'" v-model="choices" :options="options" :multiple="scenario !== 'basic'" />
       <DlNumberField v-else-if="componentDefinition.id === 'number-field'" v-model="count" :min="1" :max="99" :step="scenario === 'form-integration' ? 12 : 1" />
-      <div v-else-if="componentDefinition.id === 'label'" class="field-stack"><DlLabel for="advanced-title" required>作品标题</DlLabel><DlInput id="advanced-title" v-model="text" /><small>标签点击后会把焦点移到关联输入框。</small></div>
+      <div v-else-if="componentDefinition.id === 'label'" class="field-stack"><DlLabel for="advanced-title" required>作品标题</DlLabel><DlInputText id="advanced-title" v-model="text" /><small>标签点击后会把焦点移到关联输入框。</small></div>
       <DlPinInput v-else-if="componentDefinition.id === 'pin-input'" v-model="pin" :length="6" :mask="scenario === 'validation'" />
       <DlTagsInput v-else-if="componentDefinition.id === 'tags-input'" v-model="tags" :max="scenario === 'validation' ? 3 : 8" />
       <DlToggle v-else-if="componentDefinition.id === 'toggle'" v-model="toggled" aria-label="加入追踪">{{ toggled ? '✓ 已追踪' : '＋ 加入追踪' }}</DlToggle>

@@ -1124,11 +1124,6 @@ kbd {
   color: #f2ca62;
 }
 
-.home-category-card > a b em.native {
-  border-color: var(--dl-border);
-  color: var(--dl-text-faint);
-}
-
 .home-category-card > a small {
   grid-column: 1;
   color: var(--dl-text-faint);
@@ -1394,10 +1389,6 @@ kbd {
   color: #edc65d;
 }
 
-.sidebar-component-copy em.native {
-  border-color: var(--dl-border);
-  color: var(--dl-text-faint);
-}
 
 .sidebar-component > a i {
   color: #dfba4c;
