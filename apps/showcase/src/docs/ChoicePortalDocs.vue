@@ -32,9 +32,9 @@ const content = computed(() => ({
   },
   'grouped-search': {
     title: '分组、关键词与键盘导航',
-    description: '搜索会同时匹配名称、值、描述和 keywords，方向键与 Enter 可直接提交。',
+    description: '搜索会同时匹配名称、值、描述和 keywords，并高亮每个结果的命中依据。方向键与 Enter 可直接提交。',
     code: vueSfc({ imports: ['DlChoicePortal', 'type DlChoicePortalEntry'], script: `import { ref } from 'vue'\n\nconst value = ref('vue')\nconst options: DlChoicePortalEntry[] = [\n  { label: '前端', options: [{ value: 'vue', label: 'Vue 3', keywords: ['v3'] }] },\n  { label: '服务端', options: [{ value: 'dotnet', label: '.NET', keywords: ['aspnet'] }] },\n]`, template: `  <DlChoicePortal v-model="value" :options="options" searchable />` }),
-    tips: ['keywords 适合缩写、拼音首字母和历史称呼。', '禁用项仍可展示说明，但不能被键盘提交。'],
+    tips: ['keywords 适合缩写、拼音首字母和历史称呼；隐藏关键词命中时会临时显示。', '禁用项仍可展示说明，但不能被键盘提交。'],
   },
   'custom-value': {
     title: '建议选项与自定义值共存',

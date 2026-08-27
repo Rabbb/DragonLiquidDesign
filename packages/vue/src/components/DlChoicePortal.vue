@@ -18,7 +18,18 @@ import type {
 } from './choice-portal.types'
 
 type ChoicePortalStatus = 'default' | 'success' | 'warning' | 'error'
-type IndexedOption = DlChoicePortalOption & { groupLabel?: string; searchText: string; custom?: boolean }
+type MatchSegment = { text: string; matched: boolean }
+type HiddenMatch = { key: string; kind: '关键词' | '值'; segments: MatchSegment[] }
+type MatchPresentation = {
+  label: MatchSegment[]
+  description: MatchSegment[]
+  hidden: HiddenMatch[]
+}
+type IndexedOption = DlChoicePortalOption & {
+  groupLabel?: string
+  searchFields: { label: string; value: string; description: string; keywords: string[] }
+  custom?: boolean
+}
 
 const props = withDefaults(defineProps<{
   open?: boolean
@@ -92,22 +103,71 @@ function indexOption(option: DlChoicePortalOption, groupLabel?: string): Indexed
   return {
     ...option,
     groupLabel,
-    searchText: [option.label, option.value, option.description, ...(option.keywords ?? [])]
-      .filter(Boolean)
-      .join(' ')
-      .normalize('NFKC')
-      .toLocaleLowerCase(),
+    searchFields: {
+      label: option.label,
+      value: option.value,
+      description: option.description ?? '',
+      keywords: option.keywords ?? [],
+    },
   }
 }
 
-function fuzzyMatch(source: string, keyword: string) {
-  let cursor = 0
-  for (const character of keyword) {
-    cursor = source.indexOf(character, cursor)
-    if (cursor < 0) return false
-    cursor += 1
+function normalizeSearch(value: string) {
+  return value.normalize('NFKC').toLocaleLowerCase()
+}
+
+function matchCharacterIndexes(source: string, keyword: string): number[] | null {
+  if (!keyword) return null
+  const sourceCharacters = [...source]
+  const normalizedCharacters: string[] = []
+  const sourceIndexes: number[] = []
+
+  sourceCharacters.forEach((character, sourceIndex) => {
+    for (const normalizedCharacter of normalizeSearch(character)) {
+      normalizedCharacters.push(normalizedCharacter)
+      sourceIndexes.push(sourceIndex)
+    }
+  })
+
+  const keywordCharacters = [...keyword]
+  const exactLimit = normalizedCharacters.length - keywordCharacters.length
+  for (let start = 0; start <= exactLimit; start += 1) {
+    if (!keywordCharacters.every((character, offset) => normalizedCharacters[start + offset] === character)) continue
+    return [...new Set(keywordCharacters.map((_, offset) => sourceIndexes[start + offset]))]
   }
-  return true
+
+  const fuzzyIndexes: number[] = []
+  let cursor = 0
+  for (const character of keywordCharacters) {
+    const matchedIndex = normalizedCharacters.indexOf(character, cursor)
+    if (matchedIndex < 0) return null
+    fuzzyIndexes.push(sourceIndexes[matchedIndex]!)
+    cursor = matchedIndex + 1
+  }
+  return [...new Set(fuzzyIndexes)]
+}
+
+function matchesField(source: string, keyword: string) {
+  return matchCharacterIndexes(source, keyword) !== null
+}
+
+function matchSegments(source: string, keyword: string): MatchSegment[] {
+  if (!source) return []
+  const matchedIndexes = new Set(matchCharacterIndexes(source, keyword) ?? [])
+  const segments: MatchSegment[] = []
+
+  for (const [index, character] of [...source].entries()) {
+    const matched = matchedIndexes.has(index)
+    const previous = segments.at(-1)
+    if (previous?.matched === matched) previous.text += character
+    else segments.push({ text: character, matched })
+  }
+  return segments
+}
+
+function optionMatches(option: IndexedOption, keyword: string) {
+  const { label, value, description, keywords } = option.searchFields
+  return [label, value, description, ...keywords].some(field => matchesField(field, keyword))
 }
 
 function sanitizeCustomValue(value: string) {
@@ -118,16 +178,58 @@ const customOption = computed<IndexedOption | null>(() => {
   if (!props.allowCustom) return null
   const value = sanitizeCustomValue(query.value)
   if (!value || indexedOptions.value.some(option => option.value === value || option.label === value)) return null
-  return { value, label: value, groupLabel: '自定义', searchText: value.toLocaleLowerCase(), custom: true }
+  return {
+    value,
+    label: value,
+    groupLabel: '自定义',
+    searchFields: { label: value, value, description: '', keywords: [] },
+    custom: true,
+  }
 })
 
 const filteredOptions = computed(() => {
   const keyword = normalizedQuery.value
   const matches = keyword
-    ? indexedOptions.value.filter(option => option.searchText.includes(keyword) || fuzzyMatch(option.searchText, keyword))
+    ? indexedOptions.value.filter(option => optionMatches(option, keyword))
     : indexedOptions.value
   return customOption.value ? [customOption.value, ...matches] : matches
 })
+
+function buildMatchPresentation(option: IndexedOption, keyword: string): MatchPresentation {
+  const { label, value, description, keywords } = option.searchFields
+  const hidden: HiddenMatch[] = []
+  const shownHiddenValues = new Set<string>()
+
+  keywords.forEach((candidate, index) => {
+    if (!matchesField(candidate, keyword)) return
+    const normalizedCandidate = normalizeSearch(candidate)
+    if (shownHiddenValues.has(normalizedCandidate)) return
+    shownHiddenValues.add(normalizedCandidate)
+    hidden.push({ key: `keyword-${index}`, kind: '关键词', segments: matchSegments(candidate, keyword) })
+  })
+
+  const normalizedValue = normalizeSearch(value)
+  if (matchesField(value, keyword)
+    && normalizedValue !== normalizeSearch(label)
+    && !shownHiddenValues.has(normalizedValue)) {
+    hidden.push({ key: 'value', kind: '值', segments: matchSegments(value, keyword) })
+  }
+
+  return {
+    label: matchSegments(label, keyword),
+    description: matchSegments(description, keyword),
+    hidden,
+  }
+}
+
+const matchPresentations = computed(() => new Map(filteredOptions.value.map(option => [
+  option.value,
+  buildMatchPresentation(option, normalizedQuery.value),
+])))
+
+function presentationFor(option: IndexedOption) {
+  return matchPresentations.value.get(option.value) ?? buildMatchPresentation(option, '')
+}
 
 const visibleGroups = computed(() => {
   const groups = new Map<string, IndexedOption[]>()
@@ -328,7 +430,26 @@ watch(filteredOptions, options => {
                 @mouseenter="highlightedValue = option.disabled ? highlightedValue : option.value"
                 @click="choose(option.value)"
               >
-                <span><strong>{{ option.label }}</strong><small v-if="option.description">{{ option.description }}</small></span>
+                <span>
+                  <strong>
+                    <template v-for="(segment, index) in presentationFor(option).label" :key="index">
+                      <mark v-if="segment.matched">{{ segment.text }}</mark><template v-else>{{ segment.text }}</template>
+                    </template>
+                  </strong>
+                  <small v-if="option.description">
+                    <template v-for="(segment, index) in presentationFor(option).description" :key="index">
+                      <mark v-if="segment.matched">{{ segment.text }}</mark><template v-else>{{ segment.text }}</template>
+                    </template>
+                  </small>
+                  <span v-if="presentationFor(option).hidden.length" class="dl-choice-portal__matches">
+                    <span v-for="match in presentationFor(option).hidden" :key="match.key">
+                      <i>{{ match.kind }}</i>
+                      <template v-for="(segment, index) in match.segments" :key="index">
+                        <mark v-if="segment.matched">{{ segment.text }}</mark><template v-else>{{ segment.text }}</template>
+                      </template>
+                    </span>
+                  </span>
+                </span>
                 <em v-if="option.custom">CUSTOM</em><b v-else-if="option.value === modelValue" aria-hidden="true">✓</b>
               </button>
             </section>
@@ -386,6 +507,10 @@ watch(filteredOptions, options => {
 .dl-choice-portal__option > span { display: grid; min-width: 0; gap: 3px; }
 .dl-choice-portal__option strong { overflow: hidden; font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
 .dl-choice-portal__option small { color: var(--dl-text-faint); font-size: .67rem; line-height: 1.35; }
+.dl-choice-portal__option mark { padding: 0 .08em; border-radius: .22em; background: color-mix(in srgb, var(--dl-accent) 30%, transparent); color: var(--dl-text); font-weight: 850; }
+.dl-choice-portal__matches { display: flex !important; min-width: 0; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+.dl-choice-portal__matches > span { display: inline-flex; min-width: 0; align-items: baseline; gap: 4px; padding: 2px 6px; border: 1px solid var(--dl-accent-border); border-radius: 999px; background: var(--dl-accent-surface); color: var(--dl-text-muted); font-size: .62rem; line-height: 1.25; }
+.dl-choice-portal__matches i { color: var(--dl-accent-text); font-size: .52rem; font-style: normal; font-weight: 850; letter-spacing: .06em; }
 .dl-choice-portal__option b { color: var(--dl-accent-text); }
 .dl-choice-portal__option em { color: var(--dl-accent-text); font-size: .56rem; font-style: normal; font-weight: 900; letter-spacing: .12em; }
 .dl-choice-portal__empty { display: grid; min-height: 170px; place-items: center; color: var(--dl-text-faint); font-size: .78rem; }
