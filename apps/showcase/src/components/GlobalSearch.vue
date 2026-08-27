@@ -28,6 +28,7 @@ const input = ref<HTMLInputElement>()
 const pageEntries: SearchEntry[] = [
   { key: 'page-home', kind: '页面', title: '首页', description: 'Dragon Liquid Design 组件库概览', href: '/', keywords: 'home 首页 开始' },
   { key: 'page-components', kind: '页面', title: '组件目录', description: '浏览全部组件和使用场景', href: '/components/button/basic', keywords: 'components api 组件 文档' },
+  { key: 'page-keyboard', kind: '页面', title: '键盘使用指南', description: '学习焦点移动、整段粘贴和组件快速切换', href: '/keyboard', keywords: 'keyboard shortcut hotkey 键盘 快捷键 粘贴 切换 教程' },
   { key: 'page-themes', kind: '页面', title: '主题与配色', description: '预览内置主题、日夜模式映射与自定义主题', href: '/themes', keywords: 'theme themes 主题 配色 白天 夜间 dark light forest 自定义' },
   { key: 'page-instance', kind: '页面', title: '实例体系', description: '运行时属性、方法、事件与反射 API', href: '/instance-api', keywords: 'instance api 实例 行为 控制' },
   ...patternPages.map(page => ({

@@ -6,6 +6,7 @@ const dist = resolve(root, 'dist')
 const index = resolve(dist, 'index.html')
 const routes = [
   'themes',
+  'keyboard',
   'patterns',
   'patterns/library',
   'patterns/create',
