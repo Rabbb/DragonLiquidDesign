@@ -8,7 +8,7 @@
 - `/components/button/basic`：组件工作台入口。
 - `/patterns`：纯前端应用逻辑演示入口。
 - `/patterns/library`、`create`、`detail`、`editor`、`import`、`settings`、`feedback`：共享本地模拟数据的完整业务页面。
-- `/patterns/coverage`：70 个公开组件和 143 个目录场景的反向覆盖索引。
+- `/patterns/coverage`：70 个公开组件和 145 个目录场景的反向覆盖索引。
 - 左侧大纲选择组件与场景，右侧按需加载案例和代码。
 - 每个组件页展示 Props API 表；引用公开结构化类型时继续展示对应字段表，一个组件可包含多张 `vxe-table`。
 - 每个应用演示页面都提供“查看本页源码”，源码直接从实际 `.vue` 和共享 TypeScript 文件按需读取。

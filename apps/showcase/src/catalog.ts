@@ -493,7 +493,7 @@ const alphaReadyIds = new Set([
   'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree',
 ])
 const singleExampleIds = new Set([
-  'checkbox', 'radio-group', 'slider', 'switch', 'accordion', 'avatar', 'collapsible', 'separator', 'tabs',
+  'checkbox', 'slider', 'switch', 'accordion', 'avatar', 'collapsible', 'separator', 'tabs',
 ])
 
 function sourceUrl(id: string) {

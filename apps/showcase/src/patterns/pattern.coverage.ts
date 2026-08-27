@@ -164,6 +164,7 @@ const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
   'multi-choice': { basic: 'settings', 'grouped-search': 'settings', 'tag-overflow': 'settings' },
   segmented: { basic: 'settings', sizes: 'settings', disabled: 'settings' },
   'virtual-list': { basic: 'library', 'large-data': 'library', empty: 'library' },
+  'radio-group': { basic: 'create', validation: 'create', 'form-integration': 'create' },
   'time-wheel': { basic: 'settings', 'minute-step': 'settings', 'disabled-time': 'settings' },
   dialog: {
     basic: 'feedback', 'tone-gallery': 'feedback', 'create-record': 'create', 'featured-preview': 'library',
