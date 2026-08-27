@@ -16,7 +16,7 @@
 - 每个业务页面提供“控件导览”，通过动态 Popover 高亮并介绍当前可见控件；覆盖清单中的业务链接会直接指认指定控件。
 
 组件目录维护在 `src/catalog.ts`，五套分组维护在 `src/componentGroups.ts`，异步文档组件位于 `src/docs`。开发服务器通过 Vite alias
-直接引用 `packages/vue/src`，便于组件热更新；生产构建仍使用 `registry/dragon-liquid-vue-0.6.0-alpha.19.tgz` 验证真实发布包。
+直接引用 `packages/vue/src`，便于组件热更新；生产构建仍使用 `registry/dragon-liquid-vue-0.6.0-alpha.20.tgz` 验证真实发布包。
 
 ## 构建
 

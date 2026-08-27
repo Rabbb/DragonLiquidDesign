@@ -33,13 +33,11 @@ import RawDlIconButton from './components/DlIconButton.vue'
 import RawDlInputButton from './components/DlInputButton.vue'
 import RawDlInputCheckbox from './components/DlInputCheckbox.vue'
 import RawDlInputColor from './components/DlInputColor.vue'
-import RawDlInputDate from './components/DlInputDate.vue'
 import RawDlInputDatetimeLocal from './components/DlInputDatetimeLocal.vue'
 import RawDlInputEmail from './components/DlInputEmail.vue'
 import RawDlInputFile from './components/DlInputFile.vue'
 import RawDlInputHidden from './components/DlInputHidden.vue'
 import RawDlInputImage from './components/DlInputImage.vue'
-import RawDlInputMonth from './components/DlInputMonth.vue'
 import RawDlInputNumber from './components/DlInputNumber.vue'
 import RawDlInputPassword from './components/DlInputPassword.vue'
 import RawDlInputRadio from './components/DlInputRadio.vue'
@@ -49,7 +47,6 @@ import RawDlInputSearch from './components/DlInputSearch.vue'
 import RawDlInputSubmit from './components/DlInputSubmit.vue'
 import RawDlInputTel from './components/DlInputTel.vue'
 import RawDlInputText from './components/DlInputText.vue'
-import RawDlInputTime from './components/DlInputTime.vue'
 import RawDlInputUrl from './components/DlInputUrl.vue'
 import RawDlInputWeek from './components/DlInputWeek.vue'
 import RawDlLabel from './components/DlLabel.vue'
@@ -81,8 +78,8 @@ import RawDlTabs from './components/DlTabs.vue'
 import RawDlTagsInput from './components/DlTagsInput.vue'
 import RawDlTextarea from './components/DlTextarea.vue'
 import RawDlTimeField from './components/DlTimeField.vue'
+import RawDlTimePicker from './components/DlTimePicker.vue'
 import RawDlTimeRangeField from './components/DlTimeRangeField.vue'
-import RawDlTimeWheel from './components/DlTimeWheel.vue'
 import RawDlToast from './components/DlToast.vue'
 import RawDlToggle from './components/DlToggle.vue'
 import RawDlToggleGroup from './components/DlToggleGroup.vue'
@@ -289,11 +286,6 @@ export const DlInputCheckbox = managed(RawDlInputCheckbox, 'DlInputCheckbox', {
   methodDefinitions: [method('check / uncheck', '显式选中或取消当前复选输入。', '()')],
 })
 export const DlInputColor = managed(RawDlInputColor, 'DlInputColor', { domEvents: fieldEvents })
-export const DlInputDate = managed(RawDlInputDate, 'DlInputDate', {
-  domEvents: fieldEvents,
-  methods: { today: context => { (context.element?.querySelector('[aria-label="选择今天"]') as HTMLElement | null)?.click(); return true } },
-  methodDefinitions: [method('today', '选择当前日期，并遵守 min/max 范围。', '()')],
-})
 export const DlInputDatetimeLocal = managed(RawDlInputDatetimeLocal, 'DlInputDatetimeLocal', {
   domEvents: fieldEvents,
   methods: { now: context => { (context.element?.querySelector('[aria-label="选择现在"]') as HTMLElement | null)?.click(); return true } },
@@ -303,11 +295,6 @@ export const DlInputEmail = managed(RawDlInputEmail, 'DlInputEmail', { domEvents
 export const DlInputFile = managed(RawDlInputFile, 'DlInputFile', { domEvents: fieldEvents })
 export const DlInputHidden = managed(RawDlInputHidden, 'DlInputHidden', { domEvents: fieldEvents })
 export const DlInputImage = managed(RawDlInputImage, 'DlInputImage', { domEvents: actionEvents })
-export const DlInputMonth = managed(RawDlInputMonth, 'DlInputMonth', {
-  domEvents: fieldEvents,
-  methods: { current: context => { (context.element?.querySelector('[aria-label="选择本月"]') as HTMLElement | null)?.click(); return true } },
-  methodDefinitions: [method('current', '选择当前月份，并遵守 min/max 范围。', '()')],
-})
 export const DlInputNumber = managed(RawDlInputNumber, 'DlInputNumber', {
   domEvents: fieldEvents,
   methods: numberMethods,
@@ -337,7 +324,6 @@ export const DlInputSubmit = managed(RawDlInputSubmit, 'DlInputSubmit', {
 })
 export const DlInputTel = managed(RawDlInputTel, 'DlInputTel', { domEvents: fieldEvents })
 export const DlInputText = managed(RawDlInputText, 'DlInputText', { domEvents: fieldEvents })
-export const DlInputTime = managed(RawDlInputTime, 'DlInputTime', { domEvents: fieldEvents })
 export const DlInputUrl = managed(RawDlInputUrl, 'DlInputUrl', {
   domEvents: fieldEvents,
   methods: { open: context => { (context.element?.querySelector('[aria-label="打开网址"]') as HTMLElement | null)?.click(); return true } },
@@ -440,8 +426,8 @@ export const DlTagsInput = managed(RawDlTagsInput, 'DlTagsInput', {
 })
 export const DlTextarea = managed(RawDlTextarea, 'DlTextarea', { domEvents: fieldEvents })
 export const DlTimeField = managed(RawDlTimeField, 'DlTimeField', { domEvents: fieldEvents })
+export const DlTimePicker = managed(RawDlTimePicker, 'DlTimePicker', { domEvents: fieldEvents })
 export const DlTimeRangeField = managed(RawDlTimeRangeField, 'DlTimeRangeField', { domEvents: fieldEvents })
-export const DlTimeWheel = managed(RawDlTimeWheel, 'DlTimeWheel', { domEvents: fieldEvents })
 export const DlToast = managed(RawDlToast, 'DlToast', {
   methods: { dismiss: context => context.set('open', false) },
   methodDefinitions: [method('dismiss', '关闭当前通知。', '()')],

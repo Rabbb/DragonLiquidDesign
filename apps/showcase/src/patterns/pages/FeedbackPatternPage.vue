@@ -68,7 +68,7 @@ const taskActions: DlMenuItem[] = [
 const tasks = [
   { title: '收藏元数据同步', helper: '后台任务正在继续', value: null, tone: 'default' as DlTone, status: 'default' as const },
   { title: '封面资源生成', helper: '高优先级当前任务', value: 62, tone: 'accent' as DlTone, status: 'default' as const },
-  { title: '索引构建完成', helper: '91 个组件已写入索引', value: 100, tone: 'success' as DlTone, status: 'success' as const },
+  { title: '索引构建完成', helper: '88 个公开组件已写入索引', value: 100, tone: 'success' as DlTone, status: 'success' as const },
   { title: '来源响应缓慢', helper: '任务仍在重试', value: 48, tone: 'warning' as DlTone, status: 'warning' as const },
   { title: '图片校验中断', helper: '需要重新选择文件', value: 31, tone: 'danger' as DlTone, status: 'danger' as const },
   { title: '历史日志压缩', helper: '无需持续关注', value: 78, tone: 'muted' as DlTone, status: 'default' as const },

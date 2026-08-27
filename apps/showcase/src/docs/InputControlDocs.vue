@@ -5,13 +5,11 @@ import {
   DlInputButton,
   DlInputCheckbox,
   DlInputColor,
-  DlInputDate,
   DlInputDatetimeLocal,
   DlInputEmail,
   DlInputFile,
   DlInputHidden,
   DlInputImage,
-  DlInputMonth,
   DlInputNumber,
   DlInputPassword,
   DlInputRadio,
@@ -21,7 +19,6 @@ import {
   DlInputSubmit,
   DlInputTel,
   DlInputText,
-  DlInputTime,
   DlInputUrl,
   DlInputWeek,
 } from '@dragon-liquid/vue'
@@ -49,13 +46,11 @@ const componentAttributes: Record<string, string> = {
   button: 'value="执行操作"',
   checkbox: 'v-model="checked" name="notifications" value="enabled" label="接收发布通知"',
   color: 'v-model="color"',
-  date: 'v-model="date" min="2026-01-01" max="2026-12-31"',
   'datetime-local': 'v-model="dateTime" min="2026-08-01T00:00" max="2026-08-31T23:59"',
   email: 'v-model="email" autocomplete="email" required',
   file: 'accept="image/png,image/jpeg" multiple :max-files="4" :max-file-size="5242880" @select="handleFiles"',
   hidden: 'name="recordId" model-value="record-20260828"',
   image: 'src="/input-image-submit.svg" alt="提交表单" :width="240" :height="64"',
-  month: 'v-model="month" min="2026-01" max="2026-12"',
   number: 'v-model="count" :min="0" :max="100" :step="1" unit="项"',
   password: 'v-model="password" autocomplete="current-password" minlength="8" required',
   radio: 'v-model="release" name="release" value="stable"',
@@ -65,7 +60,6 @@ const componentAttributes: Record<string, string> = {
   submit: 'value="提交表单"',
   tel: 'v-model="phone" autocomplete="tel" format="cn-mobile"',
   text: 'v-model="title" autocomplete="name" maxlength="40" trim-on-blur',
-  time: 'v-model="time" min="08:00" max="18:00" :step="900"',
   url: 'v-model="url" autocomplete="url" required',
   week: 'v-model="week" min="2026-W01" max="2026-W52"',
 }
@@ -195,17 +189,14 @@ function formatPercent(value: number) {
       </div>
 
       <div v-else-if="definition.type === 'color'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputColor :id="controlId" v-model="currentValue" /><output>当前值：{{ currentValue }}</output></div>
-      <div v-else-if="definition.type === 'date'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputDate :id="controlId" v-model="currentValue" min="2026-01-01" max="2026-12-31" /><output>当前值：{{ currentValue }}</output></div>
       <div v-else-if="definition.type === 'datetime-local'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputDatetimeLocal :id="controlId" v-model="currentValue" min="2026-08-01T00:00" max="2026-08-31T23:59" /><output>当前值：{{ currentValue }}</output></div>
       <div v-else-if="definition.type === 'email'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputEmail :id="controlId" v-model="currentValue" autocomplete="email" required /><output>当前值：{{ currentValue }}</output></div>
-      <div v-else-if="definition.type === 'month'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputMonth :id="controlId" v-model="currentValue" min="2026-01" max="2026-12" /><output>当前值：{{ currentValue }}</output></div>
       <div v-else-if="definition.type === 'number'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputNumber :id="controlId" v-model="numberValue" :min="0" :max="100" :step="1" unit="项" /><output>当前值：{{ numberValue }}</output></div>
       <div v-else-if="definition.type === 'password'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputPassword :id="controlId" v-model="currentValue" autocomplete="current-password" minlength="8" required /><output>当前值长度：{{ currentValue.length }}</output></div>
       <div v-else-if="definition.type === 'range'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputRange :id="controlId" v-model="rangeValue" :min="0" :max="100" :step="1" min-label="低" max-label="高" :format-value="formatPercent" /><output>当前值：{{ rangeValue }}</output></div>
       <div v-else-if="definition.type === 'search'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputSearch :id="controlId" v-model="currentValue" @search="result = `检索：${$event}`" /><output>{{ result }}</output></div>
       <div v-else-if="definition.type === 'tel'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputTel :id="controlId" v-model="currentValue" autocomplete="tel" format="cn-mobile" /><output>当前值：{{ currentValue }}</output></div>
       <div v-else-if="definition.type === 'text'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputText :id="controlId" v-model="currentValue" autocomplete="name" maxlength="40" trim-on-blur /><output>当前值：{{ currentValue }}</output></div>
-      <div v-else-if="definition.type === 'time'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputTime :id="controlId" v-model="currentValue" min="08:00" max="18:00" :step="900" /><output>当前值：{{ currentValue }}</output></div>
       <div v-else-if="definition.type === 'url'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputUrl :id="controlId" v-model="currentValue" autocomplete="url" required /><output>当前值：{{ currentValue }}</output></div>
       <div v-else-if="definition.type === 'week'" class="input-control-demo"><label :for="controlId">{{ definition.label }}</label><DlInputWeek :id="controlId" v-model="currentValue" min="2026-W01" max="2026-W52" /><output>当前值：{{ currentValue }}</output></div>
     </div>

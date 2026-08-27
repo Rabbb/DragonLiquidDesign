@@ -31,11 +31,11 @@ export const componentCatalogScopes = [
 
 const recommendedIds = new Set([
   'button', 'split-button', 'badge', 'card', 'icon-button',
-  'input-color', 'input-date', 'input-datetime-local', 'input-email', 'input-file', 'input-month',
-  'input-number', 'input-password', 'input-search', 'input-tel', 'input-text', 'input-time', 'input-url', 'input-week',
+  'input-color', 'input-datetime-local', 'input-email', 'input-file',
+  'input-number', 'input-password', 'input-search', 'input-tel', 'input-text', 'input-url', 'input-week',
   'textarea', 'choice-portal', 'multi-choice', 'segmented', 'autocomplete', 'checkbox', 'combobox', 'editable',
-  'pin-input', 'radio-group', 'rating', 'select', 'slider', 'switch', 'tags-input', 'color-swatch-picker', 'time-wheel',
-  'calendar', 'date-range-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'mdx', 'virtual-list',
+  'pin-input', 'radio-group', 'rating', 'select', 'slider', 'switch', 'tags-input', 'color-swatch-picker', 'time-picker',
+  'calendar', 'date-picker', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'mdx', 'virtual-list',
   'accordion', 'alert-dialog', 'avatar', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'navigation-menu',
   'pagination', 'popover', 'progress', 'stepper', 'tabs', 'toast', 'tooltip', 'tree',
 ])
@@ -138,15 +138,14 @@ export const componentChoiceFamilies: ComponentChoiceFamily[] = [
   {
     id: 'date',
     label: '日期选择',
-    question: '业务需要字符串字段、日历对象，还是日期范围？',
-    summary: '普通表单优先类型化 Input；复杂日历和范围任务再使用日期组件族。',
-    preferredId: 'input-date',
+    question: '用户需要直接键入、弹出选择，还是浏览完整日程？',
+    summary: 'Field 负责精确输入，Picker 在相同值模型上增加选择面板，Calendar 负责月度日程浏览。',
+    preferredId: 'date-picker',
     options: [
-      { id: 'input-date', useWhen: '提交 YYYY-MM-DD 单日期字符串' },
-      { id: 'date-picker', useWhen: '需要日历浮层和结构化日期值' },
-      { id: 'calendar', useWhen: '日历需要常驻页面' },
+      { id: 'date-picker', useWhen: '多数表单需要键入与日历选择并存' },
+      { id: 'date-field', useWhen: '高密度表单只需精确键入日期' },
+      { id: 'calendar', useWhen: '需要浏览、创建或拖动月度日程' },
       { id: 'date-range-picker', useWhen: '选择开始与结束日期' },
-      { id: 'date-field', useWhen: '组合键盘友好的日期分段输入' },
       { id: 'range-calendar', useWhen: '组合常驻的范围日历' },
       { id: 'date-range-field', useWhen: '组合日期范围分段输入' },
     ],
@@ -154,14 +153,14 @@ export const componentChoiceFamilies: ComponentChoiceFamily[] = [
   {
     id: 'time',
     label: '时间选择',
-    question: '输入单个时间，还是面向触屏滚动或时间范围？',
-    summary: '普通表单使用 InputTime；移动端滚动选择和复合范围按需升级。',
-    preferredId: 'input-time',
+    question: '用户需要直接键入、可视选择，还是输入时间范围？',
+    summary: 'TimeField 保持轻量精确录入，TimePicker 组合字段和触控滚轮作为默认入口。',
+    preferredId: 'time-picker',
     options: [
-      { id: 'input-time', useWhen: '提交 HH:mm 单时间字符串' },
-      { id: 'time-wheel', useWhen: '移动端或大触控区域滚动选择' },
-      { id: 'time-field', useWhen: '组合结构化时间分段输入' },
+      { id: 'time-picker', useWhen: '多数表单需要键入和滚轮选择并存' },
+      { id: 'time-field', useWhen: '高密度表单只需精确键入时间' },
       { id: 'time-range-field', useWhen: '输入开始与结束时间' },
+      { id: 'input-datetime-local', useWhen: '同一字段需要录入本地日期与时间' },
     ],
   },
   {

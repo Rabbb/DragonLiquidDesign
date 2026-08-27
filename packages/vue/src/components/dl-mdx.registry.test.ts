@@ -75,8 +75,8 @@ describe('MarkdownX component registry', () => {
   })
 
   it('ships a unique official definition for every public component', () => {
-    expect(dlMdxOfficialComponents).toHaveLength(91)
-    expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(91)
+    expect(dlMdxOfficialComponents).toHaveLength(88)
+    expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(88)
     expect(dlMdxOfficialComponents.filter(item => item.maturity === 'alpha').length).toBeGreaterThan(10)
     expect(dlMdxOfficialComponents.every(item => item.component || item.render)).toBe(true)
   })
@@ -89,7 +89,7 @@ describe('MarkdownX component registry', () => {
       props: { modelValue: source, mode: 'preview', debounce: 0, taskInteractive: false },
     })
 
-    expect(wrapper.findAll('.dl-mdx__component-block')).toHaveLength(91)
+    expect(wrapper.findAll('.dl-mdx__component-block')).toHaveLength(88)
     expect(wrapper.findAll('.dl-mdx__unknown-component')).toHaveLength(0)
   })
 })

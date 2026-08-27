@@ -34,8 +34,8 @@ import {
   DlSwitch,
   DlTabs,
   DlTimeField,
+  DlTimePicker,
   DlTimeRangeField,
-  DlTimeWheel,
   DlYearPicker,
   DlYearRangePicker,
   type DateRange,
@@ -51,12 +51,17 @@ import { useArchiveDemo } from '../useArchiveDemo'
 const { settings, view, notify } = useArchiveDemo()
 const tab = ref('appearance')
 const reminderTime = shallowRef(new Time(20, 30))
-const reminderWheel = ref('20:30')
+const reminderPicker = shallowRef(new Time(20, 30))
 const contentSource = ref('all')
 const enabledSources = ref(['local', 'bangumi', 'anilist'])
 const digestFrequency = ref('weekly')
 const digestDate = shallowRef(new CalendarDate(2026, 8, 9))
-const calendarDate = shallowRef(new CalendarDate(2026, 8, 9))
+const calendarDate = ref('2026-08-09')
+const calendarView = ref('2026-08')
+const calendarItems = ref([
+  { id: 'digest', date: '2026-08-09', title: '每周摘要', color: '#71d1ad' },
+  { id: 'archive', date: '2026-08-18', title: '月度归档', color: '#e4b76a' },
+])
 const reportRange = shallowRef<DateRange>({ start: new CalendarDate(2026, 8, 1), end: new CalendarDate(2026, 8, 31) })
 const monthValue = shallowRef(new CalendarDate(2026, 8, 1))
 const monthRange = shallowRef<DateRange>({ start: new CalendarDate(2026, 7, 1), end: new CalendarDate(2026, 9, 1) })
@@ -92,7 +97,7 @@ const componentGuideTabs: Record<string, string> = {
   'choice-portal': 'behavior',
   'multi-choice': 'behavior',
   segmented: 'behavior',
-  'time-wheel': 'behavior',
+  'time-picker': 'behavior',
   'date-field': 'schedule',
   'time-range-field': 'schedule',
   'date-range-picker': 'schedule',
@@ -167,6 +172,10 @@ function resetSettings() {
   notify('已恢复默认设置', '演示状态已经重置。', 'warning')
 }
 
+function moveCalendarItem(item: { id: string }, day: { key: string }) {
+  calendarItems.value = calendarItems.value.map(value => value.id === item.id ? { ...value, date: day.key } : value)
+}
+
 function handleGuideTabRequest(event: Event) {
   const value = (event as CustomEvent<{ value?: string }>).detail?.value
   if (value && tabs.some(item => item.value === value)) tab.value = value
@@ -205,8 +214,11 @@ onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleG
               <header><small>DATE &amp; ARCHIVE</small><h2>日期、范围与归档周期</h2><p>字段负责精确键入，弹出选择器负责浏览，内联日历用于核心日期任务。</p></header>
               <div class="settings-grid"><div class="settings-field"><DlLabel>摘要日期字段</DlLabel><DlDateField v-model="digestDate" /></div><div class="settings-field"><DlLabel>免打扰时段</DlLabel><DlTimeRangeField v-model="quietHours" /></div></div>
               <div class="settings-grid"><div class="settings-field"><DlLabel>统计日期范围</DlLabel><DlDateRangePicker v-model="reportRange" /></div><div class="settings-field"><DlLabel>精确范围字段</DlLabel><DlDateRangeField v-model="reportRange" /></div></div>
-              <DlCollapsible title="选择具体日期" description="单日计划与连续观看区间">
-                <div class="schedule-picker-grid"><DlCalendar v-model="calendarDate" /><DlRangeCalendar v-model="reportRange" /></div>
+              <DlCollapsible title="浏览月度日程" description="事项可在日期之间拖动，单元格内容过多时独立滚动">
+                <DlCalendar v-model="calendarDate" v-model:view-value="calendarView" :items="calendarItems" height="420px" @item-drop="moveCalendarItem" />
+              </DlCollapsible>
+              <DlCollapsible title="选择连续日期" description="常驻范围选择器用于需要同时观察起止日期的任务">
+                <DlRangeCalendar v-model="reportRange" />
               </DlCollapsible>
               <DlCollapsible title="选择月份周期" description="月度回顾与季度统计">
                 <div class="schedule-picker-grid"><DlMonthPicker v-model="monthValue" /><DlMonthRangePicker v-model="monthRange" /></div>
@@ -224,7 +236,7 @@ onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleG
               <div class="setting-row"><div><b>显示成人内容</b><span>仍会保留内容分级与二次确认</span></div><DlSwitch v-model="settings.showAdultContent" /></div>
               <DlSeparator />
               <div class="settings-grid"><div class="settings-field"><DlLabel>每周摘要日期</DlLabel><DlDatePicker v-model="digestDate" /></div><div class="settings-field"><DlLabel>提醒时间</DlLabel><DlTimeField v-model="reminderTime" /></div></div>
-              <div class="settings-grid"><div class="settings-field"><DlLabel>内容来源</DlLabel><DlChoicePortal v-model="contentSource" :options="contentSourceOptions" searchable clearable placeholder="选择收藏来源" /></div><div class="settings-field"><DlLabel>触控提醒时间</DlLabel><DlTimeWheel v-model="reminderWheel" :minute-step="5" shortcut-value="20:30" shortcut-label="晚间摘要" clearable /></div></div>
+              <div class="settings-grid"><div class="settings-field"><DlLabel>内容来源</DlLabel><DlChoicePortal v-model="contentSource" :options="contentSourceOptions" searchable clearable placeholder="选择收藏来源" /></div><div class="settings-field"><DlLabel>触控提醒时间</DlLabel><DlTimePicker v-model="reminderPicker" :minute-step="5" shortcut-value="20:30" shortcut-label="晚间摘要" clearable /></div></div>
               <div class="settings-grid"><div class="settings-field"><DlLabel>摘要包含来源</DlLabel><DlMultiChoice v-model="enabledSources" :options="enabledSourceOptions" searchable clearable :max-tag-count="2" placeholder="选择多个内容来源" /></div><div class="settings-field"><DlLabel>摘要频率</DlLabel><DlSegmented v-model="digestFrequency" :items="digestFrequencyOptions" block /></div></div>
               <div class="settings-field"><DlLabel>收藏库分页</DlLabel><DlSelect v-model="settings.pageSize" :options="pageSizeOptions" /></div>
             </div>

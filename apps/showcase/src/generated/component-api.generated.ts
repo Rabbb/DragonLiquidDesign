@@ -453,14 +453,20 @@ export default {
       {
         "prop": "modelValue",
         "description": "组件当前值；使用 v-model 进行双向绑定。",
-        "type": "DateValue | DateValue[] | null",
+        "type": "string | null",
         "defaultValue": "null"
       },
       {
-        "prop": "placeholder",
-        "description": "当前值为空时显示的占位提示。",
-        "type": "DateValue",
+        "prop": "viewValue",
+        "description": "月历当前浏览的 YYYY-MM 月份；使用 v-model:view-value 双向绑定。",
+        "type": "string",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "DlCalendarItem[]",
+        "defaultValue": "() => []"
       },
       {
         "prop": "locale",
@@ -481,31 +487,130 @@ export default {
         "defaultValue": "true"
       },
       {
-        "prop": "numberOfMonths",
-        "description": "同时显示的月份面板数量。",
-        "type": "number",
-        "defaultValue": "1"
+        "prop": "showOutsideDays",
+        "description": "是否显示当前月份之外的补齐日期。",
+        "type": "boolean",
+        "defaultValue": "true"
       },
       {
-        "prop": "multiple",
-        "description": "是否允许同时选择多个值。",
+        "prop": "showToolbar",
+        "description": "是否显示格式操作和视图模式工具栏。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showToday",
+        "description": "是否在月历工具栏显示返回今天操作。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showCreate",
+        "description": "是否在日期单元格中显示新建事项入口。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "todayLabel",
+        "description": "月历工具栏返回今天按钮显示的文字。",
+        "type": "string",
+        "defaultValue": "'今天'"
+      },
+      {
+        "prop": "createLabel",
+        "description": "日历单元格新建按钮使用的无障碍名称。",
+        "type": "string",
+        "defaultValue": "'新建'"
+      },
+      {
+        "prop": "dayMinHeight",
+        "description": "月历中每个日期单元格允许使用的最小高度，单位像素。",
+        "type": "number",
+        "defaultValue": "112"
+      },
+      {
+        "prop": "height",
+        "description": "窗口或区域的高度。",
+        "type": "string | number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "draggable",
+        "description": "是否允许在桌面视口中拖动标题栏或拖动柄来移动对话框。",
+        "type": "boolean",
+        "defaultValue": "true"
       },
       {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
-      },
-      {
-        "prop": "readonly",
-        "description": "是否只读；保留浏览能力但禁止修改。",
-        "type": "boolean",
-        "defaultValue": "false"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "name": "DlCalendarItem",
+        "description": "Calendar 在指定日期单元格中展示、点击和拖动的业务事项。",
+        "rows": [
+          {
+            "prop": "id",
+            "description": "控件或输入元素使用的唯一标识。",
+            "type": "string | number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "date",
+            "description": "设置 date 字段。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "title",
+            "description": "控件或浮层显示的标题。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "color",
+            "description": "要展示或编辑的颜色值。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "kind",
+            "description": "设置 kind 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "completed",
+            "description": "该步骤是否已经完成。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "draggable",
+            "description": "是否允许在桌面视口中拖动标题栏或拖动柄来移动对话框。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "disabled",
+            "description": "是否禁用控件及其交互。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "meta",
+            "description": "设置 meta 字段。",
+            "type": "unknown",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlCalendarItem[]"
+      }
+    ]
   },
   "card": {
     "props": [
@@ -1182,6 +1287,42 @@ export default {
         "defaultValue": "24"
       },
       {
+        "prop": "minValue",
+        "description": "允许选择的最早日期。",
+        "type": "DateValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxValue",
+        "description": "允许选择的最晚日期。",
+        "type": "DateValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "isDateUnavailable",
+        "description": "设置 isDateUnavailable 属性。",
+        "type": "(date: DateValue) => boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -1206,7 +1347,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "date-picker": {
     "props": [
@@ -1223,6 +1391,12 @@ export default {
         "defaultValue": "null"
       },
       {
+        "prop": "presentation",
+        "description": "选择器入口使用可编辑字段或紧凑按钮呈现；不改变值模型和选择面板。",
+        "type": "DlDatePickerPresentation",
+        "defaultValue": "'button'"
+      },
+      {
         "prop": "placeholder",
         "description": "当前值为空时显示的占位提示。",
         "type": "string",
@@ -1235,10 +1409,88 @@ export default {
         "defaultValue": "'zh-CN'"
       },
       {
+        "prop": "granularity",
+        "description": "允许编辑到的最小日期或时间粒度。",
+        "type": "'day' | 'hour' | 'minute' | 'second'",
+        "defaultValue": "'day'"
+      },
+      {
+        "prop": "hourCycle",
+        "description": "时间字段使用 12 小时制或 24 小时制。",
+        "type": "12 | 24",
+        "defaultValue": "24"
+      },
+      {
+        "prop": "weekStartsOn",
+        "description": "一周起始日，0 表示星期日。",
+        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
+        "defaultValue": "1"
+      },
+      {
+        "prop": "minValue",
+        "description": "允许选择的最早日期。",
+        "type": "DateValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxValue",
+        "description": "允许选择的最晚日期。",
+        "type": "DateValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "isDateDisabled",
+        "description": "设置 isDateDisabled 属性。",
+        "type": "(date: DateValue) => boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "isDateUnavailable",
+        "description": "设置 isDateUnavailable 属性。",
+        "type": "(date: DateValue) => boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "id",
+        "description": "控件或输入元素使用的唯一标识。",
+        "type": "string",
+        "defaultValue": "undefined"
       },
       {
         "prop": "zIndex",
@@ -1247,7 +1499,54 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlDatePickerPresentation",
+        "title": "DlDatePickerPresentation",
+        "description": "DlDatePickerPresentation 可用的枚举值。",
+        "rows": [
+          {
+            "prop": "field",
+            "description": "DlDatePickerPresentation 的 field 选项。",
+            "type": "'field'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "button",
+            "description": "DlDatePickerPresentation 的 button 选项。",
+            "type": "'button'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "date-range-field": {
     "props": [
@@ -1276,6 +1575,42 @@ export default {
         "defaultValue": "24"
       },
       {
+        "prop": "minValue",
+        "description": "允许选择的最早日期。",
+        "type": "DateValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxValue",
+        "description": "允许选择的最晚日期。",
+        "type": "DateValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "isDateUnavailable",
+        "description": "设置 isDateUnavailable 属性。",
+        "type": "(date: DateValue) => boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -1294,7 +1629,34 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "date-range-picker": {
     "props": [
@@ -1311,6 +1673,12 @@ export default {
         "defaultValue": "null"
       },
       {
+        "prop": "presentation",
+        "description": "选择器入口使用可编辑字段或紧凑按钮呈现；不改变值模型和选择面板。",
+        "type": "DlDateRangePickerPresentation",
+        "defaultValue": "'button'"
+      },
+      {
         "prop": "placeholder",
         "description": "当前值为空时显示的占位提示。",
         "type": "string",
@@ -1323,10 +1691,58 @@ export default {
         "defaultValue": "'zh-CN'"
       },
       {
+        "prop": "granularity",
+        "description": "允许编辑到的最小日期或时间粒度。",
+        "type": "'day' | 'hour' | 'minute' | 'second'",
+        "defaultValue": "'day'"
+      },
+      {
+        "prop": "hourCycle",
+        "description": "时间字段使用 12 小时制或 24 小时制。",
+        "type": "12 | 24",
+        "defaultValue": "24"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "isDateUnavailable",
+        "description": "设置 isDateUnavailable 属性。",
+        "type": "(date: DateValue) => boolean",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
       },
       {
         "prop": "minValue",
@@ -1353,7 +1769,54 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlDateRangePickerPresentation",
+        "title": "DlDateRangePickerPresentation",
+        "description": "DlDateRangePickerPresentation 可用的枚举值。",
+        "rows": [
+          {
+            "prop": "field",
+            "description": "DlDateRangePickerPresentation 的 field 选项。",
+            "type": "'field'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "button",
+            "description": "DlDateRangePickerPresentation 的 button 选项。",
+            "type": "'button'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "dialog": {
     "props": [
@@ -2132,134 +2595,6 @@ export default {
       }
     ]
   },
-  "input-date": {
-    "props": [
-      {
-        "prop": "modelValue",
-        "description": "组件当前值；使用 v-model 进行双向绑定。",
-        "type": "string | null",
-        "defaultValue": "''"
-      },
-      {
-        "prop": "min",
-        "description": "允许的最小值。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "max",
-        "description": "允许的最大值。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "placeholder",
-        "description": "当前值为空时显示的占位提示。",
-        "type": "string",
-        "defaultValue": "'选择日期'"
-      },
-      {
-        "prop": "locale",
-        "description": "日期、时间或数字格式使用的区域语言。",
-        "type": "string",
-        "defaultValue": "'zh-CN'"
-      },
-      {
-        "prop": "size",
-        "description": "设置控件尺寸。",
-        "type": "DlSize",
-        "defaultValue": "'md'"
-      },
-      {
-        "prop": "status",
-        "description": "设置业务状态及对应视觉反馈。",
-        "type": "'default' | 'success' | 'warning' | 'error'",
-        "defaultValue": "'default'"
-      },
-      {
-        "prop": "disabled",
-        "description": "是否禁用控件及其交互。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "readonly",
-        "description": "是否只读；保留浏览能力但禁止修改。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "clearable",
-        "description": "是否允许再次操作以清空当前值。",
-        "type": "boolean",
-        "defaultValue": "true"
-      },
-      {
-        "prop": "todayShortcut",
-        "description": "设置 todayShortcut 属性。",
-        "type": "boolean",
-        "defaultValue": "true"
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": [
-      {
-        "kind": "enum",
-        "name": "DlSize",
-        "title": "DlSize",
-        "description": "组件可用的标准尺寸。",
-        "rows": [
-          {
-            "prop": "sm",
-            "description": "紧凑尺寸，适合密集界面和次要操作。",
-            "type": "'sm'",
-            "defaultValue": "紧凑"
-          },
-          {
-            "prop": "md",
-            "description": "默认尺寸，适合大多数常规界面。",
-            "type": "'md'",
-            "defaultValue": "标准"
-          },
-          {
-            "prop": "lg",
-            "description": "放大尺寸，适合重点内容和宽松布局。",
-            "type": "'lg'",
-            "defaultValue": "宽松"
-          }
-        ]
-      }
-    ]
-  },
   "input-datetime-local": {
     "props": [
       {
@@ -2686,134 +3021,6 @@ export default {
       }
     ],
     "relatedTypes": []
-  },
-  "input-month": {
-    "props": [
-      {
-        "prop": "modelValue",
-        "description": "组件当前值；使用 v-model 进行双向绑定。",
-        "type": "string | null",
-        "defaultValue": "''"
-      },
-      {
-        "prop": "min",
-        "description": "允许的最小值。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "max",
-        "description": "允许的最大值。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "placeholder",
-        "description": "当前值为空时显示的占位提示。",
-        "type": "string",
-        "defaultValue": "'选择月份'"
-      },
-      {
-        "prop": "locale",
-        "description": "日期、时间或数字格式使用的区域语言。",
-        "type": "string",
-        "defaultValue": "'zh-CN'"
-      },
-      {
-        "prop": "size",
-        "description": "设置控件尺寸。",
-        "type": "DlSize",
-        "defaultValue": "'md'"
-      },
-      {
-        "prop": "status",
-        "description": "设置业务状态及对应视觉反馈。",
-        "type": "'default' | 'success' | 'warning' | 'error'",
-        "defaultValue": "'default'"
-      },
-      {
-        "prop": "disabled",
-        "description": "是否禁用控件及其交互。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "readonly",
-        "description": "是否只读；保留浏览能力但禁止修改。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "clearable",
-        "description": "是否允许再次操作以清空当前值。",
-        "type": "boolean",
-        "defaultValue": "true"
-      },
-      {
-        "prop": "currentShortcut",
-        "description": "设置 currentShortcut 属性。",
-        "type": "boolean",
-        "defaultValue": "true"
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "step",
-        "description": "设置合法值之间的步进间隔；可使用 any 取消步进约束。",
-        "type": "number | \"any\"",
-        "defaultValue": "类型默认值"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": [
-      {
-        "kind": "enum",
-        "name": "DlSize",
-        "title": "DlSize",
-        "description": "组件可用的标准尺寸。",
-        "rows": [
-          {
-            "prop": "sm",
-            "description": "紧凑尺寸，适合密集界面和次要操作。",
-            "type": "'sm'",
-            "defaultValue": "紧凑"
-          },
-          {
-            "prop": "md",
-            "description": "默认尺寸，适合大多数常规界面。",
-            "type": "'md'",
-            "defaultValue": "标准"
-          },
-          {
-            "prop": "lg",
-            "description": "放大尺寸，适合重点内容和宽松布局。",
-            "type": "'lg'",
-            "defaultValue": "宽松"
-          }
-        ]
-      }
-    ]
   },
   "input-number": {
     "props": [
@@ -3769,128 +3976,6 @@ export default {
       {
         "prop": "placeholder",
         "description": "在空值时显示简短格式提示，不能替代 label。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "required",
-        "description": "要求该控件在表单提交前提供有效值或选择。",
-        "type": "boolean attribute",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "form",
-        "description": "通过表单 id 把输入关联到其所属 form 元素。",
-        "type": "string",
-        "defaultValue": "最近的祖先 form"
-      }
-    ],
-    "relatedTypes": [
-      {
-        "kind": "enum",
-        "name": "DlSize",
-        "title": "DlSize",
-        "description": "组件可用的标准尺寸。",
-        "rows": [
-          {
-            "prop": "sm",
-            "description": "紧凑尺寸，适合密集界面和次要操作。",
-            "type": "'sm'",
-            "defaultValue": "紧凑"
-          },
-          {
-            "prop": "md",
-            "description": "默认尺寸，适合大多数常规界面。",
-            "type": "'md'",
-            "defaultValue": "标准"
-          },
-          {
-            "prop": "lg",
-            "description": "放大尺寸，适合重点内容和宽松布局。",
-            "type": "'lg'",
-            "defaultValue": "宽松"
-          }
-        ]
-      }
-    ]
-  },
-  "input-time": {
-    "props": [
-      {
-        "prop": "modelValue",
-        "description": "组件当前值；使用 v-model 进行双向绑定。",
-        "type": "string | null",
-        "defaultValue": "''"
-      },
-      {
-        "prop": "min",
-        "description": "允许的最小值。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "max",
-        "description": "允许的最大值。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "step",
-        "description": "每次操作改变的数值步长。",
-        "type": "number",
-        "defaultValue": "300"
-      },
-      {
-        "prop": "placeholder",
-        "description": "当前值为空时显示的占位提示。",
-        "type": "string",
-        "defaultValue": "'选择时间'"
-      },
-      {
-        "prop": "size",
-        "description": "设置控件尺寸。",
-        "type": "DlSize",
-        "defaultValue": "'md'"
-      },
-      {
-        "prop": "status",
-        "description": "设置业务状态及对应视觉反馈。",
-        "type": "'default' | 'success' | 'warning' | 'error'",
-        "defaultValue": "'default'"
-      },
-      {
-        "prop": "disabled",
-        "description": "是否禁用控件及其交互。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "readonly",
-        "description": "是否只读；保留浏览能力但禁止修改。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "clearable",
-        "description": "是否允许再次操作以清空当前值。",
-        "type": "boolean",
-        "defaultValue": "true"
-      },
-      {
-        "prop": "nowShortcut",
-        "description": "设置 nowShortcut 属性。",
-        "type": "boolean",
-        "defaultValue": "true"
-      },
-      {
-        "prop": "name",
-        "description": "定义表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "—"
-      },
-      {
-        "prop": "list",
-        "description": "关联 datalist 的 id，为输入提供原生建议值。",
         "type": "string",
         "defaultValue": "—"
       },
@@ -7121,6 +7206,36 @@ export default {
         "defaultValue": "24"
       },
       {
+        "prop": "minValue",
+        "description": "允许选择的最早日期。",
+        "type": "TimeValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxValue",
+        "description": "允许选择的最晚日期。",
+        "type": "TimeValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "disabled",
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
@@ -7145,7 +7260,224 @@ export default {
         "defaultValue": "undefined"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
+  "time-picker": {
+    "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "TimeValue | null",
+        "defaultValue": "null"
+      },
+      {
+        "prop": "presentation",
+        "description": "选择器入口使用可编辑字段或紧凑按钮呈现；不改变值模型和选择面板。",
+        "type": "DlTimePickerPresentation",
+        "defaultValue": "'field'"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择时间'"
+      },
+      {
+        "prop": "locale",
+        "description": "日期、时间或数字格式使用的区域语言。",
+        "type": "string",
+        "defaultValue": "'zh-CN'"
+      },
+      {
+        "prop": "granularity",
+        "description": "允许编辑到的最小日期或时间粒度。",
+        "type": "'hour' | 'minute'",
+        "defaultValue": "'minute'"
+      },
+      {
+        "prop": "hourCycle",
+        "description": "时间字段使用 12 小时制或 24 小时制。",
+        "type": "12 | 24",
+        "defaultValue": "24"
+      },
+      {
+        "prop": "minValue",
+        "description": "允许选择的最早日期。",
+        "type": "TimeValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxValue",
+        "description": "允许选择的最晚日期。",
+        "type": "TimeValue",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "minuteStep",
+        "description": "分钟滚轮生成选项时使用的步长，限制在 1–30 分钟。",
+        "type": "number",
+        "defaultValue": "5"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "'default' | 'success' | 'warning' | 'error'",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "overlay",
+        "description": "设置浮层固定为模态面板、底部抽屉或按视口自动适配。",
+        "type": "'auto' | 'modal' | 'drawer'",
+        "defaultValue": "'auto'"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "shortcutValue",
+        "description": "时间滚轮可一键选取的 HH:mm 快捷值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "shortcutLabel",
+        "description": "时间滚轮中快捷时间按钮显示的文字。",
+        "type": "string",
+        "defaultValue": "'常用时间'"
+      },
+      {
+        "prop": "disabledTime",
+        "description": "判断指定 HH:mm 时间是否不可选择的函数。",
+        "type": "(value: string) => boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "id",
+        "description": "控件或输入元素使用的唯一标识。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "required",
+        "description": "是否标记为表单必填项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlTimePickerPresentation",
+        "title": "DlTimePickerPresentation",
+        "description": "DlTimePickerPresentation 可用的枚举值。",
+        "rows": [
+          {
+            "prop": "field",
+            "description": "DlTimePickerPresentation 的 field 选项。",
+            "type": "'field'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "button",
+            "description": "DlTimePickerPresentation 的 button 选项。",
+            "type": "'button'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "time-range-field": {
     "props": [
@@ -7193,128 +7525,6 @@ export default {
       }
     ],
     "relatedTypes": []
-  },
-  "time-wheel": {
-    "props": [
-      {
-        "prop": "open",
-        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
-        "type": "boolean",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "modelValue",
-        "description": "组件当前值；使用 v-model 进行双向绑定。",
-        "type": "string",
-        "defaultValue": "''"
-      },
-      {
-        "prop": "placeholder",
-        "description": "当前值为空时显示的占位提示。",
-        "type": "string",
-        "defaultValue": "'选择时间'"
-      },
-      {
-        "prop": "minuteStep",
-        "description": "分钟滚轮生成选项时使用的步长，限制在 1–30 分钟。",
-        "type": "number",
-        "defaultValue": "5"
-      },
-      {
-        "prop": "size",
-        "description": "设置控件尺寸。",
-        "type": "DlSize",
-        "defaultValue": "'md'"
-      },
-      {
-        "prop": "status",
-        "description": "设置业务状态及对应视觉反馈。",
-        "type": "TimeWheelStatus",
-        "defaultValue": "'default'"
-      },
-      {
-        "prop": "overlay",
-        "description": "设置浮层固定为模态面板、底部抽屉或按视口自动适配。",
-        "type": "DlChoicePortalOverlay",
-        "defaultValue": "'auto'"
-      },
-      {
-        "prop": "clearable",
-        "description": "是否允许再次操作以清空当前值。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "shortcutValue",
-        "description": "时间滚轮可一键选取的 HH:mm 快捷值。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "shortcutLabel",
-        "description": "时间滚轮中快捷时间按钮显示的文字。",
-        "type": "string",
-        "defaultValue": "'常用时间'"
-      },
-      {
-        "prop": "disabledTime",
-        "description": "判断指定 HH:mm 时间是否不可选择的函数。",
-        "type": "(value: string) => boolean",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "disabled",
-        "description": "是否禁用控件及其交互。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "name",
-        "description": "参与表单提交时使用的字段名称。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "required",
-        "description": "是否标记为表单必填项。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
-        "prop": "zIndex",
-        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
-        "type": "number",
-        "defaultValue": "undefined"
-      }
-    ],
-    "relatedTypes": [
-      {
-        "kind": "enum",
-        "name": "DlSize",
-        "title": "DlSize",
-        "description": "组件可用的标准尺寸。",
-        "rows": [
-          {
-            "prop": "sm",
-            "description": "紧凑尺寸，适合密集界面和次要操作。",
-            "type": "'sm'",
-            "defaultValue": "紧凑"
-          },
-          {
-            "prop": "md",
-            "description": "默认尺寸，适合大多数常规界面。",
-            "type": "'md'",
-            "defaultValue": "标准"
-          },
-          {
-            "prop": "lg",
-            "description": "放大尺寸，适合重点内容和宽松布局。",
-            "type": "'lg'",
-            "defaultValue": "宽松"
-          }
-        ]
-      }
-    ]
   },
   "toast": {
     "props": [

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
+import { getLocalTimeZone, parseDate, Time, today } from '@internationalized/date'
 import { computed, ref, useAttrs } from 'vue'
-import type { DateValue } from 'reka-ui'
+import type { DateValue, TimeValue } from 'reka-ui'
 import type { DlSize } from '../types'
 import DlDatePicker from './DlDatePicker.vue'
-import DlTimeWheel from './DlTimeWheel.vue'
+import DlTimePicker from './DlTimePicker.vue'
+import { parseDlTimeWheelValue } from './time-wheel.utils'
 
 defineOptions({ inheritAttrs: false })
 const props = withDefaults(defineProps<{
@@ -28,6 +29,10 @@ const attrs = useAttrs()
 const dateOpen = ref(false)
 const datePart = computed(() => props.modelValue?.split('T')[0] ?? '')
 const timePart = computed(() => props.modelValue?.split('T')[1]?.slice(0, 5) ?? '')
+const timeValue = computed(() => {
+  const value = parseDlTimeWheelValue(timePart.value)
+  return value ? new Time(value.hour, value.minute) : undefined
+})
 const dateValue = computed(() => { try { return datePart.value ? parseDate(datePart.value) : undefined } catch { return undefined } })
 const minuteStep = computed(() => Math.max(1, Math.round(props.step / 60)))
 const now = computed(() => { const date = new Date(); return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}` })
@@ -37,7 +42,10 @@ function normalize(value: string) {
   return value
 }
 function updateDate(value: DateValue | undefined) { emit('update:modelValue', value ? normalize(`${value.toString()}T${timePart.value || '09:00'}`) : '') }
-function updateTime(value: string) { emit('update:modelValue', value ? normalize(`${datePart.value || today(getLocalTimeZone()).toString()}T${value}`) : '') }
+function updateTime(value: TimeValue | undefined) {
+  const time = value ? `${String(value.hour).padStart(2, '0')}:${String(value.minute).padStart(2, '0')}` : ''
+  emit('update:modelValue', time ? normalize(`${datePart.value || today(getLocalTimeZone()).toString()}T${time}`) : '')
+}
 function useNow() { const value = normalize(`${today(getLocalTimeZone()).toString()}T${now.value}`); emit('update:modelValue', value); emit('shortcut', value) }
 function clear() { emit('update:modelValue', ''); emit('clear') }
 function disabledTime(value: string) {
@@ -51,7 +59,7 @@ function disabledTime(value: string) {
     <input v-bind="attrs" type="datetime-local" :value="modelValue ?? ''" :min="min" :max="max" :step="step" :disabled="disabled" :readonly="readonly" class="dl-input-native" @focus="dateOpen = true">
     <div class="dl-input-datetime">
       <DlDatePicker v-model:open="dateOpen" :model-value="dateValue" placeholder="选择日期" :locale="locale" :disabled="disabled || readonly" @update:model-value="updateDate" />
-      <DlTimeWheel :model-value="timePart" placeholder="选择时间" :minute-step="minuteStep" :size="size" :status="status" :shortcut-value="nowShortcut ? now : undefined" shortcut-label="当前时间" :disabled-time="disabledTime" :disabled="disabled || readonly" @update:model-value="updateTime" />
+      <DlTimePicker :model-value="timeValue" presentation="button" placeholder="选择时间" :minute-step="minuteStep" :size="size" :status="status" :shortcut-value="nowShortcut ? now : undefined" shortcut-label="当前时间" :disabled-time="disabledTime" :disabled="disabled" :readonly="readonly" @update:model-value="updateTime" />
     </div>
     <span class="dl-input-date-control__actions">
       <button v-if="nowShortcut && !readonly" type="button" class="dl-input-field__action" aria-label="选择现在" title="现在" :disabled="disabled" @click="useNow">今</button>

@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from 'reka-ui'
 import { useDlModalLayer } from '../composables/useDlLayer'
-import type { DlSize } from '../types'
 import type { DlChoicePortalOverlay } from './choice-portal.types'
 import {
   buildDlTimeWheelMinutes,
@@ -18,7 +17,6 @@ import {
   parseDlTimeWheelValue,
 } from './time-wheel.utils'
 
-type TimeWheelStatus = 'default' | 'success' | 'warning' | 'error'
 type WheelKind = 'hour' | 'minute'
 type VirtualValue = { key: string; value: number; cycle: number }
 
@@ -27,32 +25,24 @@ const props = withDefaults(defineProps<{
   modelValue?: string
   placeholder?: string
   minuteStep?: number
-  size?: DlSize
-  status?: TimeWheelStatus
   overlay?: DlChoicePortalOverlay
   clearable?: boolean
   shortcutValue?: string
   shortcutLabel?: string
   disabledTime?: (value: string) => boolean
   disabled?: boolean
-  name?: string
-  required?: boolean
   zIndex?: number
 }>(), {
   open: undefined,
   modelValue: '',
   placeholder: '选择时间',
   minuteStep: 5,
-  size: 'md',
-  status: 'default',
   overlay: 'auto',
   clearable: false,
   shortcutValue: undefined,
   shortcutLabel: '常用时间',
   disabledTime: undefined,
   disabled: false,
-  name: undefined,
-  required: false,
   zIndex: undefined,
 })
 
@@ -74,11 +64,6 @@ const steppedMinutes = computed(() => buildDlTimeWheelMinutes(props.minuteStep))
 const minutes = computed(() => [...new Set([...steppedMinutes.value, draftMinute.value])].sort((left, right) => left - right))
 const resolvedOpen = computed(() => props.open ?? internalOpen.value)
 const draftValue = computed(() => formatDlTimeWheelValue(draftHour.value, draftMinute.value))
-const displayValue = computed(() => {
-  const parsed = parseDlTimeWheelValue(props.modelValue)
-  return parsed ? `${parsed.hour}:${String(parsed.minute).padStart(2, '0')}` : props.placeholder
-})
-const isPlaceholder = computed(() => !parseDlTimeWheelValue(props.modelValue))
 const draftDisabled = computed(() => props.disabledTime?.(draftValue.value) ?? false)
 const virtualHours = computed(() => virtualValues(hours))
 const virtualMinutes = computed(() => virtualValues(minutes.value))
@@ -137,13 +122,6 @@ function initializeDraft() {
   const now = new Date()
   draftHour.value = parsed?.hour ?? now.getHours()
   draftMinute.value = clampDlTimeWheelMinute(parsed?.minute ?? now.getMinutes(), props.minuteStep)
-}
-
-function openWheel() {
-  if (props.disabled) return
-  initializeDraft()
-  setOpen(true)
-  syncWheels()
 }
 
 function closeWheel() {
@@ -308,14 +286,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div data-dl data-slot="time-wheel" class="dl-time-wheel" :data-size="size" :data-status="status" :data-disabled="disabled || undefined">
-    <span v-if="$slots.prefix" class="dl-time-wheel__affix"><slot name="prefix" /></span>
-    <button type="button" class="dl-time-wheel__trigger" :class="{ 'is-placeholder': isPlaceholder }" :disabled="disabled" aria-haspopup="dialog" :aria-expanded="resolvedOpen" @click="openWheel">{{ displayValue }}</button>
-    <span class="dl-time-wheel__actions"><button v-if="clearable && modelValue && !disabled" type="button" aria-label="清除时间" @click="clearValue">×</button><span aria-hidden="true">◷</span></span>
-    <span v-if="$slots.suffix" class="dl-time-wheel__affix"><slot name="suffix" /></span>
-  </div>
-  <input v-if="name" type="hidden" :name="name" :value="modelValue" :disabled="disabled" :required="required" />
-
   <DialogRoot :open="resolvedOpen" @update:open="setOpen">
     <DialogPortal>
       <DialogOverlay data-dl data-dl-layer="overlay" class="dl-time-wheel__overlay" :style="{ zIndex: overlayZIndex }" />
@@ -374,23 +344,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.dl-time-wheel { display: flex; width: 100%; min-width: 0; align-items: center; overflow: hidden; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-sm); background: var(--dl-surface); color: var(--dl-text); box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%), 0 8px 24px rgb(0 0 0 / 8%); transition: border-color .16s ease, box-shadow .16s ease; }
-.dl-time-wheel:focus-within { border-color: var(--dl-border-focus); box-shadow: var(--dl-focus); }
-.dl-time-wheel[data-size='sm'] { min-height: 36px; font-size: .82rem; }
-.dl-time-wheel[data-size='md'] { min-height: 44px; font-size: .875rem; }
-.dl-time-wheel[data-size='lg'] { min-height: 52px; font-size: 1rem; }
-.dl-time-wheel[data-status='success'] { border-color: color-mix(in srgb, #31a36f 58%, var(--dl-border)); }
-.dl-time-wheel[data-status='warning'] { border-color: color-mix(in srgb, #d89a31 58%, var(--dl-border)); }
-.dl-time-wheel[data-status='error'] { border-color: color-mix(in srgb, #d84d57 58%, var(--dl-border)); }
-.dl-time-wheel[data-disabled] { cursor: not-allowed; opacity: .5; }
-.dl-time-wheel__trigger { min-width: 0; flex: 1; align-self: stretch; padding: 0 12px; overflow: hidden; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; outline: none; }
-.dl-time-wheel__trigger.is-placeholder { color: var(--dl-text-faint); }
-.dl-time-wheel__trigger:disabled { cursor: not-allowed; }
-.dl-time-wheel__actions { display: flex; flex: 0 0 auto; align-items: center; gap: 7px; padding-right: 12px; color: var(--dl-text-faint); }
-.dl-time-wheel__actions button { display: grid; width: 24px; height: 24px; place-items: center; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
-.dl-time-wheel__actions button:hover { background: var(--dl-surface-hover); color: var(--dl-text); }
-.dl-time-wheel__affix { display: grid; flex: 0 0 auto; place-items: center; padding-inline: 12px 0; color: var(--dl-text-faint); }
-.dl-time-wheel__affix:last-child { padding-inline: 0 12px; }
 .dl-time-wheel__overlay { position: fixed; inset: 0; background: rgb(7 14 11 / 46%); backdrop-filter: blur(12px) saturate(108%); }
 .dl-time-wheel__panel { position: fixed; top: 50%; left: 50%; display: grid; width: min(calc(100vw - 32px), 590px); max-height: min(90vh, 760px); grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 16px; overflow: hidden; padding: 22px; border: 1px solid var(--dl-border-strong); border-radius: 28px; background: var(--dl-panel); color: var(--dl-text); box-shadow: 0 34px 100px rgb(0 0 0 / 45%), inset 0 1px 0 rgb(255 255 255 / 12%); outline: none; transform: translate(-50%, -50%); }
 .dl-time-wheel__overlay[data-state='open'] { animation: dl-time-wheel-fade .16s ease-out; }

@@ -2,12 +2,55 @@
 import { endOfMonth, getLocalTimeZone, isSameMonth, startOfMonth, today } from '@internationalized/date'
 import { computed, ref, shallowRef, watch } from 'vue'
 import type { DateRange, DateValue } from 'reka-ui'
+import type { DlSize } from '../types'
+import DlDateRangeField from './DlDateRangeField.vue'
 import DlPopover from './DlPopover.vue'
+import PickerTriggerButton from './PickerTriggerButton.vue'
 import RangePickerCalendarPanel from './RangePickerCalendarPanel.vue'
 import './date-picker-panel.css'
 
-const props = withDefaults(defineProps<{ open?: boolean; modelValue?: DateRange | null; placeholder?: string; locale?: string; disabled?: boolean; minValue?: DateValue; maxValue?: DateValue; numberOfMonths?: number; zIndex?: number }>(), { open: undefined, modelValue: null, placeholder: '选择日期范围', locale: 'zh-CN', disabled: false, minValue: undefined, maxValue: undefined, numberOfMonths: 2, zIndex: undefined })
-const emit = defineEmits<{ 'update:open': [value: boolean]; 'update:modelValue': [value: DateRange] }>()
+type DlDateRangePickerPresentation = 'field' | 'button'
+
+const props = withDefaults(defineProps<{
+  open?: boolean
+  modelValue?: DateRange | null
+  presentation?: DlDateRangePickerPresentation
+  placeholder?: string
+  locale?: string
+  granularity?: 'day' | 'hour' | 'minute' | 'second'
+  hourCycle?: 12 | 24
+  size?: DlSize
+  status?: 'default' | 'success' | 'warning' | 'error'
+  clearable?: boolean
+  isDateUnavailable?: (date: DateValue) => boolean
+  disabled?: boolean
+  readonly?: boolean
+  name?: string
+  minValue?: DateValue
+  maxValue?: DateValue
+  numberOfMonths?: number
+  zIndex?: number
+}>(), {
+  open: undefined,
+  modelValue: null,
+  presentation: 'button',
+  placeholder: '选择日期范围',
+  locale: 'zh-CN',
+  granularity: 'day',
+  hourCycle: 24,
+  size: 'md',
+  status: 'default',
+  clearable: false,
+  isDateUnavailable: undefined,
+  disabled: false,
+  readonly: false,
+  name: undefined,
+  minValue: undefined,
+  maxValue: undefined,
+  numberOfMonths: 2,
+  zIndex: undefined,
+})
+const emit = defineEmits<{ 'update:open': [value: boolean]; 'update:modelValue': [value: DateRange | undefined]; clear: [] }>()
 const localOpen = ref(props.open ?? false)
 const draftStart = shallowRef<DateValue | undefined>(props.modelValue?.start)
 const draftEnd = shallowRef<DateValue | undefined>(props.modelValue?.end)
@@ -150,15 +193,53 @@ function selectDate(value: DateValue) {
   emit('update:modelValue', { start, end })
   resolvedOpen.value = false
 }
+
+function updateField(value: DateRange | undefined) {
+  emit('update:modelValue', value)
+}
+
+function clearValue() {
+  draftStart.value = undefined
+  draftEnd.value = undefined
+  hoverDate.value = undefined
+  emit('update:modelValue', undefined)
+  emit('clear')
+  resolvedOpen.value = false
+}
 </script>
 
 <template>
   <DlPopover v-model:open="resolvedOpen" tone="subtle" align="start" :arrow="false" :side-offset="0" content-class="dl-date-picker-panel" :z-index="zIndex">
-    <template #trigger><button data-dl data-slot="date-range-picker" type="button" :disabled="disabled" class="flex min-h-11 w-full items-center justify-between gap-3 rounded-[var(--dl-radius-sm)] border border-[var(--dl-border)] bg-[var(--dl-surface)] px-3 text-left text-sm text-[var(--dl-text)] outline-none transition hover:border-[var(--dl-border-strong)] focus-visible:[box-shadow:var(--dl-focus)] disabled:opacity-45"><span :class="!modelValue?.start && 'text-[var(--dl-text-faint)]'">{{ valueText }}</span><span class="text-[var(--dl-accent)]" aria-hidden="true">▦</span></button></template>
+    <template #trigger>
+      <DlDateRangeField
+        v-if="presentation === 'field'"
+        :model-value="modelValue"
+        :locale="locale"
+        :granularity="granularity"
+        :hour-cycle="hourCycle"
+        :min-value="minValue"
+        :max-value="maxValue"
+        :is-date-unavailable="isDateUnavailable"
+        :size="size"
+        :status="status"
+        :clearable="clearable"
+        :disabled="disabled"
+        :readonly="readonly"
+        :name="name"
+        class="w-full"
+        @focusin="resolvedOpen = true"
+        @update:model-value="updateField"
+        @clear="emit('clear')"
+      >
+        <template #trailing><span class="ml-auto pl-2 text-[var(--dl-accent)]" aria-hidden="true">▦</span></template>
+      </DlDateRangeField>
+      <PickerTriggerButton v-else data-slot="date-range-picker" data-presentation="button" :value="modelValue?.start ? valueText : ''" :placeholder="placeholder" :size="size" :status="status" :disabled="disabled" />
+    </template>
     <div class="dl-independent-range-panels flex flex-wrap gap-4">
       <section v-for="(viewDate, index) in viewDates" :key="index" data-slot="range-picker-panel" :data-panel-index="index" :class="index > 0 && 'dl-range-picker-panel--divided'">
-        <RangePickerCalendarPanel :placeholder="viewDate" :range-start="previewRange.start" :range-end="previewRange.end" :locale="locale" :disabled="disabled" :min-value="getPanelMinValue(index)" :max-value="getPanelMaxValue(index)" class="border-0 bg-transparent p-0 shadow-none" @hover="hoverDate = $event" @select="selectDate" @update:placeholder="updateViewDate(index, $event)" />
+        <RangePickerCalendarPanel :placeholder="viewDate" :range-start="previewRange.start" :range-end="previewRange.end" :locale="locale" :disabled="disabled" :min-value="getPanelMinValue(index)" :max-value="getPanelMaxValue(index)" :is-date-unavailable="isDateUnavailable" class="border-0 bg-transparent p-0 shadow-none" @hover="hoverDate = $event" @select="selectDate" @update:placeholder="updateViewDate(index, $event)" />
       </section>
     </div>
+    <button v-if="clearable && modelValue?.start && !readonly" type="button" class="dl-picker-panel-clear" :disabled="disabled" @click="clearValue">清除日期范围</button>
   </DlPopover>
 </template>

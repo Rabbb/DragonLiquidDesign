@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
-import DlTimeWheel from './DlTimeWheel.vue'
+import TimeWheelPanel from './TimeWheelPanel.vue'
 import {
   buildDlTimeWheelMinutes,
   clampDlTimeWheelMinute,
@@ -22,7 +22,7 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-describe('DlTimeWheel utilities', () => {
+describe('TimeWheelPanel utilities', () => {
   it('parses, formats and clamps valid 24-hour values', () => {
     expect(parseDlTimeWheelValue('09:35')).toEqual({ hour: 9, minute: 35 })
     expect(parseDlTimeWheelValue('24:00')).toBeNull()
@@ -32,9 +32,9 @@ describe('DlTimeWheel utilities', () => {
   })
 })
 
-describe('DlTimeWheel', () => {
+describe('TimeWheelPanel', () => {
   it('uses the configured minute step and commits an available time', async () => {
-    const wrapper = mount(DlTimeWheel, {
+    const wrapper = mount(TimeWheelPanel, {
       attachTo: document.body,
       props: { open: true, modelValue: '09:30', minuteStep: 15 },
     })
@@ -56,7 +56,7 @@ describe('DlTimeWheel', () => {
   })
 
   it('fine-tunes minutes and hours independently of the wheel minute step', async () => {
-    const wrapper = mount(DlTimeWheel, {
+    const wrapper = mount(TimeWheelPanel, {
       attachTo: document.body,
       props: { open: true, modelValue: '09:30', minuteStep: 15 },
     })
@@ -74,7 +74,7 @@ describe('DlTimeWheel', () => {
   })
 
   it('wraps minute fine-tuning across midnight and blocks disabled targets', async () => {
-    const wrapper = mount(DlTimeWheel, {
+    const wrapper = mount(TimeWheelPanel, {
       attachTo: document.body,
       props: { open: true, modelValue: '23:59', minuteStep: 1, disabledTime: value => value === '00:01' },
     })
@@ -88,7 +88,7 @@ describe('DlTimeWheel', () => {
   })
 
   it('prevents applying a disabled time', async () => {
-    const wrapper = mount(DlTimeWheel, {
+    const wrapper = mount(TimeWheelPanel, {
       attachTo: document.body,
       props: { open: true, modelValue: '23:00', disabledTime: value => value >= '22:00' },
     })

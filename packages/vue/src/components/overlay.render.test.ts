@@ -52,7 +52,7 @@ describe('ported overlay presentation', () => {
     expect(panel?.dataset.arrow).toBe('hidden')
     expect(panel?.dataset.sideOffset).toBe('0')
     expect(panel?.querySelector('.dl-popover__arrow')).toBeNull()
-    expect(panel?.querySelector('[data-slot="calendar"]')).not.toBeNull()
+    expect(panel?.querySelector('[data-slot="date-picker-calendar-panel"]')).not.toBeNull()
     expect(panel?.querySelector('.dl-popover__header')).toBeNull()
     expect(panel?.querySelector('.dl-popover__close')).toBeNull()
   })
@@ -85,7 +85,7 @@ describe('ported overlay presentation', () => {
     month?.click()
     await nextTick()
 
-    expect(document.body.querySelector('[data-slot="calendar"]')).not.toBeNull()
+    expect(document.body.querySelector('[data-slot="date-picker-calendar-panel"]')).not.toBeNull()
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     const day = document.body.querySelector<HTMLElement>('[data-reka-calendar-cell-trigger][data-value="2025-11-20"]:not([data-outside-view])')
     expect(day).not.toBeNull()

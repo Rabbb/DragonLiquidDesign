@@ -6,7 +6,7 @@ import { dlCalendarCellClass, dlCalendarClass, dlCalendarNavClass } from './date
 import MonthPickerPanel from './MonthPickerPanel.vue'
 import YearPickerPanel from './YearPickerPanel.vue'
 
-const props = withDefaults(defineProps<{ placeholder: DateValue; rangeStart?: DateValue; rangeEnd?: DateValue; locale?: string; disabled?: boolean; minValue?: DateValue; maxValue?: DateValue }>(), { rangeStart: undefined, rangeEnd: undefined, locale: 'zh-CN', disabled: false, minValue: undefined, maxValue: undefined })
+const props = withDefaults(defineProps<{ placeholder: DateValue; rangeStart?: DateValue; rangeEnd?: DateValue; locale?: string; disabled?: boolean; minValue?: DateValue; maxValue?: DateValue; isDateUnavailable?: (date: DateValue) => boolean }>(), { rangeStart: undefined, rangeEnd: undefined, locale: 'zh-CN', disabled: false, minValue: undefined, maxValue: undefined, isDateUnavailable: undefined })
 const emit = defineEmits<{ 'hover': [value: DateValue | undefined]; 'select': [value: DateValue]; 'update:placeholder': [value: DateValue] }>()
 type Panel = 'day' | 'month' | 'year'
 
@@ -67,7 +67,7 @@ function selectMonth(value: DateValue | DateValue[] | undefined) {
 </script>
 
 <template>
-  <CalendarRoot v-if="panel === 'day'" v-slot="{ weekDays, grid, date: headingDate }" data-dl data-slot="range-picker-calendar-panel" :model-value="null" :placeholder="placeholder" :locale="locale" :week-starts-on="1" fixed-weeks :disabled="disabled" :min-value="minValue" :max-value="maxValue" :class="dlCalendarClass" @pointerleave="emit('hover', undefined)" @update:model-value="$event && emit('select', $event)" @update:placeholder="updatePlaceholder">
+  <CalendarRoot v-if="panel === 'day'" v-slot="{ weekDays, grid, date: headingDate }" data-dl data-slot="range-picker-calendar-panel" :model-value="null" :placeholder="placeholder" :locale="locale" :week-starts-on="1" fixed-weeks :disabled="disabled" :min-value="minValue" :max-value="maxValue" :is-date-unavailable="isDateUnavailable" :class="dlCalendarClass" @pointerleave="emit('hover', undefined)" @update:model-value="$event && emit('select', $event)" @update:placeholder="updatePlaceholder">
     <CalendarHeader class="mb-3 grid grid-cols-[4rem_1fr_4rem] items-center">
       <div class="flex justify-start">
         <CalendarPrev :prev-page="previousYear" :class="dlCalendarNavClass" aria-label="上一年">«</CalendarPrev>

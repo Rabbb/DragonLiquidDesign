@@ -183,16 +183,16 @@ const readyComponents: ComponentDefinition[] = [
     ],
   },
   {
-    id: 'time-wheel',
-    name: 'TimeWheel 时间滚轮',
+    id: 'time-picker',
+    name: 'TimePicker 时间选择器',
     category: 'dates',
-    summary: '通过可拖动的小时与分钟滚轮选择时间，并在移动端自动切换为底部抽屉。',
-    since: '0.6.0-alpha.12',
+    summary: '保留可键入的时间字段，并按需打开小时与分钟滚轮完成可视选择。',
+    since: '0.6.0-alpha.20',
     implementation: 'ready',
     maturity: 'custom',
     scenarios: [
-      { id: 'basic', label: '双列滚轮', summary: '滚动、拖动、对齐与确认' },
-      { id: 'minute-step', label: '分钟步长', summary: '不同精度与常用时间快捷值' },
+      { id: 'basic', label: '字段与选择面板', summary: '键盘编辑、滚动选择与确认' },
+      { id: 'minute-step', label: '按钮与分钟步长', summary: '紧凑触发器和常用时间快捷值' },
       { id: 'disabled-time', label: '可用时段', summary: '限制不可预约的具体时间' },
     ],
   },
@@ -400,13 +400,13 @@ const rekaSeeds: RekaSeed[] = [
   { id: 'color-swatch', name: 'Color Swatch 色板', category: 'color', maturity: 'alpha', summary: '展示具有可访问名称的颜色样本。' },
   { id: 'color-swatch-picker', name: 'Color Swatch Picker 色板选择器', category: 'color', maturity: 'alpha', summary: '从一组预设颜色样本中选择主题色。' },
 
-  { id: 'calendar', name: 'Calendar 日历', category: 'dates', maturity: 'alpha', summary: '展示日期网格并支持日期选择交互。' },
-  { id: 'date-field', name: 'Date Field 日期输入', category: 'dates', maturity: 'alpha', summary: '以分段字段输入和编辑指定日期。' },
-  { id: 'date-picker', name: 'Date Picker 日期选择器', category: 'dates', maturity: 'alpha', summary: '结合日期输入和日历浮层完成日期选择。' },
+  { id: 'calendar', name: 'Calendar 业务日历', category: 'dates', maturity: 'alpha', summary: '在完整月视图中浏览、创建和拖动日程条目，并处理单元格溢出。' },
+  { id: 'date-field', name: 'Date Field 日期字段', category: 'dates', maturity: 'alpha', summary: '以分段字段精确键入日期，并共享选择器的范围、状态和清除能力。' },
+  { id: 'date-picker', name: 'Date Picker 日期选择器', category: 'dates', maturity: 'alpha', summary: '复用日期字段的值模型与约束，再增加日期、月份和年份选择面板。' },
   { id: 'date-range-field', name: 'Date Range Field 日期范围输入', category: 'dates', maturity: 'alpha', summary: '通过分段字段输入起止日期。' },
   { id: 'date-range-picker', name: 'Date Range Picker 日期范围选择器', category: 'dates', maturity: 'alpha', summary: '结合范围输入和日历选择起止日期。' },
   { id: 'range-calendar', name: 'Range Calendar 范围日历', category: 'dates', maturity: 'alpha', summary: '在日历视图中选择连续日期范围。' },
-  { id: 'time-field', name: 'Time Field 时间输入', category: 'dates', maturity: 'alpha', summary: '以分段字段输入和编辑具体时间。' },
+  { id: 'time-field', name: 'Time Field 时间字段', category: 'dates', maturity: 'alpha', summary: '以分段字段精确键入时间，并共享选择器的范围、状态和清除能力。' },
   { id: 'time-range-field', name: 'Time Range Field 时间范围输入', category: 'dates', maturity: 'alpha', summary: '通过分段字段输入起止时间。' },
   { id: 'month-picker', name: 'Month Picker 月份选择器', category: 'dates', maturity: 'alpha', summary: '在月份网格中选择指定月份。' },
   { id: 'month-range-picker', name: 'Month Range Picker 月份范围选择器', category: 'dates', maturity: 'alpha', summary: '选择连续的起止月份范围。' },
@@ -455,6 +455,11 @@ const scenarioBlueprints: Record<Exclude<ComponentCategoryId, 'foundation'>, Sce
 }
 
 const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> = {
+  calendar: [
+    { id: 'basic', label: '月度日程', summary: '日期单元格、彩色事项与自动滚动' },
+    { id: 'drag-create', label: '拖动与新建', summary: '移动事项日期并从单元格创建内容' },
+    { id: 'adaptive', label: '自适应高度', summary: '固定高度、六周布局与局部滚动' },
+  ],
   drawer: [
     { id: 'basic', label: '通用案例', summary: '方向、尺寸与关闭行为' },
     { id: 'tone-gallery', label: '全部色调', summary: '交互预览六种 DlTone 语义色调' },

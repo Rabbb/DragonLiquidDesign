@@ -31,13 +31,11 @@ import DlIconButton from './DlIconButton.vue'
 import DlInputButton from './DlInputButton.vue'
 import DlInputCheckbox from './DlInputCheckbox.vue'
 import DlInputColor from './DlInputColor.vue'
-import DlInputDate from './DlInputDate.vue'
 import DlInputDatetimeLocal from './DlInputDatetimeLocal.vue'
 import DlInputEmail from './DlInputEmail.vue'
 import DlInputFile from './DlInputFile.vue'
 import DlInputHidden from './DlInputHidden.vue'
 import DlInputImage from './DlInputImage.vue'
-import DlInputMonth from './DlInputMonth.vue'
 import DlInputNumber from './DlInputNumber.vue'
 import DlInputPassword from './DlInputPassword.vue'
 import DlInputRadio from './DlInputRadio.vue'
@@ -47,7 +45,6 @@ import DlInputSearch from './DlInputSearch.vue'
 import DlInputSubmit from './DlInputSubmit.vue'
 import DlInputTel from './DlInputTel.vue'
 import DlInputText from './DlInputText.vue'
-import DlInputTime from './DlInputTime.vue'
 import DlInputUrl from './DlInputUrl.vue'
 import DlInputWeek from './DlInputWeek.vue'
 import DlLabel from './DlLabel.vue'
@@ -79,8 +76,8 @@ import DlTabs from './DlTabs.vue'
 import DlTagsInput from './DlTagsInput.vue'
 import DlTextarea from './DlTextarea.vue'
 import DlTimeField from './DlTimeField.vue'
+import DlTimePicker from './DlTimePicker.vue'
 import DlTimeRangeField from './DlTimeRangeField.vue'
-import DlTimeWheel from './DlTimeWheel.vue'
 import DlToast from './DlToast.vue'
 import DlToggle from './DlToggle.vue'
 import DlToggleGroup from './DlToggleGroup.vue'
@@ -137,13 +134,11 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('InputButton', DlInputButton, 'form', 'custom', { defaultProps: { value: '执行操作' }, description: '固定为 button 的输入按钮。' }),
   official('InputCheckbox', DlInputCheckbox, 'form', 'custom', { defaultProps: { modelValue: true }, description: '固定为 checkbox 的布尔输入。' }),
   official('InputColor', DlInputColor, 'form', 'custom', { defaultProps: { modelValue: '#2f80ed' }, description: '固定为 color 的颜色输入。' }),
-  official('InputDate', DlInputDate, 'form', 'custom', { defaultProps: { modelValue: '2026-08-28' }, description: '固定为 date 的日期输入。' }),
   official('InputDatetimeLocal', DlInputDatetimeLocal, 'form', 'custom', { defaultProps: { modelValue: '2026-08-28T09:30' }, description: '固定为 datetime-local 的本地日期时间输入。' }),
   official('InputEmail', DlInputEmail, 'form', 'custom', { defaultProps: { modelValue: 'designer@dragon.dev' }, description: '固定为 email 的邮箱输入。' }),
   official('InputFile', DlInputFile, 'form', 'custom', { description: '固定为 file 的文件选择输入。' }),
   official('InputHidden', DlInputHidden, 'form', 'custom', { defaultProps: { modelValue: 'record-20260828' }, description: '固定为 hidden 的隐藏表单字段。' }),
   official('InputImage', DlInputImage, 'form', 'custom', { defaultProps: { src: '/input-image-submit.svg', alt: '提交表单' }, description: '固定为 image 的图像提交输入。' }),
-  official('InputMonth', DlInputMonth, 'form', 'custom', { defaultProps: { modelValue: '2026-08' }, description: '固定为 month 的月份输入。' }),
   official('InputNumber', DlInputNumber, 'form', 'custom', { defaultProps: { modelValue: 42 }, description: '固定为 number 的数值输入。' }),
   official('InputPassword', DlInputPassword, 'form', 'custom', { defaultProps: { modelValue: 'dragon-secret' }, description: '固定为 password 的密码输入。' }),
   official('InputRadio', DlInputRadio, 'form', 'custom', { defaultProps: { value: 'stable', modelValue: 'stable' }, description: '固定为 radio 的单选输入。' }),
@@ -153,7 +148,6 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('InputSubmit', DlInputSubmit, 'form', 'custom', { defaultProps: { value: '提交' }, description: '固定为 submit 的表单提交输入。' }),
   official('InputTel', DlInputTel, 'form', 'custom', { defaultProps: { modelValue: '138 0000 0000' }, description: '固定为 tel 的电话输入。' }),
   official('InputText', DlInputText, 'form', 'custom', { defaultProps: { modelValue: 'Dragon Liquid' }, description: '固定为 text 的单行文本输入。' }),
-  official('InputTime', DlInputTime, 'form', 'custom', { defaultProps: { modelValue: '09:30' }, description: '固定为 time 的时间输入。' }),
   official('InputUrl', DlInputUrl, 'form', 'custom', { defaultProps: { modelValue: 'https://todo.moe' }, description: '固定为 url 的网址输入。' }),
   official('InputWeek', DlInputWeek, 'form', 'custom', { defaultProps: { modelValue: '2026-W35' }, description: '固定为 week 的周输入。' }),
   official('Textarea', DlTextarea, 'foundation', 'custom', { defaultProps: { modelValue: '在这里记录内容。' }, description: '多行文本输入。' }),
@@ -191,8 +185,8 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('DateRangePicker', DlDateRangePicker, 'dates', 'alpha'),
   official('RangeCalendar', DlRangeCalendar, 'dates', 'alpha'),
   official('TimeField', DlTimeField, 'dates', 'alpha'),
+  official('TimePicker', DlTimePicker, 'dates', 'custom'),
   official('TimeRangeField', DlTimeRangeField, 'dates', 'alpha'),
-  official('TimeWheel', DlTimeWheel, 'dates', 'custom', { defaultProps: { modelValue: '20:30' } }),
   official('MonthPicker', DlMonthPicker, 'dates', 'alpha'),
   official('MonthRangePicker', DlMonthRangePicker, 'dates', 'alpha'),
   official('YearPicker', DlYearPicker, 'dates', 'alpha'),

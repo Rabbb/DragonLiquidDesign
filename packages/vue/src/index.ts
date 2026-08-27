@@ -21,15 +21,15 @@ export {
   DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContextMenu, DlDateField, DlDatePicker,
   DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
   DlHoverCard, DlIconButton,
-  DlInputButton, DlInputCheckbox, DlInputColor, DlInputDate, DlInputDatetimeLocal, DlInputEmail,
-  DlInputFile, DlInputHidden, DlInputImage, DlInputMonth, DlInputNumber, DlInputPassword,
+  DlInputButton, DlInputCheckbox, DlInputColor, DlInputDatetimeLocal, DlInputEmail,
+  DlInputFile, DlInputHidden, DlInputImage, DlInputNumber, DlInputPassword,
   DlInputRadio, DlInputRange, DlInputReset, DlInputSearch, DlInputSubmit, DlInputTel, DlInputText,
-  DlInputTime, DlInputUrl, DlInputWeek,
+  DlInputUrl, DlInputWeek,
   DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
   DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPinInput,
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSegmented, DlSelect,
   DlSeparator, DlSlider, DlSplitButton, DlSplitter, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
-  DlTimeField, DlTimeRangeField, DlTimeWheel, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
+  DlTimeField, DlTimePicker, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
   DlTree, DlVirtualList, DlYearPicker, DlYearRangePicker,
 } from './managed-components'
 
@@ -73,8 +73,7 @@ export type {
   DlChoicePortalOverlay,
 } from './components/choice-portal.types'
 export type { DlMultiChoiceEntry, DlMultiChoiceGroup, DlMultiChoiceOption } from './components/multi-choice.types'
-export type { DlTimeWheelValue } from './components/time-wheel.utils'
-export { buildDlTimeWheelMinutes, clampDlTimeWheelMinute, formatDlTimeWheelValue, parseDlTimeWheelValue } from './components/time-wheel.utils'
+export type { DlCalendarDay, DlCalendarItem } from './components/calendar.types'
 export type { DlDialogDimensions, DlDialogPosition } from './components/dialog.types'
 export type {
   DlMdxBlock,

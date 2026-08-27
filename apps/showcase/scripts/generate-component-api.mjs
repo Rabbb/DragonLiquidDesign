@@ -41,6 +41,7 @@ const descriptions = {
   channel: '当前编辑或滑动控制的颜色通道。',
   children: '当前节点或导航项包含的下一级项目。',
   clearable: '是否允许再次操作以清空当前值。',
+  createLabel: '日历单元格新建按钮使用的无障碍名称。',
   closeDelay: '指针离开后关闭浮层的延迟时间，单位毫秒。',
   closeLabel: '关闭按钮的无障碍名称。',
   closable: '是否显示并允许使用关闭操作。',
@@ -83,6 +84,7 @@ const descriptions = {
   insertable: '是否允许该可信注册定义出现在 MarkdownX 浮动组件库中。',
   install: '把当前工具注入 Vue 应用；通常由 app.use 自动调用。',
   items: '用于渲染控件内容的结构化项目列表。',
+  dayMinHeight: '月历中每个日期单元格允许使用的最小高度，单位像素。',
   itemKey: '从项目读取或计算稳定渲染键的字段名或函数。',
   estimatedItemHeight: '虚拟列表每个等高项目使用的预估像素高度。',
   viewportHeight: '虚拟列表可滚动视口的像素高度。',
@@ -114,6 +116,9 @@ const descriptions = {
   emptyText: '文档没有可渲染内容时显示的占位说明。',
   lineWrapping: '是否在编辑器中启用长行自动换行。',
   showToolbar: '是否显示格式操作和视图模式工具栏。',
+  showCreate: '是否在日期单元格中显示新建事项入口。',
+  showOutsideDays: '是否显示当前月份之外的补齐日期。',
+  showToday: '是否在月历工具栏显示返回今天操作。',
   showStatus: '是否显示行数、字符数、阅读时间和解析状态。',
   taskInteractive: '是否允许在预览区直接切换任务列表状态。',
   minHeight: '组件或工作区允许使用的最小高度。',
@@ -133,6 +138,7 @@ const descriptions = {
   page: '当前页码；使用 v-model:page 双向绑定。',
   panels: '分割布局中各面板的尺寸与约束配置。',
   placeholder: '当前值为空时显示的占位提示。',
+  presentation: '选择器入口使用可编辑字段或紧凑按钮呈现；不改变值模型和选择面板。',
   placement: '抽屉从视口的哪一侧进入。',
   position: '对话框左上角的视口坐标；使用 v-model:position 读取或保存用户拖动后的位置。',
   progress: '自定义进度百分比。',
@@ -174,14 +180,17 @@ const descriptions = {
   text: '控件显示的主要文字内容。',
   title: '控件或浮层显示的标题。',
   triggerLabel: '需要触发器插槽的浮层组件所显示的默认按钮文字。',
+  triggerless: '是否隐藏独立触发器，仅保留选择面板供上层 Picker 组合。',
   tone: '设置语义色调。',
   total: '数据总条数。',
   type: '设置组件的选择模式或原生类型。',
   menus: '菜单栏中显示的菜单分组与命令列表。',
   hoverable: '是否在指针悬停时预览将要提交的评分。',
   value: '表单提交或选择操作使用的值。',
+  viewValue: '月历当前浏览的 YYYY-MM 月份；使用 v-model:view-value 双向绑定。',
   variant: '设置控件的视觉变体。',
   weekStartsOn: '一周起始日，0 表示星期日。',
+  todayLabel: '月历工具栏返回今天按钮显示的文字。',
   width: '窗口或区域的宽度。',
   height: '窗口或区域的高度。',
   x: '相对视口左侧的横向坐标。',
@@ -205,6 +214,8 @@ const structureDescriptions = {
   DlDialogDimensions: 'Dialog 调整后的像素尺寸。',
   DlDialogPosition: 'Dialog 左上角相对视口的像素坐标。',
   DlChoiceOption: '列表、组合框或切换组使用的通用选择项。',
+  DlCalendarDay: 'Calendar 日期单元格插槽和交互事件使用的日期上下文。',
+  DlCalendarItem: 'Calendar 在指定日期单元格中展示、点击和拖动的业务事项。',
   DlMenuGroup: 'Menubar 的一级菜单分组，内部通过 items 提供命令。',
   DlMenuItem: '菜单、下拉菜单、上下文菜单与工具栏使用的命令项。',
   DlNavigationItem: 'Navigation Menu 使用的可递归导航节点。',
@@ -578,7 +589,7 @@ const filenames = (await readdir(componentsRoot))
 
 const structures = {}
 const componentEnums = {}
-for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts']) {
+for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'calendar.types.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts']) {
   const typeSource = await readFile(resolve(componentsRoot, filename), 'utf8')
   const parsed = structuresFromSource(typeSource)
   Object.assign(structures, Object.fromEntries(Object.entries(parsed).map(([name, structure]) => [name, { ...structure, kind: 'structure' }])))

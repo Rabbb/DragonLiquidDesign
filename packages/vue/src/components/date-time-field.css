@@ -1,0 +1,8 @@
+.dl-structured-field { min-width: 0; }
+.dl-structured-field[data-size='sm'] { min-height: 36px; font-size: .82rem; }
+.dl-structured-field[data-size='lg'] { min-height: 52px; font-size: 1rem; }
+.dl-structured-field[data-status='success'] { border-color: color-mix(in srgb, #31a36f 58%, var(--dl-border)); }
+.dl-structured-field[data-status='warning'] { border-color: color-mix(in srgb, #d89a31 58%, var(--dl-border)); }
+.dl-structured-field[data-status='error'] { border-color: color-mix(in srgb, #d84d57 58%, var(--dl-border)); }
+.dl-structured-field__action { display: grid; width: 24px; height: 24px; flex: 0 0 auto; place-items: center; margin-left: auto; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--dl-text-faint); cursor: pointer; }
+.dl-structured-field__action:hover { background: var(--dl-surface-hover); color: var(--dl-text); }
