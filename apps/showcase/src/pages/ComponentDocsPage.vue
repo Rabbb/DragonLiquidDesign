@@ -42,6 +42,8 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   'icon-button': () => import('../docs/IconButtonDocs.vue'),
   input: () => import('../docs/InputDocs.vue'),
   select: () => import('../docs/SelectDocs.vue'),
+  'choice-portal': () => import('../docs/ChoicePortalDocs.vue'),
+  'time-wheel': () => import('../docs/TimeWheelDocs.vue'),
   textarea: () => import('../docs/TextareaDocs.vue'),
   dialog: () => import('../docs/DialogDocs.vue'),
   checkbox: () => import('../docs/FormPrimitiveDocs.vue'),

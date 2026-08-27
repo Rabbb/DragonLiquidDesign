@@ -17,14 +17,14 @@ export { CalendarDate, Time } from '@internationalized/date'
 
 export {
   DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlButton,
-  DlCalendar, DlCard, DlCheckbox, DlCollapsible, DlColorArea, DlColorField, DlColorSlider,
+  DlCalendar, DlCard, DlCheckbox, DlChoicePortal, DlCollapsible, DlColorArea, DlColorField, DlColorSlider,
   DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContextMenu, DlDateField, DlDatePicker,
   DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
   DlHoverCard, DlIconButton, DlInput, DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
   DlMonthPicker, DlMonthRangePicker, DlNavigationMenu, DlNumberField, DlPagination, DlPinInput,
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSelect,
   DlSeparator, DlSlider, DlSplitButton, DlSplitter, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
-  DlTimeField, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
+  DlTimeField, DlTimeRangeField, DlTimeWheel, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
   DlTree, DlYearPicker, DlYearRangePicker,
 } from './managed-components'
 
@@ -61,6 +61,14 @@ export type {
   DlTreeNode,
 } from './components/primitive.types'
 export type { DlSelectOption } from './components/select.types'
+export type {
+  DlChoicePortalEntry,
+  DlChoicePortalGroup,
+  DlChoicePortalOption,
+  DlChoicePortalOverlay,
+} from './components/choice-portal.types'
+export type { DlTimeWheelValue } from './components/time-wheel.utils'
+export { buildDlTimeWheelMinutes, clampDlTimeWheelMinute, formatDlTimeWheelValue, parseDlTimeWheelValue } from './components/time-wheel.utils'
 export type { DlDialogDimensions, DlDialogPosition } from './components/dialog.types'
 export type {
   DlMdxBlock,

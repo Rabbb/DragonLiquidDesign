@@ -115,7 +115,7 @@ describe('managed component instance behavior', () => {
   })
 
   it('publishes behavior metadata for all official components', () => {
-    expect(getDlComponentBehaviors()).toHaveLength(65)
+    expect(getDlComponentBehaviors()).toHaveLength(67)
     const pagination = getDlComponentBehavior('Pagination')
     expect(pagination?.valueProperty).toBe('page')
     expect(pagination?.methods.map(item => item.name)).toContain('goTo')

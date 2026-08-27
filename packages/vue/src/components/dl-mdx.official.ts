@@ -9,6 +9,7 @@ import DlButton from './DlButton.vue'
 import DlCalendar from './DlCalendar.vue'
 import DlCard from './DlCard.vue'
 import DlCheckbox from './DlCheckbox.vue'
+import DlChoicePortal from './DlChoicePortal.vue'
 import DlCollapsible from './DlCollapsible.vue'
 import DlColorArea from './DlColorArea.vue'
 import DlColorField from './DlColorField.vue'
@@ -56,6 +57,7 @@ import DlTagsInput from './DlTagsInput.vue'
 import DlTextarea from './DlTextarea.vue'
 import DlTimeField from './DlTimeField.vue'
 import DlTimeRangeField from './DlTimeRangeField.vue'
+import DlTimeWheel from './DlTimeWheel.vue'
 import DlToast from './DlToast.vue'
 import DlToggle from './DlToggle.vue'
 import DlToggleGroup from './DlToggleGroup.vue'
@@ -113,6 +115,7 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
 
   official('Autocomplete', DlAutocomplete, 'form', 'alpha', { defaultProps: { suggestions: ['Frieren', 'Fern', 'Stark'], placeholder: '搜索角色' } }),
   official('Checkbox', DlCheckbox, 'form', 'stable', { defaultProps: { label: '追踪更新', modelValue: true } }),
+  official('ChoicePortal', DlChoicePortal, 'form', 'custom', { defaultProps: { options: choices, modelValue: 'anime', placeholder: '选择内容类型' } }),
   official('Combobox', DlCombobox, 'form', 'stable', { defaultProps: { options: choices, placeholder: '选择类型' } }),
   official('Editable', DlEditable, 'form', 'stable', { defaultProps: { modelValue: '可编辑标题' } }),
   official('Label', DlLabel, 'form', 'stable', { defaultContent: '作品标题' }),
@@ -142,6 +145,7 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('RangeCalendar', DlRangeCalendar, 'dates', 'alpha'),
   official('TimeField', DlTimeField, 'dates', 'alpha'),
   official('TimeRangeField', DlTimeRangeField, 'dates', 'alpha'),
+  official('TimeWheel', DlTimeWheel, 'dates', 'custom', { defaultProps: { modelValue: '20:30' } }),
   official('MonthPicker', DlMonthPicker, 'dates', 'alpha'),
   official('MonthRangePicker', DlMonthRangePicker, 'dates', 'alpha'),
   official('YearPicker', DlYearPicker, 'dates', 'alpha'),

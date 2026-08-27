@@ -9,6 +9,7 @@ import {
   DlCalendar,
   DlCard,
   DlCheckbox,
+  DlChoicePortal,
   DlCollapsible,
   DlColorArea,
   DlColorField,
@@ -32,10 +33,12 @@ import {
   DlTabs,
   DlTimeField,
   DlTimeRangeField,
+  DlTimeWheel,
   DlYearPicker,
   DlYearRangePicker,
   type DateRange,
   type DlRadioOption,
+  type DlChoicePortalEntry,
   type DlSelectOption,
   type DlTabItem,
 } from '@dragon-liquid/vue'
@@ -44,6 +47,8 @@ import { useArchiveDemo } from '../useArchiveDemo'
 const { settings, view, notify } = useArchiveDemo()
 const tab = ref('appearance')
 const reminderTime = shallowRef(new Time(20, 30))
+const reminderWheel = ref('20:30')
+const contentSource = ref('all')
 const digestDate = shallowRef(new CalendarDate(2026, 8, 9))
 const calendarDate = shallowRef(new CalendarDate(2026, 8, 9))
 const reportRange = shallowRef<DateRange>({ start: new CalendarDate(2026, 8, 1), end: new CalendarDate(2026, 8, 31) })
@@ -78,6 +83,8 @@ const componentGuideTabs: Record<string, string> = {
   'date-picker': 'behavior',
   'time-field': 'behavior',
   select: 'behavior',
+  'choice-portal': 'behavior',
+  'time-wheel': 'behavior',
   'date-field': 'schedule',
   'time-range-field': 'schedule',
   'date-range-picker': 'schedule',
@@ -106,6 +113,16 @@ const pageSizeOptions: DlSelectOption[] = [
   { value: '6', label: '每页 6 条' },
   { value: '12', label: '每页 12 条' },
   { value: '24', label: '每页 24 条' },
+]
+const contentSourceOptions: DlChoicePortalEntry[] = [
+  { label: '本地内容', options: [
+    { value: 'all', label: '全部收藏', description: '包含本地条目与已同步内容', keywords: ['全部', 'all'] },
+    { value: 'watching', label: '正在观看', description: '只包含当前追看作品', keywords: ['追番', 'watching'] },
+  ] },
+  { label: '云端来源', options: [
+    { value: 'bangumi', label: 'Bangumi', description: '使用 Bangumi 收藏目录', keywords: ['bgm'] },
+    { value: 'anilist', label: 'AniList', description: '使用 AniList 媒体清单', keywords: ['al'] },
+  ] },
 ]
 
 function saveSettings() {
@@ -184,6 +201,7 @@ onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleG
               <div class="setting-row"><div><b>显示成人内容</b><span>仍会保留内容分级与二次确认</span></div><DlSwitch v-model="settings.showAdultContent" /></div>
               <DlSeparator />
               <div class="settings-grid"><div class="settings-field"><DlLabel>每周摘要日期</DlLabel><DlDatePicker v-model="digestDate" /></div><div class="settings-field"><DlLabel>提醒时间</DlLabel><DlTimeField v-model="reminderTime" /></div></div>
+              <div class="settings-grid"><div class="settings-field"><DlLabel>内容来源</DlLabel><DlChoicePortal v-model="contentSource" :options="contentSourceOptions" searchable clearable placeholder="选择收藏来源" /></div><div class="settings-field"><DlLabel>触控提醒时间</DlLabel><DlTimeWheel v-model="reminderWheel" :minute-step="5" shortcut-value="20:30" shortcut-label="晚间摘要" clearable /></div></div>
               <div class="settings-field"><DlLabel>收藏库分页</DlLabel><DlSelect v-model="settings.pageSize" :options="pageSizeOptions" /></div>
             </div>
           </template>

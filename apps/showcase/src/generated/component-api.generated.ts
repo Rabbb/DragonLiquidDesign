@@ -604,6 +604,134 @@ export default {
       }
     ]
   },
+  "choice-portal": {
+    "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "options",
+        "description": "可供用户选择的选项列表。",
+        "type": "DlChoicePortalEntry[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'请选择'"
+      },
+      {
+        "prop": "searchPlaceholder",
+        "description": "搜索输入框为空时显示的提示文字。",
+        "type": "string",
+        "defaultValue": "'搜索名称、值或关键词'"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "ChoicePortalStatus",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "overlay",
+        "description": "设置浮层固定为模态面板、底部抽屉或按视口自动适配。",
+        "type": "DlChoicePortalOverlay",
+        "defaultValue": "'auto'"
+      },
+      {
+        "prop": "searchable",
+        "description": "是否始终显示选项搜索框；不传时根据选项数量自动判断。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "searchThreshold",
+        "description": "自动启用搜索框所需的最少选项数量。",
+        "type": "number",
+        "defaultValue": "8"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "allowCustom",
+        "description": "是否允许把清理后的搜索文字作为自定义选项提交。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "required",
+        "description": "是否标记为表单必填项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
+  },
   "collapsible": {
     "props": [
       {
@@ -4608,6 +4736,128 @@ export default {
       }
     ],
     "relatedTypes": []
+  },
+  "time-wheel": {
+    "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择时间'"
+      },
+      {
+        "prop": "minuteStep",
+        "description": "分钟滚轮生成选项时使用的步长，限制在 1–30 分钟。",
+        "type": "number",
+        "defaultValue": "5"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "status",
+        "description": "设置业务状态及对应视觉反馈。",
+        "type": "TimeWheelStatus",
+        "defaultValue": "'default'"
+      },
+      {
+        "prop": "overlay",
+        "description": "设置浮层固定为模态面板、底部抽屉或按视口自动适配。",
+        "type": "DlChoicePortalOverlay",
+        "defaultValue": "'auto'"
+      },
+      {
+        "prop": "clearable",
+        "description": "是否允许再次操作以清空当前值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "shortcutValue",
+        "description": "时间滚轮可一键选取的 HH:mm 快捷值。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "shortcutLabel",
+        "description": "时间滚轮中快捷时间按钮显示的文字。",
+        "type": "string",
+        "defaultValue": "'常用时间'"
+      },
+      {
+        "prop": "disabledTime",
+        "description": "判断指定 HH:mm 时间是否不可选择的函数。",
+        "type": "(value: string) => boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "required",
+        "description": "是否标记为表单必填项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      }
+    ]
   },
   "toast": {
     "props": [

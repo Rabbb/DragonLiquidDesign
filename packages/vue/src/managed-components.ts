@@ -11,6 +11,7 @@ import RawDlButton from './components/DlButton.vue'
 import RawDlCalendar from './components/DlCalendar.vue'
 import RawDlCard from './components/DlCard.vue'
 import RawDlCheckbox from './components/DlCheckbox.vue'
+import RawDlChoicePortal from './components/DlChoicePortal.vue'
 import RawDlCollapsible from './components/DlCollapsible.vue'
 import RawDlColorArea from './components/DlColorArea.vue'
 import RawDlColorField from './components/DlColorField.vue'
@@ -58,6 +59,7 @@ import RawDlTagsInput from './components/DlTagsInput.vue'
 import RawDlTextarea from './components/DlTextarea.vue'
 import RawDlTimeField from './components/DlTimeField.vue'
 import RawDlTimeRangeField from './components/DlTimeRangeField.vue'
+import RawDlTimeWheel from './components/DlTimeWheel.vue'
 import RawDlToast from './components/DlToast.vue'
 import RawDlToggle from './components/DlToggle.vue'
 import RawDlToggleGroup from './components/DlToggleGroup.vue'
@@ -198,6 +200,7 @@ export const DlCheckbox = managed(RawDlCheckbox, 'DlCheckbox', {
   },
   methodDefinitions: [method('check / uncheck', '切换选中状态；toggle() 也可用于布尔值组件。', '()')],
 })
+export const DlChoicePortal = managed(RawDlChoicePortal, 'DlChoicePortal', { domEvents: fieldEvents })
 export const DlCollapsible = managed(RawDlCollapsible, 'DlCollapsible')
 export const DlColorArea = managed(RawDlColorArea, 'DlColorArea', { domEvents: fieldEvents })
 export const DlColorField = managed(RawDlColorField, 'DlColorField', { domEvents: fieldEvents })
@@ -300,6 +303,7 @@ export const DlTagsInput = managed(RawDlTagsInput, 'DlTagsInput', {
 export const DlTextarea = managed(RawDlTextarea, 'DlTextarea', { domEvents: fieldEvents })
 export const DlTimeField = managed(RawDlTimeField, 'DlTimeField', { domEvents: fieldEvents })
 export const DlTimeRangeField = managed(RawDlTimeRangeField, 'DlTimeRangeField', { domEvents: fieldEvents })
+export const DlTimeWheel = managed(RawDlTimeWheel, 'DlTimeWheel', { domEvents: fieldEvents })
 export const DlToast = managed(RawDlToast, 'DlToast', {
   methods: { dismiss: context => context.set('open', false) },
   methodDefinitions: [method('dismiss', '关闭当前通知。', '()')],
