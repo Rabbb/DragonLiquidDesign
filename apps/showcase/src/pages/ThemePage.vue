@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DlButton, useDlTheme, type DlThemeDefinition, type DlThemeMode } from '@dragon-liquid/vue'
+import { DlButton, dlThemePresets, useDlTheme, type DlThemeDefinition, type DlThemeMode } from '@dragon-liquid/vue'
 
 const theme = useDlTheme()
-const builtinThemeNames = new Set(['white', 'black', 'warm', 'midnight', 'forest'])
+const builtinThemeNames = new Set(dlThemePresets.map(item => item.name))
 
 const modes: Array<{ value: DlThemeMode; label: string; description: string }> = [
   { value: 'system', label: '跟随浏览器', description: '自动响应 prefers-color-scheme' },
@@ -89,7 +89,7 @@ function previewClass(item: DlThemeDefinition) {
         <div>
           <span>01 · PRESETS</span>
           <h2 id="preset-title">选择一套主题</h2>
-          <p>点击即可实时预览。Dragon Forest 以幽林翡翠、龙焰金与少量极光蓝紫构成魔法层次。</p>
+          <p>点击即可实时预览。新增主题参考编辑器工作台的背景、侧栏、面板、边框与焦点层级，并重新适配为网站界面。</p>
         </div>
         <DlButton v-if="theme.themeOverride.value" variant="secondary" size="sm" @click="theme.clearThemeOverride()">
           恢复模式映射
@@ -222,6 +222,34 @@ function previewClass(item: DlThemeDefinition) {
 .theme-preview--forest::before { background: rgba(226,255,239,.2); }
 .theme-preview--forest i { background: #244f39; }
 .theme-preview--forest i:nth-child(2) { background: linear-gradient(180deg, #f4d35e, #73d8a4); }
+.theme-preview--one-dark { background: #21252b; }
+.theme-preview--one-dark::before { background: #5c6370; }
+.theme-preview--one-dark i { background: #353b47; }
+.theme-preview--one-dark i:nth-child(2) { background: #61afef; }
+.theme-preview--violet-nocturne { background: #21222c; }
+.theme-preview--violet-nocturne::before { background: #6272a4; }
+.theme-preview--violet-nocturne i { background: #414558; }
+.theme-preview--violet-nocturne i:nth-child(2) { background: #bd93f9; }
+.theme-preview--mocha-mauve { background: #11111b; }
+.theme-preview--mocha-mauve::before { background: #6c7086; }
+.theme-preview--mocha-mauve i { background: #313244; }
+.theme-preview--mocha-mauve i:nth-child(2) { background: #cba6f7; }
+.theme-preview--tokyo-indigo { background: #16161e; }
+.theme-preview--tokyo-indigo::before { background: #565f89; }
+.theme-preview--tokyo-indigo i { background: #2f354f; }
+.theme-preview--tokyo-indigo i:nth-child(2) { background: #7aa2f7; }
+.theme-preview--retro-amber { background: #1d2021; }
+.theme-preview--retro-amber::before { background: #928374; }
+.theme-preview--retro-amber i { background: #504945; }
+.theme-preview--retro-amber i:nth-child(2) { background: #fabd2f; }
+.theme-preview--nordic-frost { background: #242933; }
+.theme-preview--nordic-frost::before { background: #616e88; }
+.theme-preview--nordic-frost i { background: #434c5e; }
+.theme-preview--nordic-frost i:nth-child(2) { background: #88c0d0; }
+.theme-preview--git-daylight { background: #f6f8fa; }
+.theme-preview--git-daylight::before { background: #afb8c1; }
+.theme-preview--git-daylight i { background: #d8dee4; }
+.theme-preview--git-daylight i:nth-child(2) { background: #0969da; }
 .theme-preview--docs-blue { background: #f6f7f9; }
 .theme-preview--docs-blue i { background: #dbe4ea; }
 .theme-preview--docs-blue i:nth-child(2) { background: #356b92; }

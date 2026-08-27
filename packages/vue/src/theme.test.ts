@@ -52,19 +52,37 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('createDlTheme', () => {
-  it('ships white, black, and the enchanted forest theme as selectable presets', () => {
+  it('ships the core palettes and editor-inspired workbench themes as selectable presets', () => {
     expect(dlThemePresets.map(theme => theme.name)).toEqual([
       'white',
       'black',
       'warm',
       'midnight',
       'forest',
+      'one-dark',
+      'violet-nocturne',
+      'mocha-mauve',
+      'tokyo-indigo',
+      'retro-amber',
+      'nordic-frost',
+      'git-daylight',
     ])
     const forest = dlThemePresets.find(theme => theme.name === 'forest')!
     expect(forest.tokens?.['--dragon-green']).toBe('#244f3a')
     expect(forest.tokens?.['--dl-surface']).toBe('rgba(14, 39, 26, 0.82)')
     expect(forest.tokens?.['--dl-accent']).toBe('#f4d35e')
     expect(forest.tokens?.['--dl-button-primary-bg']).toContain('#73d8a4')
+
+    const mocha = dlThemePresets.find(theme => theme.name === 'mocha-mauve')!
+    expect(mocha.base).toBe('black')
+    expect(mocha.tokens?.['--dl-night']).toBe('#11111b')
+    expect(mocha.tokens?.['--dl-accent']).toBe('#cba6f7')
+    expect(mocha.tokens?.['--dl-button-primary-bg']).toBe('#cba6f7')
+
+    const daylight = dlThemePresets.find(theme => theme.name === 'git-daylight')!
+    expect(daylight.base).toBe('white')
+    expect(daylight.colorScheme).toBe('light')
+    expect(daylight.tokens?.['--dl-surface-strong']).toBe('#ffffff')
   })
 
   it('follows the browser color scheme using white by day and black by night', () => {

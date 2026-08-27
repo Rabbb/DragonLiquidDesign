@@ -59,7 +59,107 @@ export interface DlThemeManager {
   destroy: () => void
 }
 
-const builtinThemeNames = new Set(['white', 'black', 'warm', 'midnight', 'forest'])
+interface DlWorkbenchThemePalette {
+  name: string
+  label: string
+  colorScheme: DlThemeColorScheme
+  canvas: string
+  canvasSoft: string
+  surface: string
+  surfaceStrong: string
+  surfaceHover: string
+  text: string
+  textMuted: string
+  textFaint: string
+  border: string
+  borderStrong: string
+  accent: string
+  accentText: string
+  accentRgb: string
+  primaryText: string
+  green: string
+  orange: string
+  yellow: string
+  red: string
+  cyan: string
+  purple: string
+}
+
+function workbenchTheme(palette: DlWorkbenchThemePalette): Readonly<DlThemeDefinition> {
+  const dark = palette.colorScheme === 'dark'
+  return Object.freeze({
+    name: palette.name,
+    label: palette.label,
+    colorScheme: palette.colorScheme,
+    base: dark ? 'black' : 'white',
+    tokens: Object.freeze({
+      '--dragon-green': palette.green,
+      '--dragon-orange': palette.orange,
+      '--dragon-yellow': palette.yellow,
+      '--dragon-red': palette.red,
+      '--dragon-cyan': palette.cyan,
+      '--dragon-purple': palette.purple,
+      '--dl-text': palette.text,
+      '--dl-text-muted': palette.textMuted,
+      '--dl-text-faint': palette.textFaint,
+      '--dl-night': palette.canvas,
+      '--dl-night-soft': palette.canvasSoft,
+      '--dl-surface': palette.surface,
+      '--dl-surface-strong': palette.surfaceStrong,
+      '--dl-surface-solid': palette.surfaceStrong,
+      '--dl-surface-hover': palette.surfaceHover,
+      '--dl-border': palette.border,
+      '--dl-border-strong': palette.borderStrong,
+      '--dl-border-focus': `rgba(${palette.accentRgb}, 0.82)`,
+      '--dl-accent': palette.accent,
+      '--dl-accent-text': palette.accentText,
+      '--dl-accent-surface': `rgba(${palette.accentRgb}, 0.13)`,
+      '--dl-accent-surface-hover': `rgba(${palette.accentRgb}, 0.21)`,
+      '--dl-accent-border': `rgba(${palette.accentRgb}, 0.4)`,
+      '--dl-primary': palette.accent,
+      '--dl-primary-hover': palette.accentText,
+      '--dl-button-primary-bg': palette.accent,
+      '--dl-button-primary-bg-hover': palette.accentText,
+      '--dl-button-primary-bg-active': `color-mix(in srgb, ${palette.accent} 78%, ${palette.canvas})`,
+      '--dl-button-primary-border': palette.accent,
+      '--dl-button-primary-border-hover': palette.accentText,
+      '--dl-button-primary-border-active': `color-mix(in srgb, ${palette.accent} 72%, ${palette.canvas})`,
+      '--dl-button-primary-text': palette.primaryText,
+      '--dl-button-primary-text-shadow': 'none',
+      '--dl-button-primary-text-shadow-hover': 'none',
+      '--dl-button-primary-shadow': `0 5px 18px rgba(${palette.accentRgb}, ${dark ? '0.18' : '0.14'})`,
+      '--dl-button-primary-shadow-hover': `0 7px 24px rgba(${palette.accentRgb}, ${dark ? '0.25' : '0.2'})`,
+      '--dl-button-primary-shadow-active': `inset 0 2px 5px rgba(0, 0, 0, ${dark ? '0.24' : '0.14'})`,
+      '--dl-button-secondary-bg': palette.surface,
+      '--dl-button-secondary-bg-hover': palette.surfaceHover,
+      '--dl-button-secondary-bg-active': palette.canvasSoft,
+      '--dl-button-secondary-border': palette.border,
+      '--dl-button-secondary-border-hover': palette.borderStrong,
+      '--dl-button-secondary-border-active': palette.accent,
+      '--dl-button-secondary-text': palette.text,
+      '--dl-button-secondary-text-hover': palette.text,
+      '--dl-button-secondary-text-active': palette.accentText,
+      '--dl-button-ghost-text': palette.textMuted,
+      '--dl-button-ghost-text-hover': palette.text,
+      '--dl-button-ghost-text-active': palette.accentText,
+      '--dl-button-ghost-bg-hover': `rgba(${palette.accentRgb}, 0.08)`,
+      '--dl-button-ghost-bg-active': `rgba(${palette.accentRgb}, 0.14)`,
+      '--dl-button-disabled-bg': palette.canvasSoft,
+      '--dl-button-disabled-border': palette.border,
+      '--dl-button-disabled-text': palette.textFaint,
+      '--dl-panel': `radial-gradient(circle at 88% 0%, rgba(${palette.accentRgb}, 0.1), transparent 42%), linear-gradient(145deg, ${palette.surfaceStrong}, ${palette.canvas})`,
+      '--dl-shadow': `0 12px 34px rgba(0, 0, 0, ${dark ? '0.3' : '0.1'}), inset 0 1px 0 rgba(255, 255, 255, ${dark ? '0.045' : '0.72'})`,
+      '--dl-shadow-hover': `0 17px 44px rgba(0, 0, 0, ${dark ? '0.38' : '0.14'}), 0 0 24px rgba(${palette.accentRgb}, 0.08)`,
+      '--dl-focus': `0 0 0 3px rgba(${palette.accentRgb}, 0.2), 0 0 0 1px rgba(${palette.accentRgb}, 0.66)`,
+    }),
+  })
+}
+
+const builtinThemeNames = new Set([
+  'white', 'black', 'warm', 'midnight', 'forest',
+  'one-dark', 'violet-nocturne', 'mocha-mauve', 'tokyo-indigo',
+  'retro-amber', 'nordic-frost', 'git-daylight',
+])
 
 export const dlThemePresets: readonly DlThemeDefinition[] = Object.freeze([
   Object.freeze({ name: 'white', label: 'White', colorScheme: 'light' as const }),
@@ -172,6 +272,55 @@ export const dlThemePresets: readonly DlThemeDefinition[] = Object.freeze([
       '--dl-shadow-hover': '0 26px 68px rgba(0, 0, 0, 0.4), 0 0 44px rgba(99, 215, 161, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
       '--dl-focus': '0 0 0 3px rgba(244, 211, 94, 0.18), 0 0 22px rgba(99, 215, 161, 0.18)',
     }),
+  }),
+  workbenchTheme({
+    name: 'one-dark', label: 'Code One Dark', colorScheme: 'dark',
+    canvas: '#21252b', canvasSoft: '#282c34', surface: 'rgba(40, 44, 52, 0.94)', surfaceStrong: '#2c313c', surfaceHover: '#353b47',
+    text: '#e5e9f0', textMuted: 'rgba(171, 178, 191, 0.78)', textFaint: 'rgba(171, 178, 191, 0.5)', border: 'rgba(171, 178, 191, 0.14)', borderStrong: 'rgba(171, 178, 191, 0.25)',
+    accent: '#61afef', accentText: '#8fc8f5', accentRgb: '97, 175, 239', primaryText: '#14202a',
+    green: '#98c379', orange: '#d19a66', yellow: '#e5c07b', red: '#e06c75', cyan: '#56b6c2', purple: '#c678dd',
+  }),
+  workbenchTheme({
+    name: 'violet-nocturne', label: 'Violet Nocturne', colorScheme: 'dark',
+    canvas: '#21222c', canvasSoft: '#282a36', surface: 'rgba(40, 42, 54, 0.95)', surfaceStrong: '#343746', surfaceHover: '#414558',
+    text: '#f8f8f2', textMuted: 'rgba(248, 248, 242, 0.72)', textFaint: 'rgba(248, 248, 242, 0.46)', border: 'rgba(248, 248, 242, 0.13)', borderStrong: 'rgba(248, 248, 242, 0.23)',
+    accent: '#bd93f9', accentText: '#d6b8ff', accentRgb: '189, 147, 249', primaryText: '#241b31',
+    green: '#50fa7b', orange: '#ffb86c', yellow: '#f1fa8c', red: '#ff5555', cyan: '#8be9fd', purple: '#ff79c6',
+  }),
+  workbenchTheme({
+    name: 'mocha-mauve', label: 'Mocha Mauve', colorScheme: 'dark',
+    canvas: '#11111b', canvasSoft: '#181825', surface: 'rgba(30, 30, 46, 0.96)', surfaceStrong: '#242438', surfaceHover: '#313244',
+    text: '#cdd6f4', textMuted: 'rgba(205, 214, 244, 0.74)', textFaint: 'rgba(205, 214, 244, 0.48)', border: 'rgba(205, 214, 244, 0.13)', borderStrong: 'rgba(205, 214, 244, 0.24)',
+    accent: '#cba6f7', accentText: '#dfc5ff', accentRgb: '203, 166, 247', primaryText: '#1e1e2e',
+    green: '#a6e3a1', orange: '#fab387', yellow: '#f9e2af', red: '#f38ba8', cyan: '#94e2d5', purple: '#cba6f7',
+  }),
+  workbenchTheme({
+    name: 'tokyo-indigo', label: 'Tokyo Indigo', colorScheme: 'dark',
+    canvas: '#16161e', canvasSoft: '#1a1b26', surface: 'rgba(31, 35, 53, 0.96)', surfaceStrong: '#24283b', surfaceHover: '#2f354f',
+    text: '#c0caf5', textMuted: 'rgba(192, 202, 245, 0.75)', textFaint: 'rgba(192, 202, 245, 0.48)', border: 'rgba(192, 202, 245, 0.13)', borderStrong: 'rgba(192, 202, 245, 0.24)',
+    accent: '#7aa2f7', accentText: '#a9c4ff', accentRgb: '122, 162, 247', primaryText: '#151927',
+    green: '#9ece6a', orange: '#ff9e64', yellow: '#e0af68', red: '#f7768e', cyan: '#7dcfff', purple: '#bb9af7',
+  }),
+  workbenchTheme({
+    name: 'retro-amber', label: 'Retro Amber', colorScheme: 'dark',
+    canvas: '#1d2021', canvasSoft: '#282828', surface: 'rgba(50, 48, 47, 0.96)', surfaceStrong: '#3c3836', surfaceHover: '#504945',
+    text: '#ebdbb2', textMuted: 'rgba(235, 219, 178, 0.76)', textFaint: 'rgba(235, 219, 178, 0.49)', border: 'rgba(235, 219, 178, 0.14)', borderStrong: 'rgba(235, 219, 178, 0.25)',
+    accent: '#fabd2f', accentText: '#ffd86a', accentRgb: '250, 189, 47', primaryText: '#282828',
+    green: '#b8bb26', orange: '#fe8019', yellow: '#fabd2f', red: '#fb4934', cyan: '#8ec07c', purple: '#d3869b',
+  }),
+  workbenchTheme({
+    name: 'nordic-frost', label: 'Nordic Frost', colorScheme: 'dark',
+    canvas: '#242933', canvasSoft: '#2e3440', surface: 'rgba(53, 60, 75, 0.96)', surfaceStrong: '#3b4252', surfaceHover: '#434c5e',
+    text: '#eceff4', textMuted: 'rgba(229, 233, 240, 0.76)', textFaint: 'rgba(216, 222, 233, 0.5)', border: 'rgba(216, 222, 233, 0.14)', borderStrong: 'rgba(216, 222, 233, 0.25)',
+    accent: '#88c0d0', accentText: '#a9d7e3', accentRgb: '136, 192, 208', primaryText: '#223038',
+    green: '#a3be8c', orange: '#d08770', yellow: '#ebcb8b', red: '#bf616a', cyan: '#8fbcbb', purple: '#b48ead',
+  }),
+  workbenchTheme({
+    name: 'git-daylight', label: 'Git Daylight', colorScheme: 'light',
+    canvas: '#f6f8fa', canvasSoft: '#eef1f4', surface: 'rgba(255, 255, 255, 0.96)', surfaceStrong: '#ffffff', surfaceHover: '#f3f4f6',
+    text: '#1f2328', textMuted: 'rgba(31, 35, 40, 0.72)', textFaint: 'rgba(31, 35, 40, 0.48)', border: 'rgba(31, 35, 40, 0.14)', borderStrong: 'rgba(31, 35, 40, 0.24)',
+    accent: '#0969da', accentText: '#0550ae', accentRgb: '9, 105, 218', primaryText: '#ffffff',
+    green: '#1a7f37', orange: '#bc4c00', yellow: '#9a6700', red: '#cf222e', cyan: '#0a7e8c', purple: '#8250df',
   }),
 ])
 
