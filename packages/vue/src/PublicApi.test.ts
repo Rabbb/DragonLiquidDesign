@@ -43,4 +43,9 @@ describe('public component API', () => {
     await wrapper.get('input').trigger('keydown', { key: 'ArrowUp' })
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([13])
   })
+
+  it('exports the application focus navigator separately from catalog controls', () => {
+    expect(library).toHaveProperty('DlFocusNavigator')
+    expect(library).toHaveProperty('discoverDlFocusNavigatorZones')
+  })
 })

@@ -14,6 +14,14 @@ export type {
 } from './theme'
 
 export { CalendarDate, Time } from '@internationalized/date'
+export { default as DlFocusNavigator } from './components/FocusNavigator.vue'
+export { discoverDlFocusNavigatorZones, dlFocusNavigatorTargetSelector } from './components/focus-navigator'
+export type {
+  DlFocusNavigatorDiscoveryOptions,
+  DlFocusNavigatorResolvedZone,
+  DlFocusNavigatorTarget,
+  DlFocusNavigatorZoneDefinition,
+} from './components/focus-navigator'
 
 export {
   DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlButton,

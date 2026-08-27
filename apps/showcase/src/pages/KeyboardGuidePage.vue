@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
-import { CalendarDate, DlButton, DlDateField, DlSegmented, DlTimeField, Time } from '@dragon-liquid/vue'
+import { ref, shallowRef } from 'vue'
+import { CalendarDate, DlButton, DlDateField, DlFocusNavigator, DlSegmented, DlTimeField, Time } from '@dragon-liquid/vue'
 
 const sampleDate = shallowRef(new CalendarDate(2026, 8, 28))
 const sampleTime = shallowRef(new Time(9, 30))
+const focusNavigatorOpen = ref(false)
 const practiceMode = shallowRef('keyboard')
 const practiceModes = [
   { value: 'keyboard', label: '键盘' },
@@ -66,8 +67,36 @@ function openComponentSwitcher() {
       <p class="platform-note"><b>为什么不是 Alt+Tab？</b> Alt+Tab 由操作系统保留，网页无法可靠截获；Alt+K 保留相同的“按住、选择、松开”节奏。</p>
     </section>
 
+    <section class="keyboard-guide-section focus-navigator-tutorial">
+      <header><span>03</span><div><small>APPLICATION FOCUS</small><h2>跨区域直接聚焦实际控件</h2><p>这是面向实际应用的切换器；它切换顶部导航、侧栏与当前内容，而不是组件文档。</p></div></header>
+      <div id="focus-navigator-demo" class="focus-navigator-demo">
+        <nav data-dl-focus-zone="demo-navigation" data-dl-focus-label="顶部导航" data-dl-focus-icon="⌂" aria-label="教程顶部导航">
+          <button type="button">工作台</button><button type="button">日历</button><button type="button">设置</button>
+        </nav>
+        <aside data-dl-focus-zone="demo-sidebar" data-dl-focus-label="侧边栏" data-dl-focus-icon="≡">
+          <button type="button">今天</button><button type="button">本周</button><button type="button">已归档</button>
+        </aside>
+        <article data-dl-focus-zone="demo-content" data-dl-focus-label="当前内容" data-dl-focus-icon="▦">
+          <label>任务标题<input value="整理键盘导航文档"></label>
+          <label>负责人<select><option>Dragon</option><option>Moe</option></select></label>
+          <button type="button">保存任务</button>
+        </article>
+      </div>
+      <div class="focus-navigator-actions">
+        <DlButton variant="primary" @click="focusNavigatorOpen = true">体验应用焦点切换</DlButton>
+        <span><kbd>Alt</kbd><b>+</b><kbd>J</kbd></span>
+        <small>← → 切换内容域 · ↑ ↓ 按纵向流切换控件 · 松开 Alt 聚焦</small>
+      </div>
+      <pre class="focus-navigator-code"><code>&lt;DlFocusNavigator activation-key="j" /&gt;
+
+&lt;nav data-dl-focus-zone="navigation" data-dl-focus-label="顶部导航" data-dl-focus-icon="⌂"&gt;…&lt;/nav&gt;
+&lt;aside data-dl-focus-zone="sidebar" data-dl-focus-label="侧边栏" data-dl-focus-icon="≡"&gt;…&lt;/aside&gt;
+&lt;main data-dl-focus-zone="content" data-dl-focus-label="当前内容" data-dl-focus-icon="▦"&gt;…&lt;/main&gt;</code></pre>
+      <DlFocusNavigator v-model:open="focusNavigatorOpen" activation-key="j" scope="#focus-navigator-demo" title="教程焦点切换" />
+    </section>
+
     <section class="keyboard-guide-section paste-tutorial">
-      <header><span>03</span><div><small>PASTE WHOLE VALUE</small><h2>日期与时间可以整段粘贴</h2><p>不必逐段选择年月日，复制业务文案里的值后直接粘贴即可。</p></div></header>
+      <header><span>04</span><div><small>PASTE WHOLE VALUE</small><h2>日期与时间可以整段粘贴</h2><p>不必逐段选择年月日，复制业务文案里的值后直接粘贴即可。</p></div></header>
       <div class="paste-playground">
         <article>
           <small>DATE FIELD</small>
@@ -83,7 +112,7 @@ function openComponentSwitcher() {
     </section>
 
     <section class="keyboard-guide-section practice-tutorial">
-      <header><span>04</span><div><small>ROVING FOCUS</small><h2>组选项只占一个 Tab 停靠点</h2><p>Tab 用来离开一组控件，方向键才负责在组内移动。</p></div></header>
+      <header><span>05</span><div><small>ROVING FOCUS</small><h2>组选项只占一个 Tab 停靠点</h2><p>Tab 用来离开一组控件，方向键才负责在组内移动。</p></div></header>
       <div class="practice-card">
         <DlSegmented v-model="practiceMode" :items="practiceModes" aria-label="输入方式练习" />
         <p>当前选择：<b>{{ practiceModes.find(item => item.value === practiceMode)?.label }}</b></p>
@@ -92,13 +121,14 @@ function openComponentSwitcher() {
     </section>
 
     <section class="keyboard-guide-section quick-reference">
-      <header><span>05</span><div><small>QUICK REFERENCE</small><h2>进阶操作速查</h2><p>这些动作解决右键、拖拽和长列表等纯键盘难点。</p></div></header>
+      <header><span>06</span><div><small>QUICK REFERENCE</small><h2>进阶操作速查</h2><p>这些动作解决右键、拖拽和长列表等纯键盘难点。</p></div></header>
       <dl>
         <div><dt><kbd>Alt</kbd> + <kbd>↓</kbd></dt><dd><b>打开选择器</b><span>日期、时间、月份和年份选择器</span></dd></div>
         <div><dt><kbd>Shift</kbd> + <kbd>F10</kbd></dt><dd><b>打开右键菜单</b><span>等同鼠标右键，也兼容键盘的 Menu 键</span></dd></div>
         <div><dt><kbd>Alt</kbd> + <kbd>方向键</kbd></dt><dd><b>移动日历事项</b><span>替代拖拽，按日或按周调整事项日期</span></dd></div>
         <div><dt><kbd>PageUp</kbd> / <kbd>PageDown</kbd></dt><dd><b>大步移动</b><span>长列表、时间滚轮和日历月份快速翻页</span></dd></div>
         <div><dt><kbd>Ctrl</kbd> + <kbd>K</kbd></dt><dd><b>全站搜索</b><span>知道名字时直接搜索；浏览相邻控件时使用 Alt+K</span></dd></div>
+        <div><dt><kbd>Alt</kbd> + <kbd>J</kbd></dt><dd><b>应用焦点切换</b><span>跨顶部导航、侧栏和当前内容域直接聚焦控件</span></dd></div>
       </dl>
     </section>
   </main>
@@ -136,6 +166,20 @@ kbd { display: inline-grid; min-width: 27px; min-height: 25px; place-items: cent
 .tutorial-steps article > b { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; color: var(--dl-accent-text); background: var(--dl-accent-surface); }
 .tutorial-steps h3 { margin-top: 3px; }
 .platform-note { margin: 0; padding: 14px 17px; border-left: 3px solid var(--dl-accent); border-radius: 3px 12px 12px 3px; color: var(--dl-text-muted); background: var(--dl-accent-surface); font-size: .72rem; line-height: 1.65; }
+.focus-navigator-demo { display: grid; grid-template-columns: 150px minmax(0,1fr); grid-template-areas: "nav nav" "aside content"; overflow: hidden; border: 1px solid var(--dl-border); border-radius: 18px; background: var(--dl-surface); }
+.focus-navigator-demo nav { grid-area: nav; display: flex; gap: 8px; padding: 12px; border-bottom: 1px solid var(--dl-border); }
+.focus-navigator-demo aside { grid-area: aside; display: grid; align-content: start; gap: 7px; padding: 12px; border-right: 1px solid var(--dl-border); }
+.focus-navigator-demo article { grid-area: content; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-content: start; gap: 12px; min-height: 220px; padding: 18px; }
+.focus-navigator-demo button, .focus-navigator-demo input, .focus-navigator-demo select { min-height: 36px; border: 1px solid var(--dl-border); border-radius: 10px; color: var(--dl-text); background: var(--dl-surface-strong); }
+.focus-navigator-demo button { padding: 0 13px; cursor: pointer; }
+.focus-navigator-demo button:focus-visible, .focus-navigator-demo input:focus-visible, .focus-navigator-demo select:focus-visible { outline: none; box-shadow: var(--dl-focus); }
+.focus-navigator-demo article label { display: grid; gap: 7px; color: var(--dl-text-faint); font-size: .66rem; }
+.focus-navigator-demo article input, .focus-navigator-demo article select { width: 100%; padding: 0 10px; }
+.focus-navigator-demo article > button { align-self: end; justify-self: start; }
+.focus-navigator-actions { display: flex; align-items: center; gap: 12px; }
+.focus-navigator-actions > span { display: flex; align-items: center; gap: 5px; }
+.focus-navigator-actions > small { color: var(--dl-text-faint); font-size: .66rem; }
+.focus-navigator-code { margin: 0; padding: 18px; overflow: auto; border: 1px solid var(--dl-border); border-radius: 15px; color: #dce8e2; background: #17201c; font: .7rem/1.8 "Cascadia Code", Consolas, monospace; }
 .paste-playground { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
 .paste-playground article { display: grid; justify-items: start; gap: 14px; padding: 22px; border: 1px solid var(--dl-border); border-radius: 18px; background: var(--dl-surface); }
 .paste-playground article > small { color: var(--dl-accent-text); font-size: .58rem; font-weight: 900; letter-spacing: .14em; }
@@ -150,5 +194,5 @@ kbd { display: inline-grid; min-width: 27px; min-height: 25px; place-items: cent
 .quick-reference dd { display: grid; grid-template-columns: 150px 1fr; gap: 14px; margin: 0; color: var(--dl-text-faint); font-size: .7rem; }
 .quick-reference dd b { color: var(--dl-text); }
 @media (max-width: 900px) { .keyboard-guide-hero { grid-template-columns: 1fr; padding-top: 30px; } .shortcut-grid, .tutorial-steps { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-@media (max-width: 620px) { .keyboard-guide-page { width: min(100% - 24px, 1180px); padding-top: 34px; } .keyboard-guide-hero aside { min-height: 220px; padding-inline: 12px; } .switcher-mini-card { width: 96px; height: 108px; } .shortcut-grid, .tutorial-steps, .paste-playground { grid-template-columns: 1fr; } .quick-reference dl > div, .quick-reference dd { grid-template-columns: 1fr; gap: 10px; } }
+@media (max-width: 620px) { .keyboard-guide-page { width: min(100% - 24px, 1180px); padding-top: 34px; } .keyboard-guide-hero aside { min-height: 220px; padding-inline: 12px; } .switcher-mini-card { width: 96px; height: 108px; } .shortcut-grid, .tutorial-steps, .paste-playground { grid-template-columns: 1fr; } .focus-navigator-demo { grid-template-columns: 105px minmax(0,1fr); } .focus-navigator-demo article { grid-template-columns: 1fr; } .focus-navigator-actions { align-items: flex-start; flex-wrap: wrap; } .focus-navigator-actions > small { width: 100%; } .quick-reference dl > div, .quick-reference dd { grid-template-columns: 1fr; gap: 10px; } }
 </style>
