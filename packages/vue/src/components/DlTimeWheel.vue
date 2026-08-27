@@ -333,7 +333,11 @@ onBeforeUnmount(() => {
           <button type="button" class="dl-time-wheel__close" aria-label="关闭时间选择器" @click="closeWheel">×</button>
         </header>
 
-        <div class="dl-time-wheel__summary" :data-disabled="draftDisabled || undefined"><span>当前选择</span><strong>{{ draftValue }}</strong><small v-if="draftDisabled">该时间不可用</small></div>
+        <div class="dl-time-wheel__summary" :data-disabled="draftDisabled || undefined">
+          <span>当前选择</span>
+          <strong class="dl-time-wheel__summary-value" :aria-label="draftValue"><b>{{ String(draftHour).padStart(2, '0') }}</b><i aria-hidden="true">:</i><b>{{ String(draftMinute).padStart(2, '0') }}</b></strong>
+          <small v-if="draftDisabled">该时间不可用</small>
+        </div>
 
         <div class="dl-time-wheel__columns">
           <section><h3>小时</h3><span class="dl-time-wheel__band" aria-hidden="true" />
@@ -398,15 +402,17 @@ onBeforeUnmount(() => {
 .dl-time-wheel__header p { margin: 0; color: var(--dl-text-faint); font-size: .72rem; }
 .dl-time-wheel__close { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 1px solid var(--dl-border); border-radius: 50%; background: var(--dl-surface); color: var(--dl-text-faint); font-size: 1.15rem; cursor: pointer; }
 .dl-time-wheel__close:hover { border-color: var(--dl-border-strong); background: var(--dl-surface-hover); color: var(--dl-text); }
-.dl-time-wheel__summary { display: flex; min-height: 64px; align-items: baseline; gap: 10px; padding: 12px 16px; border: 1px solid var(--dl-accent-border); border-radius: 16px; background: var(--dl-accent-surface); }
-.dl-time-wheel__summary > span { color: var(--dl-text-faint); font-size: .66rem; }
-.dl-time-wheel__summary strong { color: var(--dl-accent-text); font: 800 1.65rem/1 monospace; }
-.dl-time-wheel__summary small { margin-left: auto; color: #d84d57; font-size: .65rem; }
+.dl-time-wheel__summary { position: relative; display: grid; min-height: 76px; gap: 3px; padding: 10px 0 8px; border: 1px solid var(--dl-accent-border); border-radius: 16px; background: var(--dl-accent-surface); }
+.dl-time-wheel__summary > span { padding-inline: 16px; color: var(--dl-text-faint); font-size: .66rem; }
+.dl-time-wheel__summary-value { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr); align-items: center; gap: 12px; color: var(--dl-accent-text); font: 800 1.65rem/1 monospace; }
+.dl-time-wheel__summary-value b { font: inherit; text-align: center; }
+.dl-time-wheel__summary-value i { display: grid; place-items: center; font: inherit; font-style: normal; }
+.dl-time-wheel__summary small { position: absolute; top: 11px; right: 16px; color: #d84d57; font-size: .65rem; }
 .dl-time-wheel__summary[data-disabled] { border-color: color-mix(in srgb, #d84d57 48%, var(--dl-border)); }
-.dl-time-wheel__columns { display: grid; min-height: 0; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; }
+.dl-time-wheel__columns { display: grid; min-height: 0; grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr); align-items: center; gap: 12px; }
 .dl-time-wheel__columns > section { position: relative; display: grid; min-width: 0; gap: 7px; overflow: hidden; }
 .dl-time-wheel__columns h3 { z-index: 2; margin: 0; color: var(--dl-text-faint); font-size: .64rem; text-align: center; }
-.dl-time-wheel__columns > i { color: var(--dl-accent-text); font: 900 1.45rem/1 monospace; }
+.dl-time-wheel__columns > i { display: grid; place-items: center; color: var(--dl-accent-text); font: 900 1.45rem/1 monospace; }
 .dl-time-wheel__band { position: absolute; top: calc(50% + 2px); right: 4px; left: 4px; height: 48px; border: 1px solid var(--dl-accent-border); border-radius: 13px; background: var(--dl-accent-surface); pointer-events: none; transform: translateY(-50%); }
 .dl-time-wheel__viewport { height: 264px; padding-block: 108px; overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; scrollbar-width: none; cursor: grab; outline: none; touch-action: pan-y; }
 .dl-time-wheel__viewport:active { cursor: grabbing; }
