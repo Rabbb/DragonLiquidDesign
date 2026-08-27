@@ -9,15 +9,15 @@ const time = ref('20:30')
 const content = computed(() => ({
   basic: {
     title: '双列无限时间滚轮',
-    description: '小时和分钟都可滚动、鼠标拖动或直接点击，停止后会吸附到中线。',
+    description: '小时和分钟都可滚动、鼠标拖动或直接点击，也可用箭头精确微调。',
     code: vueSfc({ imports: ['DlTimeWheel'], script: `import { ref } from 'vue'\n\nconst time = ref('20:30')`, template: `  <DlTimeWheel v-model="time" clearable />` }),
-    tips: ['桌面端是居中面板，手机端自动使用底部抽屉。', '最终值始终使用 24 小时制 HH:mm。'],
+    tips: ['箭头每次调整 1 小时或 1 分钟，分钟微调不受滚轮步长限制。', '桌面端是居中面板，手机端自动使用底部抽屉。', '最终值始终使用 24 小时制 HH:mm。'],
   },
   'minute-step': {
     title: '分钟步长与快捷时间',
     description: '分钟选项按步长生成，快捷值用于回到业务常用时刻。',
     code: vueSfc({ imports: ['DlTimeWheel'], script: `import { ref } from 'vue'\n\nconst time = ref('20:30')`, template: `  <DlTimeWheel\n    v-model="time"\n    :minute-step="15"\n    shortcut-value="20:30"\n    shortcut-label="晚间摘要"\n  />` }),
-    tips: ['minute-step 会限制在 1–30 分钟之间。', '不整除 60 的步长仍会补充 59 分选项。'],
+    tips: ['minute-step 会限制在 1–30 分钟之间。', '不整除 60 的步长仍会补充 59 分选项。', '箭头仍可在整步值之间按 1 分钟微调。'],
   },
   'disabled-time': {
     title: '限制不可用时间',

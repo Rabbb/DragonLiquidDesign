@@ -55,6 +55,38 @@ describe('DlTimeWheel', () => {
     expect(wrapper.emitted('update:open')?.at(-1)).toEqual([false])
   })
 
+  it('fine-tunes minutes and hours independently of the wheel minute step', async () => {
+    const wrapper = mount(DlTimeWheel, {
+      attachTo: document.body,
+      props: { open: true, modelValue: '09:30', minuteStep: 15 },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    document.body.querySelector<HTMLButtonElement>('[aria-label="分钟增加 1"]')?.click()
+    await nextTick()
+    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('09:31')
+    expect(document.body.querySelector('[aria-label="分钟"] [data-cycle="2"][data-wheel-value="31"]')?.getAttribute('aria-selected')).toBe('true')
+
+    document.body.querySelector<HTMLButtonElement>('[aria-label="小时减少 1"]')?.click()
+    await nextTick()
+    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('08:31')
+  })
+
+  it('wraps minute fine-tuning across midnight and blocks disabled targets', async () => {
+    const wrapper = mount(DlTimeWheel, {
+      attachTo: document.body,
+      props: { open: true, modelValue: '23:59', minuteStep: 1, disabledTime: value => value === '00:01' },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    document.body.querySelector<HTMLButtonElement>('[aria-label="分钟增加 1"]')?.click()
+    await nextTick()
+    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('00:00')
+    expect(document.body.querySelector<HTMLButtonElement>('[aria-label="分钟增加 1"]')?.disabled).toBe(true)
+  })
+
   it('prevents applying a disabled time', async () => {
     const wrapper = mount(DlTimeWheel, {
       attachTo: document.body,

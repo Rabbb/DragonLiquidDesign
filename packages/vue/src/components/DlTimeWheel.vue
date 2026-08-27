@@ -70,7 +70,8 @@ const hourWheel = ref<HTMLElement | null>(null)
 const minuteWheel = ref<HTMLElement | null>(null)
 const { overlayZIndex, contentZIndex } = useDlModalLayer(() => props.zIndex)
 const hours = Array.from({ length: 24 }, (_, value) => value)
-const minutes = computed(() => buildDlTimeWheelMinutes(props.minuteStep))
+const steppedMinutes = computed(() => buildDlTimeWheelMinutes(props.minuteStep))
+const minutes = computed(() => [...new Set([...steppedMinutes.value, draftMinute.value])].sort((left, right) => left - right))
 const resolvedOpen = computed(() => props.open ?? internalOpen.value)
 const draftValue = computed(() => formatDlTimeWheelValue(draftHour.value, draftMinute.value))
 const displayValue = computed(() => {
@@ -166,6 +167,27 @@ function selectValue(kind: WheelKind, value: number, smooth = true) {
 function selectClicked(kind: WheelKind, value: number) {
   if (performance.now() < suppressClickUntil) return
   selectValue(kind, value)
+}
+
+function nudgeTarget(kind: WheelKind, direction: -1 | 1) {
+  if (kind === 'hour') {
+    return { hour: (draftHour.value + direction + 24) % 24, minute: draftMinute.value }
+  }
+  const total = (draftHour.value * 60 + draftMinute.value + direction + 1440) % 1440
+  return { hour: Math.floor(total / 60), minute: total % 60 }
+}
+
+function canNudge(kind: WheelKind, direction: -1 | 1) {
+  const target = nudgeTarget(kind, direction)
+  return !isDisabled(target.hour, target.minute)
+}
+
+function nudgeTime(kind: WheelKind, direction: -1 | 1) {
+  const target = nudgeTarget(kind, direction)
+  if (isDisabled(target.hour, target.minute)) return
+  draftHour.value = target.hour
+  draftMinute.value = target.minute
+  syncWheels()
 }
 
 function centeredValue(kind: WheelKind) {
@@ -318,12 +340,20 @@ onBeforeUnmount(() => {
             <div ref="hourWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="小时" tabindex="0" @scroll.passive="handleScroll('hour')" @pointerdown.capture="beginDrag('hour', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
               <button v-for="item in virtualHours" :key="item.key" type="button" role="option" :aria-selected="item.value === draftHour" :data-cycle="item.cycle" :data-wheel-value="item.value" :tabindex="item.cycle === 2 ? 0 : -1" :class="{ 'is-selected': item.value === draftHour }" :disabled="hourDisabled(item.value)" @click="selectClicked('hour', item.value)">{{ item.value }}</button>
             </div>
+            <span class="dl-time-wheel__stepper" data-slot="time-wheel-hour-stepper">
+              <button type="button" aria-label="小时增加 1" :disabled="!canNudge('hour', 1)" @click="nudgeTime('hour', 1)">▲</button>
+              <button type="button" aria-label="小时减少 1" :disabled="!canNudge('hour', -1)" @click="nudgeTime('hour', -1)">▼</button>
+            </span>
           </section>
           <i aria-hidden="true">:</i>
           <section><h3>分钟</h3><span class="dl-time-wheel__band" aria-hidden="true" />
             <div ref="minuteWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="分钟" tabindex="0" @scroll.passive="handleScroll('minute')" @pointerdown.capture="beginDrag('minute', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
               <button v-for="item in virtualMinutes" :key="item.key" type="button" role="option" :aria-selected="item.value === draftMinute" :data-cycle="item.cycle" :data-wheel-value="item.value" :tabindex="item.cycle === 2 ? 0 : -1" :class="{ 'is-selected': item.value === draftMinute }" :disabled="isDisabled(draftHour, item.value)" @click="selectClicked('minute', item.value)">{{ String(item.value).padStart(2, '0') }}</button>
             </div>
+            <span class="dl-time-wheel__stepper" data-slot="time-wheel-minute-stepper">
+              <button type="button" aria-label="分钟增加 1" :disabled="!canNudge('minute', 1)" @click="nudgeTime('minute', 1)">▲</button>
+              <button type="button" aria-label="分钟减少 1" :disabled="!canNudge('minute', -1)" @click="nudgeTime('minute', -1)">▼</button>
+            </span>
           </section>
         </div>
 
@@ -386,6 +416,12 @@ onBeforeUnmount(() => {
 .dl-time-wheel__viewport button.is-selected { color: var(--dl-accent-text); font-size: 1.3rem; }
 .dl-time-wheel__viewport button:focus-visible { box-shadow: var(--dl-focus); }
 .dl-time-wheel__viewport button:disabled { cursor: not-allowed; opacity: .2; }
+.dl-time-wheel__stepper { position: absolute; z-index: 3; top: calc(50% + 2px); right: 9px; display: grid; overflow: hidden; border: 1px solid var(--dl-border-strong); border-radius: 8px; background: var(--dl-panel); box-shadow: 0 4px 14px rgb(0 0 0 / 18%); transform: translateY(-50%); }
+.dl-time-wheel__stepper button { display: grid; width: 28px; height: 22px; place-items: center; border: 0; background: transparent; color: var(--dl-text-muted); font: 700 .52rem/1 sans-serif; cursor: pointer; transition: background-color .14s ease, color .14s ease; }
+.dl-time-wheel__stepper button + button { border-top: 1px solid var(--dl-border); }
+.dl-time-wheel__stepper button:hover:not(:disabled) { background: var(--dl-surface-hover); color: var(--dl-accent-text); }
+.dl-time-wheel__stepper button:focus-visible { position: relative; z-index: 1; outline: none; box-shadow: inset var(--dl-focus); }
+.dl-time-wheel__stepper button:disabled { cursor: not-allowed; opacity: .3; }
 .dl-time-wheel__panel footer { display: flex; align-items: center; gap: 8px; padding-top: 14px; border-top: 1px solid var(--dl-border); }
 .dl-time-wheel__panel footer > span { flex: 1; }
 .dl-time-wheel__ghost, .dl-time-wheel__primary { min-height: 36px; padding: 0 14px; border-radius: 10px; font-size: .72rem; font-weight: 800; cursor: pointer; }
