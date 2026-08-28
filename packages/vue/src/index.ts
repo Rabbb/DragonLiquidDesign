@@ -161,6 +161,24 @@ export type {
 } from './components/dl-mdx.engine'
 export { getDlMdxRustCoreStatus } from './components/dl-mdx.rust'
 export type { DlMdxRustCoreStatus, DlMdxUrlInspection } from './components/dl-mdx.rust'
+export {
+  buildDlMdxUserscript,
+  dlMdxUserscriptKnownGrants,
+  dlMdxUserscriptMatchesUrl,
+  normalizeDlMdxUserscript,
+  parseDlMdxUserscript,
+  validateDlMdxUserscript,
+} from './components/dl-mdx.userscript'
+export type {
+  DlMdxUserscriptBuildResult,
+  DlMdxUserscriptDiagnostic,
+  DlMdxUserscriptDiagnosticSeverity,
+  DlMdxUserscriptInjectInto,
+  DlMdxUserscriptMetadata,
+  DlMdxUserscriptProject,
+  DlMdxUserscriptResource,
+  DlMdxUserscriptRunAt,
+} from './components/dl-mdx.userscript'
 export { applyDlMdxCommand, insertDlMdxSnippet } from './components/dl-mdx.commands'
 export type { DlMdxCommandContext, DlMdxCommandResult, DlMdxSelection } from './components/dl-mdx.commands'
 export {

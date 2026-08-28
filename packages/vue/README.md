@@ -188,6 +188,10 @@ await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' 
 
 默认限制为 1,000 个条目、单文件 2 MiB、项目 25 MiB、目录深度 32 层，所有超限写入都会随事务回滚。内置 Memory、LocalStorage 与 HTTP 三种存储适配器；宿主可以实现同一接口接入数据库、版本历史或对象存储。构建会解析页面并分析附属脚本的导出契约，但绝不执行脚本；发布服务仍需负责鉴权、配额、隔离编译、CSP 和可信动作装载。
 
+完整的活网站源码结构、Vue 接入、HTTP 后端契约、可信 JavaScript 动作和控件接口读取方式见 [DL-MDX 活网站接入指南](../../docs/MDX_WEBSITE_HOSTING.md)。npm 包提供引擎与协议，不内置通用账号或数据库后端；后端必须由宿主结合自己的身份和租户模型实现。
+
+`0.6.0-alpha.35` 新增 userscript 引擎：`buildDlMdxUserscript()`、`parseDlMdxUserscript()`、`validateDlMdxUserscript()` 与 `dlMdxUserscriptMatchesUrl()` 可构建、导入、检查和匹配 Tampermonkey / Violentmonkey 脚本。所有操作都只处理源码，绝不在组件库上下文执行用户 JavaScript；跨站注入交给浏览器扩展，账号与共享目录仍由宿主后端提供。
+
 当前公共组件共 89 个：
 
 - 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
