@@ -65,7 +65,7 @@ createApp(App).use(theme).mount('#app')
 
 ## 组件实例、运行时属性与事件
 
-包入口导出的 64 个组件都带有统一的 `DlComponentRef`。声明式 props 和 `v-model` 仍然是常规数据流；需要桌面应用式控制时，可通过模板 `ref` 建立响应式实例覆盖：
+包入口导出的 89 个组件都带有统一的 `DlComponentRef`。声明式 props 和 `v-model` 仍然是常规数据流；需要桌面应用式控制时，可通过模板 `ref` 建立响应式实例覆盖：
 
 ```vue
 <script setup lang="ts">
@@ -135,6 +135,7 @@ createApp(App).use(mdxSecurity).mount('#app')
 
 - 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.29` 修正 MarkdownX 中 `ColorSlider` 的默认值绑定，并增加官方默认属性与实际组件 Props 一致性的自动回归检查。
 - `0.6.0-alpha.28` 将 `DlColorArea` 收紧为纯二维色域，并新增确认提交型 `DlColorPicker` 弹出选择器，明确区分嵌入式专业积木与普通表单入口。
 - `0.6.0-alpha.23` 新增 `DlFocusNavigator` 应用焦点切换器：可自动发现或显式配置顶部导航、侧栏、内容和浮层区域，在捕获阶段接管方向键，并通过 `Alt+J` 蒙版直接聚焦目标控件。
 - `0.6.0-alpha.24` 新增 7 套编辑器工作台风格的网站主题，完整覆盖背景、面板、边框、焦点、按钮与语义色，并可由主题管理器直接切换。

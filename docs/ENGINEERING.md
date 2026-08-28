@@ -205,7 +205,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.6.0-alpha.28.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.6.0-alpha.29.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -269,5 +269,5 @@ npm run build:showcase
 当前版本下载地址为：
 
 ```text
-http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.28.tgz
+http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.29.tgz
 ```

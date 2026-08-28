@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, type Component } from 'vue'
 import { describe, expect, it } from 'vitest'
 import DlMdx from './DlMdx.vue'
 import { createDlMdxOfficialRegistry, dlMdxOfficialComponents } from './dl-mdx.official'
@@ -79,6 +79,18 @@ describe('MarkdownX component registry', () => {
     expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(89)
     expect(dlMdxOfficialComponents.filter(item => item.maturity === 'alpha').length).toBeGreaterThan(10)
     expect(dlMdxOfficialComponents.every(item => item.component || item.render)).toBe(true)
+  })
+
+  it('only uses declared component props in official defaults', () => {
+    const invalidDefaults = dlMdxOfficialComponents.flatMap((definition) => {
+      if (!definition.component || !definition.defaultProps) return []
+      const declaredProps = (definition.component as Component & { props?: string[] | Record<string, unknown> }).props
+      const propNames = new Set(Array.isArray(declaredProps) ? declaredProps : Object.keys(declaredProps ?? {}))
+      const invalid = Object.keys(definition.defaultProps).filter(name => !propNames.has(name))
+      return invalid.map(name => `${definition.name}.${name}`)
+    })
+
+    expect(invalidDefaults).toEqual([])
   })
 
   it('resolves all official component blocks without unsafe fallbacks', () => {
