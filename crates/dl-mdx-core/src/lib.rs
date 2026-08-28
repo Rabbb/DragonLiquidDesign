@@ -3,7 +3,7 @@ use std::{collections::HashMap, mem, slice, str};
 
 mod syntax;
 
-const ABI_VERSION: u32 = 2;
+const ABI_VERSION: u32 = 3;
 
 #[derive(Clone, Debug)]
 struct SourceLine {
@@ -339,6 +339,12 @@ fn valid_name(value: &str) -> bool {
         && chars.all(|character| character.is_ascii_alphanumeric() || "_.-".contains(character))
 }
 
+fn valid_event_name(value: &str) -> bool {
+    let mut chars = value.chars();
+    matches!(chars.next(), Some(first) if first.is_ascii_alphabetic())
+        && chars.all(|character| character.is_ascii_alphanumeric() || "_:.-".contains(character))
+}
+
 fn bounded_value(value: &Value, depth: usize) -> bool {
     if depth > 12 {
         return false;
@@ -541,11 +547,16 @@ fn parse_blocks(lines: &[SourceLine], slug_counts: &mut HashMap<String, usize>) 
         if let Some(name) = trimmed.strip_prefix("+++component:") {
             if valid_name(name) {
                 let mut props = Map::new();
+                let mut events = Map::new();
                 let mut cursor = index + 1;
                 while cursor < lines.len() && lines[cursor].text.trim() != "+++end" {
                     if let Some((name, value)) = lines[cursor].text.split_once('=') {
                         let name = name.trim();
-                        if valid_name(name) {
+                        if let Some(event) = name.strip_prefix('@').filter(|event| valid_event_name(event)) {
+                            if let Value::String(action) = scalar(value) {
+                                events.insert(event.into(), Value::String(action));
+                            }
+                        } else if valid_name(name) {
                             props.insert(name.into(), scalar(value));
                         }
                     }
@@ -555,6 +566,7 @@ fn parse_blocks(lines: &[SourceLine], slug_counts: &mut HashMap<String, usize>) 
                 let mut context = Map::from_iter([
                     ("name".into(), Value::String(name.into())),
                     ("props".into(), Value::Object(props)),
+                    ("events".into(), Value::Object(events)),
                     ("sourceLine".into(), Value::Number(line.number.into())),
                 ]);
                 if let Some(id) = id {
@@ -866,10 +878,11 @@ mod tests {
 
     #[test]
     fn parses_markdownx_structure_and_stats() {
-        let document = parse_document("# 标题\n\n- [ ] 第一项\n- [x] 第二项\n\n| 字段 | 状态 |\n| :--- | ---: |\n| 标题 | 完成 |\n\n+++component:Callout\ntone = \"accent\"\n+++end");
+        let document = parse_document("# 标题\n\n- [ ] 第一项\n- [x] 第二项\n\n| 字段 | 状态 |\n| :--- | ---: |\n| 标题 | 完成 |\n\n+++component:Callout\ntone = \"accent\"\n@click = saveNotice\n+++end");
         assert_eq!(document["stats"]["blockCount"], 4);
         assert_eq!(document["stats"]["headingCount"], 1);
         assert_eq!(document["blocks"][3]["context"]["props"]["tone"], "accent");
+        assert_eq!(document["blocks"][3]["context"]["events"]["click"], "saveNotice");
     }
 
     #[test]

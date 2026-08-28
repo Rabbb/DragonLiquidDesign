@@ -1,6 +1,6 @@
-import { defineComponent, h, reactive, watch, type Component, type PropType, type VNodeChild } from 'vue'
-import type { DlMdxComponentDefinition } from './dl-mdx.registry'
-import { toDlMdxRenderContext } from './dl-mdx.registry'
+import { camelize, defineComponent, h, reactive, toHandlerKey, watch, type Component, type PropType, type VNodeChild } from 'vue'
+import type { DlMdxActionInvocation, DlMdxActionMap, DlMdxComponentDefinition } from './dl-mdx.registry'
+import { resolveDlMdxEventSchema, toDlMdxRenderContext } from './dl-mdx.registry'
 import type { DlMdxComponentContext, DlMdxValue } from './dl-mdx.types'
 
 const forbiddenProps = new Set(['class', 'style', 'is', 'key', 'ref', 'innerHTML', 'textContent'])
@@ -23,6 +23,8 @@ export default defineComponent({
   props: {
     definition: { type: Object as PropType<DlMdxComponentDefinition>, required: true },
     context: { type: Object as PropType<DlMdxComponentContext>, required: true },
+    actions: { type: Object as PropType<DlMdxActionMap>, default: undefined },
+    onAction: { type: Function as PropType<(invocation: DlMdxActionInvocation) => void>, default: undefined },
   },
   setup(props) {
     const localState = reactive<Record<string, DlMdxValue>>({})
@@ -46,6 +48,20 @@ export default defineComponent({
         if (!declared.has(name) || !(name in localState)) continue
         passed[name] = localState[name]
         passed[`onUpdate:${name}`] = (value: DlMdxValue) => { localState[name] = value }
+      }
+      const declaredEvents = resolveDlMdxEventSchema(props.definition)
+      for (const [event, action] of Object.entries(props.context.events)) {
+        if (!declaredEvents[event]) continue
+        const handlerKey = toHandlerKey(camelize(event))
+        const stateHandler = passed[handlerKey]
+        passed[handlerKey] = (...payload: unknown[]) => {
+          if (typeof stateHandler === 'function') stateHandler(...payload)
+          const invocation: DlMdxActionInvocation = { action, event, payload, component: props.context }
+          props.onAction?.(invocation)
+          const configured = props.actions?.[action]
+          const handler = typeof configured === 'function' ? configured : configured?.handler
+          void handler?.(invocation)
+        }
       }
 
       const slots: Record<string, () => VNodeChild> = {}

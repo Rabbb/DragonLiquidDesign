@@ -28,6 +28,7 @@ const safe = true
 +++component:Callout
 id = "notice"
 tone = "accent"
+@click = saveNotice
 +++end`)
 
     expect(document.blocks.map(block => block.type)).toEqual([
@@ -37,7 +38,7 @@ tone = "accent"
     expect(document.stats.blockCount).toBe(6)
     expect(document.blocks.at(-1)).toMatchObject({
       type: 'component',
-      context: { name: 'Callout', id: 'notice', props: { tone: 'accent' } },
+      context: { name: 'Callout', id: 'notice', props: { tone: 'accent' }, events: { click: 'saveNotice' } },
     })
   })
 

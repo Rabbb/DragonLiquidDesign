@@ -4983,6 +4983,48 @@ export default {
         "description": "覆盖 main.ts 注入的全局 MarkdownX 组件注册表；通常无需逐实例传入。",
         "type": "DlMdxRegistry",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "actions",
+        "description": "设置 actions 属性。",
+        "type": "DlMdxActionMap",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "scriptValue",
+        "description": "设置 scriptValue 属性。",
+        "type": "string | null",
+        "defaultValue": "null"
+      },
+      {
+        "prop": "styleValue",
+        "description": "设置 styleValue 属性。",
+        "type": "string | null",
+        "defaultValue": "null"
+      },
+      {
+        "prop": "showCompanionDocuments",
+        "description": "设置 showCompanionDocuments 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "scriptLanguage",
+        "description": "设置 scriptLanguage 属性。",
+        "type": "'javascript' | 'typescript'",
+        "defaultValue": "'typescript'"
+      },
+      {
+        "prop": "languageOptions",
+        "description": "设置 languageOptions 属性。",
+        "type": "DlMdxLanguageOptions",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "formatOptions",
+        "description": "传递给 Intl.NumberFormat 的数字格式化选项。",
+        "type": "DlMdxFormatOptions",
+        "defaultValue": "undefined"
       }
     ],
     "relatedTypes": [
@@ -5083,6 +5125,12 @@ export default {
             "description": "插入显式插槽渲染的安全组件块。",
             "type": "'component'",
             "defaultValue": "组件块"
+          },
+          {
+            "prop": "format",
+            "description": "DlMdxToolbarAction 的 format 选项。",
+            "type": "'format'",
+            "defaultValue": "枚举值"
           }
         ]
       },
@@ -5203,6 +5251,18 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "propSchema",
+            "description": "设置 propSchema 字段。",
+            "type": "Record<string, DlMdxPropSchema>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "eventSchema",
+            "description": "设置 eventSchema 字段。",
+            "type": "Record<string, DlMdxEventSchema>",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "contentProp",
             "description": "指定哪个组件块属性用作默认插槽文本。",
             "type": "string",
@@ -5247,6 +5307,156 @@ export default {
         ],
         "kind": "structure",
         "title": "DlMdxComponentDefinition[]"
+      },
+      {
+        "name": "DlMdxEventSchema",
+        "description": "DlMdxEventSchema 数据结构。",
+        "rows": [
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "payload",
+            "description": "设置 payload 字段。",
+            "type": "DlMdxTypeSchema",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "deprecated",
+            "description": "设置 deprecated 字段。",
+            "type": "boolean | string",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxEventSchema"
+      },
+      {
+        "name": "DlMdxTypeSchema",
+        "description": "DlMdxTypeSchema 数据结构。",
+        "rows": [
+          {
+            "prop": "type",
+            "description": "设置组件的选择模式或原生类型。",
+            "type": "DlMdxSchemaType | DlMdxSchemaType[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "enum",
+            "description": "设置 enum 字段。",
+            "type": "DlMdxValue[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "items",
+            "description": "用于渲染控件内容的结构化项目列表。",
+            "type": "DlMdxTypeSchema",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "properties",
+            "description": "设置 properties 字段。",
+            "type": "Record<string, DlMdxTypeSchema>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "requiredProperties",
+            "description": "设置 requiredProperties 字段。",
+            "type": "string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "minimum",
+            "description": "设置 minimum 字段。",
+            "type": "number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "maximum",
+            "description": "设置 maximum 字段。",
+            "type": "number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "minLength",
+            "description": "设置 minLength 字段。",
+            "type": "number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "maxLength",
+            "description": "允许输入的最大字符数。",
+            "type": "number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "pattern",
+            "description": "设置 pattern 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxTypeSchema"
+      },
+      {
+        "kind": "enum",
+        "name": "DlMdxSchemaType",
+        "title": "DlMdxSchemaType[]",
+        "description": "DlMdxSchemaType 可用的枚举值。",
+        "rows": [
+          {
+            "prop": "string",
+            "description": "DlMdxSchemaType 的 string 选项。",
+            "type": "'string'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "number",
+            "description": "DlMdxSchemaType 的 number 选项。",
+            "type": "'number'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "boolean",
+            "description": "DlMdxSchemaType 的 boolean 选项。",
+            "type": "'boolean'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "null",
+            "description": "DlMdxSchemaType 的 null 选项。",
+            "type": "'null'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "array",
+            "description": "DlMdxSchemaType 的 array 选项。",
+            "type": "'array'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "object",
+            "description": "DlMdxSchemaType 的 object 选项。",
+            "type": "'object'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "any",
+            "description": "DlMdxSchemaType 的 any 选项。",
+            "type": "'any'",
+            "defaultValue": "枚举值"
+          }
+        ]
       },
       {
         "kind": "enum",
@@ -5311,6 +5521,132 @@ export default {
             "defaultValue": "枚举值"
           }
         ]
+      },
+      {
+        "name": "DlMdxLanguageOptions",
+        "description": "DlMdxLanguageOptions 数据结构。",
+        "rows": [
+          {
+            "prop": "completion",
+            "description": "设置 completion 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "diagnostics",
+            "description": "设置 diagnostics 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "actionNames",
+            "description": "设置 actionNames 字段。",
+            "type": "string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "actionDescriptions",
+            "description": "设置 actionDescriptions 字段。",
+            "type": "Record<string, string>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "severity",
+            "description": "设置 severity 字段。",
+            "type": "Partial<Record<DlMdxDiagnosticCode, DlMdxDiagnosticSeverity | 'off'>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "validators",
+            "description": "设置 validators 字段。",
+            "type": "DlMdxValidator[]",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxLanguageOptions"
+      },
+      {
+        "kind": "enum",
+        "name": "DlMdxDiagnosticSeverity",
+        "title": "DlMdxDiagnosticSeverity",
+        "description": "DlMdxDiagnosticSeverity 可用的枚举值。",
+        "rows": [
+          {
+            "prop": "error",
+            "description": "DlMdxDiagnosticSeverity 的 error 选项。",
+            "type": "'error'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "warning",
+            "description": "DlMdxDiagnosticSeverity 的 warning 选项。",
+            "type": "'warning'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "info",
+            "description": "DlMdxDiagnosticSeverity 的 info 选项。",
+            "type": "'info'",
+            "defaultValue": "枚举值"
+          }
+        ]
+      },
+      {
+        "name": "DlMdxFormatOptions",
+        "description": "DlMdxFormatOptions 数据结构。",
+        "rows": [
+          {
+            "prop": "propertyOrder",
+            "description": "设置 propertyOrder 字段。",
+            "type": "'preserve' | 'schema' | 'alphabetical'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "equalsSpacing",
+            "description": "设置 equalsSpacing 字段。",
+            "type": "'none' | 'single' | 'align'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "quoteStyle",
+            "description": "设置 quoteStyle 字段。",
+            "type": "'preserve' | 'double' | 'single'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "indentSize",
+            "description": "设置 indentSize 字段。",
+            "type": "number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "bulletMarker",
+            "description": "设置 bulletMarker 字段。",
+            "type": "'preserve' | '-' | '*'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "normalizeFenceLanguages",
+            "description": "设置 normalizeFenceLanguages 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "maxBlankLines",
+            "description": "设置 maxBlankLines 字段。",
+            "type": "number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "trailingNewline",
+            "description": "设置 trailingNewline 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxFormatOptions"
       },
       {
         "name": "DlMdxSecurityPolicy",

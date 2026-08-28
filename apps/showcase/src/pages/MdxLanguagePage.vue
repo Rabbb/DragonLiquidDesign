@@ -1,0 +1,132 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { DlBadge, DlMdx, type DlMdxActionMap, type DlMdxFormatOptions, type DlMdxLanguageAnalysis } from '@dragon-liquid/vue'
+
+const workspaceMdx = ref([
+  '# Release workspace', '',
+  'MDX owns the document structure. Script and Style remain separate companion files.', '',
+  '+++component:Button', 'variant = "primary"', 'size = "md"', '@click = saveDocument', '+++end',
+].join('\n'))
+const workspaceScript = ref([
+  '/** Save the current document through an application-owned API. */',
+  'export async function saveDocument(context: ActionContext) {',
+  '  return context.component.id',
+  '}',
+].join('\n'))
+const workspaceStyle = ref(['.release-document {', '  color: var(--dl-text);', '  background: var(--dl-surface);', '}'].join('\n'))
+const eventLog = ref('尚未执行动作')
+const actions: DlMdxActionMap = {
+  saveDocument: {
+    description: '由 Vue 宿主注册的保存动作。',
+    handler: ({ component, event }) => { eventLog.value = `${event} → saveDocument · line ${component.sourceLine + 1}` },
+  },
+}
+
+const typedSource = ref([
+  '# Typed component block', '',
+  '把光标放在组件名、属性或事件上查看类型；按 Ctrl+Space 主动补全。', '',
+  '+++component:Button', 'variant = "primary"', 'size = "lg"', '@click = publishRelease', '+++end',
+].join('\n'))
+const typedScript = ref([
+  '/** Publish the release after validation. */',
+  'export function publishRelease(context: ActionContext) {',
+  '  console.info(context.event)',
+  '}',
+].join('\n'))
+const typedStyle = ref('/* This companion stylesheet is stored separately. */\n')
+const diagnostics = ref<DlMdxLanguageAnalysis>({ diagnostics: [], components: [], errorCount: 0, warningCount: 0 })
+const diagnosticLabel = computed(() => `${diagnostics.value.errorCount} errors · ${diagnostics.value.warningCount} warnings`)
+function updateDiagnostics(value: DlMdxLanguageAnalysis) { diagnostics.value = value }
+
+const formatterSource = ref([
+  '# Formatter playground', '',
+  '+++component:Button', 'size=\'sm\'', 'variant=\'secondary\'', '@click=publishRelease', '+++end', '', '', '* one', '* two',
+].join('\n'))
+const formatOptions: DlMdxFormatOptions = {
+  propertyOrder: 'schema', equalsSpacing: 'align', quoteStyle: 'double', bulletMarker: '-', maxBlankLines: 1, trailingNewline: true,
+}
+
+const richSource = ref([
+  '# Editable language tour', '',
+  '> 每一个文档案例都可直接改写，右侧预览实时反映结果。', '',
+  '## Content', '', '- [x] headings and tasks', '- [ ] safe registered components', '',
+  '| Layer | Responsibility |', '| :--- | :--- |', '| MDX | structure and content |', '| Script | action contract |', '| Style | isolated stylesheet |', '',
+  '```typescript', 'type DocumentState = "draft" | "published"', 'const state: DocumentState = "draft"', '```',
+].join('\n'))
+</script>
+
+<template>
+  <main class="mdx-language-page">
+    <header class="mdx-language-hero">
+      <div>
+        <DlBadge tone="accent" variant="outline">MARKDOWNX LANGUAGE</DlBadge>
+        <h1>让 MDX 成为主文档</h1>
+        <p>它承担传统 HTML 的结构身份；JavaScript / TypeScript 与 CSS 作为独立附加文档保存。类型系统、诊断、格式化和安全动作协议围绕主文档工作。</p>
+      </div>
+      <dl>
+        <div><dt>STRUCTURE</dt><dd>MDX</dd></div>
+        <div><dt>BEHAVIOR</dt><dd>Script</dd></div>
+        <div><dt>PRESENTATION</dt><dd>Style</dd></div>
+      </dl>
+    </header>
+
+    <nav class="mdx-language-nav" aria-label="MarkdownX 文档章节">
+      <a href="#workspace">工作区</a><a href="#language-service">语言服务</a><a href="#events">事件模型</a>
+      <a href="#formatter">格式化</a><a href="#syntax">语言特性</a><a href="#security">边界</a>
+    </nav>
+
+    <section id="workspace" class="mdx-language-section">
+      <header><small>01 · DOCUMENT MODEL</small><h2>一份主文档，两份附加文档</h2><p>切换 MDX、SCRIPT、STYLE 标签即可编辑。三份源码分别通过 v-model 持有，不再把脚本和样式塞进文档正文。</p></header>
+      <DlMdx v-model="workspaceMdx" v-model:script-value="workspaceScript" v-model:style-value="workspaceStyle" :actions="actions" show-companion-documents mode="split" min-height="31rem" aria-label="MDX 主文档工作区" />
+      <output class="mdx-action-log">{{ eventLog }}</output>
+    </section>
+
+    <section id="language-service" class="mdx-language-section">
+      <header><small>02 · LANGUAGE SERVICE</small><h2>类型提示不是属性清单</h2><p>注册组件的 Vue props、显式 schema、emits 和 Script 导出动作会汇合成文档语言模型。</p></header>
+      <div class="mdx-capability-grid">
+        <article><b>Ctrl + Space</b><span>组件、属性、事件、动作与枚举值补全</span></article>
+        <article><b>Hover</b><span>悬浮查看类型、范围、必填状态和说明</span></article>
+        <article><b>Diagnostics</b><span>未知组件、类型、范围、重复 ID 与事件检查</span></article>
+        <article><b>Quick Fix</b><span>诊断面板提供可安全应用的局部修复</span></article>
+      </div>
+      <div class="mdx-diagnostic-head"><span>实时自检</span><code>{{ diagnosticLabel }}</code></div>
+      <DlMdx v-model="typedSource" v-model:script-value="typedScript" v-model:style-value="typedStyle" show-companion-documents mode="split" min-height="28rem" @diagnostics="updateDiagnostics" />
+      <ul v-if="diagnostics.diagnostics.length" class="mdx-diagnostic-list">
+        <li v-for="item in diagnostics.diagnostics.slice(0, 6)" :key="`${item.code}-${item.from}`"><b>{{ item.severity }}</b><code>{{ item.code }}</code><span>Ln {{ item.line }} · {{ item.message }}</span></li>
+      </ul>
+    </section>
+
+    <section id="events" class="mdx-language-section mdx-language-prose">
+      <header><small>03 · DECLARATIVE EVENTS</small><h2>文档引用动作，宿主掌握执行权</h2></header>
+      <pre><code>+++component:Button · @click = saveDocument · +++end</code></pre>
+      <p><code>@click</code> 必须是组件 schema 声明的事件，<code>saveDocument</code> 必须来自附加脚本的导出契约或宿主 action map。附加脚本不会在预览中自动执行；生产应用决定如何编译、装载并注册真正的处理器。</p>
+    </section>
+
+    <section id="formatter" class="mdx-language-section">
+      <header><small>04 · CONFIGURABLE FORMATTER</small><h2>格式可配置，也可重复得到同一结果</h2><p>点击工具栏末尾的 ↹，或按 Shift+Alt+F。下面启用了 schema 顺序、等号对齐、双引号和统一列表符号。</p></header>
+      <DlMdx v-model="formatterSource" :format-options="formatOptions" :language-options="{ actionNames: ['publishRelease'] }" mode="split" min-height="24rem" />
+    </section>
+
+    <section id="syntax" class="mdx-language-section">
+      <header><small>05 · EDITABLE FEATURE TOUR</small><h2>文档能力必须在编辑中展示</h2><p>标题、引用、任务、表格、代码域和安全组件都应当在同一个可编辑案例里被验证。</p></header>
+      <DlMdx v-model="richSource" mode="split" min-height="28rem" />
+    </section>
+
+    <section id="security" class="mdx-language-section mdx-language-boundary">
+      <header><small>06 · TRUST BOUNDARY</small><h2>分离并不等于隐式执行</h2></header>
+      <div>
+        <article><b>MDX</b><p>解析为受控 Vue 节点；原始脚本、事件属性和危险 URL 不进入 DOM。</p></article>
+        <article><b>Script</b><p>编辑器提取导出符号做类型提示，但预览绝不 eval。应用构建流程负责装载可信实现。</p></article>
+        <article><b>Style</b><p>作为独立源码保存，不自动注入全局页面。应用可以在受控作用域内编译和挂载。</p></article>
+      </div>
+    </section>
+  </main>
+</template>
+
+<style scoped>
+.mdx-language-page{display:grid;gap:34px;padding:52px 0 96px}.mdx-language-hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr);gap:46px;align-items:end;padding:54px;border:1px solid var(--dl-border);border-radius:30px;background:linear-gradient(135deg,color-mix(in srgb,var(--dl-accent-surface) 78%,transparent),var(--dl-surface));box-shadow:var(--dl-shadow-lg)}.mdx-language-hero h1{max-width:760px;margin:18px 0 16px;font-size:clamp(2.8rem,7vw,6.2rem);line-height:.93;letter-spacing:-.065em}.mdx-language-hero p{max-width:760px;margin:0;color:var(--dl-text-muted);font-size:1.04rem;line-height:1.85}.mdx-language-hero dl{display:grid;gap:10px;margin:0}.mdx-language-hero dl div{display:flex;justify-content:space-between;padding:15px 17px;border:1px solid var(--dl-border);border-radius:14px;background:var(--dl-night-soft)}.mdx-language-hero dt{color:var(--dl-text-faint);font:700 .64rem/1 ui-monospace,monospace;letter-spacing:.12em}.mdx-language-hero dd{margin:0;color:var(--dl-accent-text);font-weight:800}
+.mdx-language-nav{position:sticky;z-index:8;top:8px;display:flex;flex-wrap:wrap;gap:4px;width:max-content;max-width:100%;margin-inline:auto;padding:6px;border:1px solid var(--dl-border);border-radius:15px;background:color-mix(in srgb,var(--dl-surface-strong) 90%,transparent);box-shadow:var(--dl-shadow-md);backdrop-filter:blur(18px)}.mdx-language-nav a{padding:8px 13px;border-radius:10px;color:var(--dl-text-muted);font-size:.78rem;font-weight:700}.mdx-language-nav a:hover{color:var(--dl-accent-text);background:var(--dl-accent-surface)}
+.mdx-language-section{scroll-margin-top:100px;display:grid;gap:18px;padding:30px;border:1px solid var(--dl-border);border-radius:24px;background:color-mix(in srgb,var(--dl-surface) 91%,transparent);box-shadow:var(--dl-shadow-sm)}.mdx-language-section>header{max-width:920px}.mdx-language-section>header small{color:var(--dl-accent-text);font:800 .65rem/1 ui-monospace,monospace;letter-spacing:.12em}.mdx-language-section h2{margin:10px 0 8px;font-size:clamp(1.55rem,3vw,2.6rem);letter-spacing:-.035em}.mdx-language-section header p,.mdx-language-prose>p{margin:0;color:var(--dl-text-muted);line-height:1.75}.mdx-action-log,.mdx-diagnostic-head{display:flex;justify-content:space-between;padding:11px 14px;border:1px solid var(--dl-border);border-radius:12px;color:var(--dl-text-muted);background:var(--dl-night-soft);font:700 .72rem/1.4 ui-monospace,monospace}
+.mdx-capability-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.mdx-capability-grid article{display:grid;gap:8px;padding:16px;border:1px solid var(--dl-border);border-radius:14px;background:var(--dl-night-soft)}.mdx-capability-grid b{color:var(--dl-accent-text);font:800 .76rem/1 ui-monospace,monospace}.mdx-capability-grid span{color:var(--dl-text-muted);font-size:.76rem;line-height:1.6}.mdx-diagnostic-list{display:grid;gap:7px;margin:0;padding:0;list-style:none}.mdx-diagnostic-list li{display:grid;grid-template-columns:70px 180px minmax(0,1fr);gap:10px;align-items:baseline;padding:10px 12px;border-bottom:1px solid var(--dl-border);font-size:.74rem}.mdx-diagnostic-list b{color:var(--dl-accent-text);text-transform:uppercase}.mdx-diagnostic-list span{color:var(--dl-text-muted)}.mdx-language-prose pre{overflow:auto;margin:0;padding:20px;border:1px solid var(--dl-border);border-radius:15px;color:var(--dl-accent-text);background:var(--dl-night-soft)}.mdx-language-prose code{font-family:ui-monospace,monospace}.mdx-language-boundary>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.mdx-language-boundary article{padding:19px;border:1px solid var(--dl-border);border-radius:15px;background:var(--dl-night-soft)}.mdx-language-boundary b{color:var(--dl-accent-text);font:800 .78rem/1 ui-monospace,monospace}.mdx-language-boundary p{margin:12px 0 0;color:var(--dl-text-muted);font-size:.8rem;line-height:1.7}
+@media(max-width:900px){.mdx-language-hero{grid-template-columns:1fr;padding:32px}.mdx-capability-grid{grid-template-columns:repeat(2,1fr)}.mdx-language-boundary>div{grid-template-columns:1fr}}@media(max-width:620px){.mdx-language-page{padding-top:28px}.mdx-language-hero,.mdx-language-section{padding:20px;border-radius:18px}.mdx-capability-grid{grid-template-columns:1fr}.mdx-diagnostic-list li{grid-template-columns:1fr}.mdx-language-nav{justify-content:center}}
+</style>

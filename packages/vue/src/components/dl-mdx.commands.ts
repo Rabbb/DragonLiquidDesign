@@ -99,5 +99,6 @@ export function applyDlMdxCommand(action: DlMdxToolbarAction, context: DlMdxComm
         : { start: range.start + 7, end: range.start + 7 })
     }
     case 'component': return { source: context.source, selection: normalize(context.selection) }
+    case 'format': return { source: context.source, selection: normalize(context.selection) }
   }
 }

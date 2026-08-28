@@ -45,7 +45,7 @@ function core(): DlMdxRustExports {
   if (typeof WebAssembly === 'undefined') throw new Error('当前环境不支持 WebAssembly，无法启动 Rust MarkdownX 核心。')
   const module = new WebAssembly.Module(decodeBase64(dlMdxRustWasmBase64))
   rustExports = new WebAssembly.Instance(module).exports as unknown as DlMdxRustExports
-  if (rustExports.dl_mdx_abi_version() !== 2) throw new Error(`不兼容的 Rust MarkdownX ABI：${rustExports.dl_mdx_abi_version()}`)
+  if (rustExports.dl_mdx_abi_version() !== 3) throw new Error(`不兼容的 Rust MarkdownX ABI：${rustExports.dl_mdx_abi_version()}`)
   return rustExports
 }
 

@@ -99,6 +99,26 @@ export type {
   DlMdxValue,
 } from './components/dl-mdx.types'
 export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
+export { analyzeDlMdx, completeDlMdx, extractDlMdxActionSymbols, formatDlMdx, hoverDlMdx } from './components/dl-mdx.language'
+export type {
+  DlMdxCompletionItem,
+  DlMdxCompletionKind,
+  DlMdxCompletionResult,
+  DlMdxDiagnostic,
+  DlMdxDiagnosticCode,
+  DlMdxDiagnosticFix,
+  DlMdxDiagnosticSeverity,
+  DlMdxFormatOptions,
+  DlMdxHoverInfo,
+  DlMdxLanguageAnalysis,
+  DlMdxLanguageComponent,
+  DlMdxLanguageComponentEvent,
+  DlMdxLanguageComponentProperty,
+  DlMdxLanguageOptions,
+  DlMdxScriptSymbol,
+  DlMdxValidator,
+  DlMdxValidatorContext,
+} from './components/dl-mdx.language'
 export { getDlMdxRustCoreStatus } from './components/dl-mdx.rust'
 export type { DlMdxRustCoreStatus, DlMdxUrlInspection } from './components/dl-mdx.rust'
 export { applyDlMdxCommand, insertDlMdxSnippet } from './components/dl-mdx.commands'
@@ -108,6 +128,8 @@ export {
   createDlMdxRegistry,
   defineDlMdxComponent,
   dlMdxRegistryKey,
+  resolveDlMdxEventSchema,
+  resolveDlMdxPropSchema,
   useDlMdxRegistry,
 } from './components/dl-mdx.registry'
 export type {
@@ -115,8 +137,16 @@ export type {
   DlMdxComponentDefinition,
   DlMdxComponentMaturity,
   DlMdxComponentRenderer,
+  DlMdxActionDefinition,
+  DlMdxActionHandler,
+  DlMdxActionInvocation,
+  DlMdxActionMap,
+  DlMdxEventSchema,
+  DlMdxPropSchema,
   DlMdxRegistry,
   DlMdxRenderContext,
+  DlMdxSchemaType,
+  DlMdxTypeSchema,
 } from './components/dl-mdx.registry'
 export { createDlMdxOfficialRegistry, dlMdxOfficialComponents } from './components/dl-mdx.official'
 export {

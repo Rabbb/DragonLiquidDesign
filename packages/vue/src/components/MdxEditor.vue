@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { DlMdxSelection } from './dl-mdx.commands'
+import { analyzeDlMdx, completeDlMdx, hoverDlMdx, type DlMdxLanguageOptions } from './dl-mdx.language'
+import type { DlMdxRegistry } from './dl-mdx.registry'
+
+export type DlMdxEditorDocumentLanguage = 'mdx' | 'javascript' | 'typescript' | 'css'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -9,18 +13,24 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   lineWrapping?: boolean
   ariaLabel?: string
+  documentLanguage?: DlMdxEditorDocumentLanguage
+  registry?: DlMdxRegistry
+  languageOptions?: DlMdxLanguageOptions
 }>(), {
   placeholder: '开始书写 Markdown…',
   readonly: false,
   disabled: false,
   lineWrapping: true,
+  documentLanguage: 'mdx',
+  registry: undefined,
+  languageOptions: undefined,
   ariaLabel: 'Markdown 编辑器',
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
   'selection-change': [selection: DlMdxSelection]
-  command: [action: 'bold' | 'italic' | 'link']
+  command: [action: 'bold' | 'italic' | 'link' | 'format']
   error: [error: Error]
 }>()
 
@@ -30,17 +40,22 @@ let editable: import('@codemirror/state').Compartment | undefined
 let wrapping: import('@codemirror/state').Compartment | undefined
 let viewModule: typeof import('@codemirror/view') | undefined
 let stateModule: typeof import('@codemirror/state') | undefined
+let lintModule: typeof import('@codemirror/lint') | undefined
 let disposed = false
 let pendingSelection: DlMdxSelection | undefined
 let pendingFocus = false
 
 onMounted(async () => {
   try {
-    const [commands, markdownModule, language, languageData, highlight, loadedState, loadedView] = await Promise.all([
+    const [commands, autocomplete, cssLanguage, javascriptLanguage, markdownModule, language, languageData, lint, highlight, loadedState, loadedView] = await Promise.all([
       import('@codemirror/commands'),
+      import('@codemirror/autocomplete'),
+      import('@codemirror/lang-css'),
+      import('@codemirror/lang-javascript'),
       import('@codemirror/lang-markdown'),
       import('@codemirror/language'),
       import('@codemirror/language-data'),
+      import('@codemirror/lint'),
       import('@lezer/highlight'),
       import('@codemirror/state'),
       import('@codemirror/view'),
@@ -49,6 +64,7 @@ onMounted(async () => {
 
     viewModule = loadedView
     stateModule = loadedState
+    lintModule = lint
     editable = new loadedState.Compartment()
     wrapping = new loadedState.Compartment()
     const dragonTheme = loadedView.EditorView.theme({
@@ -76,6 +92,16 @@ onMounted(async () => {
       '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--dl-accent)' },
       '.cm-foldGutter span': { color: 'var(--dl-accent)' },
       '.cm-tooltip': { color: 'var(--dl-text)', backgroundColor: 'var(--dl-surface-strong)', border: '1px solid var(--dl-border-strong)', borderRadius: '12px', overflow: 'hidden' },
+      '.cm-tooltip-autocomplete > ul': { maxHeight: '20rem', fontFamily: 'var(--dl-font-sans, sans-serif)' },
+      '.cm-tooltip-autocomplete > ul > li': { padding: '.38rem .65rem' },
+      '.cm-tooltip-autocomplete > ul > li[aria-selected]': { color: 'var(--dl-accent-contrast)', backgroundColor: 'var(--dl-accent)' },
+      '.cm-completionDetail': { color: 'var(--dl-text-muted)', fontStyle: 'normal', marginLeft: '.7rem' },
+      '.cm-diagnostic': { padding: '.45rem .65rem', color: 'var(--dl-text)', borderLeftWidth: '3px' },
+      '.cm-diagnostic-error': { borderLeftColor: 'var(--dl-danger, #dc2626)' },
+      '.cm-diagnostic-warning': { borderLeftColor: 'var(--dl-warning, #d97706)' },
+      '.cm-diagnostic-info': { borderLeftColor: 'var(--dl-accent)' },
+      '.cm-diagnosticAction': { color: 'var(--dl-accent-text)', background: 'var(--dl-accent-surface)', border: '1px solid var(--dl-border)', borderRadius: '6px' },
+      '.cm-dl-hover': { maxWidth: '28rem', padding: '.7rem .8rem', fontFamily: 'var(--dl-font-sans, sans-serif)', lineHeight: '1.5', whiteSpace: 'pre-wrap' },
       '.cm-dl-code-domain': {
         backgroundColor: 'color-mix(in srgb, var(--dl-night-soft) 76%, transparent)',
         boxShadow: 'inset 3px 0 0 color-mix(in srgb, var(--dl-accent) 58%, transparent)',
@@ -124,6 +150,61 @@ onMounted(async () => {
       },
     }), { decorations: value => value.decorations })
 
+    const mdxLanguageExtensions = props.documentLanguage === 'mdx' ? [
+      markdownModule.markdown({ codeLanguages: languageData.languages }),
+      codeDomainPlugin,
+      autocomplete.autocompletion({
+        override: [context => {
+          const result = completeDlMdx(context.state.doc.toString(), context.pos, props.registry, props.languageOptions, context.explicit)
+          if (!result) return null
+          const completionType: Record<string, string> = {
+            component: 'class', property: 'property', event: 'event', action: 'function', value: 'constant', keyword: 'keyword', snippet: 'text',
+          }
+          return {
+            from: result.from,
+            to: result.to,
+            options: result.items.map(item => ({
+              label: item.label,
+              type: completionType[item.kind],
+              detail: item.detail,
+              info: item.documentation,
+              apply: item.apply,
+              boost: item.boost,
+            })),
+          }
+        }],
+      }),
+      lint.linter(editorView => analyzeDlMdx(editorView.state.doc.toString(), props.registry, props.languageOptions).diagnostics.map(item => ({
+        from: item.from,
+        to: item.to,
+        severity: item.severity,
+        message: item.message,
+        actions: item.fix ? [{
+          name: item.fix.label,
+          apply(targetView: import('@codemirror/view').EditorView) {
+            targetView.dispatch({ changes: { from: item.fix!.from, to: item.fix!.to, insert: item.fix!.insert } })
+          },
+        }] : undefined,
+      })), { delay: 180 }),
+      lint.lintGutter(),
+      loadedView.hoverTooltip((editorView, position) => {
+        const result = hoverDlMdx(editorView.state.doc.toString(), position, props.registry, props.languageOptions)
+        if (!result) return null
+        return {
+          pos: result.from,
+          end: result.to,
+          create() {
+            const dom = document.createElement('div')
+            dom.className = 'cm-dl-hover'
+            dom.textContent = [result.title, result.detail, result.documentation].filter(Boolean).join('\n')
+            return { dom }
+          },
+        }
+      }),
+    ] : props.documentLanguage === 'css'
+      ? [cssLanguage.css()]
+      : [javascriptLanguage.javascript({ typescript: props.documentLanguage === 'typescript' })]
+
     view = new loadedView.EditorView({
       parent: host.value,
       state: loadedState.EditorState.create({
@@ -137,14 +218,17 @@ onMounted(async () => {
           language.indentOnInput(),
           language.bracketMatching(),
           language.syntaxHighlighting(dragonHighlightStyle, { fallback: true }),
-          markdownModule.markdown({ codeLanguages: languageData.languages }),
-          codeDomainPlugin,
+          ...mdxLanguageExtensions,
           loadedView.highlightActiveLine(),
           loadedView.placeholder(props.placeholder),
           loadedView.keymap.of([
-            { key: 'Mod-b', run: () => { emit('command', 'bold'); return true } },
-            { key: 'Mod-i', run: () => { emit('command', 'italic'); return true } },
-            { key: 'Mod-k', run: () => { emit('command', 'link'); return true } },
+            ...(props.documentLanguage === 'mdx' ? [
+              { key: 'Mod-b', run: () => { emit('command', 'bold'); return true } },
+              { key: 'Mod-i', run: () => { emit('command', 'italic'); return true } },
+              { key: 'Mod-k', run: () => { emit('command', 'link'); return true } },
+              { key: 'Shift-Alt-f', run: () => { emit('command', 'format'); return true } },
+              ...autocomplete.completionKeymap,
+            ] : []),
             ...commands.defaultKeymap,
             ...commands.historyKeymap,
             commands.indentWithTab,
@@ -191,6 +275,10 @@ watch(() => props.lineWrapping, value => {
   if (!view || !wrapping || !viewModule) return
   view.dispatch({ effects: wrapping.reconfigure(value ? viewModule.EditorView.lineWrapping : []) })
 })
+
+watch(() => [props.registry, props.languageOptions] as const, () => {
+  if (view && lintModule && props.documentLanguage === 'mdx') lintModule.forceLinting(view)
+}, { deep: true })
 
 onBeforeUnmount(() => {
   disposed = true

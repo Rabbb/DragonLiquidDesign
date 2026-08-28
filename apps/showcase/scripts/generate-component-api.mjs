@@ -651,7 +651,7 @@ const filenames = (await readdir(componentsRoot))
 
 const structures = {}
 const componentEnums = {}
-for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'calendar.types.ts', 'color-controls.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts', 'dl-mdx.rust.ts']) {
+for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'calendar.types.ts', 'color-controls.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.language.ts', 'dl-mdx.security.ts', 'dl-mdx.rust.ts']) {
   const typeSource = await readFile(resolve(componentsRoot, filename), 'utf8')
   const parsed = structuresFromSource(typeSource)
   Object.assign(structures, Object.fromEntries(Object.entries(parsed).map(([name, structure]) => [name, { ...structure, kind: 'structure' }])))
@@ -689,7 +689,8 @@ for (const name of ['DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainA
 const mdxRelatedTypes = api.mdx?.relatedTypes.map(type => type.title)
 if (JSON.stringify(mdxRelatedTypes) !== JSON.stringify([
   'DlMdxMode', 'DlMdxToolbarAction[]', 'DlMdxLinkPolicy', 'DlMdxRegistry',
-  'DlMdxComponentDefinition[]', 'DlMdxComponentCategory', 'DlMdxComponentMaturity',
+  'DlMdxComponentDefinition[]', 'DlMdxEventSchema', 'DlMdxTypeSchema', 'DlMdxSchemaType[]',
+  'DlMdxComponentCategory', 'DlMdxComponentMaturity', 'DlMdxLanguageOptions', 'DlMdxDiagnosticSeverity', 'DlMdxFormatOptions',
   'DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind', 'DlMdxRustCoreStatus',
 ])) {
   throw new Error(`Mdx 相关类型 API 顺序不正确：${mdxRelatedTypes?.join(', ')}`)

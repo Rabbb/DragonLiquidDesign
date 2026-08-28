@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, type Slots } from 'vue'
-import type { DlMdxRegistry } from './dl-mdx.registry'
+import type { DlMdxActionInvocation, DlMdxActionMap, DlMdxRegistry } from './dl-mdx.registry'
 import type { DlMdxSecurityPolicy } from './dl-mdx.security'
 import type { DlMdxBlock as DlMdxBlockValue, DlMdxDocument, DlMdxLinkPolicy } from './dl-mdx.types'
 import MdxBlock from './MdxBlock.vue'
@@ -13,12 +13,14 @@ defineProps<{
   ariaLabel: string
   componentSlots: Slots
   registry?: DlMdxRegistry
+  actions?: DlMdxActionMap
   securityPolicy?: DlMdxSecurityPolicy
 }>()
 
 const emit = defineEmits<{
   'toggle-task': [line: number]
   error: [error: Error]
+  action: [invocation: DlMdxActionInvocation]
 }>()
 
 const copiedCodeId = ref<string>()
@@ -69,9 +71,11 @@ function blockKey(block: DlMdxBlockValue, index: number): string {
       :copy-failed-id="copyFailedId"
       :component-slots="componentSlots"
       :registry="registry"
+      :actions="actions"
       :security-policy="securityPolicy"
       @toggle-task="emit('toggle-task', $event)"
       @copy-code="copyCode"
+      @action="emit('action', $event)"
     />
   </article>
 </template>

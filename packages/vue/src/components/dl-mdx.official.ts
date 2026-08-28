@@ -94,6 +94,8 @@ import {
   type DlMdxComponentCategory,
   type DlMdxComponentDefinition,
   type DlMdxComponentMaturity,
+  type DlMdxEventSchema,
+  type DlMdxPropSchema,
   type DlMdxRegistry,
 } from './dl-mdx.registry'
 import type { DlMdxValue } from './dl-mdx.types'
@@ -105,6 +107,8 @@ type OfficialOptions = {
   triggerLabel?: string
   aliases?: string[]
   description?: string
+  propSchema?: Record<string, DlMdxPropSchema>
+  eventSchema?: Record<string, DlMdxEventSchema>
 }
 
 function official(
@@ -127,7 +131,16 @@ const menuItems = [
 ]
 
 export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
-  official('Button', DlButton, 'foundation', 'custom', { contentProp: 'text', defaultContent: '执行操作', description: '主要与次要操作。' }),
+  official('Button', DlButton, 'foundation', 'custom', {
+    contentProp: 'text',
+    defaultContent: '执行操作',
+    description: '主要与次要操作。',
+    propSchema: {
+      variant: { type: 'string', enum: ['primary', 'secondary', 'ghost', 'danger'], description: '按钮的视觉层级。' },
+      size: { type: 'string', enum: ['sm', 'md', 'lg'], description: '按钮尺寸。' },
+    },
+    eventSchema: { click: { description: '用户激活按钮时触发。' } },
+  }),
   official('SplitButton', DlSplitButton, 'foundation', 'custom', { defaultProps: { label: '发布', items: menuItems }, description: '主操作与相关菜单操作。' }),
   official('Badge', DlBadge, 'foundation', 'custom', { contentProp: 'text', defaultContent: 'DRAGON', description: '状态与标签。' }),
   official('Card', DlCard, 'foundation', 'custom', { defaultProps: { padding: 'md' }, defaultContent: 'Dragon Liquid 内容卡片', description: '内容分组容器。' }),

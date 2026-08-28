@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { DlMdx, dlMdxOfficialComponents, getDlMdxRustCoreStatus, useDlMdxSecurityPolicy, type DlMdxComponentCategory } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
@@ -23,7 +23,7 @@ const writingSource = ref([
   '使用 **粗体** 标记关键信息，用 `inline code` 记录原始字段名。',
 ].join('\n'))
 
-const archiveSource = [
+const archiveSource = ref([
   '# 星海档案 · 作品条目',
   '',
   '## 基本信息',
@@ -46,9 +46,9 @@ const archiveSource = [
   'type ArchiveState = "draft" | "published"',
   'const state: ArchiveState = "draft"',
   '```',
-].join('\n')
+].join('\n'))
 
-const syntaxSource = [
+const syntaxSource = ref([
   '# 编程代码高亮',
   '',
   '编辑区识别代码域，预览区由 Rust/WASM 输出安全的词法 token。',
@@ -67,9 +67,9 @@ const syntaxSource = [
   '```sql',
   'SELECT id, title FROM todo WHERE completed = false;',
   '```',
-].join('\n')
+].join('\n'))
 
-const componentSource = [
+const componentSource = ref([
   '# 可扩展的发布说明',
   '',
   '正文仍然使用普通 Markdown。',
@@ -81,9 +81,9 @@ const componentSource = [
   '+++end',
   '',
   '组件块之后可以继续书写，不会中断文档流。',
-].join('\n')
+].join('\n'))
 
-const unsafeSource = [
+const unsafeSource = ref([
   '# 不受信任内容预览',
   '',
   '[相对站内链接](/anime/42) 可以继续使用。',
@@ -95,9 +95,9 @@ const unsafeSource = [
   '![内嵌数据图片](data:text/html;base64,PHNjcmlwdD4=)',
   '',
   '<' + 'script>window.archiveCompromised = true<' + '/script>',
-].join('\n')
+].join('\n'))
 
-const securitySource = [
+const securitySource = ref([
   '# Rust/WASM 域名白名单',
   '',
   '[允许的文档链接](https://developer.mozilla.org/en-US/docs/WebAssembly)',
@@ -109,7 +109,7 @@ const securitySource = [
   '[未允许的可执行文件](/packages/setup.exe)',
   '',
   '![允许的图片域名](https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=960&q=70)',
-].join('\n')
+].join('\n'))
 
 const officialScenarioCategories: Record<string, DlMdxComponentCategory> = {
   'official-foundation': 'foundation',
@@ -122,7 +122,7 @@ const officialLabels: Record<DlMdxComponentCategory, string> = {
   foundation: '基础组件', form: '表单组件', color: '色彩组件', dates: '日期时间组件', general: '通用组件',
 }
 const officialCategory = computed(() => officialScenarioCategories[props.scenario])
-const officialSource = computed(() => {
+const generatedOfficialSource = computed(() => {
   const category = officialCategory.value
   if (!category) return ''
   const definitions = dlMdxOfficialComponents.filter(item => item.category === category)
@@ -140,6 +140,8 @@ const officialSource = computed(() => {
     ]),
   ].join('\n')
 })
+const officialSource = ref('')
+watch(generatedOfficialSource, value => { officialSource.value = value }, { immediate: true })
 
 function officialExampleCode(category: DlMdxComponentCategory) {
   return `// main.ts
@@ -316,11 +318,11 @@ ${vueSfc({
     <div class="mdx-doc-demo">
       <DlMdx v-if="scenario === 'basic'" v-model="writingSource" min-height="31rem" aria-label="作品资料草稿" />
 
-      <DlMdx v-else-if="scenario === 'archive-document'" :model-value="archiveSource" mode="preview" readonly :show-toolbar="false" min-height="31rem" />
+      <DlMdx v-else-if="scenario === 'archive-document'" v-model="archiveSource" mode="split" min-height="31rem" />
 
-      <DlMdx v-else-if="scenario === 'syntax-highlight'" :model-value="syntaxSource" mode="split" min-height="31rem" />
+      <DlMdx v-else-if="scenario === 'syntax-highlight'" v-model="syntaxSource" mode="split" min-height="31rem" />
 
-      <DlMdx v-else-if="scenario === 'component-blocks'" :model-value="componentSource" mode="preview" min-height="24rem" />
+      <DlMdx v-else-if="scenario === 'component-blocks'" v-model="componentSource" mode="split" min-height="24rem" />
 
       <template v-else-if="scenario === 'rust-core'">
         <div class="mdx-security-status mdx-rust-status">
@@ -328,10 +330,10 @@ ${vueSfc({
           <b>ABI {{ rustCoreStatus.abiVersion }}</b>
           <code>{{ Math.round(rustCoreStatus.binarySize / 1024) }} KB · {{ rustCoreStatus.binaryFingerprint.slice(0, 12) }}</code>
         </div>
-        <DlMdx :model-value="archiveSource" mode="preview" readonly :show-toolbar="false" min-height="24rem" />
+        <DlMdx v-model="archiveSource" mode="split" min-height="24rem" />
       </template>
 
-      <DlMdx v-else-if="officialCategory" :model-value="officialSource" mode="preview" readonly :show-toolbar="false" min-height="24rem" class="mdx-official-gallery" />
+      <DlMdx v-else-if="officialCategory" v-model="officialSource" mode="split" min-height="24rem" class="mdx-official-gallery" />
 
       <template v-else-if="scenario === 'security-policy'">
         <div class="mdx-security-status">
@@ -339,14 +341,13 @@ ${vueSfc({
           <b>INTEGRITY {{ securityStatus?.integrity ? 'VERIFIED' : 'FAILED' }}</b>
           <code>{{ securityStatus?.fingerprint }}</code>
         </div>
-        <DlMdx :model-value="securitySource" mode="preview" readonly min-height="24rem" />
+        <DlMdx v-model="securitySource" mode="split" min-height="24rem" />
       </template>
 
       <DlMdx
         v-else
-        :model-value="unsafeSource"
-        mode="preview"
-        readonly
+        v-model="unsafeSource"
+        mode="split"
         :link-policy="{ allowExternal: false, allowImages: true, allowDataImages: false }"
         min-height="24rem"
       />

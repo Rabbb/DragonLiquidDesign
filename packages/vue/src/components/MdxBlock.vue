@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, type Slots } from 'vue'
-import type { DlMdxRegistry } from './dl-mdx.registry'
+import type { DlMdxActionInvocation, DlMdxActionMap, DlMdxRegistry } from './dl-mdx.registry'
 import type { DlMdxSecurityPolicy } from './dl-mdx.security'
 import type { DlMdxBlock, DlMdxLinkPolicy } from './dl-mdx.types'
 import { highlightDlMdxCodeWithRust } from './dl-mdx.rust'
@@ -15,12 +15,14 @@ const props = defineProps<{
   copyFailedId?: string
   componentSlots: Slots
   registry?: DlMdxRegistry
+  actions?: DlMdxActionMap
   securityPolicy?: DlMdxSecurityPolicy
 }>()
 
 const emit = defineEmits<{
   'toggle-task': [line: number]
   'copy-code': [id: string, source: string]
+  action: [invocation: DlMdxActionInvocation]
 }>()
 
 const highlightedCode = computed(() => {
@@ -63,9 +65,11 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
       :copy-failed-id="copyFailedId"
       :component-slots="componentSlots"
       :registry="registry"
+      :actions="actions"
       :security-policy="securityPolicy"
       @toggle-task="emit('toggle-task', $event)"
       @copy-code="forwardCopy"
+      @action="emit('action', $event)"
     />
   </blockquote>
 
@@ -86,9 +90,11 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
         :copy-failed-id="copyFailedId"
         :component-slots="componentSlots"
         :registry="registry"
+        :actions="actions"
         :security-policy="securityPolicy"
         @toggle-task="emit('toggle-task', $event)"
         @copy-code="forwardCopy"
+        @action="emit('action', $event)"
       />
     </li>
   </component>
@@ -119,7 +125,7 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
 
   <section v-else-if="block.type === 'component'" class="dl-mdx__component-block" :data-component="block.context.name">
     <component v-if="componentSlots[componentSlot]" :is="componentSlots[componentSlot]" :context="block.context" :props="block.context.props" />
-    <MdxRegisteredComponent v-else-if="registeredDefinition" :definition="registeredDefinition" :context="block.context" />
+    <MdxRegisteredComponent v-else-if="registeredDefinition" :definition="registeredDefinition" :context="block.context" :actions="actions" :on-action="invocation => emit('action', invocation)" />
     <div v-else class="dl-mdx__unknown-component">
       <span>SAFE COMPONENT SLOT</span>
       <strong>{{ block.context.name }}</strong>

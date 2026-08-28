@@ -12,6 +12,7 @@ export type DlMdxToolbarAction =
   | 'task-list'
   | 'code-block'
   | 'component'
+  | 'format'
 
 export interface DlMdxLinkPolicy {
   allowExternal?: boolean
@@ -35,6 +36,7 @@ export interface DlMdxComponentContext {
   name: string
   id?: string
   props: Record<string, DlMdxValue>
+  events: Record<string, string>
   sourceLine: number
 }
 

@@ -13,7 +13,7 @@ describe('Rust MarkdownX WebAssembly core', () => {
     expect(getDlMdxRustCoreStatus()).toMatchObject({
       engine: 'rust-wasm',
       available: true,
-      abiVersion: 2,
+      abiVersion: 3,
     })
     expect(getDlMdxRustCoreStatus().binarySize).toBeGreaterThan(100_000)
     expect(getDlMdxRustCoreStatus().binaryFingerprint).toMatch(/^[a-f0-9]{64}$/)

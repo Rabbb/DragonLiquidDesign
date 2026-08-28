@@ -144,10 +144,27 @@ const status = getDlMdxRustCoreStatus()
 const document = parseDlMdx('# Archive\n\n- [x] indexed')
 ```
 
+## MarkdownX 文档工作区与语言服务
+
+`DlMdx` 可以把 MDX 作为主结构文档，并通过 `v-model:script-value`、`v-model:style-value` 分别保存 TypeScript/JavaScript 与 CSS 附加文档。附加脚本只用于提取导出动作的类型提示，不会在预览中执行；真实动作必须由宿主通过 `actions` 注册。
+
+```vue
+<DlMdx
+  v-model="document"
+  v-model:script-value="script"
+  v-model:style-value="style"
+  :actions="{ saveDocument }"
+  show-companion-documents
+/>
+```
+
+语言服务提供组件、属性、事件、动作和枚举补全，悬浮类型说明、可修复诊断，以及由 `formatOptions` 控制的确定性格式化。按 `Ctrl+Space` 主动补全，按 `Shift+Alt+F` 格式化 MDX 主文档。
+
 当前公共组件共 89 个：
 
 - 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.33` 新增 MarkdownX 类型提示、诊断、格式化、安全声明式事件，以及 MDX 主文档配合 Script/Style 附加文档的编辑工作区。
 - `0.6.0-alpha.32` 为 MarkdownX 增加 Rust/WASM 预览语法高亮、CodeMirror 多语言解析和围栏代码域高亮；未知语言安全降级为原文。
 - `0.6.0-alpha.31` 新增 Rust/WASM MarkdownX 核心，接管纯文档解析、统计、URL 协议识别和完整性哈希，移除手写 WAT，并保留 HTML 安全适配与无 WASM 回退路径。
 - `0.6.0-alpha.29` 修正 MarkdownX 中 `ColorSlider` 的默认值绑定，并增加官方默认属性与实际组件 Props 一致性的自动回归检查。

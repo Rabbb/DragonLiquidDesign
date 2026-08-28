@@ -2,12 +2,22 @@
 import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId, watch, type ComponentPublicInstance } from 'vue'
 import { tv } from 'tailwind-variants'
 import { applyDlMdxCommand, insertDlMdxSnippet, type DlMdxSelection } from './dl-mdx.commands'
+import {
+  analyzeDlMdx,
+  extractDlMdxActionSymbols,
+  formatDlMdx,
+  type DlMdxFormatOptions,
+  type DlMdxLanguageAnalysis,
+  type DlMdxLanguageOptions,
+} from './dl-mdx.language'
 import { parseDlMdx } from './dl-mdx.parser'
 import {
   createDlMdxComponentSnippet,
   useDlMdxRegistry,
   type DlMdxComponentCategory,
   type DlMdxComponentDefinition,
+  type DlMdxActionInvocation,
+  type DlMdxActionMap,
   type DlMdxRegistry,
 } from './dl-mdx.registry'
 import { useDlMdxSecurityPolicy } from './dl-mdx.security'
@@ -27,6 +37,7 @@ type ComponentLibraryEntry = {
 }
 
 type ComponentLibraryCategory = 'all' | DlMdxComponentCategory
+type DlMdxWorkspaceDocument = 'mdx' | 'script' | 'style'
 
 const props = withDefaults(defineProps<{
   modelValue?: string | null
@@ -46,6 +57,13 @@ const props = withDefaults(defineProps<{
   maxPreviewHeight?: string
   ariaLabel?: string
   registry?: DlMdxRegistry
+  actions?: DlMdxActionMap
+  scriptValue?: string | null
+  styleValue?: string | null
+  showCompanionDocuments?: boolean
+  scriptLanguage?: 'javascript' | 'typescript'
+  languageOptions?: DlMdxLanguageOptions
+  formatOptions?: DlMdxFormatOptions
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -64,16 +82,26 @@ const props = withDefaults(defineProps<{
   maxPreviewHeight: 'none',
   ariaLabel: 'MarkdownX 文档',
   registry: undefined,
+  scriptValue: null,
+  styleValue: null,
+  showCompanionDocuments: false,
+  scriptLanguage: 'typescript',
+  languageOptions: undefined,
+  formatOptions: undefined,
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  'update:scriptValue': [value: string]
+  'update:styleValue': [value: string]
   'update:mode': [mode: DlMdxMode]
   parse: [result: DlMdxParseResult]
   error: [error: Error]
+  action: [invocation: DlMdxActionInvocation]
+  diagnostics: [analysis: DlMdxLanguageAnalysis]
 }>()
 
-const defaultToolbar: DlMdxToolbarAction[] = ['bold', 'italic', 'strike', 'inline-code', 'link', 'heading', 'blockquote', 'unordered-list', 'task-list', 'code-block', 'component']
+const defaultToolbar: DlMdxToolbarAction[] = ['bold', 'italic', 'strike', 'inline-code', 'link', 'heading', 'blockquote', 'unordered-list', 'task-list', 'code-block', 'component', 'format']
 const toolbarLabels: Record<DlMdxToolbarAction, { symbol: string; label: string; shortcut?: string }> = {
   bold: { symbol: 'B', label: '粗体', shortcut: 'Ctrl+B' },
   italic: { symbol: 'I', label: '斜体', shortcut: 'Ctrl+I' },
@@ -86,9 +114,13 @@ const toolbarLabels: Record<DlMdxToolbarAction, { symbol: string; label: string;
   'task-list': { symbol: '☑', label: '任务列表' },
   'code-block': { symbol: '{}', label: '代码块' },
   component: { symbol: '◇', label: '安全组件块' },
+  format: { symbol: '↹', label: '格式化主文档', shortcut: 'Shift+Alt+F' },
 }
 
 const localSource = ref(props.modelValue ?? '')
+const localScript = ref(props.scriptValue ?? '')
+const localStyle = ref(props.styleValue ?? '')
+const activeDocument = ref<DlMdxWorkspaceDocument>('mdx')
 const localMode = ref<DlMdxMode>(props.mode)
 const editorRef = ref<InstanceType<typeof MdxEditor>>()
 const lastEditorSelection = ref<DlMdxSelection>({ start: localSource.value.length, end: localSource.value.length })
@@ -103,6 +135,7 @@ const componentLibraryTitleId = `${componentLibraryId}-title`
 const injectedRegistry = useDlMdxRegistry()
 const injectedSecurityPolicy = useDlMdxSecurityPolicy()
 const document = shallowRef<DlMdxDocument>(parseDlMdx(localSource.value))
+const languageAnalysis = shallowRef<DlMdxLanguageAnalysis>({ diagnostics: [], components: [], errorCount: 0, warningCount: 0 })
 const parsing = ref(false)
 let parseTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -113,13 +146,26 @@ const policy = computed<Required<DlMdxLinkPolicy>>(() => ({
   allowDataImages: props.linkPolicy?.allowDataImages ?? false,
 }))
 const activeRegistry = computed(() => props.registry ?? injectedRegistry)
+const showDocumentTabs = computed(() => props.showCompanionDocuments || props.scriptValue !== null || props.styleValue !== null)
+const scriptSymbols = computed(() => extractDlMdxActionSymbols(localScript.value))
+const effectiveLanguageOptions = computed<DlMdxLanguageOptions>(() => {
+  const hostActions = Object.keys(props.actions ?? {})
+  const documentedActions = scriptSymbols.value.map(symbol => symbol.name)
+  const actionNames = [...new Set([...(props.languageOptions?.actionNames ?? []), ...hostActions, ...documentedActions])]
+  const scriptDescriptions = Object.fromEntries(scriptSymbols.value.filter(symbol => symbol.description).map(symbol => [symbol.name, symbol.description!]))
+  return {
+    ...props.languageOptions,
+    actionNames,
+    actionDescriptions: { ...scriptDescriptions, ...(props.languageOptions?.actionDescriptions ?? {}) },
+  }
+})
 const componentLibraryEntries = computed<ComponentLibraryEntry[]>(() => (activeRegistry.value?.entries() ?? [])
   .flatMap((definition) => {
     const snippet = createDlMdxComponentSnippet(definition)
     return snippet ? [{ definition, snippet }] : []
   })
   .sort((left, right) => left.definition.name.localeCompare(right.definition.name, 'en')))
-const actions = computed(() => (props.toolbar ?? defaultToolbar)
+const toolbarActions = computed(() => (props.toolbar ?? defaultToolbar)
   .filter(action => action !== 'component' || componentLibraryEntries.value.length > 0))
 const componentCategoryLabels: Record<ComponentLibraryCategory, string> = {
   all: '全部',
@@ -145,6 +191,8 @@ const filteredComponentEntries = computed(() => {
   })
 })
 const canEdit = computed(() => !props.readonly && !props.disabled)
+const activeDocumentSource = computed(() => activeDocument.value === 'script' ? localScript.value : activeDocument.value === 'style' ? localStyle.value : localSource.value)
+const activeDocumentLineCount = computed(() => activeDocumentSource.value.split('\n').length)
 const rootClass = computed(() => tv({
   base: 'dl-mdx',
   variants: {
@@ -157,9 +205,17 @@ const rootStyle = computed(() => ({ '--dl-mdx-min-height': props.minHeight, '--d
 watch(() => props.modelValue, value => {
   if ((value ?? '') !== localSource.value) localSource.value = value ?? ''
 })
+watch(() => props.scriptValue, value => {
+  if ((value ?? '') !== localScript.value) localScript.value = value ?? ''
+})
+watch(() => props.styleValue, value => {
+  if ((value ?? '') !== localStyle.value) localStyle.value = value ?? ''
+})
 watch(() => props.mode, value => { localMode.value = value })
 watch(localSource, scheduleParse, { immediate: true })
 watch(() => props.debounce, scheduleParse)
+watch([activeRegistry, effectiveLanguageOptions], scheduleParse, { deep: true })
+watch(showDocumentTabs, visible => { if (!visible) activeDocument.value = 'mdx' })
 watch(() => componentLibraryEntries.value.length, (length) => {
   if (!length) componentLibraryOpen.value = false
   if (!availableComponentCategories.value.includes(componentCategory.value)) componentCategory.value = 'all'
@@ -186,8 +242,10 @@ function scheduleParse() {
   const run = () => {
     try {
       document.value = parseDlMdx(localSource.value)
+      languageAnalysis.value = analyzeDlMdx(localSource.value, activeRegistry.value, effectiveLanguageOptions.value)
       parsing.value = false
       emit('parse', document.value.stats)
+      emit('diagnostics', languageAnalysis.value)
     } catch (cause) {
       parsing.value = false
       emit('error', cause instanceof Error ? cause : new Error(String(cause)))
@@ -202,6 +260,16 @@ function updateSource(value: string) {
   emit('update:modelValue', value)
 }
 
+function updateScript(value: string) {
+  localScript.value = value
+  emit('update:scriptValue', value)
+}
+
+function updateStyle(value: string) {
+  localStyle.value = value
+  emit('update:styleValue', value)
+}
+
 function setMode(value: DlMdxMode) {
   localMode.value = value
   emit('update:mode', value)
@@ -210,6 +278,14 @@ function setMode(value: DlMdxMode) {
 
 function execute(action: DlMdxToolbarAction) {
   if (!canEdit.value) return
+  if (action === 'format') {
+    const source = formatDlMdx(localSource.value, props.formatOptions, activeRegistry.value)
+    const current = editorRef.value?.getSelection() ?? lastEditorSelection.value
+    const selection = { start: Math.min(current.start, source.length), end: Math.min(current.end, source.length) }
+    if (editorRef.value) editorRef.value.replaceDocument(source, selection)
+    else updateSource(source)
+    return
+  }
   if (action === 'component') {
     if (!componentLibraryEntries.value.length) return
     rememberEditorSelection()
@@ -291,13 +367,14 @@ function toggleTask(line: number) {
     data-slot="mdx"
     :data-toolbar="showToolbar ? 'true' : 'false'"
     :data-status="showStatus ? 'true' : 'false'"
+    :data-documents="showDocumentTabs ? 'true' : 'false'"
     :class="rootClass"
     :style="rootStyle"
   >
     <header v-if="showToolbar" class="dl-mdx__toolbar">
-      <div v-if="localMode !== 'preview'" class="dl-mdx__format-actions" role="toolbar" aria-label="Markdown 格式工具">
+      <div v-if="localMode !== 'preview' && activeDocument === 'mdx'" class="dl-mdx__format-actions" role="toolbar" aria-label="Markdown 格式工具">
         <slot name="toolbar-start" />
-        <template v-for="action in actions" :key="action">
+        <template v-for="action in toolbarActions" :key="action">
           <button
             v-if="action === 'component'"
             :ref="setComponentLibraryTrigger"
@@ -322,8 +399,8 @@ function toggleTask(line: number) {
         </template>
         <slot name="toolbar-end" />
       </div>
-      <span v-else class="dl-mdx__preview-label">DRAGON LIQUID · RENDERED DOCUMENT</span>
-      <div class="dl-mdx__mode-switch" aria-label="视图模式">
+      <span v-else class="dl-mdx__preview-label">{{ activeDocument === 'mdx' ? 'DRAGON LIQUID · RENDERED DOCUMENT' : `${activeDocument.toUpperCase()} · COMPANION DOCUMENT` }}</span>
+      <div v-if="activeDocument === 'mdx'" class="dl-mdx__mode-switch" aria-label="视图模式">
         <button v-for="item in ([['edit', '编辑'], ['split', '分栏'], ['preview', '预览']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
       </div>
     </header>
@@ -388,8 +465,15 @@ function toggleTask(line: number) {
       </section>
     </Teleport>
 
-    <div class="dl-mdx__workspace">
-      <section v-show="localMode !== 'preview'" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
+    <nav v-if="showDocumentTabs" class="dl-mdx__document-tabs" aria-label="MarkdownX 文档工作区">
+      <button type="button" :class="{ active: activeDocument === 'mdx' }" :aria-pressed="activeDocument === 'mdx'" @click="activeDocument = 'mdx'">MDX <small>STRUCTURE</small></button>
+      <button type="button" :class="{ active: activeDocument === 'script' }" :aria-pressed="activeDocument === 'script'" @click="activeDocument = 'script'">SCRIPT <small>{{ scriptLanguage.toUpperCase() }}</small></button>
+      <button type="button" :class="{ active: activeDocument === 'style' }" :aria-pressed="activeDocument === 'style'" @click="activeDocument = 'style'">STYLE <small>CSS</small></button>
+      <span>MDX 为主文档，脚本与样式独立保存</span>
+    </nav>
+
+    <div class="dl-mdx__workspace" :class="{ 'is-companion': activeDocument !== 'mdx' }">
+      <section v-show="activeDocument === 'mdx' && localMode !== 'preview'" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
         <MdxEditor
           ref="editorRef"
           :model-value="localSource"
@@ -398,13 +482,16 @@ function toggleTask(line: number) {
           :disabled="disabled"
           :line-wrapping="lineWrapping"
           :aria-label="`${ariaLabel}编辑器`"
+          document-language="mdx"
+          :registry="activeRegistry"
+          :language-options="effectiveLanguageOptions"
           @update:model-value="updateSource"
           @selection-change="updateEditorSelection"
           @command="execute"
           @error="emit('error', $event)"
         />
       </section>
-      <section v-show="localMode !== 'edit'" class="dl-mdx__preview-pane" :aria-busy="parsing">
+      <section v-show="activeDocument === 'mdx' && localMode !== 'edit'" class="dl-mdx__preview-pane" :aria-busy="parsing">
         <div v-if="parsing" class="dl-mdx__parsing"><i />正在更新预览</div>
         <MdxPreview
           :document="document"
@@ -414,8 +501,37 @@ function toggleTask(line: number) {
           :ariaLabel="`${ariaLabel}预览`"
           :component-slots="$slots"
           :registry="activeRegistry"
+          :actions="props.actions"
           :security-policy="injectedSecurityPolicy"
           @toggle-task="toggleTask"
+          @error="emit('error', $event)"
+          @action="emit('action', $event)"
+        />
+      </section>
+      <section v-show="activeDocument === 'script'" class="dl-mdx__editor-pane dl-mdx__editor-pane--companion" aria-label="脚本附加文档">
+        <MdxEditor
+          :key="scriptLanguage"
+          :model-value="localScript"
+          placeholder="export function actionName(context) { }"
+          :readonly="readonly"
+          :disabled="disabled"
+          :line-wrapping="lineWrapping"
+          :aria-label="`${ariaLabel}脚本附加文档`"
+          :document-language="scriptLanguage"
+          @update:model-value="updateScript"
+          @error="emit('error', $event)"
+        />
+      </section>
+      <section v-show="activeDocument === 'style'" class="dl-mdx__editor-pane dl-mdx__editor-pane--companion" aria-label="样式附加文档">
+        <MdxEditor
+          :model-value="localStyle"
+          placeholder=".document-card { color: var(--dl-text); }"
+          :readonly="readonly"
+          :disabled="disabled"
+          :line-wrapping="lineWrapping"
+          :aria-label="`${ariaLabel}样式附加文档`"
+          document-language="css"
+          @update:model-value="updateStyle"
           @error="emit('error', $event)"
         />
       </section>
@@ -423,10 +539,13 @@ function toggleTask(line: number) {
 
     <footer v-if="showStatus" class="dl-mdx__status">
       <span :class="{ busy: parsing }"><i />{{ parsing ? '解析中' : '预览已同步' }}</span>
-      <span>{{ document.stats.lineCount }} 行</span>
-      <span>{{ document.stats.sourceLength }} 字符</span>
-      <span>约 {{ document.stats.readingMinutes }} 分钟阅读</span>
+      <span>{{ activeDocumentLineCount }} 行</span>
+      <span>{{ activeDocumentSource.length }} 字符</span>
+      <span v-if="activeDocument === 'mdx'">约 {{ document.stats.readingMinutes }} 分钟阅读</span>
       <span class="dl-mdx__status-spacer" />
+      <span v-if="languageAnalysis.errorCount">{{ languageAnalysis.errorCount }} errors</span>
+      <span v-if="languageAnalysis.warningCount">{{ languageAnalysis.warningCount }} warnings</span>
+      <span>{{ activeDocument.toUpperCase() }}</span>
       <span>MarkdownX · Safe Preview</span>
     </footer>
   </section>

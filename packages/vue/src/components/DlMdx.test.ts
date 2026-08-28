@@ -174,4 +174,69 @@ describe('DlMdx', () => {
     expect(css).toContain('.dl-mdx--split .dl-mdx__preview-pane { max-height: none; }')
     expect(css).toContain('height: 100%;\n  min-width: 0;\n  min-height: 0;')
   })
+
+  it('binds declared component events to host actions without evaluating document code', async () => {
+    const action = vi.fn()
+    const registry = createDlMdxRegistry([
+      defineDlMdxComponent({
+        name: 'ActionButton',
+        component: defineComponent({
+          emits: ['click'],
+          setup: (_, { emit }) => () => h('button', { type: 'button', onClick: () => emit('click', 7) }, 'Run'),
+        }),
+      }),
+    ])
+    const wrapper = mount(DlMdx, {
+      props: {
+        modelValue: '+++component:ActionButton\n@click = saveDocument\n+++end',
+        mode: 'preview',
+        debounce: 0,
+        registry,
+        actions: { saveDocument: action },
+      },
+    })
+
+    await wrapper.get('.dl-mdx__component-block button').trigger('click')
+    expect(action).toHaveBeenCalledWith(expect.objectContaining({ action: 'saveDocument', event: 'click', payload: [7] }))
+    expect(wrapper.emitted('action')?.at(-1)?.[0]).toEqual(expect.objectContaining({ action: 'saveDocument' }))
+  })
+
+  it('provides MDX, script and style documents in one editable workspace', async () => {
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: {
+        modelValue: '# Main document',
+        scriptValue: 'export function saveDocument() {}',
+        styleValue: '.document { color: red; }',
+        showCompanionDocuments: true,
+        mode: 'split',
+        debounce: 0,
+      },
+    })
+    await flushPromises()
+
+    expect(wrapper.findAll('.dl-mdx__document-tabs button').map(button => button.text())).toEqual([
+      'MDX STRUCTURE', 'SCRIPT TYPESCRIPT', 'STYLE CSS',
+    ])
+    expect(wrapper.findAll('.cm-content')).toHaveLength(3)
+    expect(wrapper.text()).toContain('Main document')
+    expect(document.body.textContent).toContain('saveDocument')
+    expect(document.body.textContent).toContain('color: red')
+    wrapper.unmount()
+  })
+
+  it('formats the main document from the toolbar', async () => {
+    const registry = createDlMdxRegistry([
+      defineDlMdxComponent({ name: 'Notice', component: defineComponent({ props: { tone: String }, setup: () => () => null }) }),
+    ])
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: { modelValue: '+++component:Notice\ntone=\'accent\'\n+++end', mode: 'edit', debounce: 0, registry },
+    })
+    await flushPromises()
+    await wrapper.get('button[aria-label="格式化主文档"]').trigger('click')
+
+    expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toBe('+++component:Notice\ntone = "accent"\n+++end\n')
+    wrapper.unmount()
+  })
 })
