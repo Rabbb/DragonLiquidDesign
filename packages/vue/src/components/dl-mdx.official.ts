@@ -13,6 +13,7 @@ import DlChoicePortal from './DlChoicePortal.vue'
 import DlCollapsible from './DlCollapsible.vue'
 import DlColorArea from './DlColorArea.vue'
 import DlColorField from './DlColorField.vue'
+import DlColorPicker from './DlColorPicker.vue'
 import DlColorSlider from './DlColorSlider.vue'
 import DlColorSwatch from './DlColorSwatch.vue'
 import DlColorSwatchPicker from './DlColorSwatchPicker.vue'
@@ -172,8 +173,9 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('Toggle', DlToggle, 'form', 'stable', { defaultContent: '收藏' }),
   official('ToggleGroup', DlToggleGroup, 'form', 'stable', { defaultProps: { items: choices, modelValue: 'anime' } }),
 
-  official('ColorArea', DlColorArea, 'color', 'alpha', { defaultProps: { color: '#ffb11b' } }),
+  official('ColorArea', DlColorArea, 'color', 'alpha', { defaultProps: { modelValue: '#ffb11b' } }),
   official('ColorField', DlColorField, 'color', 'alpha', { defaultProps: { modelValue: '#ffb11b' } }),
+  official('ColorPicker', DlColorPicker, 'color', 'alpha', { defaultProps: { modelValue: '#ffb11b' } }),
   official('ColorSlider', DlColorSlider, 'color', 'alpha', { defaultProps: { channel: 'hue', color: '#ffb11b' } }),
   official('ColorSwatch', DlColorSwatch, 'color', 'alpha', { defaultProps: { color: '#ffb11b' } }),
   official('ColorSwatchPicker', DlColorSwatchPicker, 'color', 'alpha', { defaultProps: { colors: ['#ffb11b', '#32cd32', '#87ceeb'] } }),

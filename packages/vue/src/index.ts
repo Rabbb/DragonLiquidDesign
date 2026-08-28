@@ -27,7 +27,7 @@ export type { DlColorFormat, DlColorSwatchOption, DlColorSwatchSource } from './
 
 export {
   DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlButton,
-  DlCalendar, DlCard, DlCheckbox, DlChoicePortal, DlCollapsible, DlColorArea, DlColorField, DlColorSlider,
+  DlCalendar, DlCard, DlCheckbox, DlChoicePortal, DlCollapsible, DlColorArea, DlColorField, DlColorPicker, DlColorSlider,
   DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContextMenu, DlDateField, DlDatePicker,
   DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
   DlHoverCard, DlIconButton,

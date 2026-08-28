@@ -147,6 +147,7 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   rating: () => import('../docs/AlphaFormColorDocs.vue'),
   'color-area': () => import('../docs/AlphaFormColorDocs.vue'),
   'color-field': () => import('../docs/AlphaFormColorDocs.vue'),
+  'color-picker': () => import('../docs/AlphaFormColorDocs.vue'),
   'color-slider': () => import('../docs/AlphaFormColorDocs.vue'),
   'color-swatch': () => import('../docs/AlphaFormColorDocs.vue'),
   'color-swatch-picker': () => import('../docs/AlphaFormColorDocs.vue'),
@@ -175,7 +176,7 @@ const sharedDocIds = new Set([
   'checkbox', 'radio-group', 'slider', 'switch', 'accordion', 'avatar', 'collapsible', 'popover', 'progress', 'separator', 'tabs', 'tooltip',
   'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'tags-input', 'toggle', 'toggle-group',
   'alert-dialog', 'aspect-ratio', 'context-menu', 'dropdown-menu', 'hover-card', 'menubar', 'navigation-menu', 'pagination', 'scroll-area', 'splitter', 'stepper', 'toast', 'toolbar',
-  'autocomplete', 'rating', 'color-area', 'color-field', 'color-slider', 'color-swatch', 'color-swatch-picker',
+  'autocomplete', 'rating', 'color-area', 'color-field', 'color-picker', 'color-slider', 'color-swatch', 'color-swatch-picker',
   'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree',
   'multi-choice', 'segmented', 'virtual-list',
 ])

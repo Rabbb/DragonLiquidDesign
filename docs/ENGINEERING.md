@@ -205,7 +205,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.6.0-alpha.12.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.6.0-alpha.28.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -247,14 +247,14 @@ npm run build:showcase
 当 Props 引用 `DlMenuItem[]`、`DlSelectOption[]` 等公开结构化类型时，必须继续展示对应数据结构表，
 列为“属性 / 说明 / 类型 / 是否必填”，并递归补充嵌套类型。元数据由
 `apps/showcase/scripts/generate-component-api.mjs` 从 `packages/vue/src/components/Dl*.vue`、
-`primitive.types.ts` 和 `select.types.ts` 自动生成，构建前会校验目录中的 63 个组件均有 Props 数据，
+`primitive.types.ts` 和 `select.types.ts` 自动生成，构建前会校验目录中的 89 个组件均有 Props 数据，
 并确保 Toolbar 含有 `DlMenuItem[]` 表。表格使用
 `vxe-table`，视觉沿用 TodoMoe API 卡片的半透明表面、金色代码标签和分隔线；VXE 资源仅在
 组件页按需加载，不能进入介绍首页的首屏资源。
 
 ### 9.2 性能边界
 
-63 个可用组件文档位于 `apps/showcase/src/docs`，均通过动态
+89 个可用组件文档位于 `apps/showcase/src/docs`，均通过动态
 `import()` 加载。基础组件使用独立文档 chunk；同族 Reka 封装可以共享表单或通用原语
 文档 chunk，但模板必须用互斥条件只渲染当前组件和当前场景。禁止把全部案例重新合并到
 首页或同步导入的单个组件中。
@@ -269,5 +269,5 @@ npm run build:showcase
 当前版本下载地址为：
 
 ```text
-http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.27.tgz
+http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.28.tgz
 ```

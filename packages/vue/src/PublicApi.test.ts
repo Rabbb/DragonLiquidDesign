@@ -6,7 +6,7 @@ import DlNumberField from './components/DlNumberField.vue'
 
 const componentNames = [
   'DlAccordion', 'DlAlertDialog', 'DlAspectRatio', 'DlAutocomplete', 'DlAvatar', 'DlBadge', 'DlButton', 'DlCalendar', 'DlCard', 'DlCheckbox',
-  'DlChoicePortal', 'DlCollapsible', 'DlColorArea', 'DlColorField', 'DlColorSlider', 'DlColorSwatch', 'DlColorSwatchPicker', 'DlCombobox', 'DlContextMenu', 'DlDateField', 'DlDatePicker', 'DlDateRangeField', 'DlDateRangePicker', 'DlDialog', 'DlDrawer', 'DlDropdownMenu', 'DlEditable', 'DlHoverCard',
+  'DlChoicePortal', 'DlCollapsible', 'DlColorArea', 'DlColorField', 'DlColorPicker', 'DlColorSlider', 'DlColorSwatch', 'DlColorSwatchPicker', 'DlCombobox', 'DlContextMenu', 'DlDateField', 'DlDatePicker', 'DlDateRangeField', 'DlDateRangePicker', 'DlDialog', 'DlDrawer', 'DlDropdownMenu', 'DlEditable', 'DlHoverCard',
   'DlIconButton',
   'DlInputButton', 'DlInputCheckbox', 'DlInputColor', 'DlInputDatetimeLocal', 'DlInputEmail', 'DlInputFile', 'DlInputHidden', 'DlInputImage', 'DlInputNumber', 'DlInputPassword', 'DlInputRadio', 'DlInputRange', 'DlInputReset', 'DlInputSearch', 'DlInputSubmit', 'DlInputTel', 'DlInputText', 'DlInputUrl', 'DlInputWeek',
   'DlLabel', 'DlListbox', 'DlMdx', 'DlMenubar', 'DlMultiChoice', 'DlNavigationMenu', 'DlNumberField',
@@ -17,7 +17,7 @@ const componentNames = [
 
 describe('public component API', () => {
   it('exports every stable catalog component', () => {
-    expect(componentNames).toHaveLength(88)
+    expect(componentNames).toHaveLength(89)
     for (const name of componentNames) expect(library).toHaveProperty(name)
   })
 

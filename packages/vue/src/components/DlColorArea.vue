@@ -12,9 +12,6 @@ const props = withDefaults(defineProps<{
   xChannel?: ColorChannel
   yChannel?: ColorChannel
   disabled?: boolean
-  label?: string
-  description?: string
-  showValue?: boolean
   size?: 'sm' | 'md' | 'lg'
 }>(), {
   modelValue: '#ff8c00',
@@ -22,9 +19,6 @@ const props = withDefaults(defineProps<{
   xChannel: 'saturation',
   yChannel: 'lightness',
   disabled: false,
-  label: undefined,
-  description: undefined,
-  showValue: false,
   size: 'md',
 })
 
@@ -46,10 +40,6 @@ const outerStyle = computed(() => attrs.style as StyleValue)
     :class="[`is-${size}`, { 'is-disabled': disabled }, $attrs.class]"
     :style="outerStyle"
   >
-    <div v-if="label || description || showValue" class="dl-color-meta">
-      <span><b v-if="label">{{ label }}</b><small v-if="description">{{ description }}</small></span>
-      <small v-if="showValue">{{ modelValue.toUpperCase() }}</small>
-    </div>
     <ColorAreaRoot
       v-slot="{ style }"
       :model-value="modelValue"
@@ -70,7 +60,7 @@ const outerStyle = computed(() => attrs.style as StyleValue)
 </template>
 
 <style scoped>
-.dl-color-area { display: grid; gap: 8px; width: 100%; }
+.dl-color-area { width: 100%; }
 .dl-color-area__checker { overflow: hidden; border: 1px solid var(--dl-border-strong); border-radius: var(--dl-radius-md); box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 13px 34px color-mix(in srgb, var(--dl-night) 22%, transparent); }
 .dl-color-area__surface { position: relative; width: 100%; height: 100%; touch-action: none; outline: none; }
 .dl-color-area__surface:focus-visible { box-shadow: inset var(--dl-focus); }

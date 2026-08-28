@@ -225,6 +225,11 @@ const componentDescriptions = {
     formatOptions: '格式切换入口中允许用户选择的颜色格式列表。',
     error: '字段的外部校验错误；显示文字反馈并标记 aria-invalid。',
   },
+  'color-picker': {
+    format: '浮层内 ColorField 提交和显示时使用的 HEX、RGB、HSL 或 HSB 格式。',
+    formatOptions: '浮层内颜色格式切换入口允许选择的格式列表。',
+    title: '颜色选择浮层的标题；不传时使用“选择颜色”。',
+  },
 }
 
 const structureDescriptions = {

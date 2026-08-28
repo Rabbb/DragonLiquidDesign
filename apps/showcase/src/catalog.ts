@@ -394,8 +394,9 @@ const rekaSeeds: RekaSeed[] = [
   { id: 'toggle', name: 'Toggle 切换按钮', category: 'form', summary: '表示开启或关闭状态的双态按钮。' },
   { id: 'toggle-group', name: 'Toggle Group 切换按钮组', category: 'form', summary: '组合一组支持单选或多选的切换按钮。' },
 
-  { id: 'color-area', name: 'Color Area 色彩区域', category: 'color', maturity: 'alpha', summary: '在二维色域中同时调整两个通道，并提供尺寸、值反馈和键盘微调。' },
+  { id: 'color-area', name: 'Color Area 二维色域', category: 'color', maturity: 'alpha', summary: '纯粹的二维颜色选择面，只负责同时调整两个颜色通道。' },
   { id: 'color-field', name: 'Color Field 色值字段', category: 'color', maturity: 'alpha', summary: '粘贴、校验并在 HEX、RGB、HSL、HSB 或独立通道间精确编辑颜色。' },
+  { id: 'color-picker', name: 'Color Picker 颜色选择器', category: 'color', maturity: 'alpha', summary: '从字段式触发器打开组合选色浮层，预览调整并在确认时提交颜色。' },
   { id: 'color-slider', name: 'Color Slider 色彩滑块', category: 'color', maturity: 'alpha', summary: '横向或纵向调整颜色通道，显示数值并支持透明度轨道。' },
   { id: 'color-swatch', name: 'Color Swatch 颜色样本', category: 'color', maturity: 'alpha', summary: '以透明底纹、名称、说明和值展示只读颜色样本。' },
   { id: 'color-swatch-picker', name: 'Color Swatch Picker 色板选择器', category: 'color', maturity: 'alpha', summary: '用紧凑或带标签网格从预设色中进行单选或多选。' },
@@ -492,7 +493,7 @@ const stableReadyIds = new Set([
   'pagination', 'scroll-area', 'splitter', 'stepper', 'toast', 'toolbar',
 ])
 const alphaReadyIds = new Set([
-  'autocomplete', 'rating', 'color-area', 'color-field', 'color-slider', 'color-swatch', 'color-swatch-picker',
+  'autocomplete', 'rating', 'color-area', 'color-field', 'color-picker', 'color-slider', 'color-swatch', 'color-swatch-picker',
   'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field',
   'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree',
 ])

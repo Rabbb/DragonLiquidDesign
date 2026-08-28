@@ -130,16 +130,22 @@ export const componentGuidance: Record<string, ComponentGuidance> = {
     '示例展示受控打开状态、说明文字和延迟挂载的内容区域。',
   ),
   'color-area': guide(
-    ['用户需要同时调整两个颜色通道时。', '主题编辑器需要可视化选择饱和度和亮度时。'],
-    '只选择预设品牌色时应使用 ColorSwatchPicker。',
-    '键盘操作必须能完成二维调整；不要只靠色块表达当前值，应保留可选的文本反馈。',
-    '示例展示与 Hue 滑块、ColorField 组合的完整调色工作台，以及尺寸变化。',
+    ['专业编辑器需要把二维色域永久嵌入页面时。', '需要自行组合通道条、字段和提交逻辑时。'],
+    '普通表单需要弹出式完整选色时使用 ColorPicker；只选预设色时使用 ColorSwatchPicker。',
+    '组件只负责二维色域，不内置标题、说明、值反馈或其他通道；使用方必须通过 aria-label 提供可访问名称。',
+    '示例只展示纯二维色域，组合式选色流程独立归入 ColorPicker。',
   ),
   'color-field': guide(
     ['用户需要精确输入、粘贴或复制颜色值时。', '视觉选择器旁需要可编辑的格式或通道补充时。'],
     '不熟悉颜色格式的普通用户不应只面对裸文本字段。',
     '字段需要标签、格式提示和文字错误；切换 HEX、RGB、HSL、HSB 时必须保持同一颜色。',
     '示例覆盖完整格式字段、独立通道、只读、透明度和无效状态。',
+  ),
+  'color-picker': guide(
+    ['普通表单需要任意颜色，同时不希望二维色域常驻占用空间时。', '颜色修改需要预览后确认提交时。'],
+    '专业工具需要把色域和通道永久铺开时自行组合 ColorArea、ColorSlider 与 ColorField；固定品牌色使用 ColorSwatchPicker。',
+    '触发器需要回显色样和文本值；浮层中的草稿只有确认后才提交，取消和关闭不得污染原值。',
+    '示例覆盖标准、紧凑和只读触发器，并在浮层内组合纯 ColorArea、Hue、Alpha 与 ColorField。',
   ),
   'color-slider': guide(
     ['一次只调整一个颜色通道时。', '需要细调 Hue、Alpha 等连续数值时。'],
@@ -155,7 +161,7 @@ export const componentGuidance: Record<string, ComponentGuidance> = {
   ),
   'color-swatch-picker': guide(
     ['只允许从审核过的主题色中选择时。', '希望降低自由选色造成的对比度风险时。'],
-    '需要任意颜色或精确通道编辑时应组合 ColorArea 与 ColorField。',
+    '需要任意颜色时使用 ColorPicker；需要常驻的专业调色工作台时再组合 ColorArea 与 ColorField。',
     '选中状态必须有非颜色标记，并支持键盘移动；业务选项宜提供名称、说明和禁用原因。',
     '示例展示语义化标签、紧凑网格、多选和富选项数据。',
   ),

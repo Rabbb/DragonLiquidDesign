@@ -15,6 +15,7 @@ import RawDlChoicePortal from './components/DlChoicePortal.vue'
 import RawDlCollapsible from './components/DlCollapsible.vue'
 import RawDlColorArea from './components/DlColorArea.vue'
 import RawDlColorField from './components/DlColorField.vue'
+import RawDlColorPicker from './components/DlColorPicker.vue'
 import RawDlColorSlider from './components/DlColorSlider.vue'
 import RawDlColorSwatch from './components/DlColorSwatch.vue'
 import RawDlColorSwatchPicker from './components/DlColorSwatchPicker.vue'
@@ -252,6 +253,7 @@ export const DlChoicePortal = managed(RawDlChoicePortal, 'DlChoicePortal', { dom
 export const DlCollapsible = managed(RawDlCollapsible, 'DlCollapsible')
 export const DlColorArea = managed(RawDlColorArea, 'DlColorArea', { domEvents: fieldEvents })
 export const DlColorField = managed(RawDlColorField, 'DlColorField', { domEvents: fieldEvents })
+export const DlColorPicker = managed(RawDlColorPicker, 'DlColorPicker', { domEvents: fieldEvents })
 export const DlColorSlider = managed(RawDlColorSlider, 'DlColorSlider', { domEvents: fieldEvents })
 export const DlColorSwatch = managed(RawDlColorSwatch, 'DlColorSwatch')
 export const DlColorSwatchPicker = managed(RawDlColorSwatchPicker, 'DlColorSwatchPicker', { domEvents: fieldEvents })

@@ -4,6 +4,7 @@ import {
   DlAutocomplete,
   DlColorArea,
   DlColorField,
+  DlColorPicker,
   DlColorSlider,
   DlColorSwatch,
   DlColorSwatchPicker,
@@ -34,6 +35,14 @@ const swatches: DlColorSwatchOption[] = [
 const swatchValues = swatches.map(item => item.value)
 const suggestions = ['异世界冒险', '异世界日常', '异世界转生', '异世界魔法']
 const isColorControl = computed(() => props.componentDefinition.category === 'color')
+const colorExampleTitle = computed(() => ({
+  'color-area': '纯二维色域',
+  'color-picker': '弹出式自由选色',
+  'color-field': '精确色值录入',
+  'color-slider': '独立通道调整',
+  'color-swatch': '只读颜色样本',
+  'color-swatch-picker': '预设色板选择',
+}[props.componentDefinition.id] ?? '颜色控件'))
 const currentValue = computed(() => {
   if (props.componentDefinition.id === 'autocomplete') return query.value || '等待输入'
   if (props.componentDefinition.id === 'rating') return `${rating.value} / 5`
@@ -45,15 +54,16 @@ const currentValue = computed(() => {
 const sources: Record<string, VueExampleSource> = {
   autocomplete: { imports: ['DlAutocomplete'], script: `import { ref } from 'vue'\n\nconst keyword = ref('')\nconst suggestions = ['异世界冒险', '异世界日常', '异世界转生']`, template: `  <section class="example">\n    <DlAutocomplete v-model="keyword" :suggestions="suggestions" placeholder="搜索动漫题材" aria-label="动漫题材" />\n    <output>当前文本：{{ keyword || '等待输入' }}</output>\n  </section>`, style: `.example { display: grid; gap: 12px; max-width: 480px; }` },
   rating: { imports: ['DlRating'], script: `import { ref } from 'vue'\n\nconst score = ref(3.5)`, template: `  <DlRating v-model="score" :length="5" :step="0.5" hoverable clearable aria-label="作品评分" />`, style: '' },
-  'color-area': { imports: ['DlColorArea', 'DlColorSlider', 'DlColorField'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f7')`, template: `  <div class="color-workbench">\n    <DlColorArea v-model="color" label="饱和度与明度" show-value aria-label="主题色二维选择" />\n    <DlColorSlider v-model="color" channel="hue" label="色相" show-value />\n    <DlColorField v-model="color" label="精确色值" hint="支持直接粘贴 HEX、RGB、HSL 或 HSB" />\n  </div>`, style: `.color-workbench { display: grid; gap: 14px; max-width: 680px; }` },
+  'color-area': { imports: ['DlColorArea'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f7')`, template: `  <DlColorArea v-model="color" aria-label="饱和度与明度二维色域" />`, style: `.dl-color-area { max-width: 680px; }` },
   'color-field': { imports: ['DlColorField'], script: `import { ref } from 'vue'\nimport type { DlColorFormat } from '@dragon-liquid/vue'\n\nconst color = ref('#7aa2f7')\nconst format = ref<DlColorFormat>('hex')`, template: `  <DlColorField\n    v-model="color"\n    v-model:format="format"\n    label="品牌强调色"\n    hint="可粘贴任一受支持格式；Enter 提交，Esc 撤销草稿"\n  />`, style: `.dl-color-field { max-width: 520px; }` },
+  'color-picker': { imports: ['DlColorPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f7')`, template: `  <DlColorPicker v-model="color" label="品牌强调色" hint="打开浮层后调整，确认时提交" />`, style: `.dl-color-picker { max-width: 420px; }` },
   'color-slider': { imports: ['DlColorSlider'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f780')`, template: `  <div class="channel-stack">\n    <DlColorSlider v-model="color" channel="hue" label="Hue" show-value />\n    <DlColorSlider v-model="color" channel="saturation" label="Saturation" show-value />\n    <DlColorSlider v-model="color" channel="lightness" label="Lightness" show-value />\n    <DlColorSlider v-model="color" channel="alpha" label="Alpha" show-value />\n  </div>`, style: `.channel-stack { display: grid; gap: 12px; max-width: 680px; }` },
   'color-swatch': { imports: ['DlColorSwatch'], template: `  <DlColorSwatch color="#7aa2f7" label="Tokyo Blue" description="Primary" label-position="right" show-value size="lg" />`, style: '' },
   'color-swatch-picker': { imports: ['DlColorSwatchPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f7')\nconst colors = [\n  { value: '#7aa2f7', label: 'Tokyo Blue', description: 'Primary' },\n  { value: '#bb9af7', label: 'Iris', description: 'Creative' },\n]`, template: `  <DlColorSwatchPicker v-model="color" :colors="colors" show-labels show-values aria-label="品牌主题色" />`, style: `.dl-color-swatch-picker { max-width: 680px; }` },
 }
 
 const content = computed(() => ({
-  title: isColorControl.value ? `${props.componentDefinition.name} · 统一颜色工作流` : `${props.componentDefinition.name} · Alpha 先行体验`,
+  title: isColorControl.value ? `${props.componentDefinition.name} · ${colorExampleTitle.value}` : `${props.componentDefinition.name} · Alpha 先行体验`,
   description: componentGuidanceFor(props.componentDefinition.id).example,
   code: vueSfc(sources[props.componentDefinition.id]),
   tips: isColorControl.value
@@ -72,14 +82,14 @@ const content = computed(() => ({
         <div><span>十分之一星 · 4.8</span><DlRating :model-value="4.8" :step="0.1" readonly aria-label="四点八星" /></div>
       </div>
 
-      <section v-else-if="componentDefinition.id === 'color-area'" class="color-workbench">
-        <header class="color-result-bar">
-          <DlColorSwatch :color="color" label="当前主题色" label-position="right" show-value size="lg" />
-          <span><b>二维选择</b><small>键盘方向键微调，Shift 加速</small></span>
-        </header>
-        <DlColorArea v-model="color" label="饱和度与明度" description="Saturation × Lightness" show-value aria-label="主题色二维选择" />
-        <DlColorSlider v-model="color" channel="hue" label="色相" show-value />
-        <DlColorField v-model="color" v-model:format="format" label="精确色值" hint="可粘贴 HEX、RGB、HSL 或 HSB" />
+      <section v-else-if="componentDefinition.id === 'color-area'" class="color-area-demo">
+        <DlColorArea v-model="color" aria-label="饱和度与明度二维色域" />
+      </section>
+
+      <section v-else-if="componentDefinition.id === 'color-picker'" class="color-picker-trigger-gallery">
+        <DlColorPicker v-model="color" v-model:format="format" label="品牌强调色" hint="打开浮层后调整，确认时提交" />
+        <DlColorPicker v-model="alphaColor" label="透明强调色" size="sm" />
+        <DlColorPicker model-value="#9ece6a" label="只读颜色" readonly />
       </section>
 
       <section v-else-if="componentDefinition.id === 'color-field'" class="color-field-gallery">
@@ -140,7 +150,9 @@ const content = computed(() => ({
 .alpha-form-demo { display: grid; gap: 1.2rem; width: min(100%, 820px); margin: 0 auto; padding: 1rem; }
 .alpha-form-demo output { color: var(--dl-text-faint); font: .66rem "Cascadia Code", Consolas, monospace; }
 .rating-showcase { display: grid; gap: 1rem; }.rating-showcase > div { display: grid; gap: .4rem; }.rating-showcase span { color: var(--dl-text-faint); font-size: .76rem; }
-.color-workbench, .color-field-gallery, .color-slider-gallery, .color-swatch-gallery, .color-picker-gallery { display: grid; gap: 14px; }
+.color-area-demo { width: min(100%, 680px); }
+.color-picker-trigger-gallery, .color-field-gallery, .color-slider-gallery, .color-swatch-gallery, .color-picker-gallery { display: grid; gap: 14px; }
+.color-picker-trigger-gallery { width: min(100%, 440px); }
 .color-result-bar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 13px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); background: var(--dl-surface); }
 .color-result-bar > span, .vertical-channel-card > span { display: grid; gap: 4px; text-align: right; }.color-result-bar b, .vertical-channel-card b { color: var(--dl-text); font-size: .72rem; }.color-result-bar small, .vertical-channel-card small { color: var(--dl-text-faint); font-size: .6rem; }
 .color-field-gallery { grid-template-columns: repeat(2, minmax(0,1fr)); }.color-field-gallery article, .color-swatch-gallery article, .color-picker-gallery article { display: grid; align-content: start; gap: 12px; padding: 16px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md); background: var(--dl-surface); }.color-field-gallery article:last-child { grid-column: 1 / -1; grid-template-columns: repeat(2,minmax(0,1fr)); }.color-field-gallery article:last-child h3 { grid-column: 1 / -1; }

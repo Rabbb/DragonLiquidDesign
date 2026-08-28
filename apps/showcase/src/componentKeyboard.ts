@@ -37,6 +37,12 @@ define(['color-field'], {
   paste: '支持带或不带 # 的 HEX，以及 CSS RGB、HSL、HSB 颜色文本；无效内容保留在字段中并显示文字错误。',
 })
 
+define(['color-picker'], {
+  summary: '触发器打开组合选色浮层；浮层内依次操作二维色域、通道滑块和可粘贴色值字段，确认后才提交草稿。',
+  keys: ['Enter / Space 打开', 'Alt+↓ 打开', '方向键调整色域与通道', 'Tab / Shift+Tab 遍历浮层', 'Enter 应用按钮提交', 'Escape 关闭并放弃草稿'],
+  paste: '打开后可在 ColorField 中粘贴 HEX、RGB、HSL 或 HSB；有效值先进入草稿，点击应用后提交。',
+})
+
 define(['input-color', 'input-number', 'input-range', 'number-field', 'rating', 'slider', 'color-area', 'color-slider', 'splitter'], {
   summary: '连续值和数值控件可完全通过键盘微调，并遵守最小值、最大值和步长。',
   keys: ['方向键微调', 'PageUp / PageDown 大步调整', 'Home / End 到边界'],

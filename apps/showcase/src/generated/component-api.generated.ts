@@ -905,24 +905,6 @@ export default {
         "defaultValue": "false"
       },
       {
-        "prop": "label",
-        "description": "控件的显示标签或无障碍名称。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "description",
-        "description": "补充说明文字；不传时隐藏说明区域。",
-        "type": "string",
-        "defaultValue": "undefined"
-      },
-      {
-        "prop": "showValue",
-        "description": "是否显示格式化后的当前数值。",
-        "type": "boolean",
-        "defaultValue": "false"
-      },
-      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "'sm' | 'md' | 'lg'",
@@ -1072,6 +1054,302 @@ export default {
             "description": "色相、饱和度、亮度颜色格式。",
             "type": "'hsb'",
             "defaultValue": "HSB"
+          }
+        ]
+      }
+    ]
+  },
+  "color-picker": {
+    "props": [
+      {
+        "prop": "open",
+        "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string",
+        "defaultValue": "'#ff8c00'"
+      },
+      {
+        "prop": "format",
+        "description": "浮层内 ColorField 提交和显示时使用的 HEX、RGB、HSL 或 HSB 格式。",
+        "type": "DlColorFormat",
+        "defaultValue": "'hex'"
+      },
+      {
+        "prop": "formatOptions",
+        "description": "浮层内颜色格式切换入口允许选择的格式列表。",
+        "type": "readonly DlColorFormat[]",
+        "defaultValue": "() => ['hex', 'rgb', 'hsl', 'hsb']"
+      },
+      {
+        "prop": "colorSpace",
+        "description": "颜色值采用的色彩空间。",
+        "type": "ColorSpace",
+        "defaultValue": "'hsl'"
+      },
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "hint",
+        "description": "显示在标签下方的格式或操作提示。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "placeholder",
+        "description": "当前值为空时显示的占位提示。",
+        "type": "string",
+        "defaultValue": "'选择颜色'"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "readonly",
+        "description": "是否只读；保留浏览能力但禁止修改。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "required",
+        "description": "是否标记为表单必填项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "name",
+        "description": "参与表单提交时使用的字段名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "allowAlpha",
+        "description": "是否保留输入颜色中的透明度通道；关闭时统一输出不透明颜色。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "DlSize",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "side",
+        "description": "设置浮层相对触发器出现的方位。",
+        "type": "DlOverlaySide | DlOverlayBaseSide",
+        "defaultValue": "'bottom'"
+      },
+      {
+        "prop": "align",
+        "description": "设置浮层相对触发器的对齐方式。",
+        "type": "'start' | 'center' | 'end'",
+        "defaultValue": "'start'"
+      },
+      {
+        "prop": "title",
+        "description": "颜色选择浮层的标题；不传时使用“选择颜色”。",
+        "type": "string",
+        "defaultValue": "'选择颜色'"
+      },
+      {
+        "prop": "confirmLabel",
+        "description": "确认操作按钮显示的文字。",
+        "type": "string",
+        "defaultValue": "'应用'"
+      },
+      {
+        "prop": "cancelLabel",
+        "description": "取消操作按钮显示的文字。",
+        "type": "string",
+        "defaultValue": "'取消'"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlColorFormat",
+        "title": "DlColorFormat",
+        "description": "ColorField 支持的颜色字符串输出格式。",
+        "rows": [
+          {
+            "prop": "hex",
+            "description": "十六进制颜色；透明时输出八位 HEX。",
+            "type": "'hex'",
+            "defaultValue": "HEX"
+          },
+          {
+            "prop": "rgb",
+            "description": "CSS rgb() 颜色格式。",
+            "type": "'rgb'",
+            "defaultValue": "RGB"
+          },
+          {
+            "prop": "hsl",
+            "description": "CSS hsl() 颜色格式。",
+            "type": "'hsl'",
+            "defaultValue": "HSL"
+          },
+          {
+            "prop": "hsb",
+            "description": "色相、饱和度、亮度颜色格式。",
+            "type": "'hsb'",
+            "defaultValue": "HSB"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlSize",
+        "title": "DlSize",
+        "description": "组件可用的标准尺寸。",
+        "rows": [
+          {
+            "prop": "sm",
+            "description": "紧凑尺寸，适合密集界面和次要操作。",
+            "type": "'sm'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "md",
+            "description": "默认尺寸，适合大多数常规界面。",
+            "type": "'md'",
+            "defaultValue": "标准"
+          },
+          {
+            "prop": "lg",
+            "description": "放大尺寸，适合重点内容和宽松布局。",
+            "type": "'lg'",
+            "defaultValue": "宽松"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlOverlaySide",
+        "title": "DlOverlaySide",
+        "description": "Popover 与 Tooltip 共用的十二方位数字枚举。",
+        "rows": [
+          {
+            "prop": "Top",
+            "description": "上方居中。",
+            "type": "0",
+            "defaultValue": "上"
+          },
+          {
+            "prop": "TopLeft",
+            "description": "上方靠左。",
+            "type": "1",
+            "defaultValue": "左上"
+          },
+          {
+            "prop": "TopRight",
+            "description": "上方靠右。",
+            "type": "2",
+            "defaultValue": "右上"
+          },
+          {
+            "prop": "Right",
+            "description": "右侧居中。",
+            "type": "3",
+            "defaultValue": "右"
+          },
+          {
+            "prop": "RightTop",
+            "description": "右侧靠上。",
+            "type": "4",
+            "defaultValue": "右上"
+          },
+          {
+            "prop": "RightBottom",
+            "description": "右侧靠下。",
+            "type": "5",
+            "defaultValue": "右下"
+          },
+          {
+            "prop": "Bottom",
+            "description": "下方居中。",
+            "type": "6",
+            "defaultValue": "下"
+          },
+          {
+            "prop": "BottomLeft",
+            "description": "下方靠左。",
+            "type": "7",
+            "defaultValue": "左下"
+          },
+          {
+            "prop": "BottomRight",
+            "description": "下方靠右。",
+            "type": "8",
+            "defaultValue": "右下"
+          },
+          {
+            "prop": "Left",
+            "description": "左侧居中。",
+            "type": "9",
+            "defaultValue": "左"
+          },
+          {
+            "prop": "LeftTop",
+            "description": "左侧靠上。",
+            "type": "10",
+            "defaultValue": "左上"
+          },
+          {
+            "prop": "LeftBottom",
+            "description": "左侧靠下。",
+            "type": "11",
+            "defaultValue": "左下"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlOverlayBaseSide",
+        "title": "DlOverlayBaseSide",
+        "description": "兼容 Reka UI 的四个基础方位字符串。",
+        "rows": [
+          {
+            "prop": "top",
+            "description": "DlOverlayBaseSide 的 top 选项。",
+            "type": "'top'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "right",
+            "description": "DlOverlayBaseSide 的 right 选项。",
+            "type": "'right'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "bottom",
+            "description": "DlOverlayBaseSide 的 bottom 选项。",
+            "type": "'bottom'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "left",
+            "description": "DlOverlayBaseSide 的 left 选项。",
+            "type": "'left'",
+            "defaultValue": "枚举值"
           }
         ]
       }

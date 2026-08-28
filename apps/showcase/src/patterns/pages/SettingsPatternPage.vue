@@ -13,6 +13,7 @@ import {
   DlCollapsible,
   DlColorArea,
   DlColorField,
+  DlColorPicker,
   DlColorSlider,
   DlColorSwatch,
   DlColorSwatchPicker,
@@ -86,6 +87,7 @@ const componentGuideTabs: Record<string, string> = {
   separator: 'appearance',
   'color-swatch-picker': 'appearance',
   'color-field': 'appearance',
+  'color-picker': 'appearance',
   collapsible: 'appearance',
   switch: 'appearance',
   'color-area': 'appearance',
@@ -202,6 +204,7 @@ onBeforeUnmount(() => window.removeEventListener('dl-guide-tab-request', handleG
               <DlSeparator />
               <div class="settings-field"><DlLabel>界面氛围</DlLabel><DlRadioGroup v-model="settings.themeTone" :options="toneOptions" /></div>
               <div class="settings-field"><DlLabel>自定义强调色</DlLabel><DlColorSwatchPicker v-model="accentColor" :colors="['#9ad6bf', '#8fb9e8', '#e4b76a', '#ef9fbd', '#c9a9e8']" /><DlColorField v-model="accentColor" /></div>
+              <div class="settings-field"><DlLabel>弹出式任意颜色</DlLabel><DlColorPicker v-model="accentColor" /></div>
               <DlCollapsible title="精细调整强调色" description="二维色域、色相通道和最终色样共同编辑一个颜色值">
                 <div class="color-workbench"><DlColorArea v-model="accentColor" /><DlColorSlider v-model="accentColor" channel="hue" /><div class="color-result"><DlColorSwatch :color="accentColor" label="当前强调色" size="lg" /><span><b>{{ accentColor.toUpperCase() }}</b><small>全局预览同步更新</small></span></div></div>
               </DlCollapsible>
