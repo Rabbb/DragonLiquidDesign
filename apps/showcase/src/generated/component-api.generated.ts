@@ -903,6 +903,30 @@ export default {
         "description": "是否禁用控件及其交互。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "description",
+        "description": "补充说明文字；不传时隐藏说明区域。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "showValue",
+        "description": "是否显示格式化后的当前数值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "'sm' | 'md' | 'lg'",
+        "defaultValue": "'md'"
       }
     ],
     "relatedTypes": []
@@ -916,10 +940,16 @@ export default {
         "defaultValue": "'#ff8c00'"
       },
       {
-        "prop": "colorSpace",
-        "description": "颜色值采用的色彩空间。",
-        "type": "ColorSpace",
-        "defaultValue": "'hsl'"
+        "prop": "format",
+        "description": "完整颜色值提交和显示时使用的 HEX、RGB、HSL 或 HSB 格式。",
+        "type": "DlColorFormat",
+        "defaultValue": "'hex'"
+      },
+      {
+        "prop": "formatOptions",
+        "description": "格式切换入口中允许用户选择的颜色格式列表。",
+        "type": "readonly DlColorFormat[]",
+        "defaultValue": "() => ['hex', 'rgb', 'hsl', 'hsb']"
       },
       {
         "prop": "channel",
@@ -928,10 +958,28 @@ export default {
         "defaultValue": "undefined"
       },
       {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "hint",
+        "description": "显示在标签下方的格式或操作提示。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "error",
+        "description": "字段的外部校验错误；显示文字反馈并标记 aria-invalid。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "placeholder",
         "description": "当前值为空时显示的占位提示。",
         "type": "string",
-        "defaultValue": "'#RRGGBB'"
+        "defaultValue": "undefined"
       },
       {
         "prop": "disabled",
@@ -946,13 +994,88 @@ export default {
         "defaultValue": "false"
       },
       {
+        "prop": "required",
+        "description": "是否标记为表单必填项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "name",
         "description": "参与表单提交时使用的字段名称。",
         "type": "string",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "allowAlpha",
+        "description": "是否保留输入颜色中的透明度通道；关闭时统一输出不透明颜色。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showPreview",
+        "description": "是否在颜色字段内显示实时颜色预览。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "showFormat",
+        "description": "是否显示颜色格式切换入口。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "copyable",
+        "description": "是否提供复制当前值的快捷按钮。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "step",
+        "description": "每次操作改变的数值步长。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "disableWheelChange",
+        "description": "是否阻止滚轮误改独立颜色通道；方向键仍可微调。",
+        "type": "boolean",
+        "defaultValue": "true"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "kind": "enum",
+        "name": "DlColorFormat",
+        "title": "DlColorFormat",
+        "description": "ColorField 支持的颜色字符串输出格式。",
+        "rows": [
+          {
+            "prop": "hex",
+            "description": "十六进制颜色；透明时输出八位 HEX。",
+            "type": "'hex'",
+            "defaultValue": "HEX"
+          },
+          {
+            "prop": "rgb",
+            "description": "CSS rgb() 颜色格式。",
+            "type": "'rgb'",
+            "defaultValue": "RGB"
+          },
+          {
+            "prop": "hsl",
+            "description": "CSS hsl() 颜色格式。",
+            "type": "'hsl'",
+            "defaultValue": "HSL"
+          },
+          {
+            "prop": "hsb",
+            "description": "色相、饱和度、亮度颜色格式。",
+            "type": "'hsb'",
+            "defaultValue": "HSB"
+          }
+        ]
+      }
+    ]
   },
   "color-slider": {
     "props": [
@@ -991,6 +1114,30 @@ export default {
         "description": "每次操作改变的数值步长。",
         "type": "number",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "description",
+        "description": "补充说明文字；不传时隐藏说明区域。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "showValue",
+        "description": "是否显示格式化后的当前数值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "'sm' | 'md' | 'lg'",
+        "defaultValue": "'md'"
       }
     ],
     "relatedTypes": []
@@ -1010,6 +1157,12 @@ export default {
         "defaultValue": "undefined"
       },
       {
+        "prop": "description",
+        "description": "补充说明文字；不传时隐藏说明区域。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
         "prop": "size",
         "description": "设置控件尺寸。",
         "type": "DlSize",
@@ -1018,8 +1171,20 @@ export default {
       {
         "prop": "shape",
         "description": "设置控件的外轮廓形状。",
-        "type": "'circle' | 'rounded'",
+        "type": "'circle' | 'rounded' | 'square'",
         "defaultValue": "'rounded'"
+      },
+      {
+        "prop": "labelPosition",
+        "description": "颜色样本标签的显示位置；可隐藏、置右或置于下方。",
+        "type": "'hidden' | 'right' | 'bottom'",
+        "defaultValue": "'hidden'"
+      },
+      {
+        "prop": "showValue",
+        "description": "是否显示格式化后的当前数值。",
+        "type": "boolean",
+        "defaultValue": "false"
       }
     ],
     "relatedTypes": [
@@ -1062,7 +1227,7 @@ export default {
       {
         "prop": "colors",
         "description": "供用户选择的颜色值列表。",
-        "type": "string[]",
+        "type": "readonly (string | DlColorSwatchOption)[]",
         "defaultValue": "—"
       },
       {
@@ -1082,9 +1247,72 @@ export default {
         "description": "参与表单提交时使用的字段名称。",
         "type": "string",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "showLabels",
+        "description": "是否在颜色样本旁显示名称和说明。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "showValues",
+        "description": "是否在颜色选项说明为空时显示原始色值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "columns",
+        "description": "色板网格使用的固定列数；不传时根据容器宽度自动排列。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "'sm' | 'md' | 'lg'",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "loop",
+        "description": "键盘导航到边界时是否循环。",
+        "type": "boolean",
+        "defaultValue": "true"
       }
     ],
-    "relatedTypes": []
+    "relatedTypes": [
+      {
+        "name": "DlColorSwatchOption",
+        "description": "ColorSwatchPicker 使用的命名颜色选项，可附带说明或禁用状态。",
+        "rows": [
+          {
+            "prop": "value",
+            "description": "表单提交或选择操作使用的值。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "label",
+            "description": "控件的显示标签或无障碍名称。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "disabled",
+            "description": "是否禁用控件及其交互。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlColorSwatchOption"
+      }
+    ]
   },
   "combobox": {
     "props": [
@@ -2531,7 +2759,7 @@ export default {
       },
       {
         "prop": "copyable",
-        "description": "设置 copyable 属性。",
+        "description": "是否提供复制当前值的快捷按钮。",
         "type": "boolean",
         "defaultValue": "true"
       },
@@ -7118,7 +7346,7 @@ export default {
         "prop": "delimiter",
         "description": "输入多个值时用于分隔内容的字符。",
         "type": "string",
-        "defaultValue": "'"
+        "defaultValue": "','"
       },
       {
         "prop": "clearable",

@@ -22,6 +22,8 @@ export type {
   DlFocusNavigatorTarget,
   DlFocusNavigatorZoneDefinition,
 } from './components/focus-navigator'
+export { formatColorValue, normalizeColorInput, readableColorInk, resolveColorSwatches, safeColorValue } from './components/color-controls'
+export type { DlColorFormat, DlColorSwatchOption, DlColorSwatchSource } from './components/color-controls'
 
 export {
   DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlButton,

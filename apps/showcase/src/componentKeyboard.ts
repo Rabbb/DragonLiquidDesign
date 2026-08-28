@@ -25,10 +25,16 @@ define(['input-checkbox', 'input-radio', 'checkbox', 'switch', 'toggle'], {
   keys: ['Tab 聚焦', 'Space 切换'],
 })
 
-define(['input-email', 'input-file', 'input-password', 'input-search', 'input-tel', 'input-text', 'input-url', 'textarea', 'editable', 'pin-input', 'tags-input', 'color-field'], {
+define(['input-email', 'input-file', 'input-password', 'input-search', 'input-tel', 'input-text', 'input-url', 'textarea', 'editable', 'pin-input', 'tags-input'], {
   summary: '文本录入保留浏览器编辑、选择、撤销和剪贴板能力，不截获平台通用组合键。',
   keys: ['Tab 聚焦', 'Ctrl/Cmd+A/C/X/V/Z', 'Enter 提交（控件支持时）', 'Escape 取消（控件支持时）'],
   paste: '直接粘贴文本；组件只进行自身声明过的格式化或校验。',
+})
+
+define(['color-field'], {
+  summary: '完整颜色值可直接录入、粘贴和切换格式；独立通道模式使用数值控件的键盘步进规则。',
+  keys: ['Tab 切换格式、输入与复制', 'Enter 提交', 'Escape 恢复提交前的值', '方向键微调通道', 'PageUp / PageDown 大步调整', 'Home / End 到通道边界'],
+  paste: '支持带或不带 # 的 HEX，以及 CSS RGB、HSL、HSB 颜色文本；无效内容保留在字段中并显示文字错误。',
 })
 
 define(['input-color', 'input-number', 'input-range', 'number-field', 'rating', 'slider', 'color-area', 'color-slider', 'splitter'], {

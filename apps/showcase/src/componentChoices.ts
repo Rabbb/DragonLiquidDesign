@@ -170,12 +170,12 @@ export const componentChoiceFamilies: ComponentChoiceFamily[] = [
     summary: '先区分业务配置与设计工具；普通业务不需要暴露完整色彩通道。',
     preferredId: 'input-color',
     options: [
-      { id: 'input-color', useWhen: '普通表单输入单个颜色值' },
-      { id: 'color-swatch-picker', useWhen: '只能从品牌预设色中选择' },
-      { id: 'color-field', useWhen: '精确编辑结构化颜色通道' },
-      { id: 'color-area', useWhen: '组合二维饱和度与明度面板' },
-      { id: 'color-slider', useWhen: '组合单个颜色通道滑块' },
-      { id: 'color-swatch', useWhen: '只呈现颜色样本而不允许编辑' },
+      { id: 'input-color', useWhen: '简单表单只需浏览器原生选色入口与文本值' },
+      { id: 'color-swatch-picker', useWhen: '只能从品牌或业务预设色中单选、多选' },
+      { id: 'color-field', useWhen: '需要粘贴、校验、复制或切换 HEX、RGB、HSL、HSB' },
+      { id: 'color-area', useWhen: '专业调色流程需要二维色域' },
+      { id: 'color-slider', useWhen: '专业调色流程需要微调某个颜色通道' },
+      { id: 'color-swatch', useWhen: '只读展示命名颜色、透明度或设计令牌' },
     ],
   },
   {

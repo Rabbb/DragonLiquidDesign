@@ -48,4 +48,10 @@ describe('public component API', () => {
     expect(library).toHaveProperty('DlFocusNavigator')
     expect(library).toHaveProperty('discoverDlFocusNavigatorZones')
   })
+
+  it('exports the shared color value helpers', () => {
+    expect(library.normalizeColorInput('7aa2f7')).toBe('#7aa2f7')
+    expect(library.formatColorValue('#7aa2f7', 'rgb')).toBe('rgb(122, 162, 247)')
+    expect(library.resolveColorSwatches(['#7aa2f7'])[0]?.value).toBe('#7aa2f7')
+  })
 })

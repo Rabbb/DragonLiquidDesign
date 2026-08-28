@@ -1,20 +1,82 @@
 <script setup lang="ts">
 import { ColorAreaArea, ColorAreaRoot, ColorAreaThumb, type ColorChannel, type ColorSpace } from 'reka-ui'
+import { computed, useAttrs, type StyleValue } from 'vue'
+import { safeColorValue } from './color-controls'
+import './color-controls.css'
 
-withDefaults(defineProps<{
+defineOptions({ inheritAttrs: false })
+
+const props = withDefaults(defineProps<{
   modelValue?: string
   colorSpace?: ColorSpace
   xChannel?: ColorChannel
   yChannel?: ColorChannel
   disabled?: boolean
-}>(), { modelValue: '#ff8c00', colorSpace: 'hsl', xChannel: 'saturation', yChannel: 'lightness', disabled: false })
+  label?: string
+  description?: string
+  showValue?: boolean
+  size?: 'sm' | 'md' | 'lg'
+}>(), {
+  modelValue: '#ff8c00',
+  colorSpace: 'hsl',
+  xChannel: 'saturation',
+  yChannel: 'lightness',
+  disabled: false,
+  label: undefined,
+  description: undefined,
+  showValue: false,
+  size: 'md',
+})
+
 const emit = defineEmits<{ 'update:modelValue': [value: string]; changeEnd: [value: string] }>()
+const attrs = useAttrs()
+const areaAttrs = computed(() => {
+  const { class: _class, style: _style, ...rest } = attrs
+  return rest
+})
+const visualColor = computed(() => safeColorValue(props.modelValue))
+const outerStyle = computed(() => attrs.style as StyleValue)
 </script>
 
 <template>
-  <ColorAreaRoot v-slot="{ style }" data-dl data-slot="color-area" :model-value="modelValue" :color-space="colorSpace" :x-channel="xChannel" :y-channel="yChannel" :disabled="disabled" class="w-full data-[disabled]:opacity-45" @update:model-value="emit('update:modelValue', $event)" @change-end="emit('changeEnd', $event)">
-    <ColorAreaArea :style="style" class="relative h-56 w-full touch-none rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] shadow-[inset_0_1px_0_rgba(255,255,255,.15),0_18px_45px_rgba(0,0,0,.28)] outline-none focus-visible:[box-shadow:var(--dl-focus)]">
-      <ColorAreaThumb class="size-5 rounded-full border-2 border-white bg-transparent shadow-[0_2px_10px_rgba(0,0,0,.65)] outline-none focus-visible:[box-shadow:var(--dl-focus)]" />
-    </ColorAreaArea>
-  </ColorAreaRoot>
+  <div
+    data-dl
+    data-slot="color-area"
+    class="dl-color-area"
+    :class="[`is-${size}`, { 'is-disabled': disabled }, $attrs.class]"
+    :style="outerStyle"
+  >
+    <div v-if="label || description || showValue" class="dl-color-meta">
+      <span><b v-if="label">{{ label }}</b><small v-if="description">{{ description }}</small></span>
+      <small v-if="showValue">{{ modelValue.toUpperCase() }}</small>
+    </div>
+    <ColorAreaRoot
+      v-slot="{ style }"
+      :model-value="modelValue"
+      :color-space="colorSpace"
+      :x-channel="xChannel"
+      :y-channel="yChannel"
+      :disabled="disabled"
+      @update:model-value="emit('update:modelValue', $event)"
+      @change-end="emit('changeEnd', $event)"
+    >
+      <div class="dl-color-area__checker dl-color-checker">
+        <ColorAreaArea v-bind="areaAttrs" :style="style" class="dl-color-area__surface">
+          <ColorAreaThumb class="dl-color-thumb" :style="{ background: visualColor }" />
+        </ColorAreaArea>
+      </div>
+    </ColorAreaRoot>
+  </div>
 </template>
+
+<style scoped>
+.dl-color-area { display: grid; gap: 8px; width: 100%; }
+.dl-color-area__checker { overflow: hidden; border: 1px solid var(--dl-border-strong); border-radius: var(--dl-radius-md); box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 13px 34px color-mix(in srgb, var(--dl-night) 22%, transparent); }
+.dl-color-area__surface { position: relative; width: 100%; height: 100%; touch-action: none; outline: none; }
+.dl-color-area__surface:focus-visible { box-shadow: inset var(--dl-focus); }
+.dl-color-area.is-sm .dl-color-area__checker { height: 150px; }
+.dl-color-area.is-md .dl-color-area__checker { height: 224px; }
+.dl-color-area.is-lg .dl-color-area__checker { height: 300px; }
+.dl-color-area.is-disabled { opacity: .46; }
+@media (max-width: 560px) { .dl-color-area.is-lg .dl-color-area__checker { height: 240px; } }
+</style>

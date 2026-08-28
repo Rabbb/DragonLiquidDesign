@@ -18,6 +18,7 @@ const descriptions = {
   allowRelative: '是否允许站内相对链接、图片和符合扩展名规则的文件；默认开启。',
   allowTel: '是否允许 tel 电话链接；默认关闭。',
   allowCustom: '是否允许把清理后的搜索文字作为自定义选项提交。',
+  allowAlpha: '是否保留输入颜色中的透明度通道；关闭时统一输出不透明颜色。',
   allowedProtocols: '外部白名单资源允许使用的网络协议；默认仅 https。',
   domains: '按普通链接、图片和文件分别设置的域名白名单。',
   all: '对普通链接、图片和文件同时生效的共享域名规则。',
@@ -59,6 +60,7 @@ const descriptions = {
   delayMs: '加载回退内容前等待的时间，单位毫秒。',
   delimiter: '输入多个值时用于分隔内容的字符。',
   description: '补充说明文字；不传时隐藏说明区域。',
+  disableWheelChange: '是否阻止滚轮误改独立颜色通道；方向键仍可微调。',
   defaultSize: '面板首次渲染时所占的尺寸百分比。',
   defaultContent: '组件块没有提供内容属性时使用的默认插槽文本。',
   defaultProps: '组件块未覆盖时使用的安全默认属性。',
@@ -75,6 +77,7 @@ const descriptions = {
   formatOptions: '传递给 Intl.NumberFormat 的数字格式化选项。',
   granularity: '允许编辑到的最小日期或时间粒度。',
   helper: '显示在主内容下方的辅助说明。',
+  hint: '显示在标签下方的格式或操作提示。',
   href: '点击导航项后前往的目标地址。',
   horizontal: '是否同时启用横向滚动。',
   hourCycle: '时间字段使用 12 小时制或 24 小时制。',
@@ -97,6 +100,7 @@ const descriptions = {
   loading: '是否显示加载状态并阻止重复操作。',
   locale: '日期、时间或数字格式使用的区域语言。',
   loop: '键盘导航到边界时是否循环。',
+  labelPosition: '颜色样本标签的显示位置；可隐藏、置右或置于下方。',
   mask: '是否隐藏输入字符。',
   maturity: '组件定义的稳定版、Alpha 或业务自定义标记。',
   max: '允许的最大值。',
@@ -117,6 +121,10 @@ const descriptions = {
   lineWrapping: '是否在编辑器中启用长行自动换行。',
   showToolbar: '是否显示格式操作和视图模式工具栏。',
   showCreate: '是否在日期单元格中显示新建事项入口。',
+  showFormat: '是否显示颜色格式切换入口。',
+  showLabels: '是否在颜色样本旁显示名称和说明。',
+  showPreview: '是否在颜色字段内显示实时颜色预览。',
+  showValues: '是否在颜色选项说明为空时显示原始色值。',
   showOutsideDays: '是否显示当前月份之外的补齐日期。',
   showToday: '是否在月历工具栏显示返回今天操作。',
   showStatus: '是否显示行数、字符数、阅读时间和解析状态。',
@@ -163,6 +171,7 @@ const descriptions = {
   showEdges: '是否显示首页与末页导航按钮。',
   showProgress: '是否显示随持续时间递减的进度指示。',
   showValue: '是否显示格式化后的当前数值。',
+  copyable: '是否提供复制当前值的快捷按钮。',
   shortcut: '菜单命令旁展示的键盘快捷键说明。',
   shortcutLabel: '时间滚轮中快捷时间按钮显示的文字。',
   shortcutValue: '时间滚轮可一键选取的 HH:mm 快捷值。',
@@ -197,6 +206,7 @@ const descriptions = {
   y: '相对视口顶部的纵向坐标。',
   xChannel: '二维颜色区域横轴控制的颜色通道。',
   yChannel: '二维颜色区域纵轴控制的颜色通道。',
+  columns: '色板网格使用的固定列数；不传时根据容器宽度自动排列。',
   zIndex: '覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。',
   entries: '按注册顺序返回去重后的组件定义快照。',
   unregister: '按名称或别名移除一个注册定义。',
@@ -207,6 +217,14 @@ const descriptions = {
   fingerprint: '由 WASM 计算的只读白名单完整性指纹。',
   domainRuleCount: '当前策略包含的域名规则总数。',
   fileExtensionCount: '当前策略包含的文件扩展名数量。',
+}
+
+const componentDescriptions = {
+  'color-field': {
+    format: '完整颜色值提交和显示时使用的 HEX、RGB、HSL 或 HSB 格式。',
+    formatOptions: '格式切换入口中允许用户选择的颜色格式列表。',
+    error: '字段的外部校验错误；显示文字反馈并标记 aria-invalid。',
+  },
 }
 
 const structureDescriptions = {
@@ -235,6 +253,7 @@ const structureDescriptions = {
   DlMdxSecurityOptions: '创建 MarkdownX 域名、协议、文件类型及特殊 URL 白名单时使用的配置。',
   DlMdxDomainAllowlist: '分别约束普通链接、图片、文件以及共享来源的域名规则集合。',
   DlMdxSecurityStatus: 'WASM 完整性模块的当前状态、指纹和规则数量快照。',
+  DlColorSwatchOption: 'ColorSwatchPicker 使用的命名颜色选项，可附带说明或禁用状态。',
 }
 
 const enumDescriptions = {
@@ -249,6 +268,7 @@ const enumDescriptions = {
   DlMdxComponentCategory: '官方注册定义使用的组件类别。',
   DlMdxComponentMaturity: '官方注册定义的稳定度或自定义来源标记。',
   DlMdxUrlKind: 'MarkdownX URL 守卫区分的普通链接、图片和文件资源类型。',
+  DlColorFormat: 'ColorField 支持的颜色字符串输出格式。',
 }
 
 const enumValueDescriptions = {
@@ -318,6 +338,12 @@ const enumValueDescriptions = {
     error: ['任务执行失败；与 danger 使用相同的危险视觉。', '错误'],
     danger: ['任务失败或已经中断，并覆盖为危险视觉。', '危险'],
   },
+  DlColorFormat: {
+    hex: ['十六进制颜色；透明时输出八位 HEX。', 'HEX'],
+    rgb: ['CSS rgb() 颜色格式。', 'RGB'],
+    hsl: ['CSS hsl() 颜色格式。', 'HSL'],
+    hsb: ['色相、饱和度、亮度颜色格式。', 'HSB'],
+  },
 }
 
 function componentId(filename) {
@@ -364,13 +390,38 @@ function defaultValues(source, propNames) {
   const result = new Map()
 
   for (const name of propNames) {
-    const match = body.match(new RegExp(`(?:^|[,\\n])\\s*${name}\\s*:\\s*([^,\\n}]+)`, 'm'))
-    if (match) result.set(name, match[1].trim())
+    const match = new RegExp(`(?:^|[,\\n])\\s*${name}\\s*:\\s*`, 'm').exec(body)
+    if (!match) continue
+    const start = match.index + match[0].length
+    let quote = ''
+    let escaped = false
+    let roundDepth = 0
+    let squareDepth = 0
+    let curlyDepth = 0
+    let end = body.length
+    for (let index = start; index < body.length; index += 1) {
+      const character = body[index]
+      if (quote) {
+        if (escaped) escaped = false
+        else if (character === '\\') escaped = true
+        else if (character === quote) quote = ''
+        continue
+      }
+      if (character === '"' || character === "'" || character === '`') { quote = character; continue }
+      if (character === '(') roundDepth += 1
+      else if (character === ')') roundDepth -= 1
+      else if (character === '[') squareDepth += 1
+      else if (character === ']') squareDepth -= 1
+      else if (character === '{') curlyDepth += 1
+      else if (character === '}') curlyDepth -= 1
+      else if (character === ',' && roundDepth === 0 && squareDepth === 0 && curlyDepth === 0) { end = index; break }
+    }
+    result.set(name, body.slice(start, end).trim())
   }
   return result
 }
 
-function propsFromSource(source) {
+function propsFromSource(source, id) {
   const propsMatch = source.match(/defineProps<\{([\s\S]*?)\}>\(\)/)
   if (!propsMatch) return []
   const declarations = propsMatch[1].replaceAll(';', '\n')
@@ -383,7 +434,7 @@ function propsFromSource(source) {
 
   return props.map(prop => ({
     prop: prop.name,
-    description: descriptions[prop.name] ?? `设置 ${prop.name} 属性。`,
+    description: componentDescriptions[id]?.[prop.name] ?? descriptions[prop.name] ?? `设置 ${prop.name} 属性。`,
     type: prop.type,
     defaultValue: defaults.get(prop.name) ?? (prop.optional ? 'undefined' : '—'),
   }))
@@ -503,7 +554,7 @@ function relatedTypesForRows(rows, definitions) {
   return selected.map(name => {
     const usages = usageCandidates.get(name) ?? []
     const definition = definitions[name]
-    const title = usages.some(type => new RegExp(`\\b${name}\\[\\]`).test(type)) ? `${name}[]` : name
+    const title = name !== 'DlColorFormat' && usages.some(type => new RegExp(`\\b${name}\\[\\]`).test(type)) ? `${name}[]` : name
     return { ...definition, title }
   })
 }
@@ -589,7 +640,7 @@ const filenames = (await readdir(componentsRoot))
 
 const structures = {}
 const componentEnums = {}
-for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'calendar.types.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts']) {
+for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'calendar.types.ts', 'color-controls.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts']) {
   const typeSource = await readFile(resolve(componentsRoot, filename), 'utf8')
   const parsed = structuresFromSource(typeSource)
   Object.assign(structures, Object.fromEntries(Object.entries(parsed).map(([name, structure]) => [name, { ...structure, kind: 'structure' }])))
@@ -600,13 +651,14 @@ const sharedEnums = enumsFromSource(await readFile(resolve(componentsRoot, '../t
 const api = {}
 for (const filename of filenames) {
   const source = await readFile(resolve(componentsRoot, filename), 'utf8')
-  const rows = [...modelFromSource(source), ...propsFromSource(source)]
+  const id = componentId(filename)
+  const rows = [...modelFromSource(source), ...propsFromSource(source, id)]
   if (!rows.length) throw new Error(`${filename} 未提取到任何公开属性。`)
   const localStructures = Object.fromEntries(
     Object.entries(structuresFromSource(source)).map(([name, structure]) => [name, { ...structure, kind: 'structure' }]),
   )
   const definitions = { ...structures, ...componentEnums, ...localStructures, ...sharedEnums, ...enumsFromSource(source) }
-  api[componentId(filename)] = {
+  api[id] = {
     props: rows,
     relatedTypes: relatedTypesForRows(rows, definitions),
   }
