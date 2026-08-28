@@ -53,6 +53,20 @@ describe('MarkdownX language service', () => {
     expect(hoverDlMdx(hoverSource, position, registry)?.documentation).toContain('Visual tone')
   })
 
+  it('completes, explains and validates hidden page metadata', () => {
+    const propertySource = '---\ntit\n---\n# Page'
+    const propertyPosition = propertySource.indexOf('tit') + 3
+    expect(completeDlMdx(propertySource, propertyPosition, registry)?.items).toContainEqual(expect.objectContaining({ label: 'title', kind: 'property' }))
+
+    const valueSource = '---\nlayout: d\n---\n# Page'
+    const valuePosition = valueSource.indexOf('layout: d') + 'layout: d'.length
+    expect(completeDlMdx(valueSource, valuePosition, registry)?.items).toContainEqual(expect.objectContaining({ label: 'docs', kind: 'value' }))
+    expect(hoverDlMdx(valueSource, valueSource.indexOf('layout') + 2, registry)?.detail).toBe('页面布局')
+
+    const invalid = analyzeDlMdx('---\norder: first\nunknown: value\n---\n# Page', registry)
+    expect(invalid.diagnostics.map(item => item.code)).toEqual(expect.arrayContaining(['frontmatter.value', 'frontmatter.key']))
+  })
+
   it('formats MDX deterministically with configurable layout', () => {
     const source = '+++component:Notice\ncount=2\ntone=\'accent\'\n@click=saveNotice\n+++end\n\n\n- item'
     expect(formatDlMdx(source, { equalsSpacing: 'align', quoteStyle: 'double', maxBlankLines: 1 }, registry)).toBe([

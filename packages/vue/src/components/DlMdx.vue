@@ -170,6 +170,7 @@ const toolbarActions = computed(() => (props.toolbar ?? defaultToolbar)
 const componentCategoryLabels: Record<ComponentLibraryCategory, string> = {
   all: '全部',
   foundation: '基础',
+  layout: '布局',
   form: '表单',
   color: '色彩',
   dates: '日期',
@@ -177,7 +178,7 @@ const componentCategoryLabels: Record<ComponentLibraryCategory, string> = {
 }
 const availableComponentCategories = computed<ComponentLibraryCategory[]>(() => {
   const categories = new Set(componentLibraryEntries.value.map(entry => entry.definition.category ?? 'general'))
-  return ['all', ...(['foundation', 'form', 'color', 'dates', 'general'] as DlMdxComponentCategory[])
+  return ['all', ...(['foundation', 'layout', 'form', 'color', 'dates', 'general'] as DlMdxComponentCategory[])
     .filter(category => categories.has(category))]
 })
 const filteredComponentEntries = computed(() => {

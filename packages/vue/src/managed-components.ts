@@ -10,6 +10,7 @@ import RawDlBadge from './components/DlBadge.vue'
 import RawDlButton from './components/DlButton.vue'
 import RawDlCalendar from './components/DlCalendar.vue'
 import RawDlCard from './components/DlCard.vue'
+import RawDlCluster from './components/DlCluster.vue'
 import RawDlCheckbox from './components/DlCheckbox.vue'
 import RawDlChoicePortal from './components/DlChoicePortal.vue'
 import RawDlCollapsible from './components/DlCollapsible.vue'
@@ -19,6 +20,7 @@ import RawDlColorPicker from './components/DlColorPicker.vue'
 import RawDlColorSlider from './components/DlColorSlider.vue'
 import RawDlColorSwatch from './components/DlColorSwatch.vue'
 import RawDlColorSwatchPicker from './components/DlColorSwatchPicker.vue'
+import RawDlContainer from './components/DlContainer.vue'
 import RawDlCombobox from './components/DlCombobox.vue'
 import RawDlContextMenu from './components/DlContextMenu.vue'
 import RawDlDateField from './components/DlDateField.vue'
@@ -60,6 +62,7 @@ import RawDlMultiChoice from './components/DlMultiChoice.vue'
 import RawDlNavigationMenu from './components/DlNavigationMenu.vue'
 import RawDlNumberField from './components/DlNumberField.vue'
 import RawDlPagination from './components/DlPagination.vue'
+import RawDlPageFrame from './components/DlPageFrame.vue'
 import RawDlPinInput from './components/DlPinInput.vue'
 import RawDlPopover from './components/DlPopover.vue'
 import RawDlProgress from './components/DlProgress.vue'
@@ -71,8 +74,12 @@ import RawDlSegmented from './components/DlSegmented.vue'
 import RawDlSelect from './components/DlSelect.vue'
 import RawDlSeparator from './components/DlSeparator.vue'
 import RawDlSlider from './components/DlSlider.vue'
+import RawDlSiteHeader from './components/DlSiteHeader.vue'
+import RawDlSiteNavigation from './components/DlSiteNavigation.vue'
+import RawDlSiteShell from './components/DlSiteShell.vue'
 import RawDlSplitButton from './components/DlSplitButton.vue'
 import RawDlSplitter from './components/DlSplitter.vue'
+import RawDlStack from './components/DlStack.vue'
 import RawDlStepper from './components/DlStepper.vue'
 import RawDlSwitch from './components/DlSwitch.vue'
 import RawDlTabs from './components/DlTabs.vue'
@@ -88,6 +95,8 @@ import RawDlToolbar from './components/DlToolbar.vue'
 import RawDlTooltip from './components/DlTooltip.vue'
 import RawDlTree from './components/DlTree.vue'
 import RawDlVirtualList from './components/DlVirtualList.vue'
+import RawDlGrid from './components/DlGrid.vue'
+import RawDlBreadcrumbs from './components/DlBreadcrumbs.vue'
 import RawDlYearPicker from './components/DlYearPicker.vue'
 import RawDlYearRangePicker from './components/DlYearRangePicker.vue'
 
@@ -229,6 +238,7 @@ export const DlAspectRatio = managed(RawDlAspectRatio, 'DlAspectRatio')
 export const DlAutocomplete = managed(RawDlAutocomplete, 'DlAutocomplete', { domEvents: fieldEvents })
 export const DlAvatar = managed(RawDlAvatar, 'DlAvatar')
 export const DlBadge = managed(RawDlBadge, 'DlBadge')
+export const DlBreadcrumbs = managed(RawDlBreadcrumbs, 'DlBreadcrumbs')
 export const DlButton = managed(RawDlButton, 'DlButton', {
   domEvents: actionEvents,
   methods: {
@@ -241,6 +251,7 @@ export const DlButton = managed(RawDlButton, 'DlButton', {
 })
 export const DlCalendar = managed(RawDlCalendar, 'DlCalendar', { domEvents: fieldEvents })
 export const DlCard = managed(RawDlCard, 'DlCard', { domEvents: ['click', 'focus', 'blur'] })
+export const DlCluster = managed(RawDlCluster, 'DlCluster')
 export const DlCheckbox = managed(RawDlCheckbox, 'DlCheckbox', {
   domEvents: fieldEvents,
   methods: {
@@ -257,6 +268,7 @@ export const DlColorPicker = managed(RawDlColorPicker, 'DlColorPicker', { domEve
 export const DlColorSlider = managed(RawDlColorSlider, 'DlColorSlider', { domEvents: fieldEvents })
 export const DlColorSwatch = managed(RawDlColorSwatch, 'DlColorSwatch')
 export const DlColorSwatchPicker = managed(RawDlColorSwatchPicker, 'DlColorSwatchPicker', { domEvents: fieldEvents })
+export const DlContainer = managed(RawDlContainer, 'DlContainer')
 export const DlCombobox = managed(RawDlCombobox, 'DlCombobox', { domEvents: fieldEvents })
 export const DlContextMenu = managed(RawDlContextMenu, 'DlContextMenu')
 export const DlDateField = managed(RawDlDateField, 'DlDateField', { domEvents: fieldEvents })
@@ -275,6 +287,7 @@ export const DlEditable = managed(RawDlEditable, 'DlEditable', {
   },
   methodDefinitions: [method('edit / submit / cancel', '进入编辑、提交或取消当前内联编辑。', '()')],
 })
+export const DlGrid = managed(RawDlGrid, 'DlGrid')
 export const DlHoverCard = managed(RawDlHoverCard, 'DlHoverCard')
 export const DlIconButton = managed(RawDlIconButton, 'DlIconButton', { domEvents: actionEvents })
 export const DlInputButton = managed(RawDlInputButton, 'DlInputButton', {
@@ -380,6 +393,7 @@ export const DlPagination = managed(RawDlPagination, 'DlPagination', {
     method('goTo', '跳转到指定页并自动约束范围。', '(page: number)'),
   ],
 })
+export const DlPageFrame = managed(RawDlPageFrame, 'DlPageFrame')
 export const DlPinInput = managed(RawDlPinInput, 'DlPinInput', { domEvents: fieldEvents })
 export const DlPopover = managed(RawDlPopover, 'DlPopover')
 export const DlProgress = managed(RawDlProgress, 'DlProgress', {
@@ -401,8 +415,12 @@ export const DlSegmented = managed(RawDlSegmented, 'DlSegmented', {
 export const DlSelect = managed(RawDlSelect, 'DlSelect', { domEvents: fieldEvents })
 export const DlSeparator = managed(RawDlSeparator, 'DlSeparator')
 export const DlSlider = managed(RawDlSlider, 'DlSlider', { domEvents: fieldEvents })
+export const DlSiteHeader = managed(RawDlSiteHeader, 'DlSiteHeader')
+export const DlSiteNavigation = managed(RawDlSiteNavigation, 'DlSiteNavigation')
+export const DlSiteShell = managed(RawDlSiteShell, 'DlSiteShell')
 export const DlSplitButton = managed(RawDlSplitButton, 'DlSplitButton', { domEvents: actionEvents })
 export const DlSplitter = managed(RawDlSplitter, 'DlSplitter')
+export const DlStack = managed(RawDlStack, 'DlStack')
 export const DlStepper = managed(RawDlStepper, 'DlStepper', {
   methods: stepperMethods,
   methodDefinitions: [

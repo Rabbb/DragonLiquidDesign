@@ -1,7 +1,7 @@
 import { inject, type App, type Component, type InjectionKey, type VNodeChild } from 'vue'
 import type { DlMdxComponentContext, DlMdxValue } from './dl-mdx.types'
 
-export type DlMdxComponentCategory = 'foundation' | 'form' | 'color' | 'dates' | 'general'
+export type DlMdxComponentCategory = 'foundation' | 'layout' | 'form' | 'color' | 'dates' | 'general'
 export type DlMdxComponentMaturity = 'custom' | 'stable' | 'alpha'
 export type DlMdxSchemaType = 'string' | 'number' | 'boolean' | 'null' | 'array' | 'object' | 'any'
 

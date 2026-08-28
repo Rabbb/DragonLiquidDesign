@@ -95,6 +95,39 @@ describe('MarkdownX project engine', () => {
     expect(result.routes[1].actionSymbols.map(symbol => symbol.name)).toEqual(['saveProject', 'visitAbout'])
   })
 
+  it('builds hidden front matter into routes and directory navigation groups', () => {
+    const engine = createDlMdxEngine()
+    engine.transaction((draft) => {
+      draft.writeFile('/pages/_group.json', JSON.stringify({ title: 'Overview', order: 1 }))
+      draft.writeFile('/pages/guides/_group.json', JSON.stringify({ title: '使用指南', order: 10 }))
+      draft.writeFile('/pages/index.mdx', '---\ntitle: Welcome\norder: 1\n---\n# Visible heading')
+      draft.writeFile('/pages/guides/start.mdx', '---\ntitle: Quick start\nroute: /start\ndescription: First project\norder: 2\nicon: S\n---\n# Internal heading')
+      draft.writeFile('/pages/guides/private.mdx', '---\ntitle: Draft\nhidden: true\n---\n# Draft')
+    })
+
+    const result = engine.build()
+    expect(result.ok).toBe(true)
+    expect(result.routes.map(route => route.route).sort()).toEqual(['/', '/guides/private', '/start'])
+    expect(result.routes[0]).toMatchObject({ title: 'Welcome', source: '# Visible heading', metadata: { order: 1 } })
+    expect(result.navigation).toEqual([
+      expect.objectContaining({ id: 'main', label: 'Overview', items: [expect.objectContaining({ label: 'Welcome', href: '/' })] }),
+      expect.objectContaining({ id: 'guides', label: '使用指南', items: [expect.objectContaining({ label: 'Quick start', href: '/start', icon: 'S' })] }),
+    ])
+  })
+
+  it('reports malformed page and directory metadata without rendering it', () => {
+    const engine = createDlMdxEngine()
+    engine.transaction((draft) => {
+      draft.writeFile('/pages/_group.json', '{ broken')
+      draft.writeFile('/pages/index.mdx', '---\norder: first\nroute: https://invalid.example\n---\n# Home')
+    })
+    const result = engine.build()
+
+    expect(result.ok).toBe(false)
+    expect(result.routes[0].document.blocks[0]).toMatchObject({ type: 'heading' })
+    expect(result.diagnostics.map(item => item.code)).toEqual(expect.arrayContaining(['frontmatter.value', 'frontmatter.route', 'navigation.group-config']))
+  })
+
   it('reports duplicate routes and missing entry files without executing scripts', () => {
     globalThis.__mdxEngineScriptExecuted = false
     const engine = createDlMdxEngine()

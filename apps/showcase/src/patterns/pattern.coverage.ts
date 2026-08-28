@@ -88,6 +88,15 @@ export const componentHomes: Record<string, PatternPageId> = {
   tooltip: 'feedback',
   tree: 'editor',
   'virtual-list': 'library',
+  container: 'overview',
+  stack: 'overview',
+  cluster: 'overview',
+  grid: 'overview',
+  'page-frame': 'detail',
+  breadcrumbs: 'detail',
+  'site-navigation': 'overview',
+  'site-header': 'overview',
+  'site-shell': 'overview',
 }
 
 export const componentUsageLocations: Record<string, string> = {
@@ -162,6 +171,15 @@ export const componentUsageLocations: Record<string, string> = {
   tooltip: '图标按钮解释、风险提示及嵌套层级验证',
   tree: '编辑工作台文档章节大纲与选择状态',
   'virtual-list': '收藏库大量同步记录预览的局部窗口渲染',
+  container: '所有页面的响应式可读宽度和水平留白',
+  stack: '页面章节、卡片和正文的纵向节奏',
+  cluster: '工具、标签和短操作的自动换行排列',
+  grid: '概览页与内容列表的响应式卡片网格',
+  'page-frame': '详情页标题、操作和内容插槽骨架',
+  breadcrumbs: '详情页当前位置和上级路径导航',
+  'site-navigation': '网站目录生成的分组导航菜单',
+  'site-header': '网站品牌、主页入口与顶栏操作',
+  'site-shell': '公开网站和编辑预览共享的网站母版页',
 }
 
 const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
@@ -206,7 +224,7 @@ const scenarioPageOverrides: Record<string, Record<string, PatternPageId>> = {
     arrowless: 'feedback', 'secondary-hint': 'feedback',
   },
   mdx: {
-    basic: 'editor', 'archive-document': 'editor', 'component-blocks': 'editor', 'official-foundation': 'editor',
+    basic: 'editor', 'archive-document': 'editor', 'component-blocks': 'editor', 'official-foundation': 'editor', 'official-layout': 'editor',
     'official-form': 'editor', 'official-color': 'editor', 'official-dates': 'editor', 'official-general': 'editor',
     'safe-preview': 'editor', 'security-policy': 'editor',
   },

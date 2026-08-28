@@ -25,8 +25,26 @@ const inputControlGuidance = Object.fromEntries(inputControls.map(input => [inpu
   `示例使用对应的独立 DlInputXxx，观察它在原生表单语义上增加的格式化、快捷动作和反馈。`,
 )]))
 
+const layoutControlGuidance: Record<string, ComponentGuidance> = Object.fromEntries([
+  ['container', '约束长内容的可读宽度并统一页面水平留白。'],
+  ['stack', '为纵向内容区块建立稳定且可配置的阅读节奏。'],
+  ['cluster', '让按钮、标签和短项目在窄屏中自然换行。'],
+  ['grid', '让同类卡片按可用宽度响应式分列。'],
+  ['page-frame', '让业务页面复用标题、说明、操作与内容插槽。'],
+  ['breadcrumbs', '帮助用户理解当前位置并返回上级内容。'],
+  ['site-navigation', '渲染由项目目录和页面元数据生成的导航组。'],
+  ['site-header', '统一网站品牌、主页入口、顶栏导航和全局操作。'],
+  ['site-shell', '为整个网站套用可切换导航模式的母版页。'],
+].map(([id, purpose]) => [id, guide(
+  [`${purpose}`, '需要编辑器预览与公开网站共享同一套布局契约时。'],
+  '不要在业务页面中重复手写同等的宽度、导航和响应式框架。',
+  '保持内容的语义标题顺序；导航链接、当前项和移动端入口必须具有可访问名称。',
+  '案例展示组件在真实网站母版中的组合效果，并允许直接复制完整 Vue SFC。',
+)]))
+
 export const componentGuidance: Record<string, ComponentGuidance> = {
   ...inputControlGuidance,
+  ...layoutControlGuidance,
   accordion: guide(
     ['长内容需要按主题逐段展开时。', '用户只需同时关注一个或少量内容区块时。'],
     '不要用它隐藏完成任务所必需的关键字段或错误信息。',

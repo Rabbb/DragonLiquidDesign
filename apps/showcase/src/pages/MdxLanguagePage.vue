@@ -4,7 +4,10 @@ import {
   DlBadge,
   DlInputSearch,
   DlMdx,
+  DlSegmented,
+  DlSiteShell,
   DlTextarea,
+  buildDlMdxProject,
   buildDlMdxUserscript,
   dlMdxOfficialComponents,
   resolveDlMdxEventSchema,
@@ -12,6 +15,9 @@ import {
   type DlMdxActionMap,
   type DlMdxFormatOptions,
   type DlMdxLanguageAnalysis,
+  type DlChoiceOption,
+  type DlMdxProjectSnapshot,
+  type DlSiteNavigationItem,
 } from '@dragon-liquid/vue'
 import MdxProjectWorkbench from '../components/MdxProjectWorkbench.vue'
 
@@ -34,6 +40,31 @@ const actions: DlMdxActionMap = {
     handler: ({ component, event }) => { eventLog.value = `${event} → saveDocument · line ${component.sourceLine + 1}` },
   },
 }
+
+const layoutPages = ref<Record<string, string>>({
+  '/pages/index.mdx': ['---', 'title: Studio home', 'route: /', 'group: main', 'group-title: Studio', 'order: 0', 'layout: landing', '---', '', '# A real site preview', '', '> 修改左侧隐藏域或正文，右侧母版页会立即重建。', '', '## One source of truth', '', '编辑预览与发布页面共享 SiteShell、导航清单和内容插槽。'].join('\n'),
+  '/pages/guides/start.mdx': ['---', 'title: Quick start', 'route: /guides/start', 'description: Create the first page', 'order: 1', 'icon: S', 'layout: docs', '---', '', '# Quick start', '', '目录自动成为导航组；`_group.json` 可以为目录设置显示名和顺序。'].join('\n'),
+  '/pages/guides/layouts.mdx': ['---', 'title: Layout modes', 'route: /guides/layouts', 'description: Top, side, hybrid and rail', 'order: 2', 'icon: L', 'layout: docs', '---', '', '# Layout modes', '', '页面可以选择 landing、docs、article 或 dashboard，宿主映射为相应导航模式。'].join('\n'),
+})
+const layoutActivePath = ref('/')
+const layoutDevice = ref<'desktop' | 'tablet' | 'mobile'>('desktop')
+const layoutDevices: DlChoiceOption[] = [{ value: 'desktop', label: '电脑' }, { value: 'tablet', label: '平板' }, { value: 'mobile', label: '手机' }]
+const layoutPreviewWidth = computed(() => ({ desktop: '100%', tablet: '760px', mobile: '390px' })[layoutDevice.value])
+const layoutBuild = computed(() => buildDlMdxProject({
+  manifest: { schemaVersion: 1, id: 'live-layout-preview', name: 'Northstar Studio', version: '1.0.0', entry: '/pages/index.mdx', metadata: { layout: 'docs' } },
+  entries: [
+    { kind: 'directory', path: '/' }, { kind: 'directory', path: '/pages' }, { kind: 'directory', path: '/pages/guides' },
+    { kind: 'file', path: '/pages/guides/_group.json', language: 'json', encoding: 'utf8', content: '{"title":"Guides","order":10}' },
+    ...Object.entries(layoutPages.value).map(([path, content]) => ({ kind: 'file' as const, path, language: 'mdx' as const, encoding: 'utf8' as const, content })),
+  ],
+  revision: 0,
+} satisfies DlMdxProjectSnapshot))
+const layoutRoute = computed(() => layoutBuild.value.routes.find(route => route.route === layoutActivePath.value) ?? layoutBuild.value.routes[0])
+const layoutSource = computed({
+  get: () => layoutRoute.value ? layoutPages.value[layoutRoute.value.file] ?? '' : '',
+  set: (value: string) => { if (layoutRoute.value) layoutPages.value = { ...layoutPages.value, [layoutRoute.value.file]: value } },
+})
+function navigateLayout(item: DlSiteNavigationItem) { layoutActivePath.value = item.href }
 
 const typedSource = ref([
   '# Typed component block', '',
@@ -84,6 +115,7 @@ const componentInterfaces = computed(() => {
 })
 
 function componentDocPath(name: string) {
+  if (['Container', 'Stack', 'Cluster', 'Grid', 'PageFrame', 'Breadcrumbs', 'SiteNavigation', 'SiteHeader', 'SiteShell'].includes(name)) return '/mdx#site-layout'
   const slug = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLocaleLowerCase()
   return `/components/${slug}/basic`
 }
@@ -120,7 +152,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
     </header>
 
     <nav class="mdx-language-nav" aria-label="MarkdownX 文档章节">
-      <a href="#project-engine">项目引擎</a><a href="#installation">活网站接入</a><a href="#component-interface">控件接口</a><a href="#userscripts">共享脚本</a><a href="#workspace">工作区</a><a href="#language-service">语言服务</a><a href="#events">事件模型</a>
+      <a href="#project-engine">项目引擎</a><a href="#site-layout">整站布局</a><a href="#installation">活网站接入</a><a href="#component-interface">控件接口</a><a href="#userscripts">共享脚本</a><a href="#workspace">工作区</a><a href="#language-service">语言服务</a><a href="#events">事件模型</a>
       <a href="#formatter">格式化</a><a href="#syntax">语言特性</a><a href="#security">边界</a>
     </nav>
 
@@ -132,6 +164,30 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
         <article><b>HOST</b><span>宿主接入数据库、发布流水线与受信动作运行时。</span></article>
       </div>
       <MdxProjectWorkbench />
+    </section>
+
+    <section id="site-layout" class="mdx-language-section">
+      <header><small>02 · SITE SHELL & ROUTING</small><h2>母版页套内容插槽，目录生成导航</h2><p>这不是静态截图。左侧直接编辑页面 front matter 和正文，右侧使用发布时相同的 SiteShell、分组导航和设备宽度渲染；页面元数据不会出现在正文。</p></header>
+      <div class="mdx-site-preview-toolbar"><DlSegmented v-model="layoutDevice" :items="layoutDevices" size="sm" aria-label="整站预览设备" /><code>{{ layoutRoute?.route }} · {{ layoutRoute?.file }}</code></div>
+      <div class="mdx-site-preview-grid">
+        <DlMdx v-model="layoutSource" mode="split" min-height="36rem" aria-label="可编辑网站页面" />
+        <div class="mdx-site-preview-stage"><div class="mdx-site-preview-device" :data-device="layoutDevice" :style="{ width: layoutPreviewWidth }">
+          <DlSiteShell
+            site-name="Northstar Studio"
+            caption="Editable DL-MDX project"
+            :environment="{ siteName: 'Northstar Studio', siteCaption: 'HOST ENV · preview', variables: { projectId: 'live-layout-preview' } }"
+            :navigation="layoutBuild.navigation"
+            :active-path="layoutRoute?.route ?? '/'"
+            :navigation-mode="layoutRoute?.metadata.layout === 'landing' ? 'top' : 'hybrid'"
+            content-size="md"
+            @navigate="navigateLayout"
+          >
+            <DlMdx :model-value="layoutRoute?.source ?? ''" mode="preview" :show-toolbar="false" :show-status="false" min-height="24rem" max-preview-height="none" />
+            <template #footer><div class="mdx-site-preview-footer"><span>Northstar Studio</span><span>{{ layoutBuild.routes.length }} routes</span></div></template>
+          </DlSiteShell>
+        </div></div>
+      </div>
+      <div class="mdx-engine-model"><article><b>PAGE FRONT MATTER</b><span><code>title / route / group / order / layout</code> 保存在 MDX 顶部隐藏域。</span></article><article><b>DIRECTORY CONFIG</b><span><code>_group.json</code> 自定义目录组名、顺序、折叠和隐藏状态。</span></article><article><b>HOST ENVIRONMENT</b><span>宿主传入网站名、基础路径、用户与项目变量，页面不硬编码部署环境。</span></article></div>
     </section>
 
     <section id="installation" class="mdx-language-section mdx-language-prose">
@@ -160,7 +216,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
     </section>
 
     <section id="component-interface" class="mdx-language-section">
-      <header><small>03 · COMPONENT INTERFACES</small><h2>89 个控件，共用一份可检索接口源</h2><p>这里直接读取官方 MDX 注册表，而不是复制一份静态清单。搜索控件名、用途、属性或事件；进入控件页可查看取值范围、默认值、丰富案例和实例 API。</p></header>
+      <header><small>03 · COMPONENT INTERFACES</small><h2>{{ dlMdxOfficialComponents.length }} 个控件，共用一份可检索接口源</h2><p>这里直接读取官方 MDX 注册表，而不是复制一份静态清单。搜索控件名、用途、属性或事件；进入控件页可查看取值范围、默认值、丰富案例和实例 API。</p></header>
       <div class="mdx-interface-toolbar">
         <DlInputSearch v-model="componentInterfaceQuery" placeholder="搜索 Button、modelValue、click…" aria-label="搜索 MDX 控件接口" />
         <span>{{ componentInterfaces.length }} / {{ dlMdxOfficialComponents.length }}</span>
@@ -249,5 +305,6 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
 .mdx-engine-model{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mdx-engine-model article{display:grid;gap:9px;padding:15px;border:1px solid var(--dl-border);border-radius:14px;background:var(--dl-night-soft)}.mdx-engine-model b{color:var(--dl-accent-text);font:800 .68rem/1 ui-monospace,monospace;letter-spacing:.08em}.mdx-engine-model span{color:var(--dl-text-muted);font-size:.76rem;line-height:1.65}.mdx-engine-model code{color:var(--dl-text);font-family:ui-monospace,monospace}
 .mdx-install-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mdx-install-grid article{display:grid;gap:12px;padding:18px;border:1px solid var(--dl-border);border-radius:16px;background:var(--dl-night-soft)}.mdx-install-grid article>b{color:var(--dl-accent-text);font:800 .7rem/1 ui-monospace,monospace;letter-spacing:.1em}.mdx-install-grid pre{padding:14px}.mdx-install-grid p{margin:0;color:var(--dl-text-muted);font-size:.78rem;line-height:1.65}.mdx-contract-table{display:grid;border:1px solid var(--dl-border);border-radius:15px;overflow:hidden}.mdx-contract-table>div{display:grid;grid-template-columns:74px minmax(220px,.7fr) 1fr;gap:14px;padding:12px 15px;border-bottom:1px solid var(--dl-border);font-size:.76rem}.mdx-contract-table>div:last-child{border-bottom:0}.mdx-contract-table b{color:var(--dl-accent-text);font-family:ui-monospace,monospace}.mdx-contract-table span{color:var(--dl-text-muted)}.mdx-interface-toolbar{display:grid;grid-template-columns:minmax(240px,440px) auto;align-items:center;gap:14px}.mdx-interface-toolbar>span{color:var(--dl-text-faint);font:700 .7rem/1 ui-monospace,monospace}.mdx-interface-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;max-height:720px;padding-right:5px;overflow:auto}.mdx-interface-card{display:grid;gap:10px;padding:16px;border:1px solid var(--dl-border);border-radius:15px;color:inherit;background:var(--dl-night-soft);transition:border-color .16s ease,transform .16s ease}.mdx-interface-card:hover{border-color:var(--dl-border-focus);transform:translateY(-2px)}.mdx-interface-card header{display:flex;align-items:center;justify-content:space-between;gap:12px}.mdx-interface-card header b{color:var(--dl-text);font-size:.9rem}.mdx-interface-card header span{color:var(--dl-accent-text);font:800 .6rem/1 ui-monospace,monospace;text-transform:uppercase}.mdx-interface-card p{min-height:2.5em;margin:0;color:var(--dl-text-muted);font-size:.74rem;line-height:1.55}.mdx-interface-card dl{display:grid;gap:7px;margin:0}.mdx-interface-card dl div{display:grid;grid-template-columns:48px 1fr;gap:8px;align-items:start}.mdx-interface-card dt{color:var(--dl-text-faint);font:800 .58rem/1.45 ui-monospace,monospace}.mdx-interface-card dd{margin:0;color:var(--dl-text-muted);font:600 .64rem/1.45 ui-monospace,monospace;overflow-wrap:anywhere}.mdx-interface-card i{color:var(--dl-accent-text);font-style:normal}
 .mdx-userscript-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px}.mdx-userscript-grid>article{display:grid;grid-template-rows:auto minmax(0,1fr);min-height:310px;border:1px solid var(--dl-border);border-radius:15px;overflow:hidden;background:var(--dl-night-soft)}.mdx-userscript-grid>article>header{display:flex;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--dl-border);color:var(--dl-accent-text);font:800 .64rem/1 ui-monospace,monospace}.mdx-userscript-grid>article>header span{color:var(--dl-text-faint)}.mdx-userscript-grid pre{max-height:360px;border:0;border-radius:0}
-@media(max-width:900px){.mdx-language-hero{grid-template-columns:1fr;padding:32px}.mdx-capability-grid{grid-template-columns:repeat(2,1fr)}.mdx-language-boundary>div,.mdx-engine-model,.mdx-install-grid,.mdx-userscript-grid{grid-template-columns:1fr}}@media(max-width:620px){.mdx-language-page{padding-top:28px}.mdx-language-hero,.mdx-language-section{padding:20px;border-radius:18px}.mdx-capability-grid{grid-template-columns:1fr}.mdx-diagnostic-list li,.mdx-contract-table>div{grid-template-columns:1fr}.mdx-language-nav{justify-content:center}.mdx-interface-toolbar{grid-template-columns:1fr}.mdx-interface-grid{grid-template-columns:1fr}}
+.mdx-site-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px}.mdx-site-preview-toolbar code{color:var(--dl-text-faint);font-size:.7rem}.mdx-site-preview-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:12px;min-width:0}.mdx-site-preview-stage{display:flex;min-width:0;justify-content:center;overflow:auto;padding:14px;border:1px solid var(--dl-border);border-radius:18px;background:var(--dl-night-soft)}.mdx-site-preview-device{min-width:320px;overflow:hidden;border:1px solid var(--dl-border);border-radius:14px;background:var(--dl-night);box-shadow:var(--dl-shadow-lg);transition:width .2s ease}.mdx-site-preview-device :deep(.dl-mdx),.mdx-site-preview-device :deep(.dl-mdx__workspace),.mdx-site-preview-device :deep(.dl-mdx__preview-pane),.mdx-site-preview-device :deep(.dl-mdx__document){border:0;background:transparent;box-shadow:none}.mdx-site-preview-device :deep(.dl-mdx__preview-pane),.mdx-site-preview-device :deep(.dl-mdx__document){padding:0}.mdx-site-preview-footer{display:flex;justify-content:space-between;color:var(--dl-text-faint);font:700 .62rem/1 ui-monospace,monospace}
+@media(max-width:1100px){.mdx-site-preview-grid{grid-template-columns:1fr}}@media(max-width:900px){.mdx-language-hero{grid-template-columns:1fr;padding:32px}.mdx-capability-grid{grid-template-columns:repeat(2,1fr)}.mdx-language-boundary>div,.mdx-engine-model,.mdx-install-grid,.mdx-userscript-grid{grid-template-columns:1fr}}@media(max-width:620px){.mdx-language-page{padding-top:28px}.mdx-language-hero,.mdx-language-section{padding:20px;border-radius:18px}.mdx-capability-grid{grid-template-columns:1fr}.mdx-diagnostic-list li,.mdx-contract-table>div{grid-template-columns:1fr}.mdx-language-nav{justify-content:center}.mdx-interface-toolbar{grid-template-columns:1fr}.mdx-interface-grid{grid-template-columns:1fr}.mdx-site-preview-toolbar{align-items:flex-start;flex-direction:column}}
 </style>

@@ -190,6 +190,10 @@ await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' 
 
 完整的活网站源码结构、Vue 接入、HTTP 后端契约、可信 JavaScript 动作和控件接口读取方式见 [DL-MDX 活网站接入指南](../../docs/MDX_WEBSITE_HOSTING.md)。npm 包提供引擎与协议，不内置通用账号或数据库后端；后端必须由宿主结合自己的身份和租户模型实现。
 
+`0.6.0-alpha.37` 允许数据库文本在 front matter 前带有空行，页面元数据仍会被识别并从公开正文中可靠剥离。
+
+`0.6.0-alpha.36` 新增网站布局组件族：`DlSiteShell`、`DlSiteHeader`、`DlSiteNavigation`、`DlBreadcrumbs`、`DlPageFrame`、`DlContainer`、`DlStack`、`DlCluster` 与 `DlGrid`。DL-MDX 页面同时支持隐藏的强类型 front matter、目录 `_group.json`、自动导航组、宿主环境变量和编辑/发布一致的整站预览。
+
 `0.6.0-alpha.35` 新增 userscript 引擎：`buildDlMdxUserscript()`、`parseDlMdxUserscript()`、`validateDlMdxUserscript()` 与 `dlMdxUserscriptMatchesUrl()` 可构建、导入、检查和匹配 Tampermonkey / Violentmonkey 脚本。所有操作都只处理源码，绝不在组件库上下文执行用户 JavaScript；跨站注入交给浏览器扩展，账号与共享目录仍由宿主后端提供。
 
 当前公共组件共 89 个：

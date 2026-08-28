@@ -1,5 +1,22 @@
 <script setup lang="ts">
-import { DlBadge, DlButton, DlCard, DlNavigationMenu, DlProgress, type DlNavigationItem } from '@dragon-liquid/vue'
+import {
+  DlBadge,
+  DlBreadcrumbs,
+  DlButton,
+  DlCard,
+  DlCluster,
+  DlContainer,
+  DlGrid,
+  DlNavigationMenu,
+  DlPageFrame,
+  DlProgress,
+  DlSiteHeader,
+  DlSiteNavigation,
+  DlSiteShell,
+  DlStack,
+  type DlNavigationItem,
+  type DlSiteNavigationGroup,
+} from '@dragon-liquid/vue'
 
 const stages = [
   { number: '01', title: '发现', text: '导航、搜索与筛选共同缩小内容范围。', href: '/patterns/library', components: 'Input · Select · Combobox' },
@@ -25,6 +42,16 @@ const navigationItems: DlNavigationItem[] = [
   { value: 'system', label: '系统', children: [
     { value: 'settings', label: '偏好设置', href: '/patterns/settings' },
     { value: 'coverage', label: '覆盖索引', href: '/patterns/coverage' },
+  ] },
+]
+const siteNavigation: DlSiteNavigationGroup[] = [
+  { id: 'start', label: '开始', items: [
+    { id: 'home', label: '首页', href: '/', icon: '⌂' },
+    { id: 'about', label: '项目说明', href: '/about', icon: 'i' },
+  ] },
+  { id: 'guides', label: '指南', items: [
+    { id: 'layout', label: '网站布局', href: '/guides/layout', description: '母版与内容插槽', icon: '▦' },
+    { id: 'publish', label: '发布网站', href: '/guides/publish', description: '预览与版本管理', icon: '↗' },
   ] },
 ]
 </script>
@@ -67,5 +94,62 @@ const navigationItems: DlNavigationItem[] = [
         </DlCard>
       </a>
     </div>
+
+    <div class="pattern-section-heading">
+      <div><small>SITE LAYOUT SYSTEM</small><h2>从网站母版开始，而不是从空白页面开始</h2></div>
+      <p>目录元数据生成导航，SiteShell 统一套用页头、侧栏、正文插槽与响应式规则。</p>
+    </div>
+
+    <DlCard padding="none" class="site-pattern-card">
+      <DlSiteShell
+        site-name="Atlas Notes"
+        caption="由目录结构生成"
+        mark="AN"
+        :navigation="siteNavigation"
+        active-path="/guides/layout"
+        navigation-mode="hybrid"
+        content-size="md"
+        :sticky-header="false"
+      >
+        <DlStack gap="lg">
+          <DlBreadcrumbs :items="[{ label: '首页', href: '/' }, { label: '指南', href: '/guides' }, { label: '网站布局', current: true }]" />
+          <DlPageFrame layout="aside" aside-width="170px" gap="24px" :sticky-secondary="false">
+            <DlStack gap="sm">
+              <DlBadge tone="accent" variant="outline">MASTER PAGE</DlBadge>
+              <h2>内容页面只填插槽</h2>
+              <p>站点名称、主页地址和运行环境从宿主传入；页面文件只声明标题、路由与分组。</p>
+              <DlCluster><DlButton variant="primary" size="sm">编辑页面</DlButton><DlButton variant="secondary" size="sm">预览网站</DlButton></DlCluster>
+            </DlStack>
+            <template #aside><DlCard padding="sm"><b>当前环境</b><small>preview · zh-CN</small></DlCard></template>
+          </DlPageFrame>
+          <DlGrid min-item-width="150px" gap="sm">
+            <DlCard v-for="item in ['目录导航', '母版插槽', '响应式网格']" :key="item" padding="sm"><b>{{ item }}</b><small>LAYOUT PRIMITIVE</small></DlCard>
+          </DlGrid>
+        </DlStack>
+        <template #actions><DlBadge tone="success">LIVE</DlBadge></template>
+      </DlSiteShell>
+
+      <DlContainer size="md" gutter="md" class="site-pattern-anatomy">
+        <DlStack gap="sm">
+          <small>COMPOSABLE PARTS</small>
+          <DlSiteHeader site-name="独立页头" caption="也可脱离母版组合" mark="UI" :sticky="false">
+            <template #actions><DlBadge tone="muted">HEADER</DlBadge></template>
+          </DlSiteHeader>
+          <DlSiteNavigation :groups="siteNavigation" active-path="/guides/layout" mode="tabs" />
+        </DlStack>
+      </DlContainer>
+    </DlCard>
   </section>
 </template>
+
+<style scoped>
+.site-pattern-card { overflow: hidden; }
+.site-pattern-card :deep([data-slot="site-shell"]) { min-height: 520px; }
+.site-pattern-card h2, .site-pattern-card p { margin: 0; }
+.site-pattern-card p { color: var(--dl-text-muted); line-height: 1.7; }
+.site-pattern-card :deep([data-slot="card"]) { display: grid; gap: 7px; }
+.site-pattern-card :deep([data-slot="card"] small) { color: var(--dl-text-faint); }
+.site-pattern-anatomy { padding-block: 24px; border-top: 1px solid var(--dl-border); }
+.site-pattern-anatomy > :deep([data-slot="stack"]) > small { color: var(--dl-text-faint); font: 800 .68rem/1 ui-monospace, monospace; letter-spacing: .12em; }
+.site-pattern-anatomy :deep([data-slot="site-header"]) { border: 1px solid var(--dl-border); border-radius: 14px; overflow: hidden; }
+</style>

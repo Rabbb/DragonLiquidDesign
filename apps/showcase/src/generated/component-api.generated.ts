@@ -380,6 +380,23 @@ export default {
       }
     ]
   },
+  "breadcrumbs": {
+    "props": [
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "DlBreadcrumbItem[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "separator",
+        "description": "是否将该项目渲染为菜单分隔线。",
+        "type": "string",
+        "defaultValue": "'/'"
+      }
+    ],
+    "relatedTypes": []
+  },
   "button": {
     "props": [
       {
@@ -842,6 +859,41 @@ export default {
         ]
       }
     ]
+  },
+  "cluster": {
+    "props": [
+      {
+        "prop": "as",
+        "description": "设置 as 属性。",
+        "type": "string",
+        "defaultValue": "'div'"
+      },
+      {
+        "prop": "gap",
+        "description": "设置 gap 属性。",
+        "type": "'none' | 'xs' | 'sm' | 'md' | 'lg'",
+        "defaultValue": "'sm'"
+      },
+      {
+        "prop": "align",
+        "description": "设置浮层相对触发器的对齐方式。",
+        "type": "'start' | 'center' | 'end' | 'baseline' | 'stretch'",
+        "defaultValue": "'center'"
+      },
+      {
+        "prop": "justify",
+        "description": "设置 justify 属性。",
+        "type": "'start' | 'center' | 'end' | 'between' | 'around'",
+        "defaultValue": "'start'"
+      },
+      {
+        "prop": "wrap",
+        "description": "设置 wrap 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      }
+    ],
+    "relatedTypes": []
   },
   "collapsible": {
     "props": [
@@ -1703,6 +1755,29 @@ export default {
         ]
       }
     ]
+  },
+  "container": {
+    "props": [
+      {
+        "prop": "as",
+        "description": "设置 as 属性。",
+        "type": "string",
+        "defaultValue": "'div'"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "'sm' | 'md' | 'lg' | 'xl' | 'full'",
+        "defaultValue": "'lg'"
+      },
+      {
+        "prop": "gutter",
+        "description": "设置 gutter 属性。",
+        "type": "'none' | 'sm' | 'md' | 'lg'",
+        "defaultValue": "'md'"
+      }
+    ],
+    "relatedTypes": []
   },
   "context-menu": {
     "props": [
@@ -2769,6 +2844,41 @@ export default {
         "description": "参与表单提交时使用的字段名称。",
         "type": "string",
         "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "grid": {
+    "props": [
+      {
+        "prop": "as",
+        "description": "设置 as 属性。",
+        "type": "string",
+        "defaultValue": "'div'"
+      },
+      {
+        "prop": "minItemWidth",
+        "description": "设置 minItemWidth 属性。",
+        "type": "string",
+        "defaultValue": "'240px'"
+      },
+      {
+        "prop": "columns",
+        "description": "色板网格使用的固定列数；不传时根据容器宽度自动排列。",
+        "type": "number",
+        "defaultValue": "0"
+      },
+      {
+        "prop": "gap",
+        "description": "设置 gap 属性。",
+        "type": "'xs' | 'sm' | 'md' | 'lg'",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "dense",
+        "description": "设置 dense 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
       }
     ],
     "relatedTypes": []
@@ -5471,6 +5581,12 @@ export default {
             "defaultValue": "枚举值"
           },
           {
+            "prop": "layout",
+            "description": "DlMdxComponentCategory 的 layout 选项。",
+            "type": "'layout'",
+            "defaultValue": "枚举值"
+          },
+          {
             "prop": "form",
             "description": "DlMdxComponentCategory 的 form 选项。",
             "type": "'form'",
@@ -6377,6 +6493,47 @@ export default {
         ]
       }
     ]
+  },
+  "page-frame": {
+    "props": [
+      {
+        "prop": "as",
+        "description": "设置 as 属性。",
+        "type": "string",
+        "defaultValue": "'main'"
+      },
+      {
+        "prop": "layout",
+        "description": "设置 layout 属性。",
+        "type": "'article' | 'sidebar' | 'aside' | 'three-column' | 'full'",
+        "defaultValue": "'article'"
+      },
+      {
+        "prop": "sidebarWidth",
+        "description": "设置 sidebarWidth 属性。",
+        "type": "string",
+        "defaultValue": "'240px'"
+      },
+      {
+        "prop": "asideWidth",
+        "description": "设置 asideWidth 属性。",
+        "type": "string",
+        "defaultValue": "'220px'"
+      },
+      {
+        "prop": "gap",
+        "description": "设置 gap 属性。",
+        "type": "string",
+        "defaultValue": "'36px'"
+      },
+      {
+        "prop": "stickySecondary",
+        "description": "设置 stickySecondary 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      }
+    ],
+    "relatedTypes": []
   },
   "pagination": {
     "props": [
@@ -7404,6 +7561,147 @@ export default {
     ],
     "relatedTypes": []
   },
+  "site-header": {
+    "props": [
+      {
+        "prop": "siteName",
+        "description": "设置 siteName 属性。",
+        "type": "string",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "caption",
+        "description": "设置 caption 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "homeHref",
+        "description": "设置 homeHref 属性。",
+        "type": "string",
+        "defaultValue": "'/'"
+      },
+      {
+        "prop": "mark",
+        "description": "设置 mark 属性。",
+        "type": "string",
+        "defaultValue": "'DL'"
+      },
+      {
+        "prop": "sticky",
+        "description": "设置 sticky 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "compact",
+        "description": "设置 compact 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "site-navigation": {
+    "props": [
+      {
+        "prop": "groups",
+        "description": "设置 groups 属性。",
+        "type": "DlSiteNavigationGroup[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "activePath",
+        "description": "设置 activePath 属性。",
+        "type": "string",
+        "defaultValue": "'/'"
+      },
+      {
+        "prop": "mode",
+        "description": "编辑器当前视图模式；使用 v-model:mode 进行双向绑定。",
+        "type": "'top' | 'sidebar' | 'tabs' | 'rail'",
+        "defaultValue": "'sidebar'"
+      },
+      {
+        "prop": "managed",
+        "description": "设置 managed 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "'网站导航'"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "site-shell": {
+    "props": [
+      {
+        "prop": "siteName",
+        "description": "设置 siteName 属性。",
+        "type": "string",
+        "defaultValue": "'Untitled site'"
+      },
+      {
+        "prop": "caption",
+        "description": "设置 caption 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "mark",
+        "description": "设置 mark 属性。",
+        "type": "string",
+        "defaultValue": "'DL'"
+      },
+      {
+        "prop": "navigation",
+        "description": "设置 navigation 属性。",
+        "type": "DlSiteNavigationGroup[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "activePath",
+        "description": "设置 activePath 属性。",
+        "type": "string",
+        "defaultValue": "'/'"
+      },
+      {
+        "prop": "navigationMode",
+        "description": "设置 navigationMode 属性。",
+        "type": "DlSiteNavigationMode",
+        "defaultValue": "'hybrid'"
+      },
+      {
+        "prop": "environment",
+        "description": "设置 environment 属性。",
+        "type": "DlSiteEnvironment",
+        "defaultValue": "() => ({})"
+      },
+      {
+        "prop": "contentSize",
+        "description": "设置 contentSize 属性。",
+        "type": "'sm' | 'md' | 'lg' | 'xl' | 'full'",
+        "defaultValue": "'lg'"
+      },
+      {
+        "prop": "stickyHeader",
+        "description": "设置 stickyHeader 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "sidebarWidth",
+        "description": "设置 sidebarWidth 属性。",
+        "type": "string",
+        "defaultValue": "'236px'"
+      }
+    ],
+    "relatedTypes": []
+  },
   "slider": {
     "props": [
       {
@@ -7755,6 +8053,29 @@ export default {
         "title": "DlSplitterPanel[]"
       }
     ]
+  },
+  "stack": {
+    "props": [
+      {
+        "prop": "as",
+        "description": "设置 as 属性。",
+        "type": "string",
+        "defaultValue": "'div'"
+      },
+      {
+        "prop": "gap",
+        "description": "设置 gap 属性。",
+        "type": "'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl'",
+        "defaultValue": "'md'"
+      },
+      {
+        "prop": "align",
+        "description": "设置浮层相对触发器的对齐方式。",
+        "type": "'stretch' | 'start' | 'center' | 'end'",
+        "defaultValue": "'stretch'"
+      }
+    ],
+    "relatedTypes": []
   },
   "stepper": {
     "props": [

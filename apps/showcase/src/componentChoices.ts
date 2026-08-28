@@ -38,11 +38,13 @@ const recommendedIds = new Set([
   'calendar', 'date-picker', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'mdx', 'virtual-list',
   'accordion', 'alert-dialog', 'avatar', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'navigation-menu',
   'pagination', 'popover', 'progress', 'stepper', 'tabs', 'toast', 'tooltip', 'tree',
+  'container', 'grid', 'page-frame', 'breadcrumbs', 'site-shell',
 ])
 
 const foundationIds = new Set([
   'label', 'listbox', 'color-area', 'color-slider', 'color-swatch', 'date-field', 'date-range-field',
   'range-calendar', 'time-field', 'time-range-field', 'aspect-ratio', 'collapsible', 'scroll-area', 'separator',
+  'stack', 'cluster',
 ])
 
 const compatibilityPreferredIds: Record<string, string> = {

@@ -26,19 +26,19 @@ export { formatColorValue, normalizeColorInput, readableColorInk, resolveColorSw
 export type { DlColorFormat, DlColorSwatchOption, DlColorSwatchSource } from './components/color-controls'
 
 export {
-  DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlButton,
-  DlCalendar, DlCard, DlCheckbox, DlChoicePortal, DlCollapsible, DlColorArea, DlColorField, DlColorPicker, DlColorSlider,
-  DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContextMenu, DlDateField, DlDatePicker,
+  DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlBreadcrumbs, DlButton,
+  DlCalendar, DlCard, DlCheckbox, DlChoicePortal, DlCluster, DlCollapsible, DlColorArea, DlColorField, DlColorPicker, DlColorSlider,
+  DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContainer, DlContextMenu, DlDateField, DlDatePicker,
   DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
-  DlHoverCard, DlIconButton,
+  DlGrid, DlHoverCard, DlIconButton,
   DlInputButton, DlInputCheckbox, DlInputColor, DlInputDatetimeLocal, DlInputEmail,
   DlInputFile, DlInputHidden, DlInputImage, DlInputNumber, DlInputPassword,
   DlInputRadio, DlInputRange, DlInputReset, DlInputSearch, DlInputSubmit, DlInputTel, DlInputText,
   DlInputUrl, DlInputWeek,
   DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
-  DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPinInput,
+  DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPageFrame, DlPinInput,
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSegmented, DlSelect,
-  DlSeparator, DlSlider, DlSplitButton, DlSplitter, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
+  DlSeparator, DlSiteHeader, DlSiteNavigation, DlSiteShell, DlSlider, DlSplitButton, DlSplitter, DlStack, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
   DlTimeField, DlTimePicker, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
   DlTree, DlVirtualList, DlYearPicker, DlYearRangePicker,
 } from './managed-components'
@@ -63,6 +63,13 @@ export type {
   DlPropertyUpdateResult,
 } from './control.types'
 
+export type {
+  DlBreadcrumbItem,
+  DlSiteEnvironment,
+  DlSiteNavigationGroup,
+  DlSiteNavigationItem,
+  DlSiteNavigationMode,
+} from './components/site-layout.types'
 export type {
   DlAccordionItem,
   DlChoiceOption,
@@ -99,6 +106,8 @@ export type {
   DlMdxValue,
 } from './components/dl-mdx.types'
 export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
+export { createDlMdxPageFrontMatter, parseDlMdxFrontMatter } from './components/dl-mdx.frontmatter'
+export type { DlMdxFrontMatterDiagnostic, DlMdxFrontMatterResult, DlMdxPageMetadata } from './components/dl-mdx.frontmatter'
 export { analyzeDlMdx, completeDlMdx, extractDlMdxActionSymbols, formatDlMdx, hoverDlMdx } from './components/dl-mdx.language'
 export type {
   DlMdxCompletionItem,

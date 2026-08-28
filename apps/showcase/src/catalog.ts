@@ -5,7 +5,8 @@ export const componentCategories = [
   { id: 'form', label: '表单', english: 'FORM', summary: '输入、选择、校验与表单状态。' },
   { id: 'color', label: '色彩', english: 'COLOR', summary: '颜色输入、通道控制与色板选择。' },
   { id: 'dates', label: '日期时间', english: 'DATES', summary: '日期、时间以及范围选择。' },
-  { id: 'general', label: '通用', english: 'GENERAL', summary: '布局、导航、浮层与反馈原语。' },
+  { id: 'layout', label: '网站布局', english: 'SITE LAYOUT', summary: '从内容排布到导航母版的响应式网站框架。' },
+  { id: 'general', label: '通用', english: 'GENERAL', summary: '导航、浮层、反馈与通用交互原语。' },
 ] as const
 
 export type ComponentCategoryId = typeof componentCategories[number]['id']
@@ -344,6 +345,7 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'archive-document', label: '内容档案', summary: '标题、表格、任务、引用与代码块' },
       { id: 'component-blocks', label: '安全组件块', summary: '通过显式 Vue 插槽扩展 MarkdownX' },
       { id: 'official-foundation', label: '官方注册 · 基础', summary: '基础视觉与文本输入组件定义' },
+      { id: 'official-layout', label: '官方注册 · 布局', summary: '网站母版页、导航与响应式内容布局' },
       { id: 'official-form', label: '官方注册 · 表单', summary: '稳定版和 Alpha 表单组件定义' },
       { id: 'official-color', label: '官方注册 · 色彩', summary: '全部 Alpha 色彩组件定义' },
       { id: 'official-dates', label: '官方注册 · 日期', summary: '全部 Alpha 日期时间组件定义' },
@@ -367,6 +369,51 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'large-data', label: '大量数据', summary: '千条记录的平滑局部渲染' },
       { id: 'empty', label: '空结果', summary: '自定义无内容反馈' },
     ],
+  },
+  {
+    id: 'container', name: 'Container 内容容器', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '约束页面内容宽度并提供响应式水平留白。',
+    scenarios: [{ id: 'basic', label: '内容宽度', summary: '比较窄、标准、宽和通栏内容容器' }],
+  },
+  {
+    id: 'stack', name: 'Stack 纵向布局', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '按统一间距纵向排列标题、正文、卡片与操作。',
+    scenarios: [{ id: 'basic', label: '纵向节奏', summary: '组织页面章节与内容块的垂直间距' }],
+  },
+  {
+    id: 'cluster', name: 'Cluster 流式布局', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '让标签、按钮和短内容自动换行并保持对齐。',
+    scenarios: [{ id: 'basic', label: '流式换行', summary: '在有限宽度内自动排列操作与标签' }],
+  },
+  {
+    id: 'grid', name: 'Grid 响应式网格', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '以最小列宽或固定列数建立自适应内容网格。',
+    scenarios: [{ id: 'basic', label: '自适应网格', summary: '卡片随可用宽度自动分列与回落' }],
+  },
+  {
+    id: 'page-frame', name: 'PageFrame 页面框架', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '用标题、说明、操作和内容插槽建立一致的页面骨架。',
+    scenarios: [{ id: 'basic', label: '页面骨架', summary: '组合页头、工具区与主体内容插槽' }],
+  },
+  {
+    id: 'breadcrumbs', name: 'Breadcrumbs 面包屑', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '显示当前页面在网站层级中的位置和返回路径。',
+    scenarios: [{ id: 'basic', label: '层级路径', summary: '为内容页提供紧凑的祖先路径' }],
+  },
+  {
+    id: 'site-navigation', name: 'SiteNavigation 网站导航', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '渲染由目录与 MDX 元数据生成的分组网站导航。',
+    scenarios: [{ id: 'basic', label: '分组导航', summary: '桌面、平板和移动宽度下的导航组' }],
+  },
+  {
+    id: 'site-header', name: 'SiteHeader 网站页头', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '组合品牌、主页入口、顶部导航和移动菜单触发器。',
+    scenarios: [{ id: 'basic', label: '响应式页头', summary: '品牌、导航和外部环境信息的统一入口' }],
+  },
+  {
+    id: 'site-shell', name: 'SiteShell 网站母版', category: 'layout', since: '0.6.0-alpha.36', implementation: 'ready', maturity: 'custom',
+    summary: '用内容插槽套用网站页头、分组导航、页脚和多种导航模式。',
+    scenarios: [{ id: 'basic', label: '网站母版预览', summary: '在同一母版中切换顶栏、侧栏、混合与极简导航' }],
   },
 ]
 
@@ -451,6 +498,9 @@ const scenarioBlueprints: Record<Exclude<ComponentCategoryId, 'foundation'>, Sce
   ],
   dates: [
     { id: 'basic', label: '基础用法', summary: '日期值、语言与键盘行为' },
+  ],
+  layout: [
+    { id: 'basic', label: '基础用法', summary: '响应式布局、内容插槽与导航行为' },
   ],
   general: [
     { id: 'basic', label: '基础用法', summary: '结构、状态与无障碍语义' },

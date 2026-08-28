@@ -5,11 +5,13 @@ import DlAspectRatio from './DlAspectRatio.vue'
 import DlAutocomplete from './DlAutocomplete.vue'
 import DlAvatar from './DlAvatar.vue'
 import DlBadge from './DlBadge.vue'
+import DlBreadcrumbs from './DlBreadcrumbs.vue'
 import DlButton from './DlButton.vue'
 import DlCalendar from './DlCalendar.vue'
 import DlCard from './DlCard.vue'
 import DlCheckbox from './DlCheckbox.vue'
 import DlChoicePortal from './DlChoicePortal.vue'
+import DlCluster from './DlCluster.vue'
 import DlCollapsible from './DlCollapsible.vue'
 import DlColorArea from './DlColorArea.vue'
 import DlColorField from './DlColorField.vue'
@@ -18,6 +20,7 @@ import DlColorSlider from './DlColorSlider.vue'
 import DlColorSwatch from './DlColorSwatch.vue'
 import DlColorSwatchPicker from './DlColorSwatchPicker.vue'
 import DlCombobox from './DlCombobox.vue'
+import DlContainer from './DlContainer.vue'
 import DlContextMenu from './DlContextMenu.vue'
 import DlDateField from './DlDateField.vue'
 import DlDatePicker from './DlDatePicker.vue'
@@ -28,6 +31,7 @@ import DlDrawer from './DlDrawer.vue'
 import DlDropdownMenu from './DlDropdownMenu.vue'
 import DlEditable from './DlEditable.vue'
 import DlHoverCard from './DlHoverCard.vue'
+import DlGrid from './DlGrid.vue'
 import DlIconButton from './DlIconButton.vue'
 import DlInputButton from './DlInputButton.vue'
 import DlInputCheckbox from './DlInputCheckbox.vue'
@@ -58,6 +62,7 @@ import DlMultiChoice from './DlMultiChoice.vue'
 import DlNavigationMenu from './DlNavigationMenu.vue'
 import DlNumberField from './DlNumberField.vue'
 import DlPagination from './DlPagination.vue'
+import DlPageFrame from './DlPageFrame.vue'
 import DlPinInput from './DlPinInput.vue'
 import DlPopover from './DlPopover.vue'
 import DlProgress from './DlProgress.vue'
@@ -69,8 +74,12 @@ import DlSegmented from './DlSegmented.vue'
 import DlSelect from './DlSelect.vue'
 import DlSeparator from './DlSeparator.vue'
 import DlSlider from './DlSlider.vue'
+import DlSiteHeader from './DlSiteHeader.vue'
+import DlSiteNavigation from './DlSiteNavigation.vue'
+import DlSiteShell from './DlSiteShell.vue'
 import DlSplitButton from './DlSplitButton.vue'
 import DlSplitter from './DlSplitter.vue'
+import DlStack from './DlStack.vue'
 import DlStepper from './DlStepper.vue'
 import DlSwitch from './DlSwitch.vue'
 import DlTabs from './DlTabs.vue'
@@ -131,6 +140,16 @@ const menuItems = [
 ]
 
 export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
+  official('Container', DlContainer, 'layout', 'custom', { defaultProps: { size: 'md', gutter: 'md' }, defaultContent: '居中的响应式内容区域。', description: '约束页面内容宽度并提供响应式边距。' }),
+  official('Stack', DlStack, 'layout', 'custom', { defaultProps: { gap: 'md' }, defaultContent: '纵向内容流', description: '使用一致间距纵向排列内容。' }),
+  official('Cluster', DlCluster, 'layout', 'custom', { defaultProps: { gap: 'sm', wrap: true }, defaultContent: '水平操作组', description: '可换行的横向布局，适合工具栏与标签组。' }),
+  official('Grid', DlGrid, 'layout', 'custom', { defaultProps: { minItemWidth: '220px', gap: 'md' }, defaultContent: '响应式网格内容', description: '按最小项目宽度自动分栏的响应式网格。' }),
+  official('PageFrame', DlPageFrame, 'layout', 'custom', { defaultProps: { layout: 'article', gap: '36px' }, defaultContent: '页面主内容', description: '覆盖文章、侧栏、辅助栏与三栏页面结构。' }),
+  official('Breadcrumbs', DlBreadcrumbs, 'layout', 'custom', { defaultProps: { items: [{ label: 'Home', href: '/' }, { label: 'Guide', current: true }] }, description: '展示当前位置与上级页面路径。' }),
+  official('SiteNavigation', DlSiteNavigation, 'layout', 'custom', { defaultProps: { mode: 'sidebar', groups: [{ id: 'guide', label: 'Guide', items: [{ id: 'start', label: 'Start', href: '/start' }] }] }, description: '支持顶部、侧边、标签与图标栏导航。' }),
+  official('SiteHeader', DlSiteHeader, 'layout', 'custom', { defaultProps: { siteName: 'Dragon Liquid Site', caption: 'Built with DL', mark: 'DL' }, description: '网站品牌、导航与操作区域。' }),
+  official('SiteShell', DlSiteShell, 'layout', 'custom', { defaultProps: { siteName: 'Dragon Liquid Site', navigationMode: 'hybrid', navigation: [{ id: 'main', label: 'Main', items: [{ id: 'home', label: 'Home', href: '/' }] }] }, defaultContent: '网站母版页内容插槽', description: '统一网站头部、导航、内容插槽、侧栏和页脚的母版页。' }),
+
   official('Button', DlButton, 'foundation', 'custom', {
     contentProp: 'text',
     defaultContent: '执行操作',

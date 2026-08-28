@@ -1,7 +1,9 @@
 import { analyzeDlMdx, extractDlMdxActionSymbols, type DlMdxDiagnosticSeverity, type DlMdxLanguageOptions, type DlMdxScriptSymbol } from './dl-mdx.language'
+import { parseDlMdxFrontMatter, type DlMdxPageMetadata } from './dl-mdx.frontmatter'
 import { parseDlMdx } from './dl-mdx.parser'
 import type { DlMdxRegistry } from './dl-mdx.registry'
 import type { DlMdxDocument, DlMdxValue } from './dl-mdx.types'
+import type { DlSiteNavigationGroup } from './site-layout.types'
 
 export const dlMdxProjectSchemaVersion = 1 as const
 
@@ -87,6 +89,8 @@ export interface DlMdxBuiltRoute {
   title?: string
   file: string
   source: string
+  rawSource: string
+  metadata: DlMdxPageMetadata
   script: string
   style: string
   scriptFiles: string[]
@@ -101,6 +105,7 @@ export interface DlMdxProjectBuildResult {
   revision: number
   entryRoute?: string
   routes: DlMdxBuiltRoute[]
+  navigation: DlSiteNavigationGroup[]
   diagnostics: DlMdxProjectDiagnostic[]
 }
 
@@ -383,16 +388,118 @@ function companionFiles(page: DlMdxProjectFile, map: Map<string, DlMdxProjectEnt
   return { scriptFiles, styleFiles, script: join(scriptFiles), style: join(styleFiles) }
 }
 
-function routeDefinitions(manifest: DlMdxProjectManifest, map: Map<string, DlMdxProjectEntry>): DlMdxProjectRouteDefinition[] {
-  if (manifest.routes?.length) return manifest.routes.map(route => ({ ...route, path: normalizeRoute(route.path), file: normalizeDlMdxProjectPath(route.file) }))
-  const discovered = [...map.values()].filter((entry): entry is DlMdxProjectFile => entry.kind === 'file' && entry.language === 'mdx' && entry.path.startsWith('/pages/'))
-    .map(file => ({ path: routeFromPage(file.path), file: file.path }))
-  if (!discovered.some(route => route.file === manifest.entry)) {
-    const rootIndex = discovered.findIndex(route => route.path === '/')
-    if (rootIndex >= 0) discovered.splice(rootIndex, 1)
-    discovered.unshift({ path: '/', file: manifest.entry })
+interface ResolvedRouteDefinition extends DlMdxProjectRouteDefinition {
+  metadata: DlMdxPageMetadata
+  source: string
+  rawSource: string
+  bodyStartLine: number
+}
+
+interface DirectoryGroupConfig {
+  title?: string
+  order?: number
+  hidden?: boolean
+  collapsed?: boolean
+}
+
+function pageTitle(source: string, file: string): string {
+  const heading = source.match(/^#\s+(.+)$/m)?.[1]?.replace(/[*_`~]/g, '').trim()
+  if (heading) return heading
+  const name = file.split('/').at(-1)?.replace(/\.(?:md|mdx)$/i, '').replace(/[-_]+/g, ' ') ?? 'Page'
+  return name.replace(/\b\w/g, value => value.toUpperCase())
+}
+
+function routeDefinitions(manifest: DlMdxProjectManifest, map: Map<string, DlMdxProjectEntry>, diagnostics: DlMdxProjectDiagnostic[]): ResolvedRouteDefinition[] {
+  const explicitByFile = new Map((manifest.routes ?? []).map(route => [normalizeDlMdxProjectPath(route.file), route]))
+  const files = new Map<string, DlMdxProjectFile>()
+  for (const entry of map.values()) {
+    if (entry.kind === 'file' && entry.language === 'mdx' && entry.path.startsWith('/pages/') && !/(?:^|\/)_(?:group|meta)\.mdx$/i.test(entry.path)) files.set(entry.path, entry)
   }
-  return discovered.sort((left, right) => left.path.localeCompare(right.path, 'en'))
+  for (const file of [manifest.entry, ...explicitByFile.keys()]) {
+    const entry = map.get(normalizeDlMdxProjectPath(file))
+    if (entry?.kind === 'file' && entry.language === 'mdx') files.set(entry.path, entry)
+  }
+
+  return [...files.values()].map((file) => {
+    const frontMatter = parseDlMdxFrontMatter(file.content)
+    diagnostics.push(...frontMatter.diagnostics.map(item => ({ ...item, path: file.path })))
+    const explicit = explicitByFile.get(file.path)
+    const fallbackRoute = explicit?.path ?? (file.path === manifest.entry ? '/' : routeFromPage(file.path))
+    let path = fallbackRoute
+    try { path = normalizeRoute(frontMatter.metadata.route ?? fallbackRoute) }
+    catch (cause) {
+      diagnostics.push({ code: 'frontmatter.route', severity: 'error', path: file.path, line: 1, message: cause instanceof Error ? cause.message : String(cause) })
+      path = normalizeRoute(fallbackRoute)
+    }
+    return {
+      path,
+      file: file.path,
+      title: frontMatter.metadata.title ?? explicit?.title ?? pageTitle(frontMatter.body, file.path),
+      metadata: frontMatter.metadata,
+      source: frontMatter.body,
+      rawSource: file.content,
+      bodyStartLine: frontMatter.bodyStartLine,
+    }
+  }).sort((left, right) => {
+    if (left.file === manifest.entry) return -1
+    if (right.file === manifest.entry) return 1
+    return (left.metadata.order ?? 0) - (right.metadata.order ?? 0) || left.path.localeCompare(right.path, 'en')
+  })
+}
+
+function directoryForPage(file: string): string {
+  return dirnameDlMdxProjectPath(file).replace(/^\/pages\/?/, '') || 'main'
+}
+
+function readableGroupName(value: string): string {
+  if (value === 'main') return 'Main'
+  return value.split('/').at(-1)!.replace(/[-_]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase())
+}
+
+function groupConfig(group: string, map: Map<string, DlMdxProjectEntry>, diagnostics: DlMdxProjectDiagnostic[]): DirectoryGroupConfig {
+  const path = group === 'main' ? '/pages/_group.json' : `/pages/${group}/_group.json`
+  const file = map.get(path)
+  if (!file || file.kind !== 'file') return {}
+  try {
+    const parsed = JSON.parse(file.content) as DirectoryGroupConfig
+    if (parsed.order !== undefined && !Number.isFinite(parsed.order)) throw new Error('order 必须是数字。')
+    return parsed
+  } catch (cause) {
+    diagnostics.push({ code: 'navigation.group-config', severity: 'error', path, message: `_group.json 无法读取：${cause instanceof Error ? cause.message : String(cause)}` })
+    return {}
+  }
+}
+
+function buildNavigation(routes: DlMdxBuiltRoute[], map: Map<string, DlMdxProjectEntry>, diagnostics: DlMdxProjectDiagnostic[]): DlSiteNavigationGroup[] {
+  const groups = new Map<string, DlSiteNavigationGroup>()
+  for (const route of routes) {
+    if (route.metadata.hidden) continue
+    const directory = directoryForPage(route.file)
+    const id = route.metadata.group?.trim() || directory
+    const config = groupConfig(directory, map, diagnostics)
+    if (config.hidden) continue
+    const group = groups.get(id) ?? {
+      id,
+      label: route.metadata.groupTitle ?? config.title ?? readableGroupName(id),
+      order: route.metadata.groupOrder ?? config.order ?? (id === 'main' ? -100 : 0),
+      collapsed: config.collapsed,
+      items: [],
+    }
+    group.items.push({
+      id: route.file,
+      label: route.title ?? pageTitle(route.source, route.file),
+      href: route.route,
+      description: route.metadata.description,
+      file: route.file,
+      icon: route.metadata.icon,
+      order: route.metadata.order ?? 0,
+    })
+    groups.set(id, group)
+  }
+  return [...groups.values()].map(group => ({
+    ...group,
+    items: group.items.sort((left, right) => (left.order ?? 0) - (right.order ?? 0) || left.href.localeCompare(right.href, 'en')),
+  })).filter(group => group.items.length > 0).sort((left, right) => (left.order ?? 0) - (right.order ?? 0) || left.label.localeCompare(right.label))
 }
 
 export function buildDlMdxProject(snapshot: DlMdxProjectSnapshot, options: DlMdxProjectBuildOptions = {}): DlMdxProjectBuildResult {
@@ -401,7 +508,7 @@ export function buildDlMdxProject(snapshot: DlMdxProjectSnapshot, options: DlMdx
   const diagnostics = validateSnapshot(project, options.limits)
   const routes: DlMdxBuiltRoute[] = []
   const usedRoutes = new Set<string>()
-  for (const definition of routeDefinitions(project.manifest, map)) {
+  for (const definition of routeDefinitions(project.manifest, map, diagnostics)) {
     const route = normalizeRoute(definition.path)
     if (usedRoutes.has(route)) {
       diagnostics.push({ code: 'route.duplicate', severity: 'error', path: definition.file, message: `路由 ${route} 被重复声明。` })
@@ -420,22 +527,25 @@ export function buildDlMdxProject(snapshot: DlMdxProjectSnapshot, options: DlMdx
       ...Object.fromEntries(symbols.filter(symbol => symbol.description).map(symbol => [symbol.name, symbol.description!])),
       ...(options.languageOptions?.actionDescriptions ?? {}),
     }
-    const analysis = analyzeDlMdx(file.content, options.registry, { ...options.languageOptions, actionNames, actionDescriptions })
-    const pageDiagnostics = analysis.diagnostics.map<DlMdxProjectDiagnostic>(item => ({ ...item, path: file.path }))
+    const analysis = analyzeDlMdx(definition.source, options.registry, { ...options.languageOptions, actionNames, actionDescriptions })
+    const pageDiagnostics = analysis.diagnostics.map<DlMdxProjectDiagnostic>(item => ({ ...item, path: file.path, line: item.line === undefined ? undefined : item.line + definition.bodyStartLine - 1 }))
     diagnostics.push(...pageDiagnostics)
     routes.push({
       route,
       title: definition.title,
       file: file.path,
-      source: file.content,
+      source: definition.source,
+      rawSource: definition.rawSource,
+      metadata: definition.metadata,
       ...companion,
       actionSymbols: symbols,
-      document: parseDlMdx(file.content),
+      document: parseDlMdx(definition.source),
       diagnostics: pageDiagnostics,
     })
   }
   const entryRoute = routes.find(route => route.file === project.manifest.entry)?.route
-  return { ok: !diagnostics.some(item => item.severity === 'error'), revision: project.revision, entryRoute, routes, diagnostics }
+  const navigation = buildNavigation(routes, map, diagnostics)
+  return { ok: !diagnostics.some(item => item.severity === 'error'), revision: project.revision, entryRoute, routes, navigation, diagnostics }
 }
 
 export function normalizeDlMdxProjectSnapshot(project: DlMdxProjectInput): DlMdxProjectSnapshot {

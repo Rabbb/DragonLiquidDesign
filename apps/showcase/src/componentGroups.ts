@@ -29,6 +29,7 @@ const textInputControlIds = inputControls
   .map(input => input.id)
 
 const familyGroups: ComponentGroupDefinition[] = [
+  group('site-layout', '网站布局与母版', 'SITE LAYOUT', '从内容排布、页面骨架到完整网站导航母版。', ['container', 'stack', 'cluster', 'grid', 'page-frame', 'breadcrumbs', 'site-navigation', 'site-header', 'site-shell']),
   group('actions', '操作按钮', 'ACTIONS', '执行主操作、快捷操作与组合命令。', ['button', 'split-button', 'icon-button', 'toggle', 'toggle-group']),
   group('native-inputs', 'Input 独立控件', 'INPUT COMPONENTS', '每个原生 type 都由独立的 Dragon Liquid 控件固定封装。', inputControlIds),
   group('text-entry', '文本录入', 'TEXT ENTRY', '输入、编辑和维护短文本或长文本。', ['textarea', 'editable', 'label', ...textInputControlIds]),
@@ -53,6 +54,7 @@ const familyGroups: ComponentGroupDefinition[] = [
 ]
 
 const purposeGroups: ComponentGroupDefinition[] = [
+  group('build-site', '搭建网站框架', 'BUILD SITE', '建立响应式内容布局、目录导航和可复用母版页。', ['container', 'stack', 'cluster', 'grid', 'page-frame', 'breadcrumbs', 'site-navigation', 'site-header', 'site-shell']),
   group('execute', '执行操作', 'EXECUTE', '提交、切换或触发一条明确命令。', ['button', 'split-button', 'icon-button', 'toggle', 'toggle-group', 'switch', 'toolbar', 'dropdown-menu', 'context-menu', 'menubar']),
   group('native-form-inputs', '原生输入任务', 'NATIVE INPUT', '按固定 HTML type 完成各类原生表单输入任务。', inputControlIds),
   group('write', '文本与内容录入', 'WRITE', '输入、修改和组织文字内容。', ['textarea', 'editable', 'tags-input', 'mdx', 'label', ...textInputControlIds]),
@@ -70,6 +72,7 @@ const purposeGroups: ComponentGroupDefinition[] = [
 ]
 
 const siteGroups: ComponentGroupDefinition[] = [
+  group('site-builder', '活网站与站点生成器', 'SITE BUILDER', '在线编辑、预览并发布具有目录导航的多页面网站。', ['site-shell', 'site-header', 'site-navigation', 'breadcrumbs', 'page-frame', 'container', 'stack', 'cluster', 'grid', 'mdx']),
   group('admin', '管理后台', 'ADMIN CONSOLE', '高密度表单、数据管理、批量操作和权限配置。', ['button', 'split-button', 'icon-button', ...inputControlIds, 'textarea', 'select', 'multi-choice', 'segmented', 'autocomplete', 'checkbox', 'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'radio-group', 'slider', 'switch', 'tags-input', 'toggle', 'toggle-group', 'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'alert-dialog', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'menubar', 'navigation-menu', 'pagination', 'progress', 'scroll-area', 'separator', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'tooltip', 'tree', 'virtual-list']),
   group('productivity', '效率与待办', 'PRODUCTIVITY', '任务、日程、文档、项目工作台和个人效率产品。', ['button', 'split-button', 'icon-button', ...textInputControlIds, 'textarea', 'choice-portal', 'multi-choice', 'segmented', 'checkbox', 'editable', 'tags-input', 'toggle', 'switch', 'calendar', 'date-picker', 'date-range-picker', 'time-field', 'time-range-field', 'time-picker', 'month-picker', 'year-picker', 'mdx', 'virtual-list', 'accordion', 'dialog', 'drawer', 'dropdown-menu', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'tooltip', 'tree']),
   group('content-community', '内容与社区', 'CONTENT & COMMUNITY', '内容流、个人资料、评论、收藏和社区互动。', ['button', 'badge', 'card', 'icon-button', ...textInputControlIds, 'textarea', 'autocomplete', 'checkbox', 'editable', 'multi-choice', 'radio-group', 'rating', 'select', 'switch', 'tags-input', 'toggle', 'toggle-group', 'aspect-ratio', 'avatar', 'collapsible', 'dialog', 'drawer', 'dropdown-menu', 'hover-card', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'tabs', 'toast', 'tooltip']),
@@ -85,6 +88,7 @@ const siteGroups: ComponentGroupDefinition[] = [
 ]
 
 const flowGroups: ComponentGroupDefinition[] = [
+  group('frame-site', '建立站点框架', 'FRAME SITE', '先组织网站母版、导航和页面插槽，再填充业务内容。', ['site-shell', 'site-header', 'site-navigation', 'breadcrumbs', 'page-frame', 'container', 'stack', 'cluster', 'grid']),
   group('discover-explore', '发现与浏览', 'DISCOVER', '搜索、预览并浏览可用内容和功能入口。', ['navigation-menu', 'menubar', 'tabs', 'tree', 'pagination', 'scroll-area', 'virtual-list', 'autocomplete', 'combobox', 'listbox', 'hover-card', 'card']),
   group('native-input-flow', '类型化输入流程', 'PACKAGED INPUT FLOW', '按固定数据语义使用经过交互增强的录入、选择与提交控件。', inputControlIds),
   group('capture-write', '录入与编辑', 'CAPTURE & WRITE', '创建或修改文本、数值、标签和结构化文档。', ['textarea', 'editable', 'number-field', 'pin-input', 'tags-input', 'mdx', 'label', ...textInputControlIds]),
@@ -101,6 +105,7 @@ const flowGroups: ComponentGroupDefinition[] = [
 ]
 
 const dataGroups: ComponentGroupDefinition[] = [
+  group('site-structure', '站点结构与路由', 'SITE STRUCTURE', '承载导航组、页面层级、路由和响应式内容几何。', ['site-shell', 'site-header', 'site-navigation', 'breadcrumbs', 'page-frame', 'container', 'stack', 'cluster', 'grid']),
   group('native-input-data', '类型化表单数据', 'PACKAGED INPUT DATA', '按数据类型区分字符串、布尔、文件、数值、日期和命令，并提供相应便捷逻辑。', inputControlIds),
   group('plain-text', '文本与字符串', 'TEXT & STRING', '录入、选择、编辑或呈现文本字符串。', ['textarea', 'editable', 'label', 'autocomplete', 'combobox', 'select', 'choice-portal', 'tags-input', 'pin-input', 'mdx', 'badge', 'tooltip', ...textInputControlIds]),
   group('numeric-value', '数值与范围', 'NUMBER & RANGE', '处理计数、步进、比例、评分和连续数值范围。', ['number-field', 'slider', 'rating', 'progress', 'pagination', 'stepper']),

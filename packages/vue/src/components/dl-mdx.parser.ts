@@ -5,6 +5,7 @@ import type {
   DlMdxLinkPolicy,
   DlMdxValue,
 } from './dl-mdx.types'
+import { parseDlMdxFrontMatter } from './dl-mdx.frontmatter'
 import type { DlMdxSecurityPolicy } from './dl-mdx.security'
 import { inspectDlMdxUrlWithRust, parseDlMdxWithRust, type DlMdxUrlInspection } from './dl-mdx.rust'
 
@@ -405,6 +406,7 @@ export function parseDlMdxWithTypeScript(source: string): DlMdxDocument {
 }
 
 export function parseDlMdx(source: string): DlMdxDocument {
+  source = parseDlMdxFrontMatter(source).body
   // DOMParser remains the allowlisted HTML adapter. Pure Markdown and MarkdownX
   // component blocks use the synchronous Rust/WASM core.
   if (htmlBlockStart.test(source) || inlineHtmlTag.test(source)) return parseDlMdxWithTypeScript(source)

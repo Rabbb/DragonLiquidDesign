@@ -66,19 +66,78 @@ await engine.save(createDlMdxHttpStorageAdapter({
 }))
 ```
 
-构建结果中的每条路由均提供 `source`、`script`、`style`、`scriptFiles`、`styleFiles`、动作符号和诊断结果。宿主把 `source` 交给 `DlMdx`，在受控页面作用域挂载 `style`，并把允许执行的动作传入 `actions`。
+构建结果中的每条路由均提供 `source`、`rawSource`、`metadata`、`script`、`style`、`scriptFiles`、`styleFiles`、动作符号和诊断结果。`source` 已移除隐藏页面元数据，适合预览；`rawSource` 保留编辑器原文。构建结果还提供按目录整理的 `navigation` 分组。
+
+## 页面隐藏域与目录导航
+
+每个页面可以在文件最前面声明类似 Next 文档系统的隐藏 front matter。它不会进入正文渲染：
+
+```mdx
+---
+title: Quick start
+route: /guides/start
+description: Create the first project
+group: guides
+group-title: Guides
+group-order: 10
+order: 1
+icon: S
+layout: docs
+hidden: false
+---
+
+# Quick start
+```
+
+`title`、`route`、`order` 和 `layout` 属于页面；`group` 可以跨目录合并菜单组。没有显式 `group` 时，引擎直接使用 `/pages` 下的目录。目录内可增加 `_group.json` 自定义组名：
+
+```json
+{
+  "title": "Build with DL",
+  "order": 20,
+  "collapsed": false,
+  "hidden": false
+}
+```
+
+页面配置优先于 manifest 中同文件的旧式路由声明；没有配置时仍按 `/pages/guides/start.mdx → /guides/start` 推导。无效路由、元数据类型和 `_group.json` 会进入整项目诊断。
+
+## 使用 SiteShell 母版页预览和发布
+
+网站框架不应由每个宿主重复编写。`DlSiteShell` 统一站点头、top/side/hybrid/rail 导航、响应式侧栏、内容插槽和页脚；宿主环境通过 `environment` 输入，不写进用户页面：
 
 ```vue
+<script setup lang="ts">
+import { DlMdx, DlSiteShell, type DlSiteNavigationItem } from '@dragon-liquid/vue'
+
+const environment = {
+  siteName: project.manifest.name,
+  siteCaption: `${username} / ${project.manifest.id}`,
+  homePath: build.entryRoute,
+  basePath: `/pw/${username}/${project.manifest.id}`,
+  variables: { username, projectId: project.manifest.id },
+}
+function navigate(item: DlSiteNavigationItem) {
+  activeRoute.value = build.routes.find(route => route.route === item.href)
+}
+</script>
+
 <template>
-  <style v-if="route.style">{{ route.style }}</style>
-  <DlMdx
-    :model-value="route.source"
-    :actions="trustedActions"
-    mode="preview"
-    :show-toolbar="false"
-  />
+  <style v-if="activeRoute.style">{{ activeRoute.style }}</style>
+  <DlSiteShell
+    :environment="environment"
+    :navigation="build.navigation"
+    :active-path="activeRoute.route"
+    navigation-mode="hybrid"
+    @navigate="navigate"
+  >
+    <DlMdx :model-value="activeRoute.source" :actions="trustedActions" mode="preview" :show-toolbar="false" />
+    <template #footer>Project footer</template>
+  </DlSiteShell>
 </template>
 ```
+
+内容页还可直接使用 `DlContainer`、`DlStack`、`DlCluster`、`DlGrid`、`DlPageFrame`、`DlBreadcrumbs`、`DlSiteHeader` 和 `DlSiteNavigation`。编辑器预览与公开发布必须调用同一份母版组件，设备预览只改变可用宽度，不维护另一套假页面。
 
 ## JavaScript 安全边界
 

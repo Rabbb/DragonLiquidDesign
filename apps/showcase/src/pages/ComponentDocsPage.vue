@@ -166,6 +166,15 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   drawer: () => import('../docs/AlphaGeneralDocs.vue'),
   tree: () => import('../docs/AlphaGeneralDocs.vue'),
   'virtual-list': () => import('../docs/RecommendedControlDocs.vue'),
+  container: () => import('../docs/SiteLayoutDocs.vue'),
+  stack: () => import('../docs/SiteLayoutDocs.vue'),
+  cluster: () => import('../docs/SiteLayoutDocs.vue'),
+  grid: () => import('../docs/SiteLayoutDocs.vue'),
+  'page-frame': () => import('../docs/SiteLayoutDocs.vue'),
+  breadcrumbs: () => import('../docs/SiteLayoutDocs.vue'),
+  'site-navigation': () => import('../docs/SiteLayoutDocs.vue'),
+  'site-header': () => import('../docs/SiteLayoutDocs.vue'),
+  'site-shell': () => import('../docs/SiteLayoutDocs.vue'),
 }
 const missingKeyboardComponents = componentsMissingKeyboardGuidance(componentCatalog.map(component => component.id))
 if (missingKeyboardComponents.length) {
@@ -179,6 +188,7 @@ const sharedDocIds = new Set([
   'autocomplete', 'rating', 'color-area', 'color-field', 'color-picker', 'color-slider', 'color-swatch', 'color-swatch-picker',
   'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree',
   'multi-choice', 'segmented', 'virtual-list',
+  'container', 'stack', 'cluster', 'grid', 'page-frame', 'breadcrumbs', 'site-navigation', 'site-header', 'site-shell',
 ])
 
 const activeDoc = computed(() => defineAsyncComponent({

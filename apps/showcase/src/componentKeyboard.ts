@@ -15,6 +15,16 @@ define(['badge', 'aspect-ratio', 'avatar', 'input-hidden', 'label', 'progress', 
   keys: ['无独立按键'],
 })
 
+define(['container', 'stack', 'cluster', 'grid', 'page-frame'], {
+  summary: '布局组件本身不加入 Tab 顺序，焦点只落在内容插槽中的真实交互控件上。',
+  keys: ['无独立按键', 'Tab 按文档顺序进入插槽内容'],
+})
+
+define(['breadcrumbs', 'site-navigation', 'site-header', 'site-shell'], {
+  summary: '网站框架保留原生链接与按钮行为，并让焦点顺序与视觉导航顺序一致。',
+  keys: ['Tab / Shift+Tab 移动导航焦点', 'Enter 打开链接', 'Escape 关闭移动导航（可用时）'],
+})
+
 define(['button', 'icon-button', 'input-button', 'input-image', 'input-reset', 'input-submit'], {
   summary: '遵循原生按钮语义，不另造快捷键，保证与表单和辅助技术一致。',
   keys: ['Tab 聚焦', 'Enter / Space 执行'],

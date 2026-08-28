@@ -8,6 +8,7 @@ import {
   type DlMdxSchemaType,
   type DlMdxTypeSchema,
 } from './dl-mdx.registry'
+import { parseDlMdxFrontMatter } from './dl-mdx.frontmatter'
 import type { DlMdxValue } from './dl-mdx.types'
 
 export type DlMdxDiagnosticSeverity = 'error' | 'warning' | 'info'
@@ -366,6 +367,11 @@ function applySeverity(items: DlMdxDiagnostic[], options: DlMdxLanguageOptions):
 export function analyzeDlMdx(source: string, registry?: DlMdxRegistry, options: DlMdxLanguageOptions = {}): DlMdxLanguageAnalysis {
   const scanned = scan(source)
   const diagnostics = [...scanned.diagnostics]
+  const frontMatter = parseDlMdxFrontMatter(source)
+  diagnostics.push(...frontMatter.diagnostics.map((item) => {
+    const line = scanned.lines[Math.max(0, item.line - 1)] ?? scanned.lines[0]
+    return diagnostic(line, line.start, line.end, item.code, item.severity, item.message)
+  }))
   const ids = new Map<string, DlMdxLanguageComponentProperty>()
   const actionNames = new Set(options.actionNames ?? [])
   for (const component of scanned.components) {
@@ -455,11 +461,43 @@ function completionRange(line: SourceLine, position: number, pattern = /[@\w:.-]
   return { from, to: position }
 }
 
+const frontMatterFields = [
+  { key: 'title', detail: '页面标题', documentation: '用于导航和浏览器标题；不会渲染到正文。', value: 'Page title' },
+  { key: 'route', detail: '公开路由', documentation: '以 / 开头的站内路由。', value: '/guide/start' },
+  { key: 'description', detail: '导航摘要', documentation: '侧边导航与搜索结果可以显示这段说明。', value: 'Page summary' },
+  { key: 'group', detail: '导航组 ID', documentation: '省略时使用 /pages 下的目录。', value: 'guides' },
+  { key: 'group-title', detail: '导航组显示名', documentation: '覆盖目录 _group.json 的显示名。', value: 'Guides' },
+  { key: 'group-order', detail: '导航组顺序', documentation: '数值越小越靠前。', value: '10' },
+  { key: 'order', detail: '页面顺序', documentation: '当前导航组内的排序值。', value: '1' },
+  { key: 'icon', detail: '导航图标文本', documentation: 'rail 模式和侧边导航使用的紧凑标记。', value: 'S' },
+  { key: 'layout', detail: '页面布局', documentation: '宿主可映射为母版页导航模式。', value: 'docs' },
+  { key: 'hidden', detail: '从导航隐藏', documentation: '路由仍然构建，但不会出现在自动导航中。', value: 'false' },
+] as const
+
+function frontMatterLine(source: string, lineNumber: number): boolean {
+  const lines = source.replace(/^\uFEFF/, '').split(/\r?\n/)
+  if (lines[0]?.trim() !== '---') return false
+  const closing = lines.findIndex((line, index) => index > 0 && line.trim() === '---')
+  return closing > 0 && lineNumber > 0 && lineNumber < closing
+}
+
 export function completeDlMdx(source: string, position: number, registry?: DlMdxRegistry, options: DlMdxLanguageOptions = {}, explicit = false): DlMdxCompletionResult | undefined {
   if (options.completion === false) return undefined
   const scanned = scan(source)
   const line = lineAt(scanned.lines, position)
   const before = source.slice(line.start, position)
+  if (frontMatterLine(source, line.number)) {
+    const valueMatch = before.match(/^\s*([\w-]+)\s*:\s*([\w/-]*)$/)
+    if (valueMatch) {
+      const from = position - valueMatch[2].length
+      const values = valueMatch[1] === 'layout' ? ['landing', 'docs', 'article', 'dashboard'] : ['hidden', 'navigation'].includes(valueMatch[1]) ? ['true', 'false'] : []
+      if (values.length) return { from, to: position, items: values.map(value => ({ label: value, kind: 'value', detail: `${valueMatch[1]} value`, apply: value })) }
+    }
+    if (/^\s*[\w-]*$/.test(before)) {
+      const range = completionRange(line, position, /[\w-]/)
+      return { ...range, items: frontMatterFields.map(field => ({ label: field.key, kind: 'property', detail: field.detail, documentation: field.documentation, apply: `${field.key}: ${field.value}` })) }
+    }
+  }
   const componentName = before.match(/^\s*\+\+\+component:([\w.-]*)$/)
   if (componentName) {
     const from = position - componentName[1].length
@@ -526,6 +564,7 @@ export function completeDlMdx(source: string, position: number, registry?: DlMdx
       to: position,
       items: [
         { label: '组件块', kind: 'snippet', detail: 'MarkdownX', documentation: '插入一个带类型提示的安全组件块。', apply: '+++component:' },
+        { label: '页面隐藏域', kind: 'snippet', detail: 'DL-MDX page', documentation: '插入标题、路由、分组、顺序和布局配置。', apply: '---\ntitle: Page title\nroute: /page\norder: 1\nlayout: docs\n---\n\n' },
         { label: '二级标题', kind: 'snippet', detail: 'Markdown', apply: '## 标题' },
         { label: '任务列表', kind: 'snippet', detail: 'Markdown', apply: '- [ ] 待办事项' },
         { label: 'TypeScript 代码块', kind: 'snippet', detail: 'Markdown', apply: '```typescript\n\n```' },
@@ -551,6 +590,11 @@ function sourceSlice(line: SourceLine, from: number, to: number): string {
 export function hoverDlMdx(source: string, position: number, registry?: DlMdxRegistry, options: DlMdxLanguageOptions = {}): DlMdxHoverInfo | undefined {
   const scanned = scan(source)
   const line = lineAt(scanned.lines, position)
+  if (frontMatterLine(source, line.number)) {
+    const token = tokenRange(line, position)
+    const field = frontMatterFields.find(item => item.key === token.value.replace(/:$/, ''))
+    if (field) return { from: token.from, to: token.to, title: field.key, detail: field.detail, documentation: field.documentation }
+  }
   const component = scanned.components.find(item => position >= item.from && position <= item.to)
   if (!component) return undefined
   const definition = registry?.resolve(component.name)
