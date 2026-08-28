@@ -6,6 +6,7 @@ import type {
   DlMdxValue,
 } from './dl-mdx.types'
 import type { DlMdxSecurityPolicy } from './dl-mdx.security'
+import { inspectDlMdxUrlWithRust, parseDlMdxWithRust, type DlMdxUrlInspection } from './dl-mdx.rust'
 
 type SourceLine = { text: string; number: number }
 
@@ -379,7 +380,7 @@ function parseBlocks(lines: SourceLine[], slugCounts: Map<string, number>): DlMd
   return blocks
 }
 
-export function parseDlMdx(source: string): DlMdxDocument {
+export function parseDlMdxWithTypeScript(source: string): DlMdxDocument {
   const normalized = source.replace(/\r\n?/g, '\n')
   const lines = normalized.split('\n').map((text, number) => ({ text, number }))
   const blocks = parseBlocks(lines, new Map())
@@ -397,31 +398,48 @@ export function parseDlMdx(source: string): DlMdxDocument {
   }
 }
 
-function normalizedScheme(value: string): string {
-  let decoded = value.trim()
-  for (let index = 0; index < 2; index += 1) {
-    try { decoded = decodeURIComponent(decoded) } catch { break }
+export function parseDlMdx(source: string): DlMdxDocument {
+  // DOMParser remains the allowlisted HTML adapter. Pure Markdown and MarkdownX
+  // component blocks use the synchronous Rust/WASM core.
+  if (htmlBlockStart.test(source) || inlineHtmlTag.test(source)) return parseDlMdxWithTypeScript(source)
+  try { return parseDlMdxWithRust(source) }
+  catch { return parseDlMdxWithTypeScript(source) }
+}
+
+function inspectDlMdxUrl(value: string): DlMdxUrlInspection {
+  try { return inspectDlMdxUrlWithRust(value) }
+  catch {
+    const candidate = value.trim()
+    if (!candidate || candidate.includes('\\')) return 'invalid'
+    let inspected = candidate
+    for (let index = 0; index < 2; index += 1) {
+      try { inspected = decodeURIComponent(inspected) } catch { break }
+    }
+    inspected = inspected.replace(/[\u0000-\u0020\u007f-\u009f]/g, '').toLowerCase()
+    if (inspected.startsWith('javascript:') || inspected.startsWith('vbscript:')) return 'invalid'
+    if (candidate.startsWith('//')) return 'protocol-relative'
+    if (/^(?:#|\?|\/|\.\/|\.\.\/)/.test(candidate)) return 'relative'
+    const protocol = inspected.match(/^([a-z][a-z0-9+.-]*):/)?.[1]
+    if (!protocol) return 'relative'
+    return (['http', 'https', 'mailto', 'tel', 'data', 'blob'] as const).includes(protocol as 'http') ? protocol as DlMdxUrlInspection : 'other'
   }
-  return decoded.replace(/[\u0000-\u0020\u007f-\u009f]/g, '').toLowerCase()
 }
 
 export function safeDlMdxUrl(value: string, kind: 'link' | 'image', policy: Required<DlMdxLinkPolicy>, security?: DlMdxSecurityPolicy): string | undefined {
   const candidate = value.trim()
-  const inspected = normalizedScheme(candidate)
+  const inspected = inspectDlMdxUrl(candidate)
   const secured = (approved: string) => security?.validate(approved, kind) ?? (security ? undefined : approved)
-  if (!candidate || candidate.includes('\\') || inspected.startsWith('javascript:') || inspected.startsWith('vbscript:')) return undefined
+  if (inspected === 'invalid') return undefined
   if (kind === 'image' && !policy.allowImages) return undefined
-  if (candidate.startsWith('//')) return kind === 'image' || policy.allowExternal ? secured(candidate) : undefined
-  if (/^(?:#|\?|\/|\.\/|\.\.\/)/.test(candidate)) return secured(candidate)
+  if (inspected === 'protocol-relative') return kind === 'image' || policy.allowExternal ? secured(candidate) : undefined
+  if (inspected === 'relative') return secured(candidate)
 
-  if (kind === 'image' && inspected.startsWith('data:')) {
+  if (kind === 'image' && inspected === 'data') {
     return policy.allowImages && policy.allowDataImages && /^data:image\/(?:png|jpe?g|gif|webp|avif);base64,/i.test(candidate) ? secured(candidate) : undefined
   }
 
-  const protocol = inspected.match(/^([a-z][a-z0-9+.-]*):/)?.[1]
-  if (!protocol) return secured(candidate)
-  if (kind === 'image') return policy.allowImages && ['http', 'https', 'blob'].includes(protocol) ? secured(candidate) : undefined
-  if (['mailto', 'tel'].includes(protocol)) return secured(candidate)
-  if (['http', 'https'].includes(protocol)) return policy.allowExternal ? secured(candidate) : undefined
+  if (kind === 'image') return policy.allowImages && ['http', 'https', 'blob'].includes(inspected) ? secured(candidate) : undefined
+  if (inspected === 'mailto' || inspected === 'tel') return secured(candidate)
+  if (inspected === 'http' || inspected === 'https') return policy.allowExternal ? secured(candidate) : undefined
   return undefined
 }

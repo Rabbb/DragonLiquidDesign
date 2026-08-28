@@ -5434,12 +5434,36 @@ export default {
       },
       {
         "name": "DlMdxSecurityStatus",
-        "description": "WASM 完整性模块的当前状态、指纹和规则数量快照。",
+        "description": "Rust/WASM 安全核心的当前状态、指纹和规则数量快照。",
         "rows": [
           {
             "prop": "wasm",
-            "description": "安全策略是否已经启用内嵌 WASM 完整性模块。",
+            "description": "安全策略是否已经启用内嵌 Rust/WASM 核心。",
             "type": "true",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "engine",
+            "description": "MarkdownX 当前使用的解析与安全核心实现。",
+            "type": "'rust-wasm'",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "abiVersion",
+            "description": "JavaScript 包装层与 Rust/WASM 核心之间的 ABI 版本。",
+            "type": "number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "binarySize",
+            "description": "内嵌 Rust/WASM 二进制的字节数。",
+            "type": "number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "binaryFingerprint",
+            "description": "构建时生成的 Rust/WASM 二进制 SHA-256 指纹。",
+            "type": "string",
             "defaultValue": "必填"
           },
           {
@@ -5450,7 +5474,7 @@ export default {
           },
           {
             "prop": "fingerprint",
-            "description": "由 WASM 计算的只读白名单完整性指纹。",
+            "description": "由 Rust/WASM 计算的只读白名单完整性指纹。",
             "type": "string",
             "defaultValue": "必填"
           },
@@ -5495,6 +5519,44 @@ export default {
             "defaultValue": "文件"
           }
         ]
+      },
+      {
+        "name": "DlMdxRustCoreStatus",
+        "description": "Rust/WASM 解析核心的 ABI、二进制尺寸和构建指纹。",
+        "rows": [
+          {
+            "prop": "engine",
+            "description": "MarkdownX 当前使用的解析与安全核心实现。",
+            "type": "'rust-wasm'",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "available",
+            "description": "Rust/WASM 核心是否已成功初始化并可调用。",
+            "type": "boolean",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "abiVersion",
+            "description": "JavaScript 包装层与 Rust/WASM 核心之间的 ABI 版本。",
+            "type": "number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "binarySize",
+            "description": "内嵌 Rust/WASM 二进制的字节数。",
+            "type": "number",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "binaryFingerprint",
+            "description": "构建时生成的 Rust/WASM 二进制 SHA-256 指纹。",
+            "type": "string",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxRustCoreStatus"
       }
     ]
   },

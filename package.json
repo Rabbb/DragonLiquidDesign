@@ -11,10 +11,12 @@
     "typescript": "5.9.3"
   },
   "scripts": {
+    "build:mdx-rust": "node scripts/build-mdx-rust.mjs",
     "build": "npm run build --workspace @dragon-liquid/vue",
     "build:showcase": "npm run build --workspace @dragon-liquid/showcase",
     "typecheck": "npm run typecheck --workspace @dragon-liquid/vue",
-    "test": "npm run test --workspace @dragon-liquid/vue",
+    "test:rust": "cargo test --manifest-path crates/dl-mdx-core/Cargo.toml",
+    "test": "npm run build:mdx-rust && npm run test:rust && npm run test --workspace @dragon-liquid/vue",
     "publish:local": "npm run build && npm pack --workspace @dragon-liquid/vue --pack-destination registry"
   },
   "engines": {

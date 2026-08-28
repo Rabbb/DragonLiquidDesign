@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlMdx, dlMdxOfficialComponents, useDlMdxSecurityPolicy, type DlMdxComponentCategory } from '@dragon-liquid/vue'
+import { DlMdx, dlMdxOfficialComponents, getDlMdxRustCoreStatus, useDlMdxSecurityPolicy, type DlMdxComponentCategory } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const installedSecurity = useDlMdxSecurityPolicy()
 const securityStatus = installedSecurity?.status()
+const rustCoreStatus = getDlMdxRustCoreStatus()
 
 const writingSource = ref([
   '# 《葬送的芙莉莲》资料草稿',
@@ -76,7 +77,7 @@ const unsafeSource = [
 ].join('\n')
 
 const securitySource = [
-  '# WASM 域名白名单',
+  '# Rust/WASM 域名白名单',
   '',
   '[允许的文档链接](https://developer.mozilla.org/en-US/docs/WebAssembly)',
   '',
@@ -206,7 +207,7 @@ const content = computed(() => {
     title: `官方注册 · ${officialLabels[category]}`,
     description: `该页面直接使用 main.ts 安装的官方注册表，按需展示 ${officialLabels[category]}，其中 Alpha 定义与稳定版遵循同一安全边界。`,
     code: officialExampleCode(category),
-    tips: ['createDlMdxOfficialRegistry() 包含组件库当前全部 88 个公开组件，不保留重复的日期时间兼容入口。', '组件按场景分组展示，避免一次渲染全部定义造成页面卡顿。'],
+    tips: ['createDlMdxOfficialRegistry() 包含组件库当前全部 89 个公开组件，不保留重复的日期时间兼容入口。', '组件按场景分组展示，避免一次渲染全部定义造成页面卡顿。'],
   }
   return ({
   basic: {
@@ -255,11 +256,21 @@ ${vueSfc({
     }),
     tips: ['javascript:、vbscript: 和非图片 Data URL 不会进入 DOM 链接属性。', '外部链接启用时自动附加 noopener noreferrer。'],
   },
+  'rust-core': {
+    title: 'Rust/WASM 同步解析核心',
+    description: '纯 Markdown、MarkdownX 组件块、文档统计、URL 协议识别和策略指纹由内嵌 Rust/WASM 核心完成；含白名单 HTML 的内容交给 DOM 安全适配层。',
+    code: vueSfc({
+      imports: ['DlMdx', 'getDlMdxRustCoreStatus', 'parseDlMdx'],
+      script: `const status = getDlMdxRustCoreStatus()\nconst document = '# Rust core\\n\\n- [x] synchronous WASM'\nconst stats = parseDlMdx(document).stats`,
+      template: `  <section>\n    <code>{{ status.engine }} · ABI {{ status.abiVersion }}</code>\n    <DlMdx :model-value="document" mode="preview" readonly />\n    <output>{{ stats.blockCount }} blocks</output>\n  </section>`,
+    }),
+    tips: ['WASM 字节码随组件包内嵌并同步初始化，不依赖运行时网络请求，也不会把 parseDlMdx 改成异步 API。', 'Rust crate 有独立单元测试；TypeScript 集成测试额外验证 ABI、内存释放、Unicode 锚点和重复解析。', 'HTML 不进入 Rust 字符串拼接渲染，仍由 DOMParser 转换为受限 Vue 节点，预览不使用 v-html。'],
+  },
   'security-policy': {
-    title: 'main.ts · WASM 域名白名单',
+    title: 'main.ts · Rust/WASM 域名白名单',
     description: '网站入口统一安装 URL 安全策略，分别约束普通链接、图片与文件来源；文件还必须同时命中允许的扩展名。',
     code: securityPolicyExample,
-    tips: ['白名单被规范化后封存在闭包中，策略对象被冻结；WASM 持有完整性指纹，校验异常时所有受控 URL 默认拒绝。', 'WASM 无法抵抗拥有页面控制权的人替换整个前端程序；生产环境仍应同步配置服务端校验与 CSP。'],
+    tips: ['白名单被规范化后封存在闭包中，策略对象被冻结；Rust/WASM 核心持有完整性指纹，校验异常时所有受控 URL 默认拒绝。', 'WASM 无法抵抗拥有页面控制权的人替换整个前端程序；生产环境仍应同步配置服务端校验与 CSP。'],
   },
   }[props.scenario] ?? {} as { title: string; description: string; code: string; tips: string[] })
 })
@@ -274,11 +285,20 @@ ${vueSfc({
 
       <DlMdx v-else-if="scenario === 'component-blocks'" :model-value="componentSource" mode="preview" min-height="24rem" />
 
+      <template v-else-if="scenario === 'rust-core'">
+        <div class="mdx-security-status mdx-rust-status">
+          <span><i /> {{ rustCoreStatus.engine.toUpperCase() }}</span>
+          <b>ABI {{ rustCoreStatus.abiVersion }}</b>
+          <code>{{ Math.round(rustCoreStatus.binarySize / 1024) }} KB · {{ rustCoreStatus.binaryFingerprint.slice(0, 12) }}</code>
+        </div>
+        <DlMdx :model-value="archiveSource" mode="preview" readonly :show-toolbar="false" min-height="24rem" />
+      </template>
+
       <DlMdx v-else-if="officialCategory" :model-value="officialSource" mode="preview" readonly :show-toolbar="false" min-height="24rem" class="mdx-official-gallery" />
 
       <template v-else-if="scenario === 'security-policy'">
         <div class="mdx-security-status">
-          <span><i /> WASM ACTIVE</span>
+          <span><i /> RUST/WASM ACTIVE</span>
           <b>INTEGRITY {{ securityStatus?.integrity ? 'VERIFIED' : 'FAILED' }}</b>
           <code>{{ securityStatus?.fingerprint }}</code>
         </div>

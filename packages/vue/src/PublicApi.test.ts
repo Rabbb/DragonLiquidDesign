@@ -27,6 +27,7 @@ describe('public component API', () => {
     expect(library).toHaveProperty('createDlMdxRegistry')
     expect(library).toHaveProperty('createDlMdxOfficialRegistry')
     expect(library).toHaveProperty('createDlMdxSecurityPolicy')
+    expect(library).toHaveProperty('getDlMdxRustCoreStatus')
   })
 
   it('associates labels with native fields', () => {

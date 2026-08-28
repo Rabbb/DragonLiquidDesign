@@ -209,7 +209,7 @@ function scrollToSection(id: string) {
           <pre class="code-panel"><code>{{ wrapperCode }}</code></pre>
           <div class="principle-grid">
             <DlCard padding="md"><b>兼容</b><p>现有组件属性、插槽和事件名保持不变。</p></DlCard>
-            <DlCard padding="md"><b>隔离</b><p>行为层不需要侵入重写 88 个公开组件。</p></DlCard>
+            <DlCard padding="md"><b>隔离</b><p>行为层不需要侵入重写 89 个公开组件。</p></DlCard>
             <DlCard padding="md"><b>扩展</b><p>新组件包装后自动继承通用实例能力。</p></DlCard>
           </div>
         </section>

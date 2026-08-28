@@ -212,9 +212,14 @@ const descriptions = {
   unregister: '按名称或别名移除一个注册定义。',
   validate: '使用冻结白名单和 WASM 完整性守卫验证 URL；失败时返回 undefined。',
   verifyIntegrity: '重新计算并核对白名单的 WASM 完整性指纹。',
-  wasm: '安全策略是否已经启用内嵌 WASM 完整性模块。',
+  wasm: '安全策略是否已经启用内嵌 Rust/WASM 核心。',
+  engine: 'MarkdownX 当前使用的解析与安全核心实现。',
+  available: 'Rust/WASM 核心是否已成功初始化并可调用。',
+  abiVersion: 'JavaScript 包装层与 Rust/WASM 核心之间的 ABI 版本。',
+  binarySize: '内嵌 Rust/WASM 二进制的字节数。',
+  binaryFingerprint: '构建时生成的 Rust/WASM 二进制 SHA-256 指纹。',
   integrity: '当前白名单规范化快照是否通过完整性校验。',
-  fingerprint: '由 WASM 计算的只读白名单完整性指纹。',
+  fingerprint: '由 Rust/WASM 计算的只读白名单完整性指纹。',
   domainRuleCount: '当前策略包含的域名规则总数。',
   fileExtensionCount: '当前策略包含的文件扩展名数量。',
 }
@@ -257,7 +262,8 @@ const structureDescriptions = {
   DlMdxSecurityPolicy: '由 app.use 安装的全局 MarkdownX URL 安全守卫，负责验证、完整性检查和状态报告。',
   DlMdxSecurityOptions: '创建 MarkdownX 域名、协议、文件类型及特殊 URL 白名单时使用的配置。',
   DlMdxDomainAllowlist: '分别约束普通链接、图片、文件以及共享来源的域名规则集合。',
-  DlMdxSecurityStatus: 'WASM 完整性模块的当前状态、指纹和规则数量快照。',
+  DlMdxSecurityStatus: 'Rust/WASM 安全核心的当前状态、指纹和规则数量快照。',
+  DlMdxRustCoreStatus: 'Rust/WASM 解析核心的 ABI、二进制尺寸和构建指纹。',
   DlColorSwatchOption: 'ColorSwatchPicker 使用的命名颜色选项，可附带说明或禁用状态。',
 }
 
@@ -645,7 +651,7 @@ const filenames = (await readdir(componentsRoot))
 
 const structures = {}
 const componentEnums = {}
-for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'calendar.types.ts', 'color-controls.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts']) {
+for (const filename of ['primitive.types.ts', 'select.types.ts', 'dialog.types.ts', 'calendar.types.ts', 'color-controls.ts', 'dl-mdx.types.ts', 'dl-mdx.registry.ts', 'dl-mdx.security.ts', 'dl-mdx.rust.ts']) {
   const typeSource = await readFile(resolve(componentsRoot, filename), 'utf8')
   const parsed = structuresFromSource(typeSource)
   Object.assign(structures, Object.fromEntries(Object.entries(parsed).map(([name, structure]) => [name, { ...structure, kind: 'structure' }])))
@@ -675,7 +681,7 @@ for (const input of inputControls) api[input.id] = inputControlApi(input, api[in
 if (!api.toolbar.relatedTypes.some(type => type.title === 'DlMenuItem[]')) {
   throw new Error('Toolbar 缺少 DlMenuItem[] 数据结构 API。')
 }
-for (const name of ['DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind']) {
+for (const name of ['DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind', 'DlMdxRustCoreStatus']) {
   const definition = structures[name] ?? componentEnums[name]
   if (!definition) throw new Error(`Mdx 缺少 ${name} 安全策略 API。`)
   api.mdx.relatedTypes.push({ ...definition, title: name })
@@ -684,7 +690,7 @@ const mdxRelatedTypes = api.mdx?.relatedTypes.map(type => type.title)
 if (JSON.stringify(mdxRelatedTypes) !== JSON.stringify([
   'DlMdxMode', 'DlMdxToolbarAction[]', 'DlMdxLinkPolicy', 'DlMdxRegistry',
   'DlMdxComponentDefinition[]', 'DlMdxComponentCategory', 'DlMdxComponentMaturity',
-  'DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind',
+  'DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind', 'DlMdxRustCoreStatus',
 ])) {
   throw new Error(`Mdx 相关类型 API 顺序不正确：${mdxRelatedTypes?.join(', ')}`)
 }

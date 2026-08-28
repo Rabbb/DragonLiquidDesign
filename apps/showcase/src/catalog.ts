@@ -349,7 +349,8 @@ const readyComponents: ComponentDefinition[] = [
       { id: 'official-dates', label: '官方注册 · 日期', summary: '全部 Alpha 日期时间组件定义' },
       { id: 'official-general', label: '官方注册 · 通用', summary: '布局、浮层、反馈与导航组件定义' },
       { id: 'safe-preview', label: '安全预览', summary: '阻止危险链接、数据图片和原始脚本' },
-      { id: 'security-policy', label: 'WASM 域名白名单', summary: '在 main.ts 分离限制链接、图片和文件来源' },
+      { id: 'rust-core', label: 'Rust 解析核心', summary: '同步 WASM 解析、统计与协议识别运行状态' },
+      { id: 'security-policy', label: 'Rust/WASM 白名单', summary: '在 main.ts 分离限制链接、图片和文件来源' },
     ],
   },
   {

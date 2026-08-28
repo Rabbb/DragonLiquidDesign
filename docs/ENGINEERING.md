@@ -95,6 +95,9 @@
 
 ```text
 O:\DragonLiquidDesign
+├─ crates/dl-mdx-core/
+│  ├─ src/lib.rs
+│  └─ Cargo.toml
 ├─ docs/
 ├─ packages/vue/
 │  ├─ src/components/
@@ -113,13 +116,21 @@ O:\DragonLiquidDesign
 
 组件统一使用 `Dl` 前缀，DOM 上保留 `data-slot` 以便消费方定向扩展，但不保证内部 class 名稳定。
 
+### 4.1 MarkdownX Rust/WASM 边界
+
+- `crates/dl-mdx-core` 负责纯 Markdown 与 MarkdownX 组件块解析、文档统计、URL 协议识别和 FNV-1a 完整性哈希。
+- `scripts/build-mdx-rust.mjs` 构建 `wasm32-unknown-unknown` release，并生成带 SHA-256 指纹的内嵌 TypeScript 资源；运行时不请求外部 WASM 文件。
+- `dl-mdx.rust.ts` 是唯一 ABI 包装层；JavaScript 与 Rust 的 ABI 版本不匹配时拒绝初始化。
+- 受支持的 HTML 标签仍由 TypeScript `DOMParser` 安全适配层转换为 Vue 节点，禁止 Rust 或 Vue 使用 `v-html` 直接注入文档内容。
+- `parseDlMdx()` 保持同步；普通环境使用 Rust/WASM，无 WebAssembly 时回退 TypeScript，安全策略则保持默认拒绝。
+
 ## 5. 本地 npm 发布
 
 当前机器没有正在监听的 npm 私有 registry，只有 npm 公共镜像配置；因此本阶段采用 npm 官方支持的本地 tarball 包仓库：
 
 1. 在 `packages/vue` 执行构建和测试。
 2. 使用 `npm pack --pack-destination O:\DragonLiquidDesign\registry` 生成版本化 `.tgz`。
-3. Nuxt 工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.12.tgz` 安装，引用的是发布产物而非源码。
+3. 消费工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.31.tgz` 安装，引用的是发布产物而非源码。
 4. 修改组件后必须提升包版本、重新打包并在消费方重新安装。
 
 若以后部署 Verdaccio，可保持包名和版本不变，执行：
@@ -180,6 +191,7 @@ tests                     后端测试
 
 UI 包发布前：
 
+- `cargo test --manifest-path crates/dl-mdx-core/Cargo.toml` 通过，Rust 核心能构建到 `wasm32-unknown-unknown`。
 - TypeScript 类型检查通过。
 - Vite library build 通过。
 - 核心组件测试通过。
@@ -205,7 +217,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.6.0-alpha.29.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.6.0-alpha.31.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -269,5 +281,5 @@ npm run build:showcase
 当前版本下载地址为：
 
 ```text
-http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.29.tgz
+http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.31.tgz
 ```

@@ -6,4 +6,5 @@ apps/showcase/public/packages/*.tgz
 coverage/
 .artifacts/
 .codex-*/
+crates/*/target/
 .DS_Store

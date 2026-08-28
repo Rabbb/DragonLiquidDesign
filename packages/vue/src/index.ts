@@ -99,6 +99,8 @@ export type {
   DlMdxValue,
 } from './components/dl-mdx.types'
 export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
+export { getDlMdxRustCoreStatus } from './components/dl-mdx.rust'
+export type { DlMdxRustCoreStatus, DlMdxUrlInspection } from './components/dl-mdx.rust'
 export { applyDlMdxCommand, insertDlMdxSnippet } from './components/dl-mdx.commands'
 export type { DlMdxCommandContext, DlMdxCommandResult, DlMdxSelection } from './components/dl-mdx.commands'
 export {
