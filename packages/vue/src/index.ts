@@ -119,6 +119,46 @@ export type {
   DlMdxValidator,
   DlMdxValidatorContext,
 } from './components/dl-mdx.language'
+export {
+  buildDlMdxProject,
+  createDlMdxEngine,
+  createDlMdxHttpStorageAdapter,
+  createDlMdxLocalStorageAdapter,
+  createDlMdxMemoryStorageAdapter,
+  defaultDlMdxEngineLimits,
+  dirnameDlMdxProjectPath,
+  dlMdxProjectSchemaVersion,
+  normalizeDlMdxProjectPath,
+  normalizeDlMdxProjectSnapshot,
+  parseDlMdxProject,
+  serializeDlMdxProject,
+} from './components/dl-mdx.engine'
+export type {
+  CreateDlMdxEngineOptions,
+  DlMdxBuiltRoute,
+  DlMdxEngine,
+  DlMdxEngineDraft,
+  DlMdxEngineLimits,
+  DlMdxHttpStorageAdapterOptions,
+  DlMdxProjectBuildOptions,
+  DlMdxProjectBuildResult,
+  DlMdxProjectChange,
+  DlMdxProjectChangeEvent,
+  DlMdxProjectChangeKind,
+  DlMdxProjectDiagnostic,
+  DlMdxProjectDirectory,
+  DlMdxProjectEntry,
+  DlMdxProjectFile,
+  DlMdxProjectFileEncoding,
+  DlMdxProjectFileLanguage,
+  DlMdxProjectInput,
+  DlMdxProjectManifest,
+  DlMdxProjectRouteDefinition,
+  DlMdxProjectSnapshot,
+  DlMdxProjectStorageAdapter,
+  DlMdxProjectStorageEntry,
+  DlMdxProjectTreeNode,
+} from './components/dl-mdx.engine'
 export { getDlMdxRustCoreStatus } from './components/dl-mdx.rust'
 export type { DlMdxRustCoreStatus, DlMdxUrlInspection } from './components/dl-mdx.rust'
 export { applyDlMdxCommand, insertDlMdxSnippet } from './components/dl-mdx.commands'

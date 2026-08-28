@@ -160,10 +160,39 @@ const document = parseDlMdx('# Archive\n\n- [x] indexed')
 
 语言服务提供组件、属性、事件、动作和枚举补全，悬浮类型说明、可修复诊断，以及由 `formatOptions` 控制的确定性格式化。按 `Ctrl+Space` 主动补全，按 `Shift+Alt+F` 格式化 MDX 主文档。
 
+## MarkdownX 项目引擎
+
+`DlMdx` 继续负责单文档编辑；`createDlMdxEngine()` 在它下面增加项目级虚拟文件系统、清单、原子事务、自动页面路由、跨文件诊断和存储协议。这样用户可以从一份文档平滑扩展为包含 `/pages`、脚本、样式、数据与资源的线上项目，而不必更换文档语言。
+
+```ts
+import {
+  createDlMdxEngine,
+  createDlMdxHttpStorageAdapter,
+} from '@dragon-liquid/vue'
+
+const project = createDlMdxEngine({
+  project: {
+    manifest: { id: 'team-handbook', name: 'Team handbook' },
+  },
+  limits: { maxFileBytes: 2 * 1024 * 1024 },
+})
+
+project.transaction((draft) => {
+  draft.writeFile('/pages/guide.mdx', '# Guide', { language: 'mdx' })
+  draft.writeFile('/pages/guide.ts', 'export function publish() {}', { language: 'typescript' })
+})
+
+const build = project.build()
+await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' }))
+```
+
+默认限制为 1,000 个条目、单文件 2 MiB、项目 25 MiB、目录深度 32 层，所有超限写入都会随事务回滚。内置 Memory、LocalStorage 与 HTTP 三种存储适配器；宿主可以实现同一接口接入数据库、版本历史或对象存储。构建会解析页面并分析附属脚本的导出契约，但绝不执行脚本；发布服务仍需负责鉴权、配额、隔离编译、CSP 和可信动作装载。
+
 当前公共组件共 89 个：
 
 - 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.34` 将 MarkdownX 提升为项目引擎：新增受限虚拟文件系统、原子事务、项目清单、自动路由、跨文件构建诊断，以及 Memory、LocalStorage、HTTP 存储适配器和可操作的线上项目工作台。
 - `0.6.0-alpha.33` 新增 MarkdownX 类型提示、诊断、格式化、安全声明式事件，以及 MDX 主文档配合 Script/Style 附加文档的编辑工作区。
 - `0.6.0-alpha.32` 为 MarkdownX 增加 Rust/WASM 预览语法高亮、CodeMirror 多语言解析和围栏代码域高亮；未知语言安全降级为原文。
 - `0.6.0-alpha.31` 新增 Rust/WASM MarkdownX 核心，接管纯文档解析、统计、URL 协议识别和完整性哈希，移除手写 WAT，并保留 HTML 安全适配与无 WASM 回退路径。

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { DlBadge, DlMdx, type DlMdxActionMap, type DlMdxFormatOptions, type DlMdxLanguageAnalysis } from '@dragon-liquid/vue'
+import MdxProjectWorkbench from '../components/MdxProjectWorkbench.vue'
 
 const workspaceMdx = ref([
   '# Release workspace', '',
@@ -71,18 +72,28 @@ const richSource = ref([
     </header>
 
     <nav class="mdx-language-nav" aria-label="MarkdownX 文档章节">
-      <a href="#workspace">工作区</a><a href="#language-service">语言服务</a><a href="#events">事件模型</a>
+      <a href="#project-engine">项目引擎</a><a href="#workspace">工作区</a><a href="#language-service">语言服务</a><a href="#events">事件模型</a>
       <a href="#formatter">格式化</a><a href="#syntax">语言特性</a><a href="#security">边界</a>
     </nav>
 
+    <section id="project-engine" class="mdx-language-section">
+      <header><small>01 · PROJECT ENGINE</small><h2>从一份文档，扩展成有目录的线上项目</h2><p>项目模式以虚拟文件系统和清单为核心：页面、脚本、样式、数据与资源各自保存；自动发现路由、执行整项目诊断，并通过存储适配器持久化。下面不是静态示意图，而是可创建、移动、删除、导入、导出和自动保存的项目工作台。</p></header>
+      <div class="mdx-engine-model">
+        <article><b>DOCUMENT</b><span>单个 <code>DlMdx</code> 仍可作为轻量文档编辑器。</span></article>
+        <article><b>PROJECT</b><span><code>DlMdxEngine</code> 管理目录、事务、清单与路由。</span></article>
+        <article><b>HOST</b><span>宿主接入数据库、发布流水线与受信动作运行时。</span></article>
+      </div>
+      <MdxProjectWorkbench />
+    </section>
+
     <section id="workspace" class="mdx-language-section">
-      <header><small>01 · DOCUMENT MODEL</small><h2>一份主文档，两份附加文档</h2><p>切换 MDX、SCRIPT、STYLE 标签即可编辑。三份源码分别通过 v-model 持有，不再把脚本和样式塞进文档正文。</p></header>
+      <header><small>02 · DOCUMENT MODEL</small><h2>一份主文档，两份附加文档</h2><p>切换 MDX、SCRIPT、STYLE 标签即可编辑。三份源码分别通过 v-model 持有，不再把脚本和样式塞进文档正文。</p></header>
       <DlMdx v-model="workspaceMdx" v-model:script-value="workspaceScript" v-model:style-value="workspaceStyle" :actions="actions" show-companion-documents mode="split" min-height="31rem" aria-label="MDX 主文档工作区" />
       <output class="mdx-action-log">{{ eventLog }}</output>
     </section>
 
     <section id="language-service" class="mdx-language-section">
-      <header><small>02 · LANGUAGE SERVICE</small><h2>类型提示不是属性清单</h2><p>注册组件的 Vue props、显式 schema、emits 和 Script 导出动作会汇合成文档语言模型。</p></header>
+      <header><small>03 · LANGUAGE SERVICE</small><h2>类型提示不是属性清单</h2><p>注册组件的 Vue props、显式 schema、emits 和 Script 导出动作会汇合成文档语言模型。</p></header>
       <div class="mdx-capability-grid">
         <article><b>Ctrl + Space</b><span>组件、属性、事件、动作与枚举值补全</span></article>
         <article><b>Hover</b><span>悬浮查看类型、范围、必填状态和说明</span></article>
@@ -97,23 +108,23 @@ const richSource = ref([
     </section>
 
     <section id="events" class="mdx-language-section mdx-language-prose">
-      <header><small>03 · DECLARATIVE EVENTS</small><h2>文档引用动作，宿主掌握执行权</h2></header>
+      <header><small>04 · DECLARATIVE EVENTS</small><h2>文档引用动作，宿主掌握执行权</h2></header>
       <pre><code>+++component:Button · @click = saveDocument · +++end</code></pre>
       <p><code>@click</code> 必须是组件 schema 声明的事件，<code>saveDocument</code> 必须来自附加脚本的导出契约或宿主 action map。附加脚本不会在预览中自动执行；生产应用决定如何编译、装载并注册真正的处理器。</p>
     </section>
 
     <section id="formatter" class="mdx-language-section">
-      <header><small>04 · CONFIGURABLE FORMATTER</small><h2>格式可配置，也可重复得到同一结果</h2><p>点击工具栏末尾的 ↹，或按 Shift+Alt+F。下面启用了 schema 顺序、等号对齐、双引号和统一列表符号。</p></header>
+      <header><small>05 · CONFIGURABLE FORMATTER</small><h2>格式可配置，也可重复得到同一结果</h2><p>点击工具栏末尾的 ↹，或按 Shift+Alt+F。下面启用了 schema 顺序、等号对齐、双引号和统一列表符号。</p></header>
       <DlMdx v-model="formatterSource" :format-options="formatOptions" :language-options="{ actionNames: ['publishRelease'] }" mode="split" min-height="24rem" />
     </section>
 
     <section id="syntax" class="mdx-language-section">
-      <header><small>05 · EDITABLE FEATURE TOUR</small><h2>文档能力必须在编辑中展示</h2><p>标题、引用、任务、表格、代码域和安全组件都应当在同一个可编辑案例里被验证。</p></header>
+      <header><small>06 · EDITABLE FEATURE TOUR</small><h2>文档能力必须在编辑中展示</h2><p>标题、引用、任务、表格、代码域和安全组件都应当在同一个可编辑案例里被验证。</p></header>
       <DlMdx v-model="richSource" mode="split" min-height="28rem" />
     </section>
 
     <section id="security" class="mdx-language-section mdx-language-boundary">
-      <header><small>06 · TRUST BOUNDARY</small><h2>分离并不等于隐式执行</h2></header>
+      <header><small>07 · TRUST BOUNDARY</small><h2>分离并不等于隐式执行</h2></header>
       <div>
         <article><b>MDX</b><p>解析为受控 Vue 节点；原始脚本、事件属性和危险 URL 不进入 DOM。</p></article>
         <article><b>Script</b><p>编辑器提取导出符号做类型提示，但预览绝不 eval。应用构建流程负责装载可信实现。</p></article>
@@ -128,5 +139,6 @@ const richSource = ref([
 .mdx-language-nav{position:sticky;z-index:8;top:8px;display:flex;flex-wrap:wrap;gap:4px;width:max-content;max-width:100%;margin-inline:auto;padding:6px;border:1px solid var(--dl-border);border-radius:15px;background:color-mix(in srgb,var(--dl-surface-strong) 90%,transparent);box-shadow:var(--dl-shadow-md);backdrop-filter:blur(18px)}.mdx-language-nav a{padding:8px 13px;border-radius:10px;color:var(--dl-text-muted);font-size:.78rem;font-weight:700}.mdx-language-nav a:hover{color:var(--dl-accent-text);background:var(--dl-accent-surface)}
 .mdx-language-section{scroll-margin-top:100px;display:grid;gap:18px;padding:30px;border:1px solid var(--dl-border);border-radius:24px;background:color-mix(in srgb,var(--dl-surface) 91%,transparent);box-shadow:var(--dl-shadow-sm)}.mdx-language-section>header{max-width:920px}.mdx-language-section>header small{color:var(--dl-accent-text);font:800 .65rem/1 ui-monospace,monospace;letter-spacing:.12em}.mdx-language-section h2{margin:10px 0 8px;font-size:clamp(1.55rem,3vw,2.6rem);letter-spacing:-.035em}.mdx-language-section header p,.mdx-language-prose>p{margin:0;color:var(--dl-text-muted);line-height:1.75}.mdx-action-log,.mdx-diagnostic-head{display:flex;justify-content:space-between;padding:11px 14px;border:1px solid var(--dl-border);border-radius:12px;color:var(--dl-text-muted);background:var(--dl-night-soft);font:700 .72rem/1.4 ui-monospace,monospace}
 .mdx-capability-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.mdx-capability-grid article{display:grid;gap:8px;padding:16px;border:1px solid var(--dl-border);border-radius:14px;background:var(--dl-night-soft)}.mdx-capability-grid b{color:var(--dl-accent-text);font:800 .76rem/1 ui-monospace,monospace}.mdx-capability-grid span{color:var(--dl-text-muted);font-size:.76rem;line-height:1.6}.mdx-diagnostic-list{display:grid;gap:7px;margin:0;padding:0;list-style:none}.mdx-diagnostic-list li{display:grid;grid-template-columns:70px 180px minmax(0,1fr);gap:10px;align-items:baseline;padding:10px 12px;border-bottom:1px solid var(--dl-border);font-size:.74rem}.mdx-diagnostic-list b{color:var(--dl-accent-text);text-transform:uppercase}.mdx-diagnostic-list span{color:var(--dl-text-muted)}.mdx-language-prose pre{overflow:auto;margin:0;padding:20px;border:1px solid var(--dl-border);border-radius:15px;color:var(--dl-accent-text);background:var(--dl-night-soft)}.mdx-language-prose code{font-family:ui-monospace,monospace}.mdx-language-boundary>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.mdx-language-boundary article{padding:19px;border:1px solid var(--dl-border);border-radius:15px;background:var(--dl-night-soft)}.mdx-language-boundary b{color:var(--dl-accent-text);font:800 .78rem/1 ui-monospace,monospace}.mdx-language-boundary p{margin:12px 0 0;color:var(--dl-text-muted);font-size:.8rem;line-height:1.7}
-@media(max-width:900px){.mdx-language-hero{grid-template-columns:1fr;padding:32px}.mdx-capability-grid{grid-template-columns:repeat(2,1fr)}.mdx-language-boundary>div{grid-template-columns:1fr}}@media(max-width:620px){.mdx-language-page{padding-top:28px}.mdx-language-hero,.mdx-language-section{padding:20px;border-radius:18px}.mdx-capability-grid{grid-template-columns:1fr}.mdx-diagnostic-list li{grid-template-columns:1fr}.mdx-language-nav{justify-content:center}}
+.mdx-engine-model{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.mdx-engine-model article{display:grid;gap:9px;padding:15px;border:1px solid var(--dl-border);border-radius:14px;background:var(--dl-night-soft)}.mdx-engine-model b{color:var(--dl-accent-text);font:800 .68rem/1 ui-monospace,monospace;letter-spacing:.08em}.mdx-engine-model span{color:var(--dl-text-muted);font-size:.76rem;line-height:1.65}.mdx-engine-model code{color:var(--dl-text);font-family:ui-monospace,monospace}
+@media(max-width:900px){.mdx-language-hero{grid-template-columns:1fr;padding:32px}.mdx-capability-grid{grid-template-columns:repeat(2,1fr)}.mdx-language-boundary>div,.mdx-engine-model{grid-template-columns:1fr}}@media(max-width:620px){.mdx-language-page{padding-top:28px}.mdx-language-hero,.mdx-language-section{padding:20px;border-radius:18px}.mdx-capability-grid{grid-template-columns:1fr}.mdx-diagnostic-list li{grid-template-columns:1fr}.mdx-language-nav{justify-content:center}}
 </style>
