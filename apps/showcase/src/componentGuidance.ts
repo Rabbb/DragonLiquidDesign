@@ -133,7 +133,7 @@ export const componentGuidance: Record<string, ComponentGuidance> = {
     ['专业编辑器需要把二维色域永久嵌入页面时。', '需要自行组合通道条、字段和提交逻辑时。'],
     '普通表单需要弹出式完整选色时使用 ColorPicker；只选预设色时使用 ColorSwatchPicker。',
     '组件只负责二维色域，不内置标题、说明、值反馈或其他通道；使用方必须通过 aria-label 提供可访问名称。',
-    '示例只展示纯二维色域，组合式选色流程独立归入 ColorPicker。',
+    '基础示例只展示纯二维色域；场景案例继续展示主题编辑器和双端渐变，但标题、结果与组合逻辑始终由业务容器承担。',
   ),
   'color-field': guide(
     ['用户需要精确输入、粘贴或复制颜色值时。', '视觉选择器旁需要可编辑的格式或通道补充时。'],
@@ -145,7 +145,7 @@ export const componentGuidance: Record<string, ComponentGuidance> = {
     ['普通表单需要任意颜色，同时不希望二维色域常驻占用空间时。', '颜色修改需要预览后确认提交时。'],
     '专业工具需要把色域和通道永久铺开时自行组合 ColorArea、ColorSlider 与 ColorField；固定品牌色使用 ColorSwatchPicker。',
     '触发器需要回显色样和文本值；浮层中的草稿只有确认后才提交，取消和关闭不得污染原值。',
-    '示例覆盖标准、紧凑和只读触发器，并在浮层内组合纯 ColorArea、Hue、Alpha 与 ColorField。',
+    '示例覆盖标准、紧凑和只读触发器，并补充主题设置表单与项目列表内编辑两种真实布局。',
   ),
   'color-slider': guide(
     ['一次只调整一个颜色通道时。', '需要细调 Hue、Alpha 等连续数值时。'],

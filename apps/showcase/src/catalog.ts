@@ -456,6 +456,16 @@ const scenarioBlueprints: Record<Exclude<ComponentCategoryId, 'foundation'>, Sce
 }
 
 const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> = {
+  'color-area': [
+    { id: 'basic', label: '纯二维色域', summary: '只呈现色域本体与双通道键盘操作' },
+    { id: 'theme-editor', label: '主题编辑器', summary: '组合色域、色相、精确值与实时界面预览' },
+    { id: 'gradient-stops', label: '渐变节点', summary: '用多个纯色域编辑渐变两端并即时合成结果' },
+  ],
+  'color-picker': [
+    { id: 'basic', label: '触发器状态', summary: '标准、紧凑和只读的弹出式选择入口' },
+    { id: 'theme-settings', label: '主题设置', summary: '在普通设置表单中确认颜色并预览品牌界面' },
+    { id: 'collection-list', label: '列表内编辑', summary: '在紧凑项目列表中逐项修改标识颜色' },
+  ],
   calendar: [
     { id: 'basic', label: '月度日程', summary: '日期单元格、彩色事项与自动滚动' },
     { id: 'drag-create', label: '拖动与新建', summary: '移动事项日期并从单元格创建内容' },
