@@ -38,6 +38,33 @@ export interface DlMdxComponentContext {
   sourceLine: number
 }
 
+export type DlMdxCodeTokenKind =
+  | 'plain'
+  | 'comment'
+  | 'keyword'
+  | 'string'
+  | 'number'
+  | 'operator'
+  | 'punctuation'
+  | 'function'
+  | 'type'
+  | 'property'
+  | 'tag'
+  | 'attribute'
+  | 'variable'
+  | 'constant'
+
+export interface DlMdxCodeToken {
+  kind: DlMdxCodeTokenKind
+  value: string
+}
+
+export interface DlMdxHighlightedCode {
+  language: string
+  supported: boolean
+  lines: DlMdxCodeToken[][]
+}
+
 export type DlMdxInlineToken =
   | { type: 'text'; value: string }
   | { type: 'break' }

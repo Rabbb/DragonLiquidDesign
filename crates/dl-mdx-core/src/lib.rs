@@ -1,7 +1,9 @@
 use serde_json::{json, Map, Number, Value};
 use std::{collections::HashMap, mem, slice, str};
 
-const ABI_VERSION: u32 = 1;
+mod syntax;
+
+const ABI_VERSION: u32 = 2;
 
 #[derive(Clone, Debug)]
 struct SourceLine {
@@ -56,6 +58,32 @@ pub unsafe extern "C" fn dl_mdx_parse(pointer: *const u8, length: usize) -> *con
     dl_mdx_release_output();
     let source = str::from_utf8(slice::from_raw_parts(pointer, length)).unwrap_or_default();
     let encoded = serde_json::to_vec(&parse_document(source)).unwrap_or_else(|_| b"{\"blocks\":[],\"stats\":{\"sourceLength\":0,\"lineCount\":1,\"blockCount\":0,\"headingCount\":0,\"readingMinutes\":1}}".to_vec());
+    store_output(encoded)
+}
+
+#[no_mangle]
+/// Highlights one UTF-8 source buffer and returns a JSON token document.
+///
+/// # Safety
+/// Both pointer ranges must identify initialized bytes inside this module's
+/// linear memory and remain valid for the duration of the call.
+pub unsafe extern "C" fn dl_mdx_highlight(
+    source_pointer: *const u8,
+    source_length: usize,
+    language_pointer: *const u8,
+    language_length: usize,
+) -> *const u8 {
+    dl_mdx_release_output();
+    let source =
+        str::from_utf8(slice::from_raw_parts(source_pointer, source_length)).unwrap_or_default();
+    let language =
+        str::from_utf8(slice::from_raw_parts(language_pointer, language_length)).unwrap_or("text");
+    let encoded = serde_json::to_vec(&syntax::highlight_code(source, language))
+        .unwrap_or_else(|_| b"{\"language\":\"text\",\"supported\":false,\"lines\":[]}".to_vec());
+    store_output(encoded)
+}
+
+unsafe fn store_output(encoded: Vec<u8>) -> *const u8 {
     let output = encoded.into_boxed_slice();
     OUTPUT_LENGTH = output.len();
     OUTPUT_POINTER = Box::into_raw(output) as *mut u8;

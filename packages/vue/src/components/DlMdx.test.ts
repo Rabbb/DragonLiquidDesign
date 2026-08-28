@@ -86,6 +86,39 @@ describe('DlMdx', () => {
     expect(rendered.text()).not.toContain('SAFE COMPONENT SLOT')
   })
 
+  it('renders Rust syntax tokens for fenced programming code without using HTML injection', () => {
+    const wrapper = mount(DlMdx, {
+      props: {
+        modelValue: '```ts\nconst answer: number = 42 // <script>alert(1)</script>\n```',
+        mode: 'preview',
+        debounce: 0,
+      },
+    })
+
+    const code = wrapper.get('.dl-mdx__code')
+    expect(code.attributes('data-language')).toBe('typescript')
+    expect(code.attributes('data-highlighted')).toBe('true')
+    expect(code.get('.dl-mdx__code-token--keyword').text()).toBe('const')
+    expect(code.get('.dl-mdx__code-token--number').text()).toBe('42')
+    expect(code.get('.dl-mdx__code-token--comment').text()).toContain('<script>alert(1)</script>')
+    expect(code.find('script').exists()).toBe(false)
+  })
+
+  it('marks fenced code as a highlighted editor domain', async () => {
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: {
+        modelValue: '```javascript\nconst ready = true\n```',
+        mode: 'edit',
+        debounce: 0,
+      },
+    })
+    await flushPromises()
+    await vi.waitFor(() => expect(wrapper.findAll('.cm-dl-code-domain').length).toBeGreaterThanOrEqual(3))
+    expect(wrapper.find('.cm-content').text()).toContain('const ready = true')
+    wrapper.unmount()
+  })
+
   it('does not expose a component insertion control without an insertable registry entry', async () => {
     const wrapper = mount(DlMdx, { props: { modelValue: '', mode: 'edit', debounce: 0 } })
     await flushPromises()

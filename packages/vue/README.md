@@ -133,7 +133,9 @@ createApp(App).use(mdxSecurity).mount('#app')
 
 ## MarkdownX Rust/WASM 核心
 
-`parseDlMdx()` 保持同步 API：纯 Markdown、MarkdownX 组件块、文档统计与 URL 协议识别由内嵌 Rust/WASM 核心处理；包含受支持 HTML 标签时，继续由浏览器 `DOMParser` 转换为受限 Vue 节点。WASM 二进制随 npm 包构建并内嵌，不产生运行时网络请求；不支持 WebAssembly 的环境会回退到 TypeScript 解析器，但安全白名单遵循默认拒绝原则。
+`parseDlMdx()` 保持同步 API：纯 Markdown、MarkdownX 组件块、文档统计、URL 协议识别与预览代码高亮由内嵌 Rust/WASM 核心处理；包含受支持 HTML 标签时，继续由浏览器 `DOMParser` 转换为受限 Vue 节点。WASM 二进制随 npm 包构建并内嵌，不产生运行时网络请求；不支持 WebAssembly 的环境会回退到 TypeScript 解析器，代码块降级为纯文本，安全白名单遵循默认拒绝原则。
+
+围栏代码支持 JavaScript/TypeScript、Python、Rust、C/C++/C#/Java、Go、Shell、PowerShell、SQL、JSON、YAML、CSS 与 HTML/Vue 等常用语言。预览高亮只输出固定类型的文本 token；编辑态由 CodeMirror 按围栏语言加载解析器，并高亮完整代码域。
 
 ```ts
 import { getDlMdxRustCoreStatus, parseDlMdx } from '@dragon-liquid/vue'
@@ -146,6 +148,7 @@ const document = parseDlMdx('# Archive\n\n- [x] indexed')
 
 - 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.32` 为 MarkdownX 增加 Rust/WASM 预览语法高亮、CodeMirror 多语言解析和围栏代码域高亮；未知语言安全降级为原文。
 - `0.6.0-alpha.31` 新增 Rust/WASM MarkdownX 核心，接管纯文档解析、统计、URL 协议识别和完整性哈希，移除手写 WAT，并保留 HTML 安全适配与无 WASM 回退路径。
 - `0.6.0-alpha.29` 修正 MarkdownX 中 `ColorSlider` 的默认值绑定，并增加官方默认属性与实际组件 Props 一致性的自动回归检查。
 - `0.6.0-alpha.28` 将 `DlColorArea` 收紧为纯二维色域，并新增确认提交型 `DlColorPicker` 弹出选择器，明确区分嵌入式专业积木与普通表单入口。

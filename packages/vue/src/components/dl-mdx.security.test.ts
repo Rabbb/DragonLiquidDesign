@@ -58,7 +58,7 @@ describe('DlMdx WASM URL security policy', () => {
     expect(security.status()).toMatchObject({
       wasm: true,
       engine: 'rust-wasm',
-      abiVersion: 1,
+      abiVersion: 2,
       integrity: true,
       domainRuleCount: 3,
       fileExtensionCount: 2,

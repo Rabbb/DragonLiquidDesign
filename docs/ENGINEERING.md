@@ -118,11 +118,12 @@ O:\DragonLiquidDesign
 
 ### 4.1 MarkdownX Rust/WASM 边界
 
-- `crates/dl-mdx-core` 负责纯 Markdown 与 MarkdownX 组件块解析、文档统计、URL 协议识别和 FNV-1a 完整性哈希。
+- `crates/dl-mdx-core` 负责纯 Markdown 与 MarkdownX 组件块解析、文档统计、URL 协议识别、FNV-1a 完整性哈希，以及预览代码块的安全词法高亮。
 - `scripts/build-mdx-rust.mjs` 构建 `wasm32-unknown-unknown` release，并生成带 SHA-256 指纹的内嵌 TypeScript 资源；运行时不请求外部 WASM 文件。
 - `dl-mdx.rust.ts` 是唯一 ABI 包装层；JavaScript 与 Rust 的 ABI 版本不匹配时拒绝初始化。
 - 受支持的 HTML 标签仍由 TypeScript `DOMParser` 安全适配层转换为 Vue 节点，禁止 Rust 或 Vue 使用 `v-html` 直接注入文档内容。
 - `parseDlMdx()` 保持同步；普通环境使用 Rust/WASM，无 WebAssembly 时回退 TypeScript，安全策略则保持默认拒绝。
+- 代码高亮保持双层职责：Rust/WASM 输出预览文本 token，CodeMirror 在编辑态加载语言解析器并装饰围栏代码域；两端都不执行文档中的代码。
 
 ## 5. 本地 npm 发布
 

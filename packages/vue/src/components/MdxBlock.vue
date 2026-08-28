@@ -3,6 +3,7 @@ import { computed, type Slots } from 'vue'
 import type { DlMdxRegistry } from './dl-mdx.registry'
 import type { DlMdxSecurityPolicy } from './dl-mdx.security'
 import type { DlMdxBlock, DlMdxLinkPolicy } from './dl-mdx.types'
+import { highlightDlMdxCodeWithRust } from './dl-mdx.rust'
 import MdxInline from './MdxInline.vue'
 import MdxRegisteredComponent from './MdxRegisteredComponent'
 
@@ -22,7 +23,18 @@ const emit = defineEmits<{
   'copy-code': [id: string, source: string]
 }>()
 
-const codeLines = computed(() => props.block.type === 'code' ? (props.block.value.split('\n').length ? props.block.value.split('\n') : ['']) : [])
+const highlightedCode = computed(() => {
+  if (props.block.type !== 'code') return undefined
+  try {
+    return highlightDlMdxCodeWithRust(props.block.value, props.block.language)
+  } catch {
+    return {
+      language: 'text',
+      supported: false,
+      lines: props.block.value.split('\n').map(value => value ? [{ kind: 'plain' as const, value }] : []),
+    }
+  }
+})
 const componentSlot = computed(() => {
   if (props.block.type !== 'component') return ''
   const normalized = props.block.context.name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/[^A-Za-z0-9-]+/g, '-').toLowerCase()
@@ -88,14 +100,19 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
     </table>
   </div>
 
-  <div v-else-if="block.type === 'code'" class="dl-mdx__code">
+  <div
+    v-else-if="block.type === 'code'"
+    class="dl-mdx__code"
+    :data-language="highlightedCode?.language || 'text'"
+    :data-highlighted="highlightedCode?.supported ? 'true' : 'false'"
+  >
     <div class="dl-mdx__code-toolbar">
       <span>{{ block.language || 'text' }}</span>
       <button type="button" :class="{ 'is-copied': copiedCodeId === block.id, 'is-failed': copyFailedId === block.id }" @click="emit('copy-code', block.id, block.value)">
         {{ copiedCodeId === block.id ? '已复制' : copyFailedId === block.id ? '复制失败' : '复制代码' }}
       </button>
     </div>
-    <pre><code><span v-for="(line, index) in codeLines" :key="index" class="dl-mdx__code-line"><span class="dl-mdx__code-line-number" aria-hidden="true">{{ index + 1 }}</span><span class="dl-mdx__code-line-content">{{ line }}{{ index < codeLines.length - 1 ? '\n' : '' }}</span></span></code></pre>
+    <pre><code><span v-for="(line, index) in highlightedCode?.lines || []" :key="index" class="dl-mdx__code-line"><span class="dl-mdx__code-line-number" aria-hidden="true">{{ index + 1 }}</span><span class="dl-mdx__code-line-content"><span v-for="(token, tokenIndex) in line" :key="tokenIndex" :class="`dl-mdx__code-token--${token.kind}`">{{ token.value }}</span>{{ index < (highlightedCode?.lines.length || 0) - 1 ? '\n' : '' }}</span></span></code></pre>
   </div>
 
   <hr v-else-if="block.type === 'divider'" class="dl-mdx__divider">

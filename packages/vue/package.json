@@ -1,6 +1,6 @@
 {
   "name": "@dragon-liquid/vue",
-  "version": "0.6.0-alpha.31",
+  "version": "0.6.0-alpha.32",
   "description": "Dragon Liquid themed Vue 3 components built with Reka UI, Tailwind CSS and Tailwind Variants.",
   "type": "module",
   "sideEffects": [
@@ -31,6 +31,7 @@
     "@codemirror/commands": "^6.10.3",
     "@codemirror/lang-markdown": "^6.5.0",
     "@codemirror/language": "^6.12.3",
+    "@codemirror/language-data": "^6.5.2",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.0",
     "@internationalized/date": "^3.12.3",

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   getDlMdxRustCoreStatus,
+  highlightDlMdxCodeWithRust,
   hashDlMdxWithRust,
   inspectDlMdxUrlWithRust,
   parseDlMdxWithRust,
@@ -12,7 +13,7 @@ describe('Rust MarkdownX WebAssembly core', () => {
     expect(getDlMdxRustCoreStatus()).toMatchObject({
       engine: 'rust-wasm',
       available: true,
-      abiVersion: 1,
+      abiVersion: 2,
     })
     expect(getDlMdxRustCoreStatus().binarySize).toBeGreaterThan(100_000)
     expect(getDlMdxRustCoreStatus().binaryFingerprint).toMatch(/^[a-f0-9]{64}$/)
@@ -41,6 +42,26 @@ describe('Rust MarkdownX WebAssembly core', () => {
     expect(inspectDlMdxUrlWithRust('/archive/42')).toBe('relative')
     expect(inspectDlMdxUrlWithRust('//example.com')).toBe('protocol-relative')
     expect(inspectDlMdxUrlWithRust('https://example.com')).toBe('https')
+  })
+
+  it('highlights programming languages without changing or executing source', () => {
+    const source = 'const answer: number = 42\nconsole.log("safe") // done'
+    const highlighted = highlightDlMdxCodeWithRust(source, 'ts')
+    expect(highlighted).toMatchObject({ language: 'typescript', supported: true })
+    expect(highlighted.lines).toHaveLength(2)
+    expect(highlighted.lines.map(line => line.map(token => token.value).join('')).join('\n')).toBe(source)
+    expect(highlighted.lines.flat()).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: 'keyword', value: 'const' }),
+      expect.objectContaining({ kind: 'number', value: '42' }),
+      expect.objectContaining({ kind: 'comment', value: '// done' }),
+    ]))
+  })
+
+  it('falls back to inert text tokens for unknown code languages', () => {
+    const source = '<script>alert("still text")</script>'
+    const highlighted = highlightDlMdxCodeWithRust(source, 'unknown-language')
+    expect(highlighted).toMatchObject({ language: 'text', supported: false })
+    expect(highlighted.lines[0]).toEqual([{ kind: 'plain', value: source }])
   })
 
   it('keeps the Rust document model aligned with the TypeScript fallback', () => {

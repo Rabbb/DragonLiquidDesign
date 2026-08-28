@@ -7,7 +7,7 @@ Dragon Liquid Design 是从 `O:\DEV\Todo.Moe\fd` 的视觉语言中独立提取�
 ## 目录
 
 - `packages/vue`：发布为 `@dragon-liquid/vue` 的组件包
-- `crates/dl-mdx-core`：MarkdownX 解析、安全检查和完整性哈希使用的 Rust/WASM 核心
+- `crates/dl-mdx-core`：MarkdownX 解析、安全检查、完整性哈希和预览代码高亮使用的 Rust/WASM 核心
 - `apps/showcase`：通过本地 `.tgz` 消费组件包的静态展厅
 - `registry`：本地 npm 包产物（`.tgz`）
 - `docs`：工程与使用文档
@@ -44,7 +44,7 @@ http://localhost:8030/
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.31.tgz"
+    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.32.tgz"
   }
 }
 ```

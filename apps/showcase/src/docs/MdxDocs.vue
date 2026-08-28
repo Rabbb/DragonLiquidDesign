@@ -48,6 +48,27 @@ const archiveSource = [
   '```',
 ].join('\n')
 
+const syntaxSource = [
+  '# 编程代码高亮',
+  '',
+  '编辑区识别代码域，预览区由 Rust/WASM 输出安全的词法 token。',
+  '',
+  '```ts',
+  'interface Task { title: string; done: boolean }',
+  'const active = tasks.filter(task => !task.done)',
+  '```',
+  '',
+  '```rust',
+  'pub fn completed(total: usize) -> bool {',
+  '    total > 0 // source remains text',
+  '}',
+  '```',
+  '',
+  '```sql',
+  'SELECT id, title FROM todo WHERE completed = false;',
+  '```',
+].join('\n')
+
 const componentSource = [
   '# 可扩展的发布说明',
   '',
@@ -256,6 +277,20 @@ ${vueSfc({
     }),
     tips: ['javascript:、vbscript: 和非图片 Data URL 不会进入 DOM 链接属性。', '外部链接启用时自动附加 noopener noreferrer。'],
   },
+  'syntax-highlight': {
+    title: '编程代码与代码域高亮',
+    description: '编辑器按围栏语言加载 CodeMirror 解析器并标识完整代码域；预览由 Rust/WASM 同步生成文本 token，不执行代码，也不注入 HTML。',
+    code: vueSfc({
+      imports: ['DlMdx'],
+      script: `const document = [
+  '\`\`\`ts',
+  'const answer: number = 42',
+  '\`\`\`',
+].join('\\n')`,
+      template: `  <DlMdx :model-value="document" mode="split" />`,
+    }),
+    tips: ['内置识别 JavaScript/TypeScript、Python、Rust、C/C++/C#/Java、Go、Shell、PowerShell、SQL、JSON、YAML、CSS、HTML/Vue 等常用语言。', '未知语言保持原文并使用纯文本样式；复制按钮始终复制未经着色加工的源代码。', '预览只创建 Vue 文本节点和带固定类名的 span，不使用 v-html。'],
+  },
   'rust-core': {
     title: 'Rust/WASM 同步解析核心',
     description: '纯 Markdown、MarkdownX 组件块、文档统计、URL 协议识别和策略指纹由内嵌 Rust/WASM 核心完成；含白名单 HTML 的内容交给 DOM 安全适配层。',
@@ -282,6 +317,8 @@ ${vueSfc({
       <DlMdx v-if="scenario === 'basic'" v-model="writingSource" min-height="31rem" aria-label="作品资料草稿" />
 
       <DlMdx v-else-if="scenario === 'archive-document'" :model-value="archiveSource" mode="preview" readonly :show-toolbar="false" min-height="31rem" />
+
+      <DlMdx v-else-if="scenario === 'syntax-highlight'" :model-value="syntaxSource" mode="split" min-height="31rem" />
 
       <DlMdx v-else-if="scenario === 'component-blocks'" :model-value="componentSource" mode="preview" min-height="24rem" />
 
