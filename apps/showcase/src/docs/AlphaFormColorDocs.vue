@@ -50,6 +50,7 @@ const colorExampleTitle = computed(() => ({
   'color-area:theme-editor': '应用于主题编辑器',
   'color-area:gradient-stops': '应用于渐变节点',
   'color-picker': '弹出式自由选色',
+  'color-picker:vertical-layout': '窄空间纵向特例',
   'color-picker:theme-settings': '应用于主题设置',
   'color-picker:collection-list': '应用于列表内编辑',
   'color-field': '精确色值录入',
@@ -103,6 +104,7 @@ const sources: Record<string, VueExampleSource> = {
   },
   'color-field': { imports: ['DlColorField'], script: `import { ref } from 'vue'\nimport type { DlColorFormat } from '@dragon-liquid/vue'\n\nconst color = ref('#7aa2f7')\nconst format = ref<DlColorFormat>('hex')`, template: `  <DlColorField\n    v-model="color"\n    v-model:format="format"\n    label="品牌强调色"\n    hint="可粘贴任一受支持格式；Enter 提交，Esc 撤销草稿"\n  />`, style: `.dl-color-field { max-width: 520px; }` },
   'color-picker': { imports: ['DlColorPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f7')`, template: `  <DlColorPicker v-model="color" label="品牌强调色" hint="打开浮层后调整，确认时提交" />`, style: `.dl-color-picker { max-width: 420px; }` },
+  'color-picker:vertical-layout': { imports: ['DlColorPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#bb9af7')`, template: `  <DlColorPicker\n    v-model="color"\n    orientation="vertical"\n    label="窄侧栏强调色"\n    hint="纵向面板仅用于宽度受限的特殊区域"\n  />`, style: `.dl-color-picker { max-width: 300px; }` },
   'color-picker:theme-settings': {
     imports: ['DlColorPicker'],
     script: `import { ref } from 'vue'\n\nconst accent = ref('#7aa2f7')`,
@@ -133,7 +135,8 @@ const scenarioDescription = computed(() => ({
   'color-area': '验证纯二维色域的值模型、尺寸和键盘双轴调整；标签与当前值由使用场景在组件外提供。',
   'color-area:theme-editor': '在专业主题工具中，把纯 ColorArea 与独立 Hue、ColorField 和结果预览组合成常驻工作台。',
   'color-area:gradient-stops': '用两个互不耦合的 ColorArea 编辑渐变端点，业务容器负责命名节点与合成最终视觉。',
-  'color-picker': '比较标准、紧凑和只读触发器，完整色域只在用户需要时进入浮层。',
+  'color-picker': '比较标准、紧凑和只读触发器；默认横向浮层把二维色域与精确控制并排组织。',
+  'color-picker:vertical-layout': '纵向布局需要显式设置 orientation="vertical"，适合窄侧栏等宽度受限的特殊区域。',
   'color-picker:theme-settings': '在普通设置页中确认后提交颜色，并让业务预览只响应已提交值。',
   'color-picker:collection-list': '在高密度项目列表中为每一行提供紧凑入口，避免常驻色域破坏列表阅读节奏。',
 }[exampleKey.value] ?? componentGuidanceFor(props.componentDefinition.id).example))
@@ -188,6 +191,7 @@ const content = computed(() => ({
           <DlColorPicker v-model="alphaColor" label="透明强调色" size="sm" />
           <DlColorPicker model-value="#9ece6a" label="只读颜色" readonly />
         </template>
+        <DlColorPicker v-else-if="scenario === 'vertical-layout'" v-model="color" v-model:format="format" orientation="vertical" label="窄侧栏强调色" hint="纵向面板仅用于宽度受限的特殊区域" />
         <div v-else-if="scenario === 'theme-settings'" class="theme-setting-demo">
           <div><small>APPEARANCE</small><h3>Workspace appearance</h3><p>浮层确认后才更新右侧品牌预览。</p><DlColorPicker v-model="color" v-model:format="format" label="品牌强调色" hint="支持透明度与精确色值" /></div>
           <aside :style="{ borderColor: color }"><span :style="{ background: color }">ACTIVE</span><h3>Today</h3><p>Review component documentation</p><button type="button" :style="{ background: color }">Continue</button></aside>

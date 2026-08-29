@@ -1198,6 +1198,12 @@ export default {
         "defaultValue": "'md'"
       },
       {
+        "prop": "orientation",
+        "description": "设置完整选色面板的布局方向；默认横向并排，纵向仅用于窄空间等特殊场景。",
+        "type": "'horizontal' | 'vertical'",
+        "defaultValue": "'horizontal'"
+      },
+      {
         "prop": "side",
         "description": "设置浮层相对触发器出现的方位。",
         "type": "DlOverlaySide | DlOverlayBaseSide",
@@ -5135,6 +5141,12 @@ export default {
         "description": "传递给 Intl.NumberFormat 的数字格式化选项。",
         "type": "DlMdxFormatOptions",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "sourceLanguage",
+        "description": "设置 sourceLanguage 属性。",
+        "type": "DlMdxEditorDocumentLanguage",
+        "defaultValue": "'mdx'"
       }
     ],
     "relatedTypes": [

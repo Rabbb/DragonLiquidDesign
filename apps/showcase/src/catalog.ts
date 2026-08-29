@@ -514,7 +514,8 @@ const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> 
     { id: 'gradient-stops', label: '渐变节点', summary: '用多个纯色域编辑渐变两端并即时合成结果' },
   ],
   'color-picker': [
-    { id: 'basic', label: '触发器状态', summary: '标准、紧凑和只读的弹出式选择入口' },
+    { id: 'basic', label: '默认横向', summary: '标准、紧凑和只读入口默认打开横向选色工作区' },
+    { id: 'vertical-layout', label: '垂直特殊布局', summary: '仅在窄侧栏等受限空间中显式启用纵向面板' },
     { id: 'theme-settings', label: '主题设置', summary: '在普通设置表单中确认颜色并预览品牌界面' },
     { id: 'collection-list', label: '列表内编辑', summary: '在紧凑项目列表中逐项修改标识颜色' },
   ],

@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<{
   name?: string
   allowAlpha?: boolean
   size?: DlSize
+  orientation?: 'horizontal' | 'vertical'
   side?: DlOverlaySide | DlOverlayBaseSide
   align?: 'start' | 'center' | 'end'
   title?: string
@@ -44,6 +45,7 @@ const props = withDefaults(defineProps<{
   name: undefined,
   allowAlpha: true,
   size: 'md',
+  orientation: 'horizontal',
   side: 'bottom',
   align: 'start',
   title: '选择颜色',
@@ -74,6 +76,7 @@ const resolvedOpen = computed({
   },
 })
 const visualColor = computed(() => safeColorValue(props.modelValue))
+const panelClass = computed(() => `dl-color-picker-panel is-${props.orientation}`)
 const valueText = computed(() => {
   try {
     return formatColorValue(props.modelValue, props.format, props.allowAlpha)
@@ -147,7 +150,7 @@ function cancel() {
       :align="align"
       :arrow="false"
       :side-offset="6"
-      content-class="dl-color-picker-panel"
+      :content-class="panelClass"
       :z-index="zIndex"
     >
       <template #trigger>
@@ -168,7 +171,7 @@ function cancel() {
         </slot>
       </template>
 
-      <div class="dl-color-picker-panel__controls">
+      <div class="dl-color-picker-panel__controls" :data-orientation="orientation">
         <DlColorArea
           :model-value="draft"
           :color-space="colorSpace"
@@ -176,32 +179,34 @@ function cancel() {
           aria-label="二维颜色区域"
           @update:model-value="updateDraft"
         />
-        <DlColorSlider
-          :model-value="draft"
-          :color-space="colorSpace"
-          channel="hue"
-          size="sm"
-          aria-label="色相"
-          @update:model-value="updateDraft"
-        />
-        <DlColorSlider
-          v-if="allowAlpha"
-          :model-value="draft"
-          :color-space="colorSpace"
-          channel="alpha"
-          size="sm"
-          aria-label="透明度"
-          @update:model-value="updateDraft"
-        />
-        <DlColorField
-          :model-value="draft"
-          :format="activeFormat"
-          :format-options="formatOptions"
-          :allow-alpha="allowAlpha"
-          :copyable="false"
-          @update:model-value="updateDraft"
-          @update:format="updateFormat"
-        />
+        <div class="dl-color-picker-panel__rail">
+          <DlColorSlider
+            :model-value="draft"
+            :color-space="colorSpace"
+            channel="hue"
+            size="sm"
+            aria-label="色相"
+            @update:model-value="updateDraft"
+          />
+          <DlColorSlider
+            v-if="allowAlpha"
+            :model-value="draft"
+            :color-space="colorSpace"
+            channel="alpha"
+            size="sm"
+            aria-label="透明度"
+            @update:model-value="updateDraft"
+          />
+          <DlColorField
+            :model-value="draft"
+            :format="activeFormat"
+            :format-options="formatOptions"
+            :allow-alpha="allowAlpha"
+            :copyable="false"
+            @update:model-value="updateDraft"
+            @update:format="updateFormat"
+          />
+        </div>
       </div>
       <div class="dl-color-picker-panel__actions">
         <button type="button" class="dl-color-picker-panel__button is-quiet" @click="cancel">{{ cancelLabel }}</button>
@@ -231,12 +236,19 @@ function cancel() {
 .dl-color-picker.is-lg .dl-color-picker__trigger { min-height: 50px; }
 .dl-color-picker.is-lg .dl-color-picker__swatch { width: 40px; height: 40px; }
 .dl-color-picker.is-disabled { opacity: .48; }
-.dl-color-picker-panel { width: min(20rem, calc(100vw - 1.5rem)); }
+.dl-color-picker-panel { width: min(38rem, calc(100vw - 1.5rem)); }
+.dl-color-picker-panel.is-vertical { width: min(20rem, calc(100vw - 1.5rem)); }
 .dl-color-picker-panel__controls { display: grid; gap: 10px; }
+.dl-color-picker-panel__rail { display: grid; gap: 10px; }
+.dl-color-picker-panel.is-horizontal .dl-color-picker-panel__controls { grid-template-columns: minmax(0, 1.1fr) minmax(14rem, .9fr); align-items: center; column-gap: 16px; }
 .dl-color-picker-panel__actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 13px; }
 .dl-color-picker-panel__button { min-width: 68px; min-height: 34px; padding: 0 13px; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-sm); color: var(--dl-text-muted); background: var(--dl-surface); font: inherit; font-weight: 750; cursor: pointer; }
 .dl-color-picker-panel__button:hover { border-color: var(--dl-border-strong); background: var(--dl-surface-hover); }
 .dl-color-picker-panel__button:focus-visible { outline: none; box-shadow: var(--dl-focus); }
 .dl-color-picker-panel__button.is-primary { border-color: color-mix(in srgb, var(--dl-accent) 58%, var(--dl-border)); color: var(--dl-accent-ink); background: var(--dl-accent); }
+@media (max-width: 620px) {
+  .dl-color-picker-panel.is-horizontal { width: min(20rem, calc(100vw - 1.5rem)); }
+  .dl-color-picker-panel.is-horizontal .dl-color-picker-panel__controls { grid-template-columns: 1fr; }
+}
 @media (prefers-reduced-motion: reduce) { .dl-color-picker__trigger, .dl-color-picker__chevron { transition: none; } }
 </style>

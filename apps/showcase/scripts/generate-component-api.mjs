@@ -233,6 +233,7 @@ const componentDescriptions = {
   'color-picker': {
     format: '浮层内 ColorField 提交和显示时使用的 HEX、RGB、HSL 或 HSB 格式。',
     formatOptions: '浮层内颜色格式切换入口允许选择的格式列表。',
+    orientation: '设置完整选色面板的布局方向；默认横向并排，纵向仅用于窄空间等特殊场景。',
     title: '颜色选择浮层的标题；不传时使用“选择颜色”。',
   },
 }

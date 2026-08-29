@@ -27,6 +27,22 @@ function mountPicker(props: Record<string, unknown> = {}) {
 }
 
 describe('DlColorPicker', () => {
+  it('uses the horizontal panel by default and keeps vertical as an explicit layout', async () => {
+    mountPicker()
+    await nextTick()
+
+    expect(document.body.querySelector('.dl-color-picker-panel')?.classList.contains('is-horizontal')).toBe(true)
+    expect(document.body.querySelector('.dl-color-picker-panel__controls')?.getAttribute('data-orientation')).toBe('horizontal')
+
+    wrappers.splice(0).forEach(wrapper => wrapper.unmount())
+    document.body.innerHTML = ''
+    mountPicker({ orientation: 'vertical' })
+    await nextTick()
+
+    expect(document.body.querySelector('.dl-color-picker-panel')?.classList.contains('is-vertical')).toBe(true)
+    expect(document.body.querySelector('.dl-color-picker-panel__controls')?.getAttribute('data-orientation')).toBe('vertical')
+  })
+
   it('keeps area changes in a draft until the user confirms', async () => {
     const wrapper = mountPicker()
     await nextTick()
