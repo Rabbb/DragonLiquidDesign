@@ -4,7 +4,7 @@ import type { DlMdxSelection } from './dl-mdx.commands'
 import { analyzeDlMdx, completeDlMdx, hoverDlMdx, type DlMdxLanguageOptions } from './dl-mdx.language'
 import type { DlMdxRegistry } from './dl-mdx.registry'
 
-export type DlMdxEditorDocumentLanguage = 'mdx' | 'javascript' | 'typescript' | 'css'
+export type DlMdxEditorDocumentLanguage = 'mdx' | 'javascript' | 'typescript' | 'json' | 'css'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -47,11 +47,12 @@ let pendingFocus = false
 
 onMounted(async () => {
   try {
-    const [commands, autocomplete, cssLanguage, javascriptLanguage, markdownModule, language, languageData, lint, highlight, loadedState, loadedView] = await Promise.all([
+    const [commands, autocomplete, cssLanguage, javascriptLanguage, jsonLanguage, markdownModule, language, languageData, lint, highlight, loadedState, loadedView] = await Promise.all([
       import('@codemirror/commands'),
       import('@codemirror/autocomplete'),
       import('@codemirror/lang-css'),
       import('@codemirror/lang-javascript'),
+      import('@codemirror/lang-json'),
       import('@codemirror/lang-markdown'),
       import('@codemirror/language'),
       import('@codemirror/language-data'),
@@ -158,7 +159,7 @@ onMounted(async () => {
           const result = completeDlMdx(context.state.doc.toString(), context.pos, props.registry, props.languageOptions, context.explicit)
           if (!result) return null
           const completionType: Record<string, string> = {
-            component: 'class', property: 'property', event: 'event', action: 'function', value: 'constant', keyword: 'keyword', snippet: 'text',
+            component: 'class', property: 'property', event: 'event', action: 'function', value: 'constant', variable: 'variable', keyword: 'keyword', snippet: 'text',
           }
           return {
             from: result.from,
@@ -203,6 +204,8 @@ onMounted(async () => {
       }),
     ] : props.documentLanguage === 'css'
       ? [cssLanguage.css()]
+      : props.documentLanguage === 'json'
+        ? [jsonLanguage.json()]
       : [javascriptLanguage.javascript({ typescript: props.documentLanguage === 'typescript' })]
 
     view = new loadedView.EditorView({

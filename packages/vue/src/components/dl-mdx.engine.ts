@@ -1,6 +1,7 @@
 import { analyzeDlMdx, extractDlMdxActionSymbols, type DlMdxDiagnosticSeverity, type DlMdxLanguageOptions, type DlMdxScriptSymbol } from './dl-mdx.language'
 import { parseDlMdxFrontMatter, type DlMdxPageMetadata } from './dl-mdx.frontmatter'
 import { parseDlMdx } from './dl-mdx.parser'
+import { analyzeDlMdxTemplate } from './dl-mdx.template'
 import type { DlMdxRegistry } from './dl-mdx.registry'
 import type { DlMdxDocument, DlMdxValue } from './dl-mdx.types'
 import type { DlSiteNavigationGroup } from './site-layout.types'
@@ -38,9 +39,11 @@ export interface DlMdxProjectManifest {
   name: string
   version: string
   entry: string
+  layout?: string
   routes?: DlMdxProjectRouteDefinition[]
   sharedScripts?: string[]
   sharedStyles?: string[]
+  dataFiles?: string[]
   metadata?: Record<string, DlMdxValue>
 }
 
@@ -100,12 +103,23 @@ export interface DlMdxBuiltRoute {
   diagnostics: DlMdxProjectDiagnostic[]
 }
 
+export interface DlMdxBuiltLayout {
+  file: string
+  source: string
+  rawSource: string
+  style: string
+  styleFiles: string[]
+  diagnostics: DlMdxProjectDiagnostic[]
+}
+
 export interface DlMdxProjectBuildResult {
   ok: boolean
   revision: number
   entryRoute?: string
+  layout?: DlMdxBuiltLayout
   routes: DlMdxBuiltRoute[]
   navigation: DlSiteNavigationGroup[]
+  data: Record<string, DlMdxValue>
   diagnostics: DlMdxProjectDiagnostic[]
 }
 
@@ -262,9 +276,11 @@ function defaultManifest(partial: Partial<DlMdxProjectManifest> = {}): DlMdxProj
     name: partial.name ?? 'Untitled MarkdownX Project',
     version: partial.version ?? '0.1.0',
     entry: normalizeDlMdxProjectPath(partial.entry ?? '/pages/index.mdx'),
+    ...(partial.layout ? { layout: normalizeDlMdxProjectPath(partial.layout) } : {}),
     ...(partial.routes ? { routes: partial.routes.map(route => ({ ...route, path: normalizeRoute(route.path), file: normalizeDlMdxProjectPath(route.file) })) } : {}),
     ...(partial.sharedScripts ? { sharedScripts: partial.sharedScripts.map(normalizeDlMdxProjectPath) } : {}),
     ...(partial.sharedStyles ? { sharedStyles: partial.sharedStyles.map(normalizeDlMdxProjectPath) } : {}),
+    ...(partial.dataFiles ? { dataFiles: partial.dataFiles.map(normalizeDlMdxProjectPath) } : {}),
     ...(partial.metadata ? { metadata: clone(partial.metadata) } : {}),
   }
 }
@@ -369,8 +385,16 @@ function validateSnapshot(snapshot: DlMdxProjectSnapshot, limitOptions: Partial<
     }
   }
   if (projectBytes > limits.maxProjectBytes) diagnostics.push({ code: 'limit.project-size', severity: 'error', message: `项目内容超过 ${limits.maxProjectBytes} 字节。` })
-  for (const path of [...(snapshot.manifest.sharedScripts ?? []), ...(snapshot.manifest.sharedStyles ?? [])]) {
+  for (const path of [...(snapshot.manifest.sharedScripts ?? []), ...(snapshot.manifest.sharedStyles ?? []), ...(snapshot.manifest.dataFiles ?? [])]) {
     if (map.get(path)?.kind !== 'file') diagnostics.push({ code: 'manifest.shared-missing', severity: 'error', path, message: '共享脚本或样式文件不存在。' })
+  }
+  if (snapshot.manifest.layout) {
+    const layout = map.get(snapshot.manifest.layout)
+    if (!layout || layout.kind !== 'file' || layout.language !== 'mdx') diagnostics.push({ code: 'manifest.layout', severity: 'error', path: snapshot.manifest.layout, message: '项目母版必须指向一个存在的 MDX 文件。' })
+  }
+  for (const path of snapshot.manifest.dataFiles ?? []) {
+    const dataFile = map.get(path)
+    if (dataFile?.kind === 'file' && dataFile.language !== 'json') diagnostics.push({ code: 'manifest.data', severity: 'error', path, message: '项目数据文件必须使用 JSON 语言。' })
   }
   return diagnostics
 }
@@ -507,6 +531,19 @@ export function buildDlMdxProject(snapshot: DlMdxProjectSnapshot, options: DlMdx
   const map = new Map(project.entries.map(entry => [entry.path, entry]))
   const diagnostics = validateSnapshot(project, options.limits)
   const routes: DlMdxBuiltRoute[] = []
+  const data: Record<string, DlMdxValue> = {}
+  for (const path of project.manifest.dataFiles ?? []) {
+    const file = map.get(path)
+    if (!file || file.kind !== 'file') continue
+    try {
+      const value = JSON.parse(file.content) as DlMdxValue
+      const name = path.split('/').at(-1)?.replace(/\.json$/i, '') ?? path
+      if (value && typeof value === 'object' && !Array.isArray(value)) Object.assign(data, value)
+      else data[name] = value
+    } catch (cause) {
+      diagnostics.push({ code: 'data.json', severity: 'error', path, message: `项目数据文件无法读取：${cause instanceof Error ? cause.message : String(cause)}` })
+    }
+  }
   const usedRoutes = new Set<string>()
   for (const definition of routeDefinitions(project.manifest, map, diagnostics)) {
     const route = normalizeRoute(definition.path)
@@ -527,8 +564,10 @@ export function buildDlMdxProject(snapshot: DlMdxProjectSnapshot, options: DlMdx
       ...Object.fromEntries(symbols.filter(symbol => symbol.description).map(symbol => [symbol.name, symbol.description!])),
       ...(options.languageOptions?.actionDescriptions ?? {}),
     }
-    const analysis = analyzeDlMdx(definition.source, options.registry, { ...options.languageOptions, actionNames, actionDescriptions })
-    const pageDiagnostics = analysis.diagnostics.map<DlMdxProjectDiagnostic>(item => ({ ...item, path: file.path, line: item.line === undefined ? undefined : item.line + definition.bodyStartLine - 1 }))
+    const analysisDiagnostics = definition.metadata.renderer === 'template'
+      ? analyzeDlMdxTemplate(definition.source, options.registry)
+      : analyzeDlMdx(definition.source, options.registry, { ...options.languageOptions, actionNames, actionDescriptions }).diagnostics
+    const pageDiagnostics = analysisDiagnostics.map<DlMdxProjectDiagnostic>(item => ({ ...item, path: file.path, line: item.line === undefined ? undefined : item.line + definition.bodyStartLine - 1 }))
     diagnostics.push(...pageDiagnostics)
     routes.push({
       route,
@@ -545,7 +584,18 @@ export function buildDlMdxProject(snapshot: DlMdxProjectSnapshot, options: DlMdx
   }
   const entryRoute = routes.find(route => route.file === project.manifest.entry)?.route
   const navigation = buildNavigation(routes, map, diagnostics)
-  return { ok: !diagnostics.some(item => item.severity === 'error'), revision: project.revision, entryRoute, routes, navigation, diagnostics }
+  let layout: DlMdxBuiltLayout | undefined
+  if (project.manifest.layout) {
+    const layoutFile = map.get(project.manifest.layout)
+    if (layoutFile?.kind === 'file' && layoutFile.language === 'mdx') {
+      const frontMatter = parseDlMdxFrontMatter(layoutFile.content)
+      const layoutDiagnostics = analyzeDlMdxTemplate(frontMatter.body, options.registry).map<DlMdxProjectDiagnostic>(item => ({ ...item, path: layoutFile.path, line: item.line + frontMatter.bodyStartLine - 1 }))
+      diagnostics.push(...layoutDiagnostics)
+      const companion = companionFiles(layoutFile, map, project.manifest)
+      layout = { file: layoutFile.path, source: frontMatter.body, rawSource: layoutFile.content, style: companion.style, styleFiles: companion.styleFiles, diagnostics: layoutDiagnostics }
+    }
+  }
+  return { ok: !diagnostics.some(item => item.severity === 'error'), revision: project.revision, entryRoute, routes, navigation, layout, data, diagnostics }
 }
 
 export function normalizeDlMdxProjectSnapshot(project: DlMdxProjectInput): DlMdxProjectSnapshot {
@@ -699,9 +749,11 @@ export function createDlMdxEngine(options: CreateDlMdxEngineOptions = {}): DlMdx
         for (const item of moving) nextMap.delete(item.path)
         moving.forEach((item, index) => nextMap.set(targets[index], { ...item, path: targets[index] }))
         if (nextManifest.entry === source || nextManifest.entry.startsWith(`${source}/`)) nextManifest.entry = `${destination}${nextManifest.entry.slice(source.length)}`
+        if (nextManifest.layout === source || nextManifest.layout?.startsWith(`${source}/`)) nextManifest.layout = `${destination}${nextManifest.layout.slice(source.length)}`
         nextManifest.routes = nextManifest.routes?.map(route => route.file === source || route.file.startsWith(`${source}/`) ? { ...route, file: `${destination}${route.file.slice(source.length)}` } : route)
         nextManifest.sharedScripts = nextManifest.sharedScripts?.map(file => file === source || file.startsWith(`${source}/`) ? `${destination}${file.slice(source.length)}` : file)
         nextManifest.sharedStyles = nextManifest.sharedStyles?.map(file => file === source || file.startsWith(`${source}/`) ? `${destination}${file.slice(source.length)}` : file)
+        nextManifest.dataFiles = nextManifest.dataFiles?.map(file => file === source || file.startsWith(`${source}/`) ? `${destination}${file.slice(source.length)}` : file)
         changes.push({ kind: 'move', previousPath: source, path: destination })
       },
       remove(path, recursive = false) {

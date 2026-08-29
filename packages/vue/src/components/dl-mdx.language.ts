@@ -9,6 +9,7 @@ import {
   type DlMdxTypeSchema,
 } from './dl-mdx.registry'
 import { parseDlMdxFrontMatter } from './dl-mdx.frontmatter'
+import { analyzeDlMdxTemplate } from './dl-mdx.template'
 import type { DlMdxValue } from './dl-mdx.types'
 
 export type DlMdxDiagnosticSeverity = 'error' | 'warning' | 'info'
@@ -104,7 +105,7 @@ export interface DlMdxLanguageOptions {
   validators?: DlMdxValidator[]
 }
 
-export type DlMdxCompletionKind = 'component' | 'property' | 'event' | 'action' | 'value' | 'keyword' | 'snippet'
+export type DlMdxCompletionKind = 'component' | 'property' | 'event' | 'action' | 'value' | 'variable' | 'keyword' | 'snippet'
 
 export interface DlMdxCompletionItem {
   label: string
@@ -372,6 +373,17 @@ export function analyzeDlMdx(source: string, registry?: DlMdxRegistry, options: 
     const line = scanned.lines[Math.max(0, item.line - 1)] ?? scanned.lines[0]
     return diagnostic(line, line.start, line.end, item.code, item.severity, item.message)
   }))
+  const templateDocument = frontMatter.metadata.renderer === 'template' || /\bexport\s+default\s+function\s+[A-Z]/.test(frontMatter.body)
+  if (templateDocument) {
+    diagnostics.push(...analyzeDlMdxTemplate(source, registry))
+    const filtered = options.diagnostics === false ? [] : applySeverity(diagnostics, options).sort((left, right) => left.from - right.from || left.to - right.to)
+    return {
+      diagnostics: filtered,
+      components: [],
+      errorCount: filtered.filter(item => item.severity === 'error').length,
+      warningCount: filtered.filter(item => item.severity === 'warning').length,
+    }
+  }
   const ids = new Map<string, DlMdxLanguageComponentProperty>()
   const actionNames = new Set(options.actionNames ?? [])
   for (const component of scanned.components) {
@@ -471,6 +483,7 @@ const frontMatterFields = [
   { key: 'order', detail: '页面顺序', documentation: '当前导航组内的排序值。', value: '1' },
   { key: 'icon', detail: '导航图标文本', documentation: 'rail 模式和侧边导航使用的紧凑标记。', value: 'S' },
   { key: 'layout', detail: '页面布局', documentation: '宿主可映射为母版页导航模式。', value: 'docs' },
+  { key: 'renderer', detail: '页面渲染器', documentation: 'document 渲染 Markdown；template 使用安全的函数式 JSX 模板。', value: 'template' },
   { key: 'hidden', detail: '从导航隐藏', documentation: '路由仍然构建，但不会出现在自动导航中。', value: 'false' },
 ] as const
 
@@ -490,12 +503,55 @@ export function completeDlMdx(source: string, position: number, registry?: DlMdx
     const valueMatch = before.match(/^\s*([\w-]+)\s*:\s*([\w/-]*)$/)
     if (valueMatch) {
       const from = position - valueMatch[2].length
-      const values = valueMatch[1] === 'layout' ? ['landing', 'docs', 'article', 'dashboard'] : ['hidden', 'navigation'].includes(valueMatch[1]) ? ['true', 'false'] : []
+      const values = valueMatch[1] === 'layout'
+        ? ['landing', 'docs', 'article', 'dashboard']
+        : ['renderer', 'render'].includes(valueMatch[1])
+          ? ['document', 'template']
+          : ['hidden', 'navigation'].includes(valueMatch[1]) ? ['true', 'false'] : []
       if (values.length) return { from, to: position, items: values.map(value => ({ label: value, kind: 'value', detail: `${valueMatch[1]} value`, apply: value })) }
     }
     if (/^\s*[\w-]*$/.test(before)) {
       const range = completionRange(line, position, /[\w-]/)
       return { ...range, items: frontMatterFields.map(field => ({ label: field.key, kind: 'property', detail: field.detail, documentation: field.documentation, apply: `${field.key}: ${field.value}` })) }
+    }
+  }
+  const frontMatter = parseDlMdxFrontMatter(source)
+  const templateDocument = frontMatter.metadata.renderer === 'template' || /\bexport\s+default\s+function\s+[A-Z]/.test(frontMatter.body)
+  if (templateDocument) {
+    const tag = before.match(/<\/?([A-Za-z][\w]*)?$/)
+    if (tag) {
+      const value = tag[1] ?? ''
+      const functions = [...source.matchAll(/\bfunction\s+([A-Z][\w$]*)\s*\(/g)].map(match => match[1])
+      const runtime = [
+        ['Fragment', '并列根节点'], ['If', '条件结构'], ['Else', '条件分支'], ['For', '数据循环'], ['Slot', '宿主内容插槽'], ['Fill', '组件命名插槽'],
+      ]
+      const entries: DlMdxCompletionItem[] = [
+        ...runtime.map(([label, detail]) => ({ label, kind: 'keyword' as const, detail, apply: label })),
+        ...functions.map(label => ({ label, kind: 'component' as const, detail: '项目函数组件', apply: label })),
+        ...(registry?.entries() ?? []).map(definition => ({ label: definition.name, kind: 'component' as const, detail: definition.description ?? definition.category, apply: definition.name })),
+      ]
+      return { from: position - value.length, to: position, items: entries.filter((item, index) => entries.findIndex(candidate => candidate.label === item.label) === index) }
+    }
+    const opening = source.slice(0, position).match(/<([A-Z][\w$]*)\b[^<>]*\s([A-Za-z][\w-]*)?$/)
+    if (opening) {
+      const value = opening[2] ?? ''
+      const definition = registry?.resolve(opening[1])
+      const properties = Object.entries(definition ? resolveDlMdxPropSchema(definition) : {}).map(([label, schema]) => ({
+        label, kind: 'property' as const, detail: schema.description ?? '组件属性', apply: `${label}={}`,
+      }))
+      const events = Object.entries(definition ? resolveDlMdxEventSchema(definition) : {}).map(([name, schema]) => {
+        const label = `on${name.split(/[-:]/).map(part => part.slice(0, 1).toUpperCase() + part.slice(1)).join('')}`
+        return { label, kind: 'event' as const, detail: schema.description ?? '宿主动作', apply: `${label}={actions.}` }
+      })
+      return { from: position - value.length, to: position, items: [...properties, ...events] }
+    }
+    const expression = before.match(/\{[^{}]*?([A-Za-z_$][\w$]*)?$/)
+    if (expression) {
+      const value = expression[1] ?? ''
+      const roots = [
+        ['environment', '宿主环境变量'], ['navigation', '目录生成的导航数据'], ['route', '当前路由'], ['project', '项目清单'], ['data', '项目 JSON 数据'], ['page', '当前页面数据'], ['actions', '宿主允许的动作'],
+      ]
+      return { from: position - value.length, to: position, items: roots.map(([label, detail]) => ({ label, kind: 'variable' as const, detail, apply: label })) }
     }
   }
   const componentName = before.match(/^\s*\+\+\+component:([\w.-]*)$/)
@@ -643,6 +699,11 @@ export function formatDlMdx(source: string, options: DlMdxFormatOptions = {}, re
     trailingNewline: options.trailingNewline ?? true,
   }
   const normalized = source.replace(/\r\n?/g, '\n')
+  const frontMatter = parseDlMdxFrontMatter(normalized)
+  if (frontMatter.metadata.renderer === 'template' || /\bexport\s+default\s+function\s+[A-Z]/.test(frontMatter.body)) {
+    const result = normalized.trimEnd()
+    return (options.trailingNewline ?? true) ? `${result}\n` : result
+  }
   const scanned = scan(normalized)
   const byStart = new Map(scanned.components.map(component => [component.startLine, component]))
   const output: string[] = []

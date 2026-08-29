@@ -106,6 +106,22 @@ export type {
   DlMdxValue,
 } from './components/dl-mdx.types'
 export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
+export { default as DlMdxTemplate } from './components/DlMdxTemplate'
+export { analyzeDlMdxTemplate, evaluateDlMdxTemplateExpression, parseDlMdxTemplate, parseDlMdxTemplateExpression } from './components/dl-mdx.template'
+export type {
+  DlMdxTemplateAttribute,
+  DlMdxTemplateAttributeValue,
+  DlMdxTemplateBinding,
+  DlMdxTemplateDiagnostic,
+  DlMdxTemplateDiagnosticSeverity,
+  DlMdxTemplateExpression,
+  DlMdxTemplateFunction,
+  DlMdxTemplateNode,
+  DlMdxTemplateProgram,
+  DlMdxTemplateScope,
+} from './components/dl-mdx.template'
+export type { DlMdxTemplateContext } from './components/DlMdxTemplate'
+export type { DlMdxEditorDocumentLanguage } from './components/MdxEditor.vue'
 export { createDlMdxPageFrontMatter, parseDlMdxFrontMatter } from './components/dl-mdx.frontmatter'
 export type { DlMdxFrontMatterDiagnostic, DlMdxFrontMatterResult, DlMdxPageMetadata } from './components/dl-mdx.frontmatter'
 export { analyzeDlMdx, completeDlMdx, extractDlMdxActionSymbols, formatDlMdx, hoverDlMdx } from './components/dl-mdx.language'
@@ -145,6 +161,7 @@ export {
 export type {
   CreateDlMdxEngineOptions,
   DlMdxBuiltRoute,
+  DlMdxBuiltLayout,
   DlMdxEngine,
   DlMdxEngineDraft,
   DlMdxEngineLimits,

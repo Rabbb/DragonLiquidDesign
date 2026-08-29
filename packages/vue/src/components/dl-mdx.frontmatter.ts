@@ -8,6 +8,7 @@ export interface DlMdxPageMetadata {
   order?: number
   icon?: string
   layout?: string
+  renderer?: 'document' | 'template'
   hidden?: boolean
 }
 
@@ -30,7 +31,7 @@ const keyAliases: Record<string, keyof DlMdxPageMetadata> = {
   title: 'title', name: 'title', route: 'route', path: 'route', description: 'description',
   group: 'group', 'group-title': 'groupTitle', grouptitle: 'groupTitle',
   'group-order': 'groupOrder', grouporder: 'groupOrder', order: 'order',
-  icon: 'icon', layout: 'layout', hidden: 'hidden', navigation: 'hidden', nav: 'hidden',
+  icon: 'icon', layout: 'layout', renderer: 'renderer', render: 'renderer', hidden: 'hidden', navigation: 'hidden', nav: 'hidden',
 }
 
 function scalar(source: string): string | number | boolean {
@@ -82,6 +83,12 @@ export function parseDlMdxFrontMatter(source: string): DlMdxFrontMatterResult {
       else diagnostics.push({ code: 'frontmatter.value', severity: 'error', message: `${match[1]} 必须是 true 或 false。`, line: index + 1 })
       continue
     }
+    if (key === 'renderer') {
+      const renderer = String(value).toLowerCase()
+      if (renderer !== 'document' && renderer !== 'template') diagnostics.push({ code: 'frontmatter.value', severity: 'error', message: `${match[1]} 必须是 document 或 template。`, line: index + 1 })
+      else metadata.renderer = renderer
+      continue
+    }
     if (typeof value !== 'string' || !value.trim()) diagnostics.push({ code: 'frontmatter.value', severity: 'error', message: `${match[1]} 不能为空。`, line: index + 1 })
     else metadata[key] = value.trim() as never
   }
@@ -98,7 +105,7 @@ export function createDlMdxPageFrontMatter(metadata: DlMdxPageMetadata): string 
   const entries: Array<[string, unknown]> = [
     ['title', metadata.title], ['route', metadata.route], ['description', metadata.description],
     ['group', metadata.group], ['group-title', metadata.groupTitle], ['group-order', metadata.groupOrder],
-    ['order', metadata.order], ['icon', metadata.icon], ['layout', metadata.layout], ['hidden', metadata.hidden],
+    ['order', metadata.order], ['icon', metadata.icon], ['layout', metadata.layout], ['renderer', metadata.renderer], ['hidden', metadata.hidden],
   ]
   const lines = entries.flatMap(([key, value]) => value === undefined ? [] : [`${key}: ${typeof value === 'string' && /[:#]/.test(value) ? JSON.stringify(value) : value}`])
   return lines.length ? ['---', ...lines, '---'].join('\n') : ''

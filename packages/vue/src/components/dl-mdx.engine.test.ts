@@ -95,6 +95,21 @@ describe('MarkdownX project engine', () => {
     expect(result.routes[1].actionSymbols.map(symbol => symbol.name)).toEqual(['saveProject', 'visitAbout'])
   })
 
+  it('builds a project-owned function layout and template pages', () => {
+    const engine = createDlMdxEngine()
+    engine.transaction((draft) => {
+      draft.writeFile('/layouts/default.mdx', 'export default function Layout({ project }) { return <main><h1>{project.name}</h1><Slot name="page" /></main> }')
+      draft.writeFile('/layouts/default.css', '.site { min-height: 100vh; }')
+      draft.writeFile('/pages/index.mdx', '---\nrenderer: template\n---\nexport default function Page({ route }) { return <article>{route.title}</article> }')
+      draft.updateManifest({ layout: '/layouts/default.mdx' })
+    })
+
+    const result = engine.build()
+    expect(result.ok).toBe(true)
+    expect(result.layout).toMatchObject({ file: '/layouts/default.mdx', styleFiles: ['/layouts/default.css'] })
+    expect(result.routes[0]).toMatchObject({ metadata: { renderer: 'template' } })
+  })
+
   it('builds hidden front matter into routes and directory navigation groups', () => {
     const engine = createDlMdxEngine()
     engine.transaction((draft) => {

@@ -190,6 +190,8 @@ await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' 
 
 完整的活网站源码结构、Vue 接入、HTTP 后端契约、可信 JavaScript 动作和控件接口读取方式见 [DL-MDX 活网站接入指南](../../docs/MDX_WEBSITE_HOSTING.md)。npm 包提供引擎与协议，不内置通用账号或数据库后端；后端必须由宿主结合自己的身份和租户模型实现。
 
+`0.6.0-alpha.39` 新增安全的函数式 MDX 模板运行时：用户可在项目内编辑母版和函数化页面，通过 `If`、`For`、`Slot`、`Fill` 与局部函数组件控制结构；清单支持 `layout` 和 `dataFiles`，宿主只需注入导航、路由、环境、项目数据与可信动作。
+
 `0.6.0-alpha.37` 允许数据库文本在 front matter 前带有空行，页面元数据仍会被识别并从公开正文中可靠剥离。
 
 `0.6.0-alpha.36` 新增网站布局组件族：`DlSiteShell`、`DlSiteHeader`、`DlSiteNavigation`、`DlBreadcrumbs`、`DlPageFrame`、`DlContainer`、`DlStack`、`DlCluster` 与 `DlGrid`。DL-MDX 页面同时支持隐藏的强类型 front matter、目录 `_group.json`、自动导航组、宿主环境变量和编辑/发布一致的整站预览。

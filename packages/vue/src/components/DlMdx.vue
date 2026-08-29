@@ -28,7 +28,7 @@ import type {
   DlMdxParseResult,
   DlMdxToolbarAction,
 } from './dl-mdx.types'
-import MdxEditor from './MdxEditor.vue'
+import MdxEditor, { type DlMdxEditorDocumentLanguage } from './MdxEditor.vue'
 import MdxPreview from './MdxPreview.vue'
 
 type ComponentLibraryEntry = {
@@ -64,6 +64,7 @@ const props = withDefaults(defineProps<{
   scriptLanguage?: 'javascript' | 'typescript'
   languageOptions?: DlMdxLanguageOptions
   formatOptions?: DlMdxFormatOptions
+  sourceLanguage?: DlMdxEditorDocumentLanguage
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -88,6 +89,7 @@ const props = withDefaults(defineProps<{
   scriptLanguage: 'typescript',
   languageOptions: undefined,
   formatOptions: undefined,
+  sourceLanguage: 'mdx',
 })
 
 const emit = defineEmits<{
@@ -475,15 +477,16 @@ function toggleTask(line: number) {
 
     <div class="dl-mdx__workspace" :class="{ 'is-companion': activeDocument !== 'mdx' }">
       <section v-show="activeDocument === 'mdx' && localMode !== 'preview'" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
-        <MdxEditor
-          ref="editorRef"
+      <MdxEditor
+        :key="`source:${sourceLanguage}`"
+        ref="editorRef"
           :model-value="localSource"
           :placeholder="placeholder"
           :readonly="readonly"
           :disabled="disabled"
           :line-wrapping="lineWrapping"
           :aria-label="`${ariaLabel}编辑器`"
-          document-language="mdx"
+        :document-language="sourceLanguage"
           :registry="activeRegistry"
           :language-options="effectiveLanguageOptions"
           @update:model-value="updateSource"

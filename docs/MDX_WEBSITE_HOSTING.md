@@ -102,42 +102,85 @@ hidden: false
 
 页面配置优先于 manifest 中同文件的旧式路由声明；没有配置时仍按 `/pages/guides/start.mdx → /guides/start` 推导。无效路由、元数据类型和 `_group.json` 会进入整项目诊断。
 
-## 使用 SiteShell 母版页预览和发布
+## 用户可编辑母版与函数化页面
 
-网站框架不应由每个宿主重复编写。`DlSiteShell` 统一站点头、top/side/hybrid/rail 导航、响应式侧栏、内容插槽和页脚；宿主环境通过 `environment` 输入，不写进用户页面：
+网站的页面骨架不再写死在宿主中。项目可在清单中声明一份用户自己的母版和若干 JSON 数据文件；宿主只注入菜单、当前路由、项目清单等运行环境：
 
-```vue
-<script setup lang="ts">
-import { DlMdx, DlSiteShell, type DlSiteNavigationItem } from '@dragon-liquid/vue'
-
-const environment = {
-  siteName: project.manifest.name,
-  siteCaption: `${username} / ${project.manifest.id}`,
-  homePath: build.entryRoute,
-  basePath: `/pw/${username}/${project.manifest.id}`,
-  variables: { username, projectId: project.manifest.id },
+```ts
+const project = {
+  manifest: {
+    id: 'product-handbook',
+    name: 'Product handbook',
+    entry: '/pages/index.mdx',
+    layout: '/layouts/default.mdx',
+    dataFiles: ['/data/site.json'],
+    sharedStyles: ['/shared/site.css'],
+  },
+  entries: [
+    { kind: 'file', path: '/data/site.json', language: 'json', encoding: 'utf8', content: '{"hero":{"title":"Build freely"}}' },
+  ],
 }
-function navigate(item: DlSiteNavigationItem) {
-  activeRoute.value = build.routes.find(route => route.route === item.href)
-}
-</script>
-
-<template>
-  <style v-if="activeRoute.style">{{ activeRoute.style }}</style>
-  <DlSiteShell
-    :environment="environment"
-    :navigation="build.navigation"
-    :active-path="activeRoute.route"
-    navigation-mode="hybrid"
-    @navigate="navigate"
-  >
-    <DlMdx :model-value="activeRoute.source" :actions="trustedActions" mode="preview" :show-toolbar="false" />
-    <template #footer>Project footer</template>
-  </DlSiteShell>
-</template>
 ```
 
-内容页还可直接使用 `DlContainer`、`DlStack`、`DlCluster`、`DlGrid`、`DlPageFrame`、`DlBreadcrumbs`、`DlSiteHeader` 和 `DlSiteNavigation`。编辑器预览与公开发布必须调用同一份母版组件，设备预览只改变可用宽度，不维护另一套假页面。
+母版采用受控的函数式 MDX。语法接近 JSX / Razor，但不会通过 `eval` 或 `new Function` 执行字符串：
+
+```mdx
+function Brand({ project }) {
+  return <strong>{project.name}</strong>;
+}
+
+export default function Layout({ environment, navigation, route, project, data, actions }) {
+  return (
+    <SiteShell
+      siteName={project.name}
+      navigation={navigation}
+      activePath={route.path}
+      navigationMode={environment.navigationMode ?? "hybrid"}
+      onNavigate={actions.navigate}
+    >
+      <Brand project={project} />
+      <If when={environment.preview}><Badge>PREVIEW</Badge></If>
+      <Slot name="page" />
+      <Fill name="footer"><small>{data.site.footer}</small></Fill>
+    </SiteShell>
+  );
+}
+```
+
+函数式内容页增加 `renderer: template`，可以自行决定页面结构和数据循环；普通 Markdown 页面仍由 `DlMdx` 渲染，并填入母版的 `page` 插槽：
+
+```mdx
+---
+title: Home
+route: /
+renderer: template
+---
+
+export default function Home({ data, route }) {
+  const hero = data.site.hero;
+  return (
+    <main class="home">
+      <h1>{hero.title}</h1>
+      <For each={hero.features} as="feature">
+        <Card><h2>{feature.title}</h2><p>{feature.description}</p></Card>
+      </For>
+    </main>
+  );
+}
+```
+
+运行时内置 `Fragment`、`If` / `Else`、`For`、`Slot` 和 `Fill`。表达式支持安全的属性读取、数组/对象、算术与逻辑运算、空值合并和三元表达式；不允许任意函数调用、原型链访问、动态导入或直接执行 JavaScript。可调用行为只能来自宿主审核后注入的 `actions`。
+
+宿主必须向母版和页面传入同一组上下文：
+
+- `environment`：用户名、公开地址、预览态、设备或导航模式等外部环境；
+- `navigation`：引擎从项目目录和页面元数据生成的菜单；
+- `route`、`page`：当前路径、标题、文件和页面元数据；
+- `project`：项目清单；
+- `data`：`dataFiles` 合并后的 JSON 数据；
+- `actions`：经过宿主授权的导航、保存或业务动作。
+
+`DlSiteShell`、`DlContainer`、`DlStack`、`DlCluster`、`DlGrid`、`DlPageFrame` 等只是可选积木，不再是不可修改的外壳。正式发布、草稿预览和编辑器预览应调用同一个 `DlMdxTemplate` 运行时和同一份项目源码。
 
 ## JavaScript 安全边界
 

@@ -729,6 +729,12 @@
 .dl-mdx__unknown-component > strong { color: var(--dl-accent-text); }
 .dl-mdx__unknown-component > p { margin: 0; color: var(--dl-text-muted); font-size: 0.78rem; }
 
+.dl-mdx-template { min-width: 0; }
+.dl-mdx-template__error { display: grid; gap: 0.55rem; margin: 1rem; padding: 1rem; border: 1px solid color-mix(in srgb, var(--dl-danger, #ef6b73) 45%, transparent); border-radius: var(--dl-radius-md); color: var(--dl-text-muted); background: color-mix(in srgb, var(--dl-danger, #ef6b73) 8%, var(--dl-surface)); }
+.dl-mdx-template__error strong { color: var(--dl-danger, #ef6b73); font: 800 0.68rem/1 ui-monospace, monospace; letter-spacing: 0.08em; }
+.dl-mdx-template__error p { margin: 0; font-size: 0.78rem; line-height: 1.55; }
+.dl-mdx-template__error code { color: var(--dl-accent-text); }
+
 .dl-mdx__registry-trigger {
   appearance: none;
   min-height: 2.45rem;

@@ -96,6 +96,20 @@ describe('MarkdownX language service', () => {
     ])
     expect(globalThis.__dlMdxScriptExecuted).toBe(false)
   })
+
+  it('completes function templates, runtime values and registered component APIs', () => {
+    const tagSource = '---\nrenderer: template\n---\nexport default function Page({ data }) { return <No'
+    const tagItems = completeDlMdx(tagSource, tagSource.length, registry)?.items ?? []
+    expect(tagItems).toContainEqual(expect.objectContaining({ label: 'Notice', kind: 'component' }))
+
+    const expressionSource = 'export default function Page({ data }) { return <p>{da'
+    const expressionItems = completeDlMdx(expressionSource, expressionSource.length, registry)?.items ?? []
+    expect(expressionItems).toContainEqual(expect.objectContaining({ label: 'data', kind: 'variable' }))
+
+    const propertySource = 'export default function Page() { return <Notice to'
+    const propertyItems = completeDlMdx(propertySource, propertySource.length, registry)?.items ?? []
+    expect(propertyItems).toContainEqual(expect.objectContaining({ label: 'tone', kind: 'property' }))
+  })
 })
 
 declare global {
