@@ -1586,21 +1586,15 @@ export default {
       },
       {
         "prop": "showLabels",
-        "description": "是否在颜色样本旁显示名称和说明。",
+        "description": "是否在颜色样本右侧显示名称和说明；选项仍按容器宽度二维流式换行。",
         "type": "boolean",
         "defaultValue": "false"
       },
       {
         "prop": "showValues",
-        "description": "是否在颜色选项说明为空时显示原始色值。",
+        "description": "是否在颜色选项缺少说明时，于右侧补充显示原始色值。",
         "type": "boolean",
         "defaultValue": "false"
-      },
-      {
-        "prop": "columns",
-        "description": "色板网格使用的固定列数；不传时根据容器宽度自动排列。",
-        "type": "number",
-        "defaultValue": "undefined"
       },
       {
         "prop": "size",

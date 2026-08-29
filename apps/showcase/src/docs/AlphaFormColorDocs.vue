@@ -128,7 +128,7 @@ const sources: Record<string, VueExampleSource> = {
   },
   'color-slider': { imports: ['DlColorSlider'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f780')`, template: `  <div class="channel-stack">\n    <DlColorSlider v-model="color" channel="hue" label="Hue" show-value />\n    <DlColorSlider v-model="color" channel="saturation" label="Saturation" show-value />\n    <DlColorSlider v-model="color" channel="lightness" label="Lightness" show-value />\n    <DlColorSlider v-model="color" channel="alpha" label="Alpha" show-value />\n  </div>`, style: `.channel-stack { display: grid; gap: 12px; max-width: 680px; }` },
   'color-swatch': { imports: ['DlColorSwatch'], template: `  <DlColorSwatch color="#7aa2f7" label="Tokyo Blue" description="Primary" label-position="right" show-value size="lg" />`, style: '' },
-  'color-swatch-picker': { imports: ['DlColorSwatchPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f7')\nconst colors = [\n  { value: '#7aa2f7', label: 'Tokyo Blue', description: 'Primary' },\n  { value: '#bb9af7', label: 'Iris', description: 'Creative' },\n]`, template: `  <DlColorSwatchPicker v-model="color" :colors="colors" show-labels show-values aria-label="品牌主题色" />`, style: `.dl-color-swatch-picker { max-width: 680px; }` },
+  'color-swatch-picker': { imports: ['DlColorSwatchPicker'], script: `import { ref } from 'vue'\n\nconst color = ref('#7aa2f7')\nconst colors = [\n  { value: '#7aa2f7', label: 'Tokyo Blue', description: 'Primary' },\n  { value: '#bb9af7', label: 'Iris', description: 'Creative' },\n  { value: '#9ece6a', label: 'Leaf', description: 'Success' },\n  { value: '#e0af68', label: 'Amber', description: 'Warning' },\n]`, template: `  <DlColorSwatchPicker v-model="color" :colors="colors" show-labels show-values aria-label="品牌主题色" />`, style: `.dl-color-swatch-picker { max-width: 680px; }` },
 }
 
 const scenarioDescription = computed(() => ({
@@ -139,6 +139,7 @@ const scenarioDescription = computed(() => ({
   'color-picker:vertical-layout': '纵向布局需要显式设置 orientation="vertical"，适合窄侧栏等宽度受限的特殊区域。',
   'color-picker:theme-settings': '在普通设置页中确认后提交颜色，并让业务预览只响应已提交值。',
   'color-picker:collection-list': '在高密度项目列表中为每一行提供紧凑入口，避免常驻色域破坏列表阅读节奏。',
+  'color-swatch-picker': '色板从左向右排列并自动换行，形成宽度由内容决定的二维流，而不是等宽列表。',
 }[exampleKey.value] ?? componentGuidanceFor(props.componentDefinition.id).example))
 
 const content = computed(() => ({
@@ -249,9 +250,9 @@ const content = computed(() => ({
       </section>
 
       <section v-else class="color-picker-gallery">
-        <article><h3>带语义的品牌色</h3><DlColorSwatchPicker v-model="color" :colors="swatches" show-labels show-values aria-label="品牌主题色" /></article>
+        <article><h3>左右流式品牌色</h3><DlColorSwatchPicker v-model="color" :colors="swatches" show-labels show-values aria-label="品牌主题色" /></article>
         <article><h3>紧凑色板</h3><DlColorSwatchPicker v-model="color" :colors="swatchValues" size="sm" aria-label="紧凑主题色" /></article>
-        <article><h3>多选色板</h3><DlColorSwatchPicker v-model="multipleColors" :colors="swatches" multiple show-labels :columns="2" aria-label="图表颜色" /></article>
+        <article><h3>多选流式色板</h3><DlColorSwatchPicker v-model="multipleColors" :colors="swatches" multiple show-labels aria-label="图表颜色" /></article>
       </section>
 
       <output>当前值：{{ currentValue }}</output>

@@ -14,7 +14,6 @@ const props = withDefaults(defineProps<{
   name?: string
   showLabels?: boolean
   showValues?: boolean
-  columns?: number
   size?: 'sm' | 'md' | 'lg'
   loop?: boolean
 }>(), {
@@ -36,13 +35,6 @@ const rootAttrs = computed(() => {
   const { class: _class, style: _style, ...rest } = attrs
   return rest
 })
-const gridStyle = computed(() => ({
-  gridTemplateColumns: props.columns
-    ? `repeat(${props.columns}, minmax(0, 1fr))`
-    : props.showLabels
-      ? 'repeat(auto-fill, minmax(145px, 1fr))'
-      : `repeat(auto-fill, ${props.size === 'sm' ? '34px' : props.size === 'lg' ? '54px' : '44px'})`,
-}))
 </script>
 
 <template>
@@ -50,6 +42,7 @@ const gridStyle = computed(() => ({
     v-bind="rootAttrs"
     data-dl
     data-slot="color-swatch-picker"
+    data-layout="flow"
     :model-value="modelValue"
     :multiple="multiple"
     :disabled="disabled"
@@ -57,7 +50,7 @@ const gridStyle = computed(() => ({
     :loop="loop"
     class="dl-color-swatch-picker"
     :class="[`is-${size}`, { 'show-labels': showLabels }, $attrs.class]"
-    :style="[$attrs.style, gridStyle]"
+    :style="$attrs.style"
     @update:model-value="emit('update:modelValue', $event as string | string[])"
   >
     <ColorSwatchPickerItem
@@ -82,21 +75,23 @@ const gridStyle = computed(() => ({
 </template>
 
 <style scoped>
-.dl-color-swatch-picker { display: grid; align-items: stretch; gap: 8px; width: 100%; }
-.dl-color-swatch-picker__item { position: relative; display: grid; place-items: center; min-width: 0; padding: 3px; border: 1px solid transparent; border-radius: var(--dl-radius-sm); outline: none; color: var(--dl-text); background: transparent; cursor: pointer; transition: border-color .14s ease, background .14s ease, box-shadow .14s ease, transform .14s ease; }
-.dl-color-swatch-picker.show-labels .dl-color-swatch-picker__item { grid-template-columns: auto minmax(0,1fr); justify-content: start; gap: 9px; padding: 7px; text-align: left; }
-.dl-color-swatch-picker__item:hover:not([data-disabled]) { border-color: var(--dl-border-strong); background: var(--dl-surface-hover); transform: translateY(-1px); }
-.dl-color-swatch-picker__item[data-state="checked"] { border-color: var(--dl-accent-border); background: var(--dl-accent-surface); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--dl-accent) 10%, transparent); }
+.dl-color-swatch-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px; width: 100%; }
+.dl-color-swatch-picker__item { position: relative; display: inline-flex; flex: 0 0 auto; align-items: center; min-width: 0; padding: 3px; border: 0; border-radius: var(--dl-radius-sm); outline: none; color: var(--dl-text); background: transparent; cursor: pointer; transition: color .14s ease, box-shadow .14s ease, transform .14s ease; }
+.dl-color-swatch-picker.show-labels .dl-color-swatch-picker__item { flex: 0 1 auto; max-width: 100%; gap: 8px; padding-right: 5px; text-align: left; }
+.dl-color-swatch-picker__item:hover:not([data-disabled]) { transform: translateY(-1px); }
+.dl-color-swatch-picker__item:hover:not([data-disabled]) .dl-color-swatch-picker__sample { border-color: var(--dl-border-focus); }
+.dl-color-swatch-picker__item[data-state="checked"] .dl-color-swatch-picker__sample { border-color: var(--dl-accent-border); box-shadow: 0 0 0 2px var(--dl-accent-surface); }
+.dl-color-swatch-picker__item[data-state="checked"] .dl-color-swatch-picker__copy b { color: var(--dl-accent-text); }
 .dl-color-swatch-picker__item:focus-visible { box-shadow: var(--dl-focus); }
 .dl-color-swatch-picker__item[data-disabled] { cursor: not-allowed; opacity: .36; }
-.dl-color-swatch-picker__sample { position: relative; display: block; overflow: hidden; border: 1px solid var(--dl-border-strong); border-radius: 10px; }
+.dl-color-swatch-picker__sample { position: relative; display: block; flex: 0 0 auto; overflow: hidden; border: 1px solid var(--dl-border-strong); border-radius: 10px; transition: border-color .14s ease, box-shadow .14s ease; }
 .dl-color-swatch-picker.is-sm .dl-color-swatch-picker__sample { width: 28px; height: 28px; }
 .dl-color-swatch-picker.is-md .dl-color-swatch-picker__sample { width: 38px; height: 38px; }
 .dl-color-swatch-picker.is-lg .dl-color-swatch-picker__sample { width: 48px; height: 48px; }
 .dl-color-swatch-picker__fill { position: absolute; inset: 0; }
 .dl-color-swatch-picker__semantic { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .dl-color-swatch-picker__indicator { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dl-swatch-ink); font-size: .75rem; font-weight: 950; text-shadow: 0 1px 3px rgba(0,0,0,.22); }
-.dl-color-swatch-picker__copy { display: grid; gap: 3px; min-width: 0; }
+.dl-color-swatch-picker__copy { display: grid; gap: 2px; min-width: 0; max-width: 11rem; }
 .dl-color-swatch-picker__copy b, .dl-color-swatch-picker__copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dl-color-swatch-picker__copy b { font-size: .68rem; }
 .dl-color-swatch-picker__copy small { color: var(--dl-text-faint); font: .53rem "Cascadia Code", Consolas, monospace; }

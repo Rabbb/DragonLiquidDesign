@@ -236,6 +236,10 @@ const componentDescriptions = {
     orientation: '设置完整选色面板的布局方向；默认横向并排，纵向仅用于窄空间等特殊场景。',
     title: '颜色选择浮层的标题；不传时使用“选择颜色”。',
   },
+  'color-swatch-picker': {
+    showLabels: '是否在颜色样本右侧显示名称和说明；选项仍按容器宽度二维流式换行。',
+    showValues: '是否在颜色选项缺少说明时，于右侧补充显示原始色值。',
+  },
 }
 
 const structureDescriptions = {

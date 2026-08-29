@@ -448,7 +448,7 @@ const rekaSeeds: RekaSeed[] = [
   { id: 'color-picker', name: 'Color Picker 颜色选择器', category: 'color', maturity: 'alpha', summary: '从字段式触发器打开组合选色浮层，预览调整并在确认时提交颜色。' },
   { id: 'color-slider', name: 'Color Slider 色彩滑块', category: 'color', maturity: 'alpha', summary: '横向或纵向调整颜色通道，显示数值并支持透明度轨道。' },
   { id: 'color-swatch', name: 'Color Swatch 颜色样本', category: 'color', maturity: 'alpha', summary: '以透明底纹、名称、说明和值展示只读颜色样本。' },
-  { id: 'color-swatch-picker', name: 'Color Swatch Picker 色板选择器', category: 'color', maturity: 'alpha', summary: '用紧凑或带标签网格从预设色中进行单选或多选。' },
+  { id: 'color-swatch-picker', name: 'Color Swatch Picker 色板选择器', category: 'color', maturity: 'alpha', summary: '以二维流式色板从预设色中单选或多选，带标签时保持左色块、右说明。' },
 
   { id: 'calendar', name: 'Calendar 业务日历', category: 'dates', maturity: 'alpha', summary: '在完整月视图中浏览、创建和拖动日程条目，并处理单元格溢出。' },
   { id: 'date-field', name: 'Date Field 日期字段', category: 'dates', maturity: 'alpha', summary: '以分段字段精确键入日期，并共享选择器的范围、状态和清除能力。' },

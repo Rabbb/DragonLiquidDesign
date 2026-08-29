@@ -61,7 +61,7 @@ describe('Dragon Liquid color controls', () => {
     ])
   })
 
-  it('shows values and labels in sliders and labeled swatch grids', () => {
+  it('shows values and labels in sliders and a two-dimensional swatch flow', () => {
     const slider = mount(DlColorSlider, {
       props: { modelValue: '#ff000080', channel: 'alpha', label: '透明度', showValue: true },
     })
@@ -78,6 +78,9 @@ describe('Dragon Liquid color controls', () => {
     expect(picker.text()).toContain('Tokyo Blue')
     expect(picker.text()).toContain('推荐')
     expect(picker.findAll('[role="option"]')).toHaveLength(2)
+    const flowRoot = picker.get('.dl-color-swatch-picker')
+    expect(flowRoot.attributes('data-layout')).toBe('flow')
+    expect(flowRoot.attributes('style') ?? '').not.toContain('grid-template-columns')
     expect(picker.get('.dl-color-swatch-picker__fill').attributes('style')).toContain('background-color: rgb(122, 162, 247)')
   })
 })
