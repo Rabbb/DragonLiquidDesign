@@ -98,9 +98,9 @@ describe('MarkdownX project engine', () => {
   it('builds a project-owned function layout and template pages', () => {
     const engine = createDlMdxEngine()
     engine.transaction((draft) => {
-      draft.writeFile('/layouts/default.mdx', 'export default function Layout({ project }) { return <main><h1>{project.name}</h1><Slot name="page" /></main> }')
+      draft.writeFile('/layouts/default.mdx', 'export default function Layout() { return <main><h1>{$dlx.project.name}</h1><Slot name="page" /></main> }')
       draft.writeFile('/layouts/default.css', '.site { min-height: 100vh; }')
-      draft.writeFile('/pages/index.mdx', '---\nrenderer: template\n---\nexport default function Page({ route }) { return <article>{route.title}</article> }')
+      draft.writeFile('/pages/index.mdx', '---\nrenderer: template\n---\nexport default function Page() { return <article>{$dlx.route.title}</article> }')
       draft.updateManifest({ layout: '/layouts/default.mdx' })
     })
 

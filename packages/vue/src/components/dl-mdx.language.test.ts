@@ -102,9 +102,13 @@ describe('MarkdownX language service', () => {
     const tagItems = completeDlMdx(tagSource, tagSource.length, registry)?.items ?? []
     expect(tagItems).toContainEqual(expect.objectContaining({ label: 'Notice', kind: 'component' }))
 
-    const expressionSource = 'export default function Page({ data }) { return <p>{da'
+    const expressionSource = 'export default function Page() { return <p>{$dl'
     const expressionItems = completeDlMdx(expressionSource, expressionSource.length, registry)?.items ?? []
-    expect(expressionItems).toContainEqual(expect.objectContaining({ label: 'data', kind: 'variable' }))
+    expect(expressionItems).toContainEqual(expect.objectContaining({ label: '$dlx', kind: 'variable' }))
+
+    const memberSource = 'export default function Page() { return <p>{$dlx.da'
+    const memberItems = completeDlMdx(memberSource, memberSource.length, registry)?.items ?? []
+    expect(memberItems).toContainEqual(expect.objectContaining({ label: 'data', kind: 'property' }))
 
     const propertySource = 'export default function Page() { return <Notice to'
     const propertyItems = completeDlMdx(propertySource, propertySource.length, registry)?.items ?? []

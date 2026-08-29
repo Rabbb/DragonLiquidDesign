@@ -541,17 +541,23 @@ export function completeDlMdx(source: string, position: number, registry?: DlMdx
       }))
       const events = Object.entries(definition ? resolveDlMdxEventSchema(definition) : {}).map(([name, schema]) => {
         const label = `on${name.split(/[-:]/).map(part => part.slice(0, 1).toUpperCase() + part.slice(1)).join('')}`
-        return { label, kind: 'event' as const, detail: schema.description ?? '宿主动作', apply: `${label}={actions.}` }
+        return { label, kind: 'event' as const, detail: schema.description ?? '宿主动作', apply: `${label}={$dlx.actions.}` }
       })
       return { from: position - value.length, to: position, items: [...properties, ...events] }
+    }
+    const runtimeMember = before.match(/\{[^{}]*?\$dlx\.([A-Za-z_$][\w$]*)?$/)
+    if (runtimeMember) {
+      const value = runtimeMember[1] ?? ''
+      const members = [
+        ['env', '宿主环境变量'], ['navigation', '目录生成的导航数据'], ['route', '当前路由'], ['project', '项目清单'],
+        ['data', '项目 JSON 数据'], ['page', '当前页面数据'], ['actions', '宿主授权的动作'], ['state', '当前运行时状态'],
+      ]
+      return { from: position - value.length, to: position, items: members.map(([label, detail]) => ({ label, kind: 'property' as const, detail, apply: label })) }
     }
     const expression = before.match(/\{[^{}]*?([A-Za-z_$][\w$]*)?$/)
     if (expression) {
       const value = expression[1] ?? ''
-      const roots = [
-        ['environment', '宿主环境变量'], ['navigation', '目录生成的导航数据'], ['route', '当前路由'], ['project', '项目清单'], ['data', '项目 JSON 数据'], ['page', '当前页面数据'], ['actions', '宿主允许的动作'],
-      ]
-      return { from: position - value.length, to: position, items: roots.map(([label, detail]) => ({ label, kind: 'variable' as const, detail, apply: label })) }
+      return { from: position - value.length, to: position, items: [{ label: '$dlx', kind: 'variable', detail: 'DLX 只读页面运行时', documentation: '统一访问 env、navigation、route、project、page、data、actions 与 state。', apply: '$dlx' }] }
     }
   }
   const componentName = before.match(/^\s*\+\+\+component:([\w.-]*)$/)

@@ -425,6 +425,7 @@ function parseFunctionBody(body: string, bodyOffset: number): { bindings: DlMdxT
   const bindings: DlMdxTemplateBinding[] = []
   const bindingPattern = /\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*([^;\n]+)\s*;?/g
   for (const match of prelude.matchAll(bindingPattern)) {
+    if (match[1] === '$dlx') throw new TemplateSyntaxError('$dlx 是只读运行时保留字，不能被局部变量覆盖。', bodyOffset + (match.index ?? 0))
     const expression = match[2].trim()
     const expressionAt = bodyOffset + (match.index ?? 0) + match[0].indexOf(match[2])
     bindings.push({ name: match[1], expression: parseDlMdxTemplateExpression(expression, expressionAt) })
@@ -471,6 +472,7 @@ export function parseDlMdxTemplate(input: string, registry?: DlMdxRegistry): DlM
       const close = matching(source, open, '{', '}')
       const name = match[3]
       if (!/^[A-Z][A-Za-z0-9_$]*$/.test(name)) throw new TemplateSyntaxError('函数组件名称必须以大写字母开头。', sourceOffset + from)
+      if (/(?:^|[^\w$])\$dlx(?:$|[^\w$])/.test(match[4])) throw new TemplateSyntaxError('$dlx 由运行时自动提供，无需也不能声明为函数参数。', sourceOffset + from)
       const parsed = parseFunctionBody(source.slice(open + 1, close), sourceOffset + open + 1)
       functions[name] = { name, parameters: functionParameters(match[4]), ...parsed, from: sourceOffset + from }
       if (match[2]) entry = name

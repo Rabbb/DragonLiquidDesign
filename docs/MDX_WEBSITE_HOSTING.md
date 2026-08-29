@@ -125,23 +125,23 @@ const project = {
 母版采用受控的函数式 MDX。语法接近 JSX / Razor，但不会通过 `eval` 或 `new Function` 执行字符串：
 
 ```mdx
-function Brand({ project }) {
-  return <strong>{project.name}</strong>;
+function Brand({ name }) {
+  return <strong>{name}</strong>;
 }
 
-export default function Layout({ environment, navigation, route, project, data, actions }) {
+export default function Layout() {
   return (
     <SiteShell
-      siteName={project.name}
-      navigation={navigation}
-      activePath={route.path}
-      navigationMode={environment.navigationMode ?? "hybrid"}
-      onNavigate={actions.navigate}
+      siteName={$dlx.project.name}
+      navigation={$dlx.navigation}
+      activePath={$dlx.route.path}
+      navigationMode={$dlx.env.navigationMode ?? "hybrid"}
+      onNavigate={$dlx.actions.navigate}
     >
-      <Brand project={project} />
-      <If when={environment.preview}><Badge>PREVIEW</Badge></If>
+      <Brand name={$dlx.project.name} />
+      <If when={$dlx.env.preview}><Badge>PREVIEW</Badge></If>
       <Slot name="page" />
-      <Fill name="footer"><small>{data.site.footer}</small></Fill>
+      <Fill name="footer"><small>{$dlx.data.site.footer}</small></Fill>
     </SiteShell>
   );
 }
@@ -156,8 +156,8 @@ route: /
 renderer: template
 ---
 
-export default function Home({ data, route }) {
-  const hero = data.site.hero;
+export default function Home() {
+  const hero = $dlx.data.site.hero;
   return (
     <main class="home">
       <h1>{hero.title}</h1>
@@ -169,16 +169,17 @@ export default function Home({ data, route }) {
 }
 ```
 
-运行时内置 `Fragment`、`If` / `Else`、`For`、`Slot` 和 `Fill`。表达式支持安全的属性读取、数组/对象、算术与逻辑运算、空值合并和三元表达式；不允许任意函数调用、原型链访问、动态导入或直接执行 JavaScript。可调用行为只能来自宿主审核后注入的 `actions`。
+运行时内置 `Fragment`、`If` / `Else`、`For`、`Slot` 和 `Fill`。表达式支持安全的属性读取、数组/对象、算术与逻辑运算、空值合并和三元表达式；不允许任意函数调用、原型链访问、动态导入或直接执行 JavaScript。可调用行为只能来自宿主审核后注入的 `$dlx.actions`。
 
-宿主必须向母版和页面传入同一组上下文：
+`DLX` 是语言和引擎名称，`$dlx` 是母版与页面唯一的只读运行时入口。它是保留字，不能被函数参数或局部变量覆盖。宿主必须向母版和页面传入同一组上下文：
 
-- `environment`：用户名、公开地址、预览态、设备或导航模式等外部环境；
-- `navigation`：引擎从项目目录和页面元数据生成的菜单；
-- `route`、`page`：当前路径、标题、文件和页面元数据；
-- `project`：项目清单；
-- `data`：`dataFiles` 合并后的 JSON 数据；
-- `actions`：经过宿主授权的导航、保存或业务动作。
+- `$dlx.env`：用户名、公开地址、预览态、设备或导航模式等外部环境；
+- `$dlx.navigation`：引擎从项目目录和页面元数据生成的菜单；
+- `$dlx.route`、`$dlx.page`：当前路径、标题、文件和页面元数据；
+- `$dlx.project`：项目清单；
+- `$dlx.data`：`dataFiles` 合并后的 JSON 数据；
+- `$dlx.actions`：经过宿主授权的导航、保存或业务动作；
+- `$dlx.state`：宿主提供的页面运行时状态。
 
 `DlSiteShell`、`DlContainer`、`DlStack`、`DlCluster`、`DlGrid`、`DlPageFrame` 等只是可选积木，不再是不可修改的外壳。正式发布、草稿预览和编辑器预览应调用同一个 `DlMdxTemplate` 运行时和同一份项目源码。
 

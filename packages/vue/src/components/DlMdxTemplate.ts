@@ -18,7 +18,17 @@ import {
 import { safeDlMdxUrl } from './dl-mdx.parser'
 import { useDlMdxSecurityPolicy } from './dl-mdx.security'
 
-export type DlMdxTemplateContext = Record<string, unknown>
+export interface DlMdxTemplateContext {
+  readonly env?: Readonly<Record<string, unknown>>
+  readonly navigation?: unknown
+  readonly route?: unknown
+  readonly project?: unknown
+  readonly page?: unknown
+  readonly data?: unknown
+  readonly actions?: Readonly<Record<string, unknown>>
+  readonly state?: Readonly<Record<string, unknown>>
+  readonly [key: string]: unknown
+}
 
 const forbiddenProperties = new Set(['is', 'key', 'ref', 'innerHTML', 'textContent', 'srcdoc'])
 const nativeProperties = new Set([
@@ -179,7 +189,7 @@ export default defineComponent({
     return () => {
       const current = program.value
       return h('div', { class: 'dl-mdx-template', 'data-dl': '', 'data-slot': 'mdx-template', 'aria-label': props.ariaLabel }, [
-        current.diagnostics.some(item => item.severity === 'error') ? renderError(current) : renderer.value(props.context),
+        current.diagnostics.some(item => item.severity === 'error') ? renderError(current) : renderer.value({ $dlx: props.context }),
       ])
     }
   },

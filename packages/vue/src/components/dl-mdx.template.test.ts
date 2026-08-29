@@ -21,8 +21,8 @@ const registry = createDlMdxRegistry([
 
 describe('DL-MDX function templates', () => {
   it('evaluates safe data expressions without function execution', () => {
-    const expression = parseDlMdxTemplateExpression('user.active && (count + 2 >= 4 ? user.name : "Guest")')
-    expect(evaluateDlMdxTemplateExpression(expression, { user: { active: true, name: 'Fern' }, count: 2 })).toBe('Fern')
+    const expression = parseDlMdxTemplateExpression('$dlx.data.user.active && ($dlx.state.count + 2 >= 4 ? $dlx.data.user.name : "Guest")')
+    expect(evaluateDlMdxTemplateExpression(expression, { $dlx: { data: { user: { active: true, name: 'Fern' } }, state: { count: 2 } } })).toBe('Fern')
     expect(evaluateDlMdxTemplateExpression(parseDlMdxTemplateExpression('user.constructor'), { user: {} })).toBeUndefined()
     expect(() => parseDlMdxTemplateExpression('danger()')).toThrow()
   })
@@ -34,14 +34,14 @@ function RouteTitle({ route }) {
   return <h1>{title}</h1>;
 }
 
-export default function Layout({ project, navigation, route, environment, actions }) {
+export default function Layout() {
   return (
-    <SiteShell siteName={project.name} navigation={navigation} activePath={route.path} onNavigate={actions.navigate}>
-      <If when={environment.preview}><span>Preview</span><Else><span>Published</span></Else></If>
-      <RouteTitle route={route} />
-      <For each={navigation} as="group"><small>{group.label}</small></For>
+    <SiteShell siteName={$dlx.project.name} navigation={$dlx.navigation} activePath={$dlx.route.path} onNavigate={$dlx.actions.navigate}>
+      <If when={$dlx.env.preview}><span>Preview</span><Else><span>Published</span></Else></If>
+      <RouteTitle route={$dlx.route} />
+      <For each={$dlx.navigation} as="group"><small>{group.label}</small></For>
       <Slot name="page" />
-      <Fill name="footer"><span>{project.version}</span></Fill>
+      <Fill name="footer"><span>{$dlx.project.version}</span></Fill>
     </SiteShell>
   );
 }`
@@ -56,19 +56,19 @@ export default function Layout({ project, navigation, route, environment, action
     const wrapper = mount(DlMdxTemplate, {
       props: {
         registry,
-        source: `export default function Layout({ project, navigation, route, environment, actions }) {
-          return <SiteShell siteName={project.name} navigation={navigation} activePath={route.path} onNavigate={actions.navigate}>
-            <If when={environment.preview}><span class="preview">Draft</span></If>
-            <For each={navigation} as="group"><i>{group.label}</i></For>
+        source: `export default function Layout() {
+          return <SiteShell siteName={$dlx.project.name} navigation={$dlx.navigation} activePath={$dlx.route.path} onNavigate={$dlx.actions.navigate}>
+            <If when={$dlx.env.preview}><span class="preview">Draft</span></If>
+            <For each={$dlx.navigation} as="group"><i>{group.label}</i></For>
             <Slot name="page" />
-            <Fill name="footer"><small>{project.version}</small></Fill>
+            <Fill name="footer"><small>{$dlx.project.version}</small></Fill>
           </SiteShell>;
         }`,
         context: {
           project: { name: 'Living Aurora', version: '0.2.0' },
           navigation: [{ label: 'Main' }, { label: 'Notes' }],
           route: { path: '/notes' },
-          environment: { preview: true },
+          env: { preview: true },
           actions: { navigate },
         },
       },
@@ -86,5 +86,10 @@ export default function Layout({ project, navigation, route, environment, action
   it('reports unknown components and malformed JSX', () => {
     expect(parseDlMdxTemplate('export default function App() { return <Missing /> }', registry).diagnostics[0]?.code).toBe('template.component.unknown')
     expect(parseDlMdxTemplate('export default function App() { return <div>broken</span> }', registry).diagnostics[0]?.code).toBe('template.syntax')
+  })
+
+  it('reserves the $dlx runtime namespace against local shadowing', () => {
+    expect(parseDlMdxTemplate('export default function App() { const $dlx = {}; return <main /> }').diagnostics[0]?.message).toContain('保留字')
+    expect(parseDlMdxTemplate('export default function App({ $dlx }) { return <main /> }').diagnostics[0]?.message).toContain('自动提供')
   })
 })
