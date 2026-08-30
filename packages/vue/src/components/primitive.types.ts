@@ -33,6 +33,7 @@ export interface DlMenuItem {
   shortcut?: string
   description?: string
   icon?: string
+  checkable?: boolean
   checked?: boolean
   disabled?: boolean
   separator?: boolean

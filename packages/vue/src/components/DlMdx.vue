@@ -21,6 +21,7 @@ import {
   type DlMdxRegistry,
 } from './dl-mdx.registry'
 import { useDlMdxSecurityPolicy } from './dl-mdx.security'
+import { parseCachedDlMdx } from './dl-mdx.preview-cache'
 import type {
   DlMdxDocument,
   DlMdxLinkPolicy,
@@ -29,8 +30,12 @@ import type {
   DlMdxRuntimeSymbol,
   DlMdxToolbarAction,
 } from './dl-mdx.types'
+import type { DlDataTableColumn } from './primitive.types'
+import DlDataTable from './DlDataTable.vue'
+import DlDialog from './DlDialog.vue'
 import MdxEditor, { type DlMdxEditorDocumentLanguage } from './MdxEditor.vue'
 import MdxPreview from './MdxPreview.vue'
+import MdxRuntimeJsonTree from './MdxRuntimeJsonTree.vue'
 
 type ComponentLibraryEntry = {
   definition: DlMdxComponentDefinition
@@ -39,6 +44,12 @@ type ComponentLibraryEntry = {
 
 type ComponentLibraryCategory = 'all' | DlMdxComponentCategory
 type DlMdxWorkspaceDocument = 'mdx' | 'script' | 'style'
+type RuntimeTableRow = DlMdxRuntimeSymbol & Record<string, unknown> & {
+  id: string
+  displayName: string
+  kindLabel: string
+  resolvedValue: unknown
+}
 
 const props = withDefaults(defineProps<{
   modelValue?: string | null
@@ -71,6 +82,8 @@ const props = withDefaults(defineProps<{
   runtimeSymbols?: DlMdxRuntimeSymbol[]
   foldComponents?: boolean
   density?: 'compact' | 'comfortable'
+  bordered?: boolean
+  optimizePreview?: boolean
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -101,6 +114,8 @@ const props = withDefaults(defineProps<{
   runtimeSymbols: () => [],
   foldComponents: true,
   density: 'compact',
+  bordered: true,
+  optimizePreview: true,
 })
 
 const emit = defineEmits<{
@@ -148,7 +163,9 @@ const componentLibraryId = `dl-mdx-component-library-${useId().replace(/[^A-Za-z
 const componentLibraryTitleId = `${componentLibraryId}-title`
 const injectedRegistry = useDlMdxRegistry()
 const injectedSecurityPolicy = useDlMdxSecurityPolicy()
-const document = shallowRef<DlMdxDocument>(parseDlMdx(localSource.value))
+const startsInLightweightPreview = props.optimizePreview && props.mode === 'preview'
+  && !props.showCompanionDocuments && props.scriptValue === null && props.styleValue === null
+const document = shallowRef<DlMdxDocument>(startsInLightweightPreview ? parseCachedDlMdx(localSource.value) : parseDlMdx(localSource.value))
 const languageAnalysis = shallowRef<DlMdxLanguageAnalysis>({ diagnostics: [], components: [], errorCount: 0, warningCount: 0 })
 const parsing = ref(false)
 let parseTimer: ReturnType<typeof setTimeout> | undefined
@@ -161,16 +178,33 @@ const policy = computed<Required<DlMdxLinkPolicy>>(() => ({
 }))
 const activeRegistry = computed(() => props.registry ?? injectedRegistry)
 const showDocumentTabs = computed(() => props.showCompanionDocuments || props.scriptValue !== null || props.styleValue !== null)
+const lightweightPreview = computed(() => props.optimizePreview && localMode.value === 'preview' && !showDocumentTabs.value)
+const effectiveShowToolbar = computed(() => props.showToolbar && (localMode.value !== 'preview' || props.showModeSwitch))
+const effectiveShowStatus = computed(() => props.showStatus && localMode.value !== 'preview')
+const effectiveBordered = computed(() => props.bordered && localMode.value !== 'preview')
 const scriptSymbols = computed(() => extractDlMdxActionSymbols(localScript.value))
-const resolvedRuntimeSymbols = computed(() => props.runtimeSymbols.map((symbol) => {
+const resolvedRuntimeSymbols = computed<RuntimeTableRow[]>(() => props.runtimeSymbols.map((symbol, index) => {
   let value = symbol.value
   try {
     if (symbol.resolve) value = symbol.resolve()
   } catch (cause) {
     value = cause instanceof Error ? `读取失败：${cause.message}` : `读取失败：${String(cause)}`
   }
-  return { ...symbol, preview: runtimePreview(value) }
+  const resolvedValue = normalizeRuntimeValue(value)
+  return {
+    ...symbol,
+    id: `${symbol.kind}:${symbol.name}:${index}`,
+    displayName: symbol.signature || symbol.name,
+    kindLabel: symbol.kind === 'method' ? '方法' : '变量',
+    resolvedValue,
+  }
 }))
+const runtimeColumns: DlDataTableColumn[] = [
+  { field: 'kindLabel', title: '类型', width: 88 },
+  { field: 'displayName', title: '名称 / 签名', minWidth: 250 },
+  { field: 'description', title: '说明', minWidth: 260 },
+  { field: 'resolvedValue', title: '当前值', minWidth: 360 },
+]
 const effectiveLanguageOptions = computed<DlMdxLanguageOptions>(() => {
   const hostActions = Object.keys(props.actions ?? {})
   const documentedActions = scriptSymbols.value.map(symbol => symbol.name)
@@ -241,7 +275,8 @@ watch(() => props.styleValue, value => {
 watch(() => props.mode, value => { localMode.value = value })
 watch(localSource, scheduleParse, { immediate: true })
 watch(() => props.debounce, scheduleParse)
-watch([activeRegistry, effectiveLanguageOptions], scheduleParse, { deep: true })
+watch([activeRegistry, effectiveLanguageOptions], scheduleParse)
+watch(localMode, value => { if (value === 'preview') runtimePanelOpen.value = false })
 watch(showDocumentTabs, visible => { if (!visible) activeDocument.value = 'mdx' })
 watch(() => componentLibraryEntries.value.length, (length) => {
   if (!length) componentLibraryOpen.value = false
@@ -268,8 +303,10 @@ function scheduleParse() {
   parsing.value = true
   const run = () => {
     try {
-      document.value = parseDlMdx(localSource.value)
-      languageAnalysis.value = analyzeDlMdx(localSource.value, activeRegistry.value, effectiveLanguageOptions.value)
+      document.value = lightweightPreview.value ? parseCachedDlMdx(localSource.value) : parseDlMdx(localSource.value)
+      languageAnalysis.value = lightweightPreview.value
+        ? { diagnostics: [], components: [], errorCount: 0, warningCount: 0 }
+        : analyzeDlMdx(localSource.value, activeRegistry.value, effectiveLanguageOptions.value)
       parsing.value = false
       emit('parse', document.value.stats)
       emit('diagnostics', languageAnalysis.value)
@@ -297,16 +334,35 @@ function updateStyle(value: string) {
   emit('update:styleValue', value)
 }
 
-function runtimePreview(value: unknown) {
-  if (value === undefined) return 'undefined'
-  if (value === null) return 'null'
-  if (typeof value === 'string') return value || '""'
-  if (typeof value === 'function') return '[Function]'
+function normalizeRuntimeValue(value: unknown, seen = new WeakSet<object>(), depth = 0): unknown {
+  if (typeof value === 'string') {
+    const source = value.trim()
+    if ((source.startsWith('{') || source.startsWith('[')) && source.length > 1) {
+      try { return normalizeRuntimeValue(JSON.parse(source), seen, depth) }
+      catch { return value }
+    }
+    return value
+  }
+  if (typeof value === 'function') return `[Function ${value.name || 'anonymous'}]`
+  if (typeof value === 'bigint') return `${value}n`
+  if (typeof value === 'symbol') return value.toString()
+  if (value === null || typeof value !== 'object') return value
+  if (value instanceof Date) return value.toISOString()
+  if (seen.has(value)) return '[Circular]'
+  if (depth >= 8) return '[Max depth]'
+  seen.add(value)
   try {
-    const json = JSON.stringify(value)
-    return json.length > 320 ? `${json.slice(0, 317)}…` : json
-  } catch {
-    return String(value)
+    if (Array.isArray(value)) {
+      const result = value.slice(0, 100).map(item => normalizeRuntimeValue(item, seen, depth + 1))
+      if (value.length > 100) result.push(`[+${value.length - 100} items]`)
+      return result
+    }
+    const entries = Object.entries(value).slice(0, 100)
+    const result = Object.fromEntries(entries.map(([key, item]) => [key, normalizeRuntimeValue(item, seen, depth + 1)]))
+    if (Object.keys(value).length > 100) result.$truncated = `+${Object.keys(value).length - 100} properties`
+    return result
+  } catch (cause) {
+    return cause instanceof Error ? `[Unreadable: ${cause.message}]` : '[Unreadable value]'
   }
 }
 
@@ -405,15 +461,17 @@ function toggleTask(line: number) {
   <section
     data-dl
     data-slot="mdx"
-    :data-toolbar="showToolbar ? 'true' : 'false'"
+    :data-toolbar="effectiveShowToolbar ? 'true' : 'false'"
     :data-mode-switch="showModeSwitch ? 'true' : 'false'"
-    :data-status="showStatus ? 'true' : 'false'"
+    :data-status="effectiveShowStatus ? 'true' : 'false'"
     :data-documents="showDocumentTabs ? 'true' : 'false'"
-    :data-runtime="runtimePanelOpen && runtimeSymbols.length ? 'true' : 'false'"
+    data-runtime="false"
+    :data-bordered="effectiveBordered ? 'true' : 'false'"
+    :data-lightweight-preview="lightweightPreview ? 'true' : 'false'"
     :class="rootClass"
     :style="rootStyle"
   >
-    <header v-if="showToolbar" class="dl-mdx__toolbar">
+    <header v-if="effectiveShowToolbar" class="dl-mdx__toolbar">
       <div v-if="localMode !== 'preview' && activeDocument === 'mdx'" class="dl-mdx__format-actions" role="toolbar" aria-label="Markdown 格式工具">
         <slot name="toolbar-start" />
         <template v-for="action in toolbarActions" :key="action">
@@ -441,32 +499,54 @@ function toggleTask(line: number) {
         </template>
         <slot name="toolbar-end" />
       </div>
-      <span v-else class="dl-mdx__preview-label">{{ activeDocument === 'mdx' ? 'DRAGON LIQUID · RENDERED DOCUMENT' : `${activeDocument.toUpperCase()} · COMPANION DOCUMENT` }}</span>
+      <span v-else-if="activeDocument !== 'mdx'" class="dl-mdx__preview-label">{{ `${activeDocument.toUpperCase()} · COMPANION DOCUMENT` }}</span>
       <button
-        v-if="runtimeSymbols.length"
+        v-if="localMode !== 'preview' && runtimeSymbols.length"
         type="button"
         class="dl-mdx__runtime-trigger"
         :class="{ active: runtimePanelOpen }"
         :aria-expanded="runtimePanelOpen"
-        aria-controls="dl-mdx-runtime-panel"
         title="查看当前页面可用的变量与方法"
-        @click="runtimePanelOpen = !runtimePanelOpen"
+        @click="runtimePanelOpen = true"
       >DLENV <small>{{ runtimeSymbols.length }}</small></button>
       <div v-if="showModeSwitch && activeDocument === 'mdx'" class="dl-mdx__mode-switch" aria-label="视图模式">
         <button v-for="item in ([['edit', '编辑'], ['split', '分栏'], ['preview', '预览']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
       </div>
     </header>
 
-    <section v-if="runtimePanelOpen && runtimeSymbols.length" id="dl-mdx-runtime-panel" class="dl-mdx__runtime-panel" aria-label="当前 MDX 运行时">
-      <header><span><small>LIVE PAGE CONTEXT</small><b>变量与方法</b></span><button type="button" aria-label="关闭运行时面板" @click="runtimePanelOpen = false">×</button></header>
-      <div class="dl-mdx__runtime-grid">
-        <article v-for="symbol in resolvedRuntimeSymbols" :key="`${symbol.kind}:${symbol.name}`" :data-kind="symbol.kind">
-          <span><em>{{ symbol.kind === 'method' ? 'METHOD' : 'VALUE' }}</em><code>{{ symbol.signature || symbol.name }}</code></span>
-          <p v-if="symbol.description">{{ symbol.description }}</p>
-          <output v-if="symbol.kind === 'variable'">{{ symbol.preview }}</output>
-        </article>
+    <DlDialog
+      v-if="localMode !== 'preview' && runtimeSymbols.length"
+      v-model:open="runtimePanelOpen"
+      title="DLENV 运行时环境"
+      description="查看当前 MDX 页面可访问的变量、数据结构和开放方法。"
+      fullscreen
+      :draggable="false"
+      :resizable="false"
+    >
+      <div class="dl-mdx__runtime-page">
+        <header class="dl-mdx__runtime-summary">
+          <span><b>{{ resolvedRuntimeSymbols.filter(item => item.kind === 'variable').length }}</b><small>变量</small></span>
+          <span><b>{{ resolvedRuntimeSymbols.filter(item => item.kind === 'method').length }}</b><small>方法</small></span>
+          <p>JSON 对象与数组可在单元格中逐层展开；循环引用和超大结构会安全截断。</p>
+        </header>
+        <DlDataTable
+          :rows="resolvedRuntimeSymbols"
+          :columns="runtimeColumns"
+          row-key="id"
+          height="calc(100dvh - 12.75rem)"
+          border="inner"
+          :stripe="false"
+          empty-text="当前页面没有公开的运行时信息"
+        >
+          <template #cell-displayName="{ row }"><code class="dl-mdx__runtime-name">{{ row.displayName }}</code></template>
+          <template #cell-description="{ row }"><span class="dl-mdx__runtime-description">{{ row.description || '—' }}</span></template>
+          <template #cell-resolvedValue="{ row }">
+            <MdxRuntimeJsonTree v-if="row.kind === 'variable'" :value="row.resolvedValue" />
+            <span v-else class="dl-mdx__runtime-method">由宿主页面提供</span>
+          </template>
+        </DlDataTable>
       </div>
-    </section>
+    </DlDialog>
 
     <Teleport to="body">
       <section
@@ -536,7 +616,7 @@ function toggleTask(line: number) {
     </nav>
 
     <div class="dl-mdx__workspace" :class="{ 'is-companion': activeDocument !== 'mdx' }">
-      <section v-show="activeDocument === 'mdx' && localMode !== 'preview'" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
+      <section v-if="activeDocument === 'mdx' && localMode !== 'preview'" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
       <MdxEditor
         :key="`source:${sourceLanguage}`"
         ref="editorRef"
@@ -556,7 +636,7 @@ function toggleTask(line: number) {
           @error="emit('error', $event)"
         />
       </section>
-      <section v-show="activeDocument === 'mdx' && localMode !== 'edit'" class="dl-mdx__preview-pane" :aria-busy="parsing">
+      <section v-if="activeDocument === 'mdx' && localMode !== 'edit'" class="dl-mdx__preview-pane" :aria-busy="parsing">
         <div v-if="parsing" class="dl-mdx__parsing"><i />正在更新预览</div>
         <MdxPreview
           :document="document"
@@ -603,7 +683,7 @@ function toggleTask(line: number) {
       </section>
     </div>
 
-    <footer v-if="showStatus" class="dl-mdx__status">
+    <footer v-if="effectiveShowStatus" class="dl-mdx__status">
       <span :class="{ busy: parsing }"><i />{{ parsing ? '解析中' : '预览已同步' }}</span>
       <span>{{ activeDocumentLineCount }} 行</span>
       <span>{{ activeDocumentSource.length }} 字符</span>

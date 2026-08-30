@@ -146,6 +146,57 @@ describe('DlMdx', () => {
     expect(wrapper.classes()).not.toContain('dl-mdx--compact')
   })
 
+  it('uses a borderless lightweight surface for read-only preview documents', () => {
+    const wrapper = mount(DlMdx, {
+      props: {
+        modelValue: '## 嵌入式结果',
+        mode: 'preview',
+        readonly: true,
+        showModeSwitch: false,
+        runtimeSymbols: [{ name: 'DLENV.result', kind: 'variable', value: { ready: true } }],
+        debounce: 0,
+      },
+    })
+
+    expect(wrapper.attributes('data-lightweight-preview')).toBe('true')
+    expect(wrapper.attributes('data-bordered')).toBe('false')
+    expect(wrapper.attributes('data-toolbar')).toBe('false')
+    expect(wrapper.attributes('data-status')).toBe('false')
+    expect(wrapper.find('.cm-editor').exists()).toBe(false)
+    expect(wrapper.find('.dl-mdx__runtime-trigger').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('DRAGON LIQUID · RENDERED DOCUMENT')
+  })
+
+  it('allows editable MDX workspaces to opt out of their outer frame', () => {
+    const wrapper = mount(DlMdx, {
+      props: { modelValue: '# Frameless editor', mode: 'edit', bordered: false, debounce: 0 },
+    })
+    expect(wrapper.attributes('data-bordered')).toBe('false')
+  })
+
+  it('opens DLENV as a fullscreen data table with collapsible JSON values', async () => {
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: {
+        modelValue: '# Runtime',
+        mode: 'edit',
+        runtimeSymbols: [
+          { name: 'DLENV.page', kind: 'variable', description: '页面环境', value: { route: '/', flags: ['draft', 'local'] } },
+          { name: 'save', kind: 'method', signature: 'save()', description: '保存页面' },
+        ],
+        debounce: 0,
+      },
+    })
+
+    await wrapper.get('.dl-mdx__runtime-trigger').trigger('click')
+    await flushPromises()
+    expect(document.body.querySelector('[data-slot="dialog"][data-fullscreen="true"]')).not.toBeNull()
+    expect(document.body.textContent).toContain('DLENV 运行时环境')
+    expect(document.body.textContent).toContain('DLENV.page')
+    expect(document.body.querySelector('.dl-mdx-runtime-tree')).not.toBeNull()
+    wrapper.unmount()
+  })
+
   it('lets the host hide the mode switch and control edit or preview directly', async () => {
     const wrapper = mount(DlMdx, {
       props: { modelValue: '# Controlled view', mode: 'edit', showModeSwitch: false, debounce: 0 },

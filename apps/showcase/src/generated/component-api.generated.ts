@@ -1842,6 +1842,12 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "checkable",
+            "description": "设置 checkable 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "checked",
             "description": "设置 checked 字段。",
             "type": "boolean",
@@ -2975,6 +2981,12 @@ export default {
             "prop": "icon",
             "description": "自定义状态图标；不传时按色调选择默认图标。",
             "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checkable",
+            "description": "设置 checkable 字段。",
+            "type": "boolean",
             "defaultValue": "可选"
           },
           {
@@ -5383,6 +5395,18 @@ export default {
         "description": "设置 density 属性。",
         "type": "'compact' | 'comfortable'",
         "defaultValue": "'compact'"
+      },
+      {
+        "prop": "bordered",
+        "description": "设置 bordered 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "optimizePreview",
+        "description": "设置 optimizePreview 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
       }
     ],
     "relatedTypes": [
@@ -6390,6 +6414,12 @@ export default {
             "prop": "icon",
             "description": "自定义状态图标；不传时按色调选择默认图标。",
             "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checkable",
+            "description": "设置 checkable 字段。",
+            "type": "boolean",
             "defaultValue": "可选"
           },
           {
@@ -8251,6 +8281,12 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "checkable",
+            "description": "设置 checkable 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "checked",
             "description": "设置 checked 字段。",
             "type": "boolean",
@@ -9476,6 +9512,12 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "checkable",
+            "description": "设置 checkable 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "checked",
             "description": "设置 checked 字段。",
             "type": "boolean",
@@ -9609,6 +9651,12 @@ export default {
             "prop": "icon",
             "description": "自定义状态图标；不传时按色调选择默认图标。",
             "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checkable",
+            "description": "设置 checkable 字段。",
+            "type": "boolean",
             "defaultValue": "可选"
           },
           {

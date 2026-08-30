@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MenubarItem, MenubarSeparator, MenubarSub, MenubarSubContent, MenubarSubTrigger } from 'reka-ui'
+import { MenubarCheckboxItem, MenubarItem, MenubarSeparator, MenubarSub, MenubarSubContent, MenubarSubTrigger } from 'reka-ui'
 import type { DlMenuItem } from './primitive.types'
 
 defineProps<{ items: DlMenuItem[] }>()
@@ -18,10 +18,19 @@ const emit = defineEmits<{ select: [value: string] }>()
         <ToolbarMenuItems :items="item.children" @select="emit('select', $event)" />
       </MenubarSubContent>
     </MenubarSub>
+    <MenubarCheckboxItem
+      v-else-if="item.checkable"
+      :model-value="Boolean(item.checked)"
+      :disabled="item.disabled"
+      class="dl-toolbar-menu__item dl-toolbar-menu__item--checkbox"
+      @select="emit('select', item.value)"
+    >
+      <span class="dl-toolbar-menu__item-main"><i v-if="item.icon" aria-hidden="true">{{ item.icon }}</i><span>{{ item.label }}</span><small v-if="item.description">{{ item.description }}</small></span>
+      <span class="dl-toolbar-menu__item-end"><span class="dl-toolbar-menu__check" :data-checked="item.checked || undefined" aria-hidden="true">{{ item.checked ? '✓' : '' }}</span><kbd v-if="item.shortcut">{{ item.shortcut }}</kbd></span>
+    </MenubarCheckboxItem>
     <MenubarItem v-else :disabled="item.disabled" class="dl-toolbar-menu__item" @select="emit('select', item.value)">
       <span class="dl-toolbar-menu__item-main"><i v-if="item.icon" aria-hidden="true">{{ item.icon }}</i><span>{{ item.label }}</span><small v-if="item.description">{{ item.description }}</small></span>
       <span class="dl-toolbar-menu__item-end"><span v-if="item.checked" aria-label="已选择">✓</span><kbd v-if="item.shortcut">{{ item.shortcut }}</kbd></span>
     </MenubarItem>
   </template>
 </template>
-

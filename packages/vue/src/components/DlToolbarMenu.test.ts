@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import DlToolbarMenu from './DlToolbarMenu.vue'
 
@@ -21,6 +21,21 @@ describe('DlToolbarMenu', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('select')).toEqual([['save']])
+    wrapper.unmount()
+  })
+
+  it('renders checked toggle items with checkbox menu semantics', async () => {
+    const wrapper = mount(DlToolbarMenu, {
+      props: {
+        menus: [{ value: 'view', label: '视图', items: [{ value: 'rail', label: '显示笔记本栏', checkable: true, checked: true }] }],
+      },
+    })
+
+    await wrapper.get('.dl-toolbar-menu__trigger').trigger('pointerdown', { button: 0, ctrlKey: false })
+    await flushPromises()
+    const item = document.body.querySelector('[role="menuitemcheckbox"]')
+    expect(item?.getAttribute('aria-checked')).toBe('true')
+    expect(item?.textContent).toContain('显示笔记本栏')
     wrapper.unmount()
   })
 })
