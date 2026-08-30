@@ -46,6 +46,7 @@ export interface DlMdxComponentContext {
   id?: string
   props: Record<string, DlMdxValue>
   events: Record<string, string>
+  slots?: Record<string, string>
   sourceLine: number
 }
 

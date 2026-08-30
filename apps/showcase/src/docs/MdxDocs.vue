@@ -78,6 +78,12 @@ const componentSource = ref([
   'id = "release-notice"',
   'tone = "accent"',
   'title = "先行预览"',
+  '+++slot:default',
+  '## 插槽也是正式 MDX',
+  '',
+  '- 可直接编辑',
+  '- 由组件决定如何渲染',
+  '+++endslot',
   '+++end',
   '',
   '组件块之后可以继续书写，不会中断文档流。',
@@ -296,13 +302,13 @@ ${vueSfc({
   },
   'rust-core': {
     title: 'Rust/WASM 同步解析核心',
-    description: '纯 Markdown、MarkdownX 组件块、文档统计、URL 协议识别和策略指纹由内嵌 Rust/WASM 核心完成；含白名单 HTML 的内容交给 DOM 安全适配层。',
+    description: '纯 Markdown、MarkdownX 组件块及其可编辑插槽、文档统计、URL 协议识别和策略指纹由内嵌 Rust/WASM 核心完成；含白名单 HTML 的内容交给 DOM 安全适配层。',
     code: vueSfc({
       imports: ['DlMdx', 'getDlMdxRustCoreStatus', 'parseDlMdx'],
       script: `const status = getDlMdxRustCoreStatus()\nconst document = '# Rust core\\n\\n- [x] synchronous WASM'\nconst stats = parseDlMdx(document).stats`,
       template: `  <section>\n    <code>{{ status.engine }} · ABI {{ status.abiVersion }}</code>\n    <DlMdx :model-value="document" mode="preview" readonly />\n    <output>{{ stats.blockCount }} blocks</output>\n  </section>`,
     }),
-    tips: ['WASM 字节码随组件包内嵌并同步初始化，不依赖运行时网络请求，也不会把 parseDlMdx 改成异步 API。', 'Rust crate 有独立单元测试；TypeScript 集成测试额外验证 ABI、内存释放、Unicode 锚点和重复解析。', 'HTML 不进入 Rust 字符串拼接渲染，仍由 DOMParser 转换为受限 Vue 节点，预览不使用 v-html。'],
+    tips: ['+++slot:default 与 +++endslot 之间保存原始 MDX，注册组件可通过 contentProp 接收并二次渲染。', 'WASM 字节码随组件包内嵌并同步初始化，不依赖运行时网络请求，也不会把 parseDlMdx 改成异步 API。', 'Rust crate 有独立单元测试；TypeScript 集成测试额外验证 ABI、内存释放、Unicode 锚点和重复解析。', 'HTML 不进入 Rust 字符串拼接渲染，仍由 DOMParser 转换为受限 Vue 节点，预览不使用 v-html。'],
   },
   'security-policy': {
     title: 'main.ts · Rust/WASM 域名白名单',

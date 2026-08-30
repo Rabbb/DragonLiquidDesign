@@ -548,8 +548,27 @@ fn parse_blocks(lines: &[SourceLine], slug_counts: &mut HashMap<String, usize>) 
             if valid_name(name) {
                 let mut props = Map::new();
                 let mut events = Map::new();
+                let mut slots = Map::new();
                 let mut cursor = index + 1;
                 while cursor < lines.len() && lines[cursor].text.trim() != "+++end" {
+                    if let Some(slot_name) = lines[cursor]
+                        .text
+                        .trim()
+                        .strip_prefix("+++slot:")
+                        .filter(|slot_name| valid_name(slot_name))
+                    {
+                        let mut body = Vec::new();
+                        cursor += 1;
+                        while cursor < lines.len() && lines[cursor].text.trim() != "+++endslot" {
+                            body.push(lines[cursor].text.as_str());
+                            cursor += 1;
+                        }
+                        slots.insert(slot_name.into(), Value::String(body.join("\n")));
+                        if cursor < lines.len() {
+                            cursor += 1;
+                        }
+                        continue;
+                    }
                     if let Some((name, value)) = lines[cursor].text.split_once('=') {
                         let name = name.trim();
                         if let Some(event) = name.strip_prefix('@').filter(|event| valid_event_name(event)) {
@@ -571,6 +590,9 @@ fn parse_blocks(lines: &[SourceLine], slug_counts: &mut HashMap<String, usize>) 
                 ]);
                 if let Some(id) = id {
                     context.insert("id".into(), Value::String(id));
+                }
+                if !slots.is_empty() {
+                    context.insert("slots".into(), Value::Object(slots));
                 }
                 blocks.push(json!({ "type": "component", "context": context }));
                 index = if cursor < lines.len() {
@@ -883,6 +905,12 @@ mod tests {
         assert_eq!(document["stats"]["headingCount"], 1);
         assert_eq!(document["blocks"][3]["context"]["props"]["tone"], "accent");
         assert_eq!(document["blocks"][3]["context"]["events"]["click"], "saveNotice");
+    }
+
+    #[test]
+    fn keeps_component_default_slot_as_raw_mdx() {
+        let document = parse_document("+++component:JournalTodo\nsourceTodoId = \"todo-1\"\n+++slot:default\n## 完整标题\n\n- [ ] 独立的 **MDX** 描述\n+++endslot\n+++end");
+        assert_eq!(document["blocks"][0]["context"]["slots"]["default"], "## 完整标题\n\n- [ ] 独立的 **MDX** 描述");
     }
 
     #[test]

@@ -74,6 +74,24 @@ describe('MarkdownX component registry', () => {
     expect(local.text()).not.toContain('全局定义')
   })
 
+  it('passes an editable default MDX slot through the component content prop', () => {
+    const registry = createDlMdxRegistry([
+      defineDlMdxComponent({
+        name: 'JournalTodo',
+        component: defineComponent({
+          props: { contentMdx: String },
+          setup: props => () => h('pre', { 'data-journal-content': '' }, props.contentMdx),
+        }),
+        contentProp: 'contentMdx',
+      }),
+    ])
+    const source = '+++component:JournalTodo\n+++slot:default\n## 可编辑 TODO\n\n正文 **保留 MDX**\n+++endslot\n+++end'
+    const wrapper = mount(DlMdx, { global: { plugins: [registry] }, props: { modelValue: source, mode: 'preview', debounce: 0 } })
+
+    expect(wrapper.get('[data-journal-content]').text()).toContain('## 可编辑 TODO')
+    expect(wrapper.get('[data-journal-content]').text()).toContain('正文 **保留 MDX**')
+  })
+
   it('ships a unique official definition for every public component', () => {
     expect(dlMdxOfficialComponents).toHaveLength(100)
     expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(100)

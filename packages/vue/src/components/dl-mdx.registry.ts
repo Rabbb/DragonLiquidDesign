@@ -53,6 +53,7 @@ export interface DlMdxRenderContext {
   props: Record<string, DlMdxValue>
   sourceLine: number
   content?: string
+  slots?: Record<string, string>
 }
 
 export type DlMdxComponentRenderer = (context: DlMdxRenderContext) => VNodeChild
@@ -214,10 +215,11 @@ export function useDlMdxRegistry(fallback?: DlMdxRegistry): DlMdxRegistry | unde
 export function toDlMdxRenderContext(context: DlMdxComponentContext, definition: DlMdxComponentDefinition): DlMdxRenderContext {
   const merged = { ...(definition.defaultProps ?? {}), ...context.props }
   const contentKey = definition.contentProp ?? 'content'
-  const value = merged[contentKey]
+  const slotContent = context.slots?.default
+  const value = slotContent ?? merged[contentKey]
   return {
     ...context,
-    props: merged,
+    props: slotContent === undefined ? merged : { ...merged, [contentKey]: slotContent },
     content: typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ? String(value) : definition.defaultContent,
   }
 }

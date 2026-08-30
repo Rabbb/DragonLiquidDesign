@@ -17,6 +17,7 @@ export type DlMdxDiagnosticCode =
   | 'syntax.component-unclosed'
   | 'syntax.component-orphan-end'
   | 'syntax.component-line'
+  | 'syntax.component-slot-unclosed'
   | 'syntax.fence-unclosed'
   | 'component.unknown'
   | 'component.duplicate-id'
@@ -68,6 +69,14 @@ export interface DlMdxLanguageComponentEvent {
   line: number
 }
 
+export interface DlMdxLanguageComponentSlot {
+  name: string
+  from: number
+  to: number
+  line: number
+  endLine: number
+}
+
 export interface DlMdxLanguageComponent {
   name: string
   from: number
@@ -79,6 +88,7 @@ export interface DlMdxLanguageComponent {
   closed: boolean
   properties: DlMdxLanguageComponentProperty[]
   events: DlMdxLanguageComponentEvent[]
+  slots: DlMdxLanguageComponentSlot[]
 }
 
 export interface DlMdxLanguageAnalysis {
@@ -170,10 +180,13 @@ export function extractDlMdxActionSymbols(source: string): DlMdxScriptSymbol[] {
 }
 
 type SourceLine = { text: string; raw: string; number: number; start: number; end: number }
-type ScannedComponent = DlMdxLanguageComponent & { startLine: number; invalidLines: SourceLine[] }
+type ScannedSlot = DlMdxLanguageComponentSlot & { contentLines: SourceLine[] }
+type ScannedComponent = DlMdxLanguageComponent & { startLine: number; invalidLines: SourceLine[]; slots: ScannedSlot[] }
 
 const componentStartPattern = /^(\s*)\+\+\+component:([A-Za-z][\w.-]*)\s*$/
 const componentEndPattern = /^\s*\+\+\+end\s*$/
+const componentSlotStartPattern = /^\s*\+\+\+slot:([A-Za-z][\w.-]*)\s*$/
+const componentSlotEndPattern = /^\s*\+\+\+endslot\s*$/
 const propertyPattern = /^(\s*)([A-Za-z][\w.-]*)\s*=\s*(.*?)\s*$/
 const eventPattern = /^(\s*)@([A-Za-z][\w:.-]*)\s*=\s*(.*?)\s*$/
 const actionPattern = /^[A-Za-z][\w.-]*$/
@@ -267,10 +280,26 @@ function scan(source: string): { lines: SourceLine[]; components: ScannedCompone
     const nameOffset = line.text.indexOf(opening[2])
     const properties: DlMdxLanguageComponentProperty[] = []
     const events: DlMdxLanguageComponentEvent[] = []
+    const slots: ScannedSlot[] = []
     const invalidLines: SourceLine[] = []
     let cursor = index + 1
     while (cursor < lines.length && !componentEndPattern.test(lines[cursor].text)) {
       const current = lines[cursor]
+      const slotOpening = current.text.match(componentSlotStartPattern)
+      if (slotOpening) {
+        const contentLines: SourceLine[] = []
+        let slotCursor = cursor + 1
+        while (slotCursor < lines.length && !componentSlotEndPattern.test(lines[slotCursor].text)) {
+          contentLines.push(lines[slotCursor])
+          slotCursor += 1
+        }
+        const slotClosed = slotCursor < lines.length
+        const slotEndLine = slotClosed ? slotCursor : Math.max(cursor, lines.length - 1)
+        slots.push({ name: slotOpening[1], from: current.start, to: lines[slotEndLine].end, line: current.number, endLine: slotEndLine, contentLines })
+        if (!slotClosed) diagnostics.push(diagnostic(current, current.start, current.end, 'syntax.component-slot-unclosed', 'error', `组件插槽 ${slotOpening[1]} 缺少 +++endslot。`, { label: '补上插槽结束标记', from: source.length, to: source.length, insert: `${source.endsWith('\n') ? '' : '\n'}+++endslot\n+++end` }))
+        cursor = slotClosed ? slotCursor + 1 : lines.length
+        continue
+      }
       if (!current.text.trim()) {
         invalidLines.push(current)
         cursor += 1
@@ -300,6 +329,7 @@ function scan(source: string): { lines: SourceLine[]; components: ScannedCompone
       closed,
       properties,
       events,
+      slots,
       startLine: index,
       invalidLines,
     })
@@ -411,6 +441,7 @@ export function analyzeDlMdx(source: string, registry?: DlMdxRegistry, options: 
         else ids.set(property.value, property)
       }
     }
+    if (definition.contentProp && component.slots.some(slot => slot.name === 'default')) seenProps.add(definition.contentProp)
     for (const [name, schema] of Object.entries(propSchema)) if (schema.required && !seenProps.has(name) && schema.default === undefined) diagnostics.push(diagnostic(openingLine, component.nameFrom, component.nameTo, 'prop.required', 'error', `${definition.name} 缺少必填属性 ${name}。`, { label: `添加 ${name}`, from: openingLine.end, to: openingLine.end, insert: `\n${name} = ${placeholder(schema)}` }))
     for (const event of component.events) {
       const line = scanned.lines[event.line]
@@ -578,7 +609,8 @@ export function completeDlMdx(source: string, position: number, registry?: DlMdx
   }
 
   const component = scanned.components.find(item => line.number > item.line && line.number <= item.endLine)
-  if (component) {
+  const componentSlot = component?.slots.find(slot => line.number >= slot.line && line.number <= slot.endLine)
+  if (component && !componentSlot) {
     const definition = registry?.resolve(component.name)
     const eventValue = before.match(/^\s*@([A-Za-z][\w:.-]*)\s*=\s*([\w.-]*)$/)
     if (eventValue) {
@@ -612,7 +644,10 @@ export function completeDlMdx(source: string, position: number, registry?: DlMdx
         documentation: schema.description,
         apply: `@${name} = ${options.actionNames?.[0] ?? 'actionName'}`,
       }))
-      return { ...range, items: [...props, ...events, { label: '+++end', kind: 'keyword', detail: '结束组件块', apply: '+++end' }] }
+      const slot = definition.contentProp && !component.slots.some(item => item.name === 'default')
+        ? [{ label: '+++slot:default', kind: 'snippet' as const, detail: '可编辑的默认 MDX 插槽', apply: '+++slot:default\n\n+++endslot' }]
+        : []
+      return { ...range, items: [...props, ...events, ...slot, { label: '+++end', kind: 'keyword', detail: '结束组件块', apply: '+++end' }] }
     }
   }
 
@@ -659,6 +694,7 @@ export function hoverDlMdx(source: string, position: number, registry?: DlMdxReg
   }
   const component = scanned.components.find(item => position >= item.from && position <= item.to)
   if (!component) return undefined
+  if (component.slots.some(slot => position >= slot.from && position <= slot.to)) return undefined
   const definition = registry?.resolve(component.name)
   if (!definition) return undefined
   if (position >= component.nameFrom && position <= component.nameTo) return { from: component.nameFrom, to: component.nameTo, title: definition.name, detail: definition.description, documentation: `${definition.category ?? 'general'} · ${definition.maturity ?? 'stable'}` }
@@ -733,6 +769,11 @@ export function formatDlMdx(source: string, options: DlMdxFormatOptions = {}, re
         output.push(`${indent}${row.name}${equals}${row.value}`)
       }
       output.push(...component.invalidLines.filter(line => line.text.trim()).map(line => line.text.trimEnd()))
+      for (const slot of component.slots) {
+        output.push(`+++slot:${slot.name}`)
+        output.push(...slot.contentLines.map(line => line.text))
+        output.push('+++endslot')
+      }
       output.push('+++end')
       index = component.endLine + 1
       continue

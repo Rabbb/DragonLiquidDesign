@@ -250,8 +250,21 @@ function parseBlocks(lines: SourceLine[], slugCounts: Map<string, number>): DlMd
     if (component) {
       const props: Record<string, DlMdxValue> = {}
       const events: Record<string, string> = {}
+      const slots: Record<string, string> = {}
       let cursor = index + 1
       while (cursor < lines.length && lines[cursor].text.trim() !== '+++end') {
+        const slot = lines[cursor].text.trim().match(/^\+\+\+slot:([A-Za-z][\w.-]*)\s*$/)
+        if (slot) {
+          const body: string[] = []
+          cursor += 1
+          while (cursor < lines.length && lines[cursor].text.trim() !== '+++endslot') {
+            body.push(lines[cursor].text)
+            cursor += 1
+          }
+          slots[slot[1]] = body.join('\n')
+          if (cursor < lines.length) cursor += 1
+          continue
+        }
         const event = lines[cursor].text.match(/^\s*@([A-Za-z][\w:.-]*)\s*=\s*(.+?)\s*$/)
         const property = lines[cursor].text.match(/^\s*([A-Za-z][\w.-]*)\s*=\s*(.+?)\s*$/)
         if (event) {
@@ -267,6 +280,7 @@ function parseBlocks(lines: SourceLine[], slugCounts: Map<string, number>): DlMd
           id: typeof props.id === 'string' ? props.id : undefined,
           props,
           events,
+          ...(Object.keys(slots).length ? { slots } : {}),
           sourceLine: line.number,
         },
       })

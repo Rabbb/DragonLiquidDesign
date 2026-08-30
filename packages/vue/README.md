@@ -133,7 +133,7 @@ createApp(App).use(mdxSecurity).mount('#app')
 
 ## MarkdownX Rust/WASM 核心
 
-`parseDlMdx()` 保持同步 API：纯 Markdown、MarkdownX 组件块、文档统计、URL 协议识别与预览代码高亮由内嵌 Rust/WASM 核心处理；包含受支持 HTML 标签时，继续由浏览器 `DOMParser` 转换为受限 Vue 节点。WASM 二进制随 npm 包构建并内嵌，不产生运行时网络请求；不支持 WebAssembly 的环境会回退到 TypeScript 解析器，代码块降级为纯文本，安全白名单遵循默认拒绝原则。
+`parseDlMdx()` 保持同步 API：纯 Markdown、MarkdownX 组件块、`+++slot:default` / `+++endslot` 可编辑 MDX 插槽、文档统计、URL 协议识别与预览代码高亮由内嵌 Rust/WASM 核心处理；包含受支持 HTML 标签时，继续由浏览器 `DOMParser` 转换为受限 Vue 节点。WASM 二进制随 npm 包构建并内嵌，不产生运行时网络请求；不支持 WebAssembly 的环境会回退到 TypeScript 解析器，代码块降级为纯文本，安全白名单遵循默认拒绝原则。
 
 围栏代码支持 JavaScript/TypeScript、Python、Rust、C/C++/C#/Java、Go、Shell、PowerShell、SQL、JSON、YAML、CSS 与 HTML/Vue 等常用语言。预览高亮只输出固定类型的文本 token；编辑态由 CodeMirror 按围栏语言加载解析器，并高亮完整代码域。
 

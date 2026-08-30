@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './dl-mdx.parser'
+import { parseDlMdx, parseDlMdxInline, parseDlMdxWithTypeScript, safeDlMdxUrl } from './dl-mdx.parser'
 
 const defaultPolicy = {
   allowExternal: true,
@@ -85,6 +85,23 @@ tone = "accent"
     expect(document.blocks[0]).toMatchObject({
       type: 'component',
       context: { props: { options: [{ value: 'anime', label: '动画' }] } },
+    })
+  })
+
+  it.each([
+    ['Rust', parseDlMdx],
+    ['TypeScript', parseDlMdxWithTypeScript],
+  ])('keeps formal MDX source inside a component default slot with the %s parser', (_, parse) => {
+    const source = '+++component:JournalTodo\nsourceTodoId = "todo-1"\n+++slot:default\n## 完整标题\n\n- [ ] 独立的 **MDX** 描述\n+++endslot\n+++end'
+    const document = parse(source)
+
+    expect(document.blocks[0]).toMatchObject({
+      type: 'component',
+      context: {
+        name: 'JournalTodo',
+        props: { sourceTodoId: 'todo-1' },
+        slots: { default: '## 完整标题\n\n- [ ] 独立的 **MDX** 描述' },
+      },
     })
   })
 

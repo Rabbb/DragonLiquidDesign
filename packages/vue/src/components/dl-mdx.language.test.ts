@@ -81,6 +81,23 @@ describe('MarkdownX language service', () => {
     ].join('\n'))
   })
 
+  it('treats component slot bodies as editable MDX and preserves them while formatting', () => {
+    const contentComponent = defineDlMdxComponent({
+      name: 'JournalTodo',
+      component: defineComponent({ props: { sourceTodoId: String, contentMdx: String }, setup: () => () => null }),
+      contentProp: 'contentMdx',
+      propSchema: { sourceTodoId: { type: 'string', required: true } },
+    })
+    const contentRegistry = createDlMdxRegistry([contentComponent])
+    const source = '+++component:JournalTodo\nsourceTodoId="todo-1"\n+++slot:default\n## 标题\n\n- [ ] 正式 MDX\n+++endslot\n+++end'
+    const analysis = analyzeDlMdx(source, contentRegistry)
+    const formatted = formatDlMdx(source, { equalsSpacing: 'single' }, contentRegistry)
+
+    expect(analysis.errorCount).toBe(0)
+    expect(analysis.warningCount).toBe(0)
+    expect(formatted).toContain('+++slot:default\n## 标题\n\n- [ ] 正式 MDX\n+++endslot')
+  })
+
   it('extracts exported companion-script actions without executing the script', () => {
     globalThis.__dlMdxScriptExecuted = false
     const source = [
