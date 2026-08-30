@@ -49,6 +49,10 @@ const props = withDefaults(defineProps<{
   minHeight?: number
   resetGeometryOnClose?: boolean
   fullscreen?: boolean
+  modal?: boolean
+  overlay?: boolean
+  dismissOnInteractOutside?: boolean
+  floating?: boolean
 }>(), {
   open: false,
   description: undefined,
@@ -64,6 +68,10 @@ const props = withDefaults(defineProps<{
   minHeight: 200,
   resetGeometryOnClose: true,
   fullscreen: false,
+  modal: true,
+  overlay: true,
+  dismissOnInteractOutside: true,
+  floating: false,
 })
 
 const emit = defineEmits<{
@@ -343,6 +351,10 @@ function handleOpenChange(value: boolean) {
   if (!value) finishInteraction()
 }
 
+function handleInteractOutside(event: Event) {
+  if (!props.dismissOnInteractOutside) event.preventDefault()
+}
+
 watch(() => [props.position?.x, props.position?.y], () => {
   localPosition.value = copyPosition(props.position)
   if (!props.open) initialPosition = copyPosition(props.position)
@@ -374,10 +386,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <DialogRoot :open="open" @update:open="handleOpenChange">
+  <DialogRoot :open="open" :modal="modal" @update:open="handleOpenChange">
     <DialogTrigger v-if="$slots.trigger" as-child><slot name="trigger" /></DialogTrigger>
     <DialogPortal>
       <DialogOverlay
+        v-if="modal && overlay"
         data-dl
         data-dl-layer="overlay"
         :style="{ zIndex: overlayZIndex }"
@@ -387,15 +400,18 @@ onBeforeUnmount(() => {
         ref="contentRef"
         data-dl
         data-slot="dialog"
-        data-dl-layer="modal"
+        :data-dl-layer="modal ? 'modal' : 'floating'"
         data-guide-surface="dialog"
         :data-size="size"
         :data-fullscreen="fullscreen ? 'true' : 'false'"
+        :data-modal="modal ? 'true' : 'false'"
+        :data-floating="floating ? 'true' : 'false'"
         :data-draggable="draggable && !compactLayout && !fullscreen ? 'true' : 'false'"
         :data-resizable="resizable && !compactLayout && !fullscreen ? 'true' : 'false'"
         :data-interaction="interaction?.type"
         :style="contentStyle"
         :class="dialogStyles({ size, tone })"
+        @interact-outside="handleInteractOutside"
       >
         <header class="dl-dialog__header" @pointerdown="startHeaderDrag">
           <div class="dl-dialog__meta">
@@ -516,6 +532,12 @@ onBeforeUnmount(() => {
 .dl-dialog--md { --dl-dialog-width: 640px; }
 .dl-dialog--lg { --dl-dialog-width: 840px; gap: 24px; padding: 28px; border-radius: 32px; }
 .dl-dialog[data-fullscreen='true']{inset:12px;width:auto;max-width:none;height:auto;max-height:none;transform:none;border-radius:20px}
+.dl-dialog[data-floating='true']{gap:0;padding:0;border-color:var(--dl-border-strong);border-radius:12px;background:var(--dl-surface-solid);box-shadow:0 12px 34px rgba(15,23,42,.2),0 2px 8px rgba(15,23,42,.1);backdrop-filter:blur(14px) saturate(104%)}
+.dl-dialog[data-floating='true']::before,.dl-dialog[data-floating='true']::after{display:none}
+.dl-dialog[data-floating='true'] .dl-dialog__header{align-items:center;gap:8px;padding:6px 7px 6px 10px;border-bottom:1px solid var(--dl-border)}
+.dl-dialog[data-floating='true'] .dl-dialog__meta{gap:2px}.dl-dialog[data-floating='true'] .dl-dialog__title{font-size:.74rem;line-height:1.15;letter-spacing:.02em}.dl-dialog[data-floating='true'] .dl-dialog__description{font-size:.62rem;line-height:1.25}
+.dl-dialog[data-floating='true'] .dl-dialog__body{gap:4px;padding:6px}.dl-dialog[data-floating='true'] .dl-dialog__footer{gap:5px;padding:6px;border-top:1px solid var(--dl-border)}
+.dl-dialog[data-floating='true'] .dl-dialog__window-actions{gap:3px}.dl-dialog[data-floating='true'] .dl-dialog__drag-handle,.dl-dialog[data-floating='true'] .dl-dialog__close{width:26px;height:26px;border-radius:7px;font-size:.76rem}.dl-dialog[data-floating='true'] .dl-dialog__drag-handle{height:26px}.dl-dialog[data-floating='true'] .dl-dialog__resize-handle{right:2px;bottom:2px;width:18px;height:18px}
 .dl-tone-accent { --dl-overlay-border: rgba(255, 223, 128, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(104, 225, 255, 0.18), rgba(255, 215, 110, 0.74), rgba(104, 225, 255, 0.24)); --dl-overlay-glow: rgba(104, 225, 255, 0.12); }
 .dl-tone-success { --dl-overlay-border: rgba(113, 209, 173, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(124, 255, 190, 0.22), rgba(0, 206, 209, 0.62), rgba(124, 255, 190, 0.18)); --dl-overlay-glow: rgba(124, 255, 190, 0.12); }
 .dl-tone-warning { --dl-overlay-border: rgba(255, 179, 71, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(255, 178, 89, 0.24), rgba(255, 215, 110, 0.74), rgba(255, 178, 89, 0.2)); --dl-overlay-glow: rgba(255, 178, 89, 0.14); }

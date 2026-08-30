@@ -480,6 +480,27 @@ describe('ported overlay presentation', () => {
     expect(dialog?.querySelector('[data-slot="dialog-resize-handle"]')).toBeNull()
   })
 
+  it('renders a persistent modeless floating dialog without an overlay', async () => {
+    mountOverlay(DlDialog, {
+      attachTo: document.body,
+      props: {
+        open: true,
+        title: 'Document outline',
+        modal: false,
+        overlay: false,
+        floating: true,
+        dismissOnInteractOutside: false,
+      },
+    })
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('[data-slot="dialog"]')
+    expect(dialog?.dataset.modal).toBe('false')
+    expect(dialog?.dataset.floating).toBe('true')
+    expect(dialog?.dataset.dlLayer).toBe('floating')
+    expect(document.body.querySelector('.dl-dialog-overlay')).toBeNull()
+  })
+
   it('renders the popover surface through its portal with the migrated class', async () => {
     mountOverlay(DlPopover, {
       attachTo: document.body,

@@ -128,6 +128,8 @@ export type { DlMdxTemplateContext } from './components/DlMdxTemplate'
 export type { DlMdxEditorDocumentLanguage } from './components/MdxEditor.vue'
 export { createDlMdxPageFrontMatter, parseDlMdxFrontMatter } from './components/dl-mdx.frontmatter'
 export type { DlMdxFrontMatterDiagnostic, DlMdxFrontMatterResult, DlMdxPageMetadata } from './components/dl-mdx.frontmatter'
+export { createDlMdxOutline } from './components/dl-mdx.outline'
+export type { DlMdxOutlineItem } from './components/dl-mdx.outline'
 export { analyzeDlMdx, completeDlMdx, extractDlMdxActionSymbols, formatDlMdx, hoverDlMdx } from './components/dl-mdx.language'
 export type {
   DlMdxCompletionItem,
