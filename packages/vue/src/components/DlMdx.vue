@@ -539,7 +539,7 @@ function toggleTask(line: number) {
           :rows="resolvedRuntimeSymbols"
           :columns="runtimeColumns"
           row-key="id"
-          height="calc(100dvh - 12.75rem)"
+          height="100%"
           border="inner"
           :stripe="false"
           empty-text="当前页面没有公开的运行时信息"
