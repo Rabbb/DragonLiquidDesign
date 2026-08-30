@@ -165,6 +165,35 @@ describe('DlMdx', () => {
     expect(wrapper.emitted('update:mode')?.at(-1)).toEqual(['edit'])
   })
 
+  it('keeps literal component values immutable when the website binding policy is enabled', async () => {
+    const ValueControl = defineComponent({
+      props: { modelValue: Number, disabled: Boolean },
+      emits: ['update:modelValue'],
+      setup(props, { emit }) {
+        return () => h('button', { class: 'literal-value-control', disabled: props.disabled, onClick: () => emit('update:modelValue', (props.modelValue ?? 0) + 1) }, String(props.modelValue))
+      },
+    })
+    const registry = createDlMdxRegistry([
+      defineDlMdxComponent({ name: 'ValueControl', component: ValueControl }),
+    ])
+    const wrapper = mount(DlMdx, {
+      props: {
+        modelValue: '+++component:ValueControl\nmodelValue = 12\n+++end',
+        mode: 'preview',
+        lockLiteralBindings: true,
+        registry,
+        debounce: 0,
+      },
+    })
+
+    const control = wrapper.get('.literal-value-control')
+    expect(control.text()).toBe('12')
+    expect(control.attributes('disabled')).toBeDefined()
+    expect(control.attributes('data-dl-binding')).toBe('literal-readonly')
+    await control.trigger('click')
+    expect(control.text()).toBe('12')
+  })
+
   it('does not expose a component insertion control without an insertable registry entry', async () => {
     const wrapper = mount(DlMdx, { props: { modelValue: '', mode: 'edit', debounce: 0 } })
     await flushPromises()

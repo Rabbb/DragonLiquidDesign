@@ -98,6 +98,28 @@ function safeComponentProps(definition: DlMdxComponentDefinition, input: Record<
   return { ...(definition.defaultProps ?? {}), ...output }
 }
 
+function hasWritableModelBinding(node: Extract<DlMdxTemplateNode, { type: 'element' }>) {
+  const attribute = node.attributes.find(item => item.name === 'modelValue')
+  if (!attribute || attribute.value.type !== 'expression') return false
+  return attribute.value.expression.type === 'identifier' || attribute.value.expression.type === 'member'
+}
+
+function hasFixedModelBinding(node: Extract<DlMdxTemplateNode, { type: 'element' }>) {
+  return node.attributes.some(item => item.name === 'modelValue') && !hasWritableModelBinding(node)
+}
+
+function lockFixedModelBinding(definition: DlMdxComponentDefinition, input: Record<string, unknown>, locked: boolean) {
+  if (!locked || !Object.prototype.hasOwnProperty.call(input, 'modelValue')) return input
+  const output = { ...input }
+  const declared = componentPropNames(definition.component)
+  if (declared.has('readonly')) output.readonly = true
+  else if (declared.has('disabled')) output.disabled = true
+  else output.inert = true
+  output['aria-readonly'] = 'true'
+  output['data-dl-binding'] = 'literal-readonly'
+  return output
+}
+
 function namedChildren(node: Extract<DlMdxTemplateNode, { type: 'element' }>) {
   const named = new Map<string, DlMdxTemplateNode[]>()
   const defaults: DlMdxTemplateNode[] = []
@@ -112,7 +134,7 @@ function namedChildren(node: Extract<DlMdxTemplateNode, { type: 'element' }>) {
   return { named, defaults }
 }
 
-function templateRenderer(program: DlMdxTemplateProgram, registry: DlMdxRegistry | undefined, hostSlots: Slots) {
+function templateRenderer(program: DlMdxTemplateProgram, registry: DlMdxRegistry | undefined, hostSlots: Slots, lockLiteralBindings: boolean) {
   const renderNodes = (nodes: DlMdxTemplateNode[], scope: DlMdxTemplateScope): VNodeChild[] => nodes.flatMap(node => {
     const rendered = renderNode(node, scope)
     return Array.isArray(rendered) ? rendered : [rendered]
@@ -158,8 +180,9 @@ function templateRenderer(program: DlMdxTemplateProgram, registry: DlMdxRegistry
     if (isDlMdxTemplateNativeElement(node.name)) return h(node.name, safeNativeProps(node.name, props), renderNodes(defaults, scope))
     const definition = registry?.resolve(node.name)
     if (!definition) return null
-    if (definition.render) return definition.render({ name: definition.name, props: safeComponentProps(definition, props) as never, sourceLine: 1 })
-    return definition.component ? h(definition.component, safeComponentProps(definition, props), slots) : null
+    const componentProps = lockFixedModelBinding(definition, safeComponentProps(definition, props), lockLiteralBindings && hasFixedModelBinding(node))
+    if (definition.render) return definition.render({ name: definition.name, props: componentProps as never, sourceLine: 1 })
+    return definition.component ? h(definition.component, componentProps, slots) : null
   }
 
   return (scope: DlMdxTemplateScope) => {
@@ -174,6 +197,7 @@ export default defineComponent({
     source: { type: String, required: true },
     context: { type: Object as PropType<DlMdxTemplateContext>, default: () => ({}) },
     registry: { type: Object as PropType<DlMdxRegistry>, default: undefined },
+    lockLiteralBindings: { type: Boolean, default: true },
     ariaLabel: { type: String, default: 'DL-MDX 函数模板' },
   },
   emits: {
@@ -184,11 +208,11 @@ export default defineComponent({
     useDlMdxSecurityPolicy()
     const registry = computed(() => props.registry ?? injectedRegistry)
     const program = computed(() => parseDlMdxTemplate(props.source, registry.value))
-    const renderer = computed(() => templateRenderer(program.value, registry.value, slots))
+    const renderer = computed(() => templateRenderer(program.value, registry.value, slots, props.lockLiteralBindings))
     watch(program, current => emit('diagnostics', current.diagnostics), { immediate: true })
     return () => {
       const current = program.value
-      return h('div', { class: 'dl-mdx-template', 'data-dl': '', 'data-slot': 'mdx-template', 'aria-label': props.ariaLabel }, [
+      return h('div', { class: 'dl-mdx-template', 'data-dl': '', 'data-slot': 'mdx-template', 'data-literal-bindings': props.lockLiteralBindings ? 'readonly' : 'mutable', 'aria-label': props.ariaLabel }, [
         current.diagnostics.some(item => item.severity === 'error') ? renderError(current) : renderer.value({ $dlx: props.context }),
       ])
     }

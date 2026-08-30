@@ -24,6 +24,7 @@ export default defineComponent({
     definition: { type: Object as PropType<DlMdxComponentDefinition>, required: true },
     context: { type: Object as PropType<DlMdxComponentContext>, required: true },
     actions: { type: Object as PropType<DlMdxActionMap>, default: undefined },
+    lockLiteralBindings: { type: Boolean, default: false },
     onAction: { type: Function as PropType<(invocation: DlMdxActionInvocation) => void>, default: undefined },
   },
   setup(props) {
@@ -44,10 +45,19 @@ export default defineComponent({
       const component = props.definition.component
       const declared = componentPropNames(component)
       const passed = safeProps(props.definition, renderContext.props)
+      const literalModelBinding = props.lockLiteralBindings && Object.prototype.hasOwnProperty.call(props.context.props, 'modelValue')
       for (const name of stateProps) {
         if (!declared.has(name) || !(name in localState)) continue
         passed[name] = localState[name]
+        if (literalModelBinding && name === 'modelValue') continue
         passed[`onUpdate:${name}`] = (value: DlMdxValue) => { localState[name] = value }
+      }
+      if (literalModelBinding) {
+        if (declared.has('readonly')) passed.readonly = true
+        else if (declared.has('disabled')) passed.disabled = true
+        else passed.inert = true
+        passed['aria-readonly'] = 'true'
+        passed['data-dl-binding'] = 'literal-readonly'
       }
       const declaredEvents = resolveDlMdxEventSchema(props.definition)
       for (const [event, action] of Object.entries(props.context.events)) {

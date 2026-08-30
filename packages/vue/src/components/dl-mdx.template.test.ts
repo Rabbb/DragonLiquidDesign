@@ -11,12 +11,21 @@ const TestShell = defineComponent({
   setup(props, { slots }) { return () => h('section', { class: 'test-shell' }, [h('b', props.siteName), slots.default?.(), slots.footer?.()]) },
 })
 
+const TestValueControl = defineComponent({
+  props: { modelValue: Number, disabled: Boolean },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    return () => h('button', { class: 'test-value-control', disabled: props.disabled, onClick: () => emit('update:modelValue', (props.modelValue ?? 0) + 1) }, String(props.modelValue))
+  },
+})
+
 const registry = createDlMdxRegistry([
   defineDlMdxComponent({
     name: 'SiteShell',
     component: TestShell,
     eventSchema: { navigate: {} },
   }),
+  defineDlMdxComponent({ name: 'ValueControl', component: TestValueControl }),
 ])
 
 describe('DL-MDX function templates', () => {
@@ -81,6 +90,29 @@ export default function Layout() {
     expect(wrapper.find('article').text()).toBe('Editable page')
     expect(wrapper.find('footer')).toBeDefined()
     expect(wrapper.text()).toContain('0.2.0')
+  })
+
+  it('locks literal control values but leaves variable bindings interactive', () => {
+    const literal = mount(DlMdxTemplate, {
+      props: {
+        registry,
+        source: 'export default function App() { return <ValueControl modelValue={12} /> }',
+      },
+    })
+    const fixedControl = literal.get('.test-value-control')
+    expect(fixedControl.attributes('disabled')).toBeDefined()
+    expect(fixedControl.attributes('data-dl-binding')).toBe('literal-readonly')
+    expect(literal.get('[data-slot="mdx-template"]').attributes('data-literal-bindings')).toBe('readonly')
+
+    const variable = mount(DlMdxTemplate, {
+      props: {
+        registry,
+        source: 'export default function App() { return <ValueControl modelValue={$dlx.state.amount} /> }',
+        context: { state: { amount: 12 } },
+      },
+    })
+    expect(variable.get('.test-value-control').attributes('disabled')).toBeUndefined()
+    expect(variable.get('.test-value-control').attributes('data-dl-binding')).toBeUndefined()
   })
 
   it('reports unknown components and malformed JSX', () => {

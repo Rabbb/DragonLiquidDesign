@@ -5277,6 +5277,12 @@ export default {
         "defaultValue": "true"
       },
       {
+        "prop": "lockLiteralBindings",
+        "description": "是否锁定组件的 modelValue 字面量绑定；变量引用保持可交互，适合发布或实时网站。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
         "prop": "debounce",
         "description": "源文本变化后等待多少毫秒再刷新预览；设为 0 时同步解析。",
         "type": "number",

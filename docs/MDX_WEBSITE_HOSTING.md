@@ -37,10 +37,13 @@ createApp(App)
   :model-value="source"
   mode="preview"
   readonly
+  lock-literal-bindings
   :show-toolbar="false"
   :show-status="false"
 />
 ```
+
+实时网站应启用 `lock-literal-bindings`。此时 `modelValue = 12`、`modelValue="fixed"` 或 `modelValue={12}` 属于固定字面量，控件只展示该值；`modelValue={amount}`、`modelValue={$dlx.state.amount}` 等变量引用保持可交互。`DlMdxTemplate` 默认启用这条规则，普通 `DlMdx` 则由网站宿主显式启用，避免破坏组件教学页的交互案例。
 
 ## 从项目源码构建网站
 

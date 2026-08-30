@@ -54,6 +54,7 @@ const props = withDefaults(defineProps<{
   showModeSwitch?: boolean
   showStatus?: boolean
   taskInteractive?: boolean
+  lockLiteralBindings?: boolean
   debounce?: number
   minHeight?: string
   maxPreviewHeight?: string
@@ -84,6 +85,7 @@ const props = withDefaults(defineProps<{
   showModeSwitch: true,
   showStatus: true,
   taskInteractive: true,
+  lockLiteralBindings: false,
   debounce: 120,
   minHeight: '28rem',
   maxPreviewHeight: 'none',
@@ -560,6 +562,7 @@ function toggleTask(line: number) {
           :document="document"
           :link-policy="policy"
           :task-interactive="taskInteractive && canEdit"
+          :lock-literal-bindings="lockLiteralBindings"
           :empty-text="emptyText"
           :ariaLabel="`${ariaLabel}预览`"
           :component-slots="$slots"

@@ -11,6 +11,7 @@ const props = defineProps<{
   block: DlMdxBlock
   linkPolicy: Required<DlMdxLinkPolicy>
   taskInteractive: boolean
+  lockLiteralBindings: boolean
   copiedCodeId?: string
   copyFailedId?: string
   componentSlots: Slots
@@ -61,6 +62,7 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
       :block="child"
       :link-policy="linkPolicy"
       :task-interactive="taskInteractive"
+      :lock-literal-bindings="lockLiteralBindings"
       :copied-code-id="copiedCodeId"
       :copy-failed-id="copyFailedId"
       :component-slots="componentSlots"
@@ -86,6 +88,7 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
         :block="child"
         :link-policy="linkPolicy"
         :task-interactive="taskInteractive"
+        :lock-literal-bindings="lockLiteralBindings"
         :copied-code-id="copiedCodeId"
         :copy-failed-id="copyFailedId"
         :component-slots="componentSlots"
@@ -125,7 +128,7 @@ function forwardCopy(id: string, source: string) { emit('copy-code', id, source)
 
   <section v-else-if="block.type === 'component'" class="dl-mdx__component-block" :data-component="block.context.name">
     <component v-if="componentSlots[componentSlot]" :is="componentSlots[componentSlot]" :context="block.context" :props="block.context.props" />
-    <MdxRegisteredComponent v-else-if="registeredDefinition" :definition="registeredDefinition" :context="block.context" :actions="actions" :on-action="invocation => emit('action', invocation)" />
+    <MdxRegisteredComponent v-else-if="registeredDefinition" :definition="registeredDefinition" :context="block.context" :actions="actions" :lock-literal-bindings="lockLiteralBindings" :on-action="invocation => emit('action', invocation)" />
     <div v-else class="dl-mdx__unknown-component">
       <span>SAFE COMPONENT SLOT</span>
       <strong>{{ block.context.name }}</strong>

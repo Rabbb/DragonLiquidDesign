@@ -119,6 +119,7 @@ const descriptions = {
   linkPolicy: '链接、外部页面与图片资源的安全渲染策略。',
   emptyText: '文档没有可渲染内容时显示的占位说明。',
   lineWrapping: '是否在编辑器中启用长行自动换行。',
+  lockLiteralBindings: '是否锁定组件的 modelValue 字面量绑定；变量引用保持可交互，适合发布或实时网站。',
   showToolbar: '是否显示格式操作和视图模式工具栏。',
   showModeSwitch: '是否显示内置的“编辑 / 分栏 / 预览”切换器；隐藏后由宿主通过 mode 或 v-model:mode 控制视图。',
   showCreate: '是否在日期单元格中显示新建事项入口。',

@@ -9,6 +9,7 @@ defineProps<{
   document: DlMdxDocument
   linkPolicy: Required<DlMdxLinkPolicy>
   taskInteractive: boolean
+  lockLiteralBindings: boolean
   emptyText: string
   ariaLabel: string
   componentSlots: Slots
@@ -67,6 +68,7 @@ function blockKey(block: DlMdxBlockValue, index: number): string {
       :block="block"
       :link-policy="linkPolicy"
       :task-interactive="taskInteractive"
+      :lock-literal-bindings="lockLiteralBindings"
       :copied-code-id="copiedCodeId"
       :copy-failed-id="copyFailedId"
       :component-slots="componentSlots"
