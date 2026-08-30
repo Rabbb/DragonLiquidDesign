@@ -198,6 +198,14 @@ describe('DlMdx', () => {
     expect(document.body.textContent).toContain('DLENV 运行时环境')
     expect(document.body.textContent).toContain('DLENV.page')
     expect(document.body.querySelector('.dl-mdx-runtime-tree')).not.toBeNull()
+
+    const table = wrapper.findComponent({ name: 'DlDataTable' })
+    table.vm.$emit('cellClick', { row: table.props('rows')[0], field: 'resolvedValue' })
+    await flushPromises()
+    expect(document.body.textContent).toContain('JSON 数据详情')
+    expect(document.body.querySelectorAll('[data-slot="dialog"]')).toHaveLength(2)
+    expect(document.body.querySelector('.dl-mdx__runtime-json-code[data-highlighted="true"]')).not.toBeNull()
+    expect(document.body.querySelector('.dl-mdx__runtime-json-code .dl-mdx__code-token--property')?.textContent).toContain('"route"')
     wrapper.unmount()
   })
 

@@ -11,6 +11,7 @@ import {
   type DlMdxLanguageOptions,
 } from './dl-mdx.language'
 import { parseDlMdx } from './dl-mdx.parser'
+import { highlightDlMdxCodeWithRust } from './dl-mdx.rust'
 import {
   createDlMdxComponentSnippet,
   useDlMdxRegistry,
@@ -154,6 +155,8 @@ const editorRef = ref<InstanceType<typeof MdxEditor>>()
 const lastEditorSelection = ref<DlMdxSelection>({ start: localSource.value.length, end: localSource.value.length })
 const componentLibraryOpen = ref(false)
 const runtimePanelOpen = ref(false)
+const runtimeValueDetailOpen = ref(false)
+const runtimeValueDetailRow = ref<RuntimeTableRow>()
 const componentSearch = ref('')
 const componentCategory = ref<ComponentLibraryCategory>('all')
 const componentLibraryTrigger = ref<HTMLElement>()
@@ -203,8 +206,24 @@ const runtimeColumns: DlDataTableColumn[] = [
   { field: 'kindLabel', title: '类型', width: 88 },
   { field: 'displayName', title: '名称 / 签名', minWidth: 250 },
   { field: 'description', title: '说明', minWidth: 260 },
-  { field: 'resolvedValue', title: '当前值', minWidth: 360 },
+  { field: 'resolvedValue', title: '当前值', minWidth: 360, className: 'dl-mdx__runtime-value-cell' },
 ]
+const runtimeValueDetailSource = computed(() => {
+  if (!runtimeValueDetailRow.value) return ''
+  const serialized = JSON.stringify(runtimeValueDetailRow.value.resolvedValue, null, 2)
+  return serialized === undefined ? String(runtimeValueDetailRow.value.resolvedValue) : serialized
+})
+const runtimeValueDetailCode = computed(() => {
+  try {
+    return highlightDlMdxCodeWithRust(runtimeValueDetailSource.value, 'json')
+  } catch {
+    return {
+      language: 'json',
+      supported: false,
+      lines: runtimeValueDetailSource.value.split('\n').map(value => value ? [{ kind: 'plain' as const, value }] : []),
+    }
+  }
+})
 const effectiveLanguageOptions = computed<DlMdxLanguageOptions>(() => {
   const hostActions = Object.keys(props.actions ?? {})
   const documentedActions = scriptSymbols.value.map(symbol => symbol.name)
@@ -277,6 +296,7 @@ watch(localSource, scheduleParse, { immediate: true })
 watch(() => props.debounce, scheduleParse)
 watch([activeRegistry, effectiveLanguageOptions], scheduleParse)
 watch(localMode, value => { if (value === 'preview') runtimePanelOpen.value = false })
+watch(runtimePanelOpen, open => { if (!open) runtimeValueDetailOpen.value = false })
 watch(showDocumentTabs, visible => { if (!visible) activeDocument.value = 'mdx' })
 watch(() => componentLibraryEntries.value.length, (length) => {
   if (!length) componentLibraryOpen.value = false
@@ -364,6 +384,12 @@ function normalizeRuntimeValue(value: unknown, seen = new WeakSet<object>(), dep
   } catch (cause) {
     return cause instanceof Error ? `[Unreadable: ${cause.message}]` : '[Unreadable value]'
   }
+}
+
+function openRuntimeValueCell(payload: { row: RuntimeTableRow; field?: string }) {
+  if (payload.field !== 'resolvedValue' || payload.row.kind !== 'variable') return
+  runtimeValueDetailRow.value = payload.row
+  runtimeValueDetailOpen.value = true
 }
 
 function setMode(value: DlMdxMode) {
@@ -543,6 +569,7 @@ function toggleTask(line: number) {
           border="inner"
           :stripe="false"
           empty-text="当前页面没有公开的运行时信息"
+          @cell-click="openRuntimeValueCell"
         >
           <template #cell-displayName="{ row }"><code class="dl-mdx__runtime-name">{{ row.displayName }}</code></template>
           <template #cell-description="{ row }"><span class="dl-mdx__runtime-description">{{ row.description || '—' }}</span></template>
@@ -551,6 +578,19 @@ function toggleTask(line: number) {
             <span v-else class="dl-mdx__runtime-method">由宿主页面提供</span>
           </template>
         </DlDataTable>
+      </div>
+    </DlDialog>
+
+    <DlDialog
+      v-if="runtimeValueDetailRow"
+      v-model:open="runtimeValueDetailOpen"
+      :title="runtimeValueDetailRow.displayName"
+      description="JSON 数据详情"
+      size="lg"
+      :draggable="false"
+    >
+      <div class="dl-mdx__code dl-mdx__runtime-json-code" data-language="json" :data-highlighted="runtimeValueDetailCode.supported ? 'true' : 'false'">
+        <pre><code><span v-for="(line, index) in runtimeValueDetailCode.lines" :key="index" class="dl-mdx__code-line"><span class="dl-mdx__code-line-number" aria-hidden="true">{{ index + 1 }}</span><span class="dl-mdx__code-line-content"><span v-for="(token, tokenIndex) in line" :key="tokenIndex" :class="`dl-mdx__code-token--${token.kind}`">{{ token.value }}</span>{{ index < runtimeValueDetailCode.lines.length - 1 ? '\n' : '' }}</span></span></code></pre>
       </div>
     </DlDialog>
 
