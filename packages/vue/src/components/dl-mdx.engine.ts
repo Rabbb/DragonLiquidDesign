@@ -514,6 +514,7 @@ function buildNavigation(routes: DlMdxBuiltRoute[], map: Map<string, DlMdxProjec
       label: route.title ?? pageTitle(route.source, route.file),
       href: route.route,
       description: route.metadata.description,
+      keywords: route.metadata.keywords,
       file: route.file,
       icon: route.metadata.icon,
       order: route.metadata.order ?? 0,

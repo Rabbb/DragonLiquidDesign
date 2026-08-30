@@ -13,6 +13,7 @@ export interface DlSiteNavigationItem {
   label: string
   href: string
   description?: string
+  keywords?: string[]
   file?: string
   icon?: string
   order?: number

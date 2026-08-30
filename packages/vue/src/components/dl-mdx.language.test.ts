@@ -67,6 +67,15 @@ describe('MarkdownX language service', () => {
     expect(invalid.diagnostics.map(item => item.code)).toEqual(expect.arrayContaining(['frontmatter.value', 'frontmatter.key']))
   })
 
+  it('offers the hidden menu keywords field', () => {
+    const source = '---\nkey\n---\n# Page'
+    const completion = completeDlMdx(source, source.indexOf('key') + 3, undefined, {}, true)
+
+    expect(completion?.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: 'keywords', apply: 'keywords: ["notes", "work"]' }),
+    ]))
+  })
+
   it('formats MDX deterministically with configurable layout', () => {
     const source = '+++component:Notice\ncount=2\ntone=\'accent\'\n@click=saveNotice\n+++end\n\n\n- item'
     expect(formatDlMdx(source, { equalsSpacing: 'align', quoteStyle: 'double', maxBlankLines: 1 }, registry)).toBe([

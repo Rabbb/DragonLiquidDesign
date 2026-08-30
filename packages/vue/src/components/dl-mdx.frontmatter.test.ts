@@ -3,10 +3,18 @@ import { createDlMdxPageFrontMatter, parseDlMdxFrontMatter } from './dl-mdx.fron
 
 describe('MarkdownX page front matter', () => {
   it('extracts typed hidden metadata and keeps the visible body pure', () => {
-    const result = parseDlMdxFrontMatter('---\ntitle: Guide\nroute: /guide\norder: 4\nnavigation: false\n---\n# Start')
-    expect(result.metadata).toEqual({ title: 'Guide', route: '/guide', order: 4, hidden: true })
+    const result = parseDlMdxFrontMatter('---\ntitle: Guide\nroute: /guide\nkeywords: ["MDX", "keyboard guide"]\norder: 4\nnavigation: false\n---\n# Start')
+    expect(result.metadata).toEqual({ title: 'Guide', route: '/guide', keywords: ['MDX', 'keyboard guide'], order: 4, hidden: true })
     expect(result.body).toBe('# Start')
-    expect(result.bodyStartLine).toBe(7)
+    expect(result.bodyStartLine).toBe(8)
+  })
+
+  it('accepts compact comma-separated menu keywords and removes duplicates', () => {
+    const result = parseDlMdxFrontMatter('---\nkeywords: 工作, 复盘，工作\n---\n# Daily')
+
+    expect(result.metadata.keywords).toEqual(['工作', '复盘'])
+    expect(result.diagnostics).toEqual([])
+    expect(createDlMdxPageFrontMatter(result.metadata)).toContain('keywords: ["工作","复盘"]')
   })
 
   it('serializes metadata in a stable editable order', () => {

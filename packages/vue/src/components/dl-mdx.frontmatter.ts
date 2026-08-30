@@ -2,6 +2,7 @@ export interface DlMdxPageMetadata {
   title?: string
   route?: string
   description?: string
+  keywords?: string[]
   group?: string
   groupTitle?: string
   groupOrder?: number
@@ -29,9 +30,25 @@ export interface DlMdxFrontMatterResult {
 
 const keyAliases: Record<string, keyof DlMdxPageMetadata> = {
   title: 'title', name: 'title', route: 'route', path: 'route', description: 'description',
+  keyword: 'keywords', keywords: 'keywords',
   group: 'group', 'group-title': 'groupTitle', grouptitle: 'groupTitle',
   'group-order': 'groupOrder', grouporder: 'groupOrder', order: 'order',
   icon: 'icon', layout: 'layout', renderer: 'renderer', render: 'renderer', hidden: 'hidden', navigation: 'hidden', nav: 'hidden',
+}
+
+function stringList(source: string): string[] | null {
+  const value = source.trim()
+  if (!value || value === '[]') return []
+  if (value.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(value) as unknown
+      if (!Array.isArray(parsed) || parsed.some(item => typeof item !== 'string')) return null
+      return [...new Set(parsed.map(item => item.trim()).filter(Boolean))]
+    } catch { return null }
+  }
+  const parsed = scalar(value)
+  if (typeof parsed !== 'string') return null
+  return [...new Set(parsed.split(/[,，]/).map(item => item.trim()).filter(Boolean))]
 }
 
 function scalar(source: string): string | number | boolean {
@@ -71,6 +88,12 @@ export function parseDlMdxFrontMatter(source: string): DlMdxFrontMatterResult {
       diagnostics.push({ code: 'frontmatter.key', severity: 'warning', message: `未知的页面元数据字段：${match[1]}。`, line: index + 1 })
       continue
     }
+    if (key === 'keywords') {
+      const values = stringList(match[2])
+      if (!values) diagnostics.push({ code: 'frontmatter.value', severity: 'error', message: `${match[1]} 必须是逗号分隔文字或字符串数组。`, line: index + 1 })
+      else metadata.keywords = values
+      continue
+    }
     const value = scalar(match[2])
     if (key === 'order' || key === 'groupOrder') {
       if (typeof value !== 'number' || !Number.isFinite(value)) diagnostics.push({ code: 'frontmatter.value', severity: 'error', message: `${match[1]} 必须是数字。`, line: index + 1 })
@@ -103,10 +126,10 @@ export function parseDlMdxFrontMatter(source: string): DlMdxFrontMatterResult {
 
 export function createDlMdxPageFrontMatter(metadata: DlMdxPageMetadata): string {
   const entries: Array<[string, unknown]> = [
-    ['title', metadata.title], ['route', metadata.route], ['description', metadata.description],
+    ['title', metadata.title], ['route', metadata.route], ['description', metadata.description], ['keywords', metadata.keywords],
     ['group', metadata.group], ['group-title', metadata.groupTitle], ['group-order', metadata.groupOrder],
     ['order', metadata.order], ['icon', metadata.icon], ['layout', metadata.layout], ['renderer', metadata.renderer], ['hidden', metadata.hidden],
   ]
-  const lines = entries.flatMap(([key, value]) => value === undefined ? [] : [`${key}: ${typeof value === 'string' && /[:#]/.test(value) ? JSON.stringify(value) : value}`])
+  const lines = entries.flatMap(([key, value]) => value === undefined ? [] : [`${key}: ${Array.isArray(value) ? JSON.stringify(value) : typeof value === 'string' && /[:#]/.test(value) ? JSON.stringify(value) : value}`])
   return lines.length ? ['---', ...lines, '---'].join('\n') : ''
 }

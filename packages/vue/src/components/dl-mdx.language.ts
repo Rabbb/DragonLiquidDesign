@@ -508,6 +508,7 @@ const frontMatterFields = [
   { key: 'title', detail: '页面标题', documentation: '用于导航和浏览器标题；不会渲染到正文。', value: 'Page title' },
   { key: 'route', detail: '公开路由', documentation: '以 / 开头的站内路由。', value: '/guide/start' },
   { key: 'description', detail: '导航摘要', documentation: '侧边导航与搜索结果可以显示这段说明。', value: 'Page summary' },
+  { key: 'keywords', detail: '菜单检索关键词', documentation: '只用于菜单检索，不会渲染到正文；可填写逗号分隔文字或字符串数组。', value: '["notes", "work"]' },
   { key: 'group', detail: '导航组 ID', documentation: '省略时使用 /pages 下的目录。', value: 'guides' },
   { key: 'group-title', detail: '导航组显示名', documentation: '覆盖目录 _group.json 的显示名。', value: 'Guides' },
   { key: 'group-order', detail: '导航组顺序', documentation: '数值越小越靠前。', value: '10' },
