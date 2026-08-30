@@ -470,8 +470,9 @@
 .dl-mdx__runtime-method { color:var(--dl-text-faint);font-size:.68rem; }
 .dl-mdx__runtime-value-cell { cursor:zoom-in; }
 .dl-mdx__runtime-value-cell:hover { background:var(--dl-surface-hover); }
-.dl-mdx__runtime-json-code { min-height:0;max-height:min(70dvh,48rem); }
-.dl-mdx__runtime-json-code pre { max-height:min(70dvh,48rem); }
+.dl-mdx__runtime-json-editor { height:min(70dvh,48rem);min-height:18rem;overflow:hidden;border:1px solid var(--dl-border);border-radius:var(--dl-radius-md);background:var(--dl-night-soft); }
+.dl-mdx__runtime-json-editor .cm-editor { height:100%; }
+.dl-mdx__runtime-json-editor .cm-scroller { overflow:auto; }
 .dl-mdx-runtime-tree,.dl-mdx-runtime-tree__leaf { min-width:0;color:var(--dl-text-muted);font:650 .67rem/1.45 var(--dl-font-mono,ui-monospace,monospace); }
 .dl-mdx-runtime-tree summary { display:flex;align-items:center;gap:7px;width:max-content;max-width:100%;padding:2px 4px;border-radius:5px;color:var(--dl-text-faint);cursor:pointer;user-select:none; }
 .dl-mdx-runtime-tree summary:hover { color:var(--dl-accent-text);background:var(--dl-surface-hover); }

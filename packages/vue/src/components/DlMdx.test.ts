@@ -204,8 +204,9 @@ describe('DlMdx', () => {
     await flushPromises()
     expect(document.body.textContent).toContain('JSON 数据详情')
     expect(document.body.querySelectorAll('[data-slot="dialog"]')).toHaveLength(2)
-    expect(document.body.querySelector('.dl-mdx__runtime-json-code[data-highlighted="true"]')).not.toBeNull()
-    expect(document.body.querySelector('.dl-mdx__runtime-json-code .dl-mdx__code-token--property')?.textContent).toContain('"route"')
+    await vi.waitFor(() => expect(document.body.querySelector('.dl-mdx__runtime-json-editor .cm-editor')).not.toBeNull())
+    expect(document.body.querySelector('.dl-mdx__runtime-json-editor .cm-foldGutter')).not.toBeNull()
+    expect(document.body.querySelector('.dl-mdx__runtime-json-editor .cm-content')?.textContent).toContain('"route"')
     wrapper.unmount()
   })
 

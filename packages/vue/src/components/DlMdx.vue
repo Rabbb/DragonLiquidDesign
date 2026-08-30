@@ -11,7 +11,6 @@ import {
   type DlMdxLanguageOptions,
 } from './dl-mdx.language'
 import { parseDlMdx } from './dl-mdx.parser'
-import { highlightDlMdxCodeWithRust } from './dl-mdx.rust'
 import {
   createDlMdxComponentSnippet,
   useDlMdxRegistry,
@@ -212,17 +211,6 @@ const runtimeValueDetailSource = computed(() => {
   if (!runtimeValueDetailRow.value) return ''
   const serialized = JSON.stringify(runtimeValueDetailRow.value.resolvedValue, null, 2)
   return serialized === undefined ? String(runtimeValueDetailRow.value.resolvedValue) : serialized
-})
-const runtimeValueDetailCode = computed(() => {
-  try {
-    return highlightDlMdxCodeWithRust(runtimeValueDetailSource.value, 'json')
-  } catch {
-    return {
-      language: 'json',
-      supported: false,
-      lines: runtimeValueDetailSource.value.split('\n').map(value => value ? [{ kind: 'plain' as const, value }] : []),
-    }
-  }
 })
 const effectiveLanguageOptions = computed<DlMdxLanguageOptions>(() => {
   const hostActions = Object.keys(props.actions ?? {})
@@ -589,8 +577,14 @@ function toggleTask(line: number) {
       size="lg"
       :draggable="false"
     >
-      <div class="dl-mdx__code dl-mdx__runtime-json-code" data-language="json" :data-highlighted="runtimeValueDetailCode.supported ? 'true' : 'false'">
-        <pre><code><span v-for="(line, index) in runtimeValueDetailCode.lines" :key="index" class="dl-mdx__code-line"><span class="dl-mdx__code-line-number" aria-hidden="true">{{ index + 1 }}</span><span class="dl-mdx__code-line-content"><span v-for="(token, tokenIndex) in line" :key="tokenIndex" :class="`dl-mdx__code-token--${token.kind}`">{{ token.value }}</span>{{ index < runtimeValueDetailCode.lines.length - 1 ? '\n' : '' }}</span></span></code></pre>
+      <div class="dl-mdx__runtime-json-editor">
+        <MdxEditor
+          :model-value="runtimeValueDetailSource"
+          readonly
+          document-language="json"
+          :line-wrapping="false"
+          aria-label="JSON 数据详情"
+        />
       </div>
     </DlDialog>
 
