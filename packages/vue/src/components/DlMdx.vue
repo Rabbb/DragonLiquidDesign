@@ -506,9 +506,15 @@ function toggleTask(line: number) {
         class="dl-mdx__runtime-trigger"
         :class="{ active: runtimePanelOpen }"
         :aria-expanded="runtimePanelOpen"
+        aria-label="查看 DLENV 运行时环境"
         title="查看当前页面可用的变量与方法"
         @click="runtimePanelOpen = true"
-      >DLENV <small>{{ runtimeSymbols.length }}</small></button>
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+          <rect x="3.5" y="4.5" width="17" height="15" rx="3" />
+          <path d="m7.5 9 3 3-3 3M13 15h3.5" />
+        </svg>
+      </button>
       <div v-if="showModeSwitch && activeDocument === 'mdx'" class="dl-mdx__mode-switch" aria-label="视图模式">
         <button v-for="item in ([['edit', '编辑'], ['split', '分栏'], ['preview', '预览']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
       </div>

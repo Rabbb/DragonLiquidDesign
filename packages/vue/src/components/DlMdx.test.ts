@@ -188,7 +188,11 @@ describe('DlMdx', () => {
       },
     })
 
-    await wrapper.get('.dl-mdx__runtime-trigger').trigger('click')
+    const trigger = wrapper.get('.dl-mdx__runtime-trigger')
+    expect(trigger.attributes('aria-label')).toBe('查看 DLENV 运行时环境')
+    expect(trigger.text()).toBe('')
+    expect(trigger.find('svg').exists()).toBe(true)
+    await trigger.trigger('click')
     await flushPromises()
     expect(document.body.querySelector('[data-slot="dialog"][data-fullscreen="true"]')).not.toBeNull()
     expect(document.body.textContent).toContain('DLENV 运行时环境')
