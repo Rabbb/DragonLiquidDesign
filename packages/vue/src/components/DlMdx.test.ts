@@ -119,6 +119,33 @@ describe('DlMdx', () => {
     wrapper.unmount()
   })
 
+  it('folds MarkdownX component source by default and allows opting out', async () => {
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: {
+        modelValue: '+++component:Notice\ntitle = "密集信息"\n+++slot:default\n## 正文\n+++endslot\n+++end',
+        mode: 'edit',
+        debounce: 0,
+      },
+    })
+    await flushPromises()
+    await vi.waitFor(() => expect(wrapper.get('.cm-foldPlaceholder').text()).toContain('组件代码'))
+
+    await wrapper.setProps({ foldComponents: false })
+    await vi.waitFor(() => expect(wrapper.find('.cm-foldPlaceholder').exists()).toBe(false))
+    expect(wrapper.get('.cm-content').text()).toContain('title = "密集信息"')
+    wrapper.unmount()
+  })
+
+  it('uses compact document density by default with a comfortable opt-out', async () => {
+    const wrapper = mount(DlMdx, { props: { modelValue: '## 标题', mode: 'preview', debounce: 0 } })
+    expect(wrapper.classes()).toContain('dl-mdx--compact')
+
+    await wrapper.setProps({ density: 'comfortable' })
+    expect(wrapper.classes()).toContain('dl-mdx--comfortable')
+    expect(wrapper.classes()).not.toContain('dl-mdx--compact')
+  })
+
   it('does not expose a component insertion control without an insertable registry entry', async () => {
     const wrapper = mount(DlMdx, { props: { modelValue: '', mode: 'edit', debounce: 0 } })
     await flushPromises()

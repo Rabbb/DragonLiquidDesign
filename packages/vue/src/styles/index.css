@@ -763,6 +763,84 @@
 .dl-mdx__unknown-component > strong { color: var(--dl-accent-text); }
 .dl-mdx__unknown-component > p { margin: 0; color: var(--dl-text-muted); font-size: 0.78rem; }
 
+/* Compact is the default MarkdownX reading density. It only scales controls inside
+   the rendered document, leaving the standalone component library untouched. */
+.dl-mdx--compact .dl-mdx__toolbar {
+  min-height: 2.7rem;
+  gap: 0.45rem;
+  padding: 0.35rem 0.45rem;
+}
+.dl-mdx--compact .dl-mdx__format-actions { gap: 0.08rem; }
+.dl-mdx--compact .dl-mdx__format-actions > button {
+  min-width: 1.78rem;
+  min-height: 1.78rem;
+  border-radius: 7px;
+  font-size: 0.66rem;
+}
+.dl-mdx--compact .dl-mdx__mode-switch { padding: 2px; border-radius: 8px; }
+.dl-mdx--compact .dl-mdx__mode-switch button { min-height: 1.62rem; padding: 0 0.5rem; font-size: 0.66rem; }
+.dl-mdx--compact .dl-mdx__document {
+  gap: 0.34rem;
+  max-width: 68rem;
+  padding: clamp(0.62rem, 1.6vw, 1rem);
+  font-size: 0.875rem;
+  line-height: 1.46;
+}
+.dl-mdx--compact .dl-mdx__heading {
+  margin: 0.18rem 0 0;
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+}
+.dl-mdx--compact .dl-mdx__heading:is(h1) { font-size: 1.18rem; }
+.dl-mdx--compact .dl-mdx__heading:is(h2) { font-size: 1.06rem; }
+.dl-mdx--compact .dl-mdx__heading:is(h3) { font-size: 1.02rem; }
+.dl-mdx--compact .dl-mdx__heading:is(h4) { font-size: 0.99rem; }
+.dl-mdx--compact .dl-mdx__heading:is(h5) { font-size: 0.96rem; }
+.dl-mdx--compact .dl-mdx__heading:is(h6) { font-size: 0.93rem; }
+.dl-mdx--compact .dl-mdx__heading > a { padding-right: 0.25rem; }
+.dl-mdx--compact .dl-mdx__paragraph { line-height: 1.46; }
+.dl-mdx--compact .dl-mdx__inline-code,
+.dl-mdx--compact .dl-mdx__unknown-component code { padding: 0.08rem 0.28rem; border-radius: 5px; line-height: 1.3; }
+.dl-mdx--compact .dl-mdx__image { max-height: 24rem; margin: 0.28rem auto; border-radius: 9px; }
+.dl-mdx--compact .dl-mdx__blockquote { gap: 0.28rem; padding: 0.46rem 0.62rem; border-radius: 9px; }
+.dl-mdx--compact .dl-mdx__list { gap: 0.12rem; padding-left: 1.18rem; }
+.dl-mdx--compact .dl-mdx__list .dl-mdx__list { margin-top: 0.12rem; }
+.dl-mdx--compact .dl-mdx__task { grid-template-columns: 0.9rem minmax(0, 1fr); gap: 0.35rem; }
+.dl-mdx--compact .dl-mdx__task input { width: 0.84rem; height: 0.84rem; margin-top: 0.2rem; border-radius: 4px; }
+.dl-mdx--compact .dl-mdx__task input:checked::after { font-size: 0.61rem; line-height: 0.72rem; }
+.dl-mdx--compact .dl-mdx__table-shell { border-radius: 9px; }
+.dl-mdx--compact .dl-mdx__table-shell th,
+.dl-mdx--compact .dl-mdx__table-shell td { padding: 0.34rem 0.5rem; line-height: 1.35; }
+.dl-mdx--compact .dl-mdx__table-shell th { font-size: 0.76rem; }
+.dl-mdx--compact .dl-mdx__code { border-radius: 10px; }
+.dl-mdx--compact .dl-mdx__code-toolbar { min-height: 1.85rem; padding: 0.22rem 0.4rem 0.22rem 0.62rem; }
+.dl-mdx--compact .dl-mdx__code-toolbar button { padding: 0.2rem 0.45rem; }
+.dl-mdx--compact .dl-mdx__code pre { padding: 0.45rem 0; font-size: 0.76rem; line-height: 1.5; }
+.dl-mdx--compact .dl-mdx__code-line { grid-template-columns: 2.7rem minmax(0, 1fr); padding-right: 0.6rem; }
+.dl-mdx--compact .dl-mdx__code-line-number { width: 2.7rem; padding: 0 0.55rem 0 0.35rem; }
+.dl-mdx--compact .dl-mdx__code-line-content { padding-left: 0.62rem; }
+.dl-mdx--compact .dl-mdx__divider { margin: 0.28rem 0; }
+.dl-mdx--compact .dl-mdx__component-block { min-width: 0; }
+.dl-mdx--compact .dl-mdx__component-block [data-dl][data-slot='card'] { padding: 0.65rem; border-radius: 10px; }
+.dl-mdx--compact .dl-mdx__component-block [data-dl][data-slot='button'] {
+  min-height: 1.78rem;
+  gap: 0.35rem;
+  padding-inline: 0.65rem;
+  border-radius: 7px;
+  font-size: 0.72rem;
+}
+.dl-mdx--compact .dl-mdx__component-block .dl-input-field,
+.dl-mdx--compact .dl-mdx__component-block [data-dl][data-slot='select-trigger'] {
+  min-height: 2rem;
+  padding-inline: 0.5rem;
+  font-size: 0.78rem;
+}
+.dl-mdx--compact .dl-mdx__component-block [data-dl][data-slot='checkbox'] { gap: 0.4rem; font-size: 0.78rem; }
+.dl-mdx--compact .dl-mdx__component-block [data-dl][data-slot='checkbox'] > button { width: 1rem; height: 1rem; }
+.dl-mdx--compact .dl-mdx__component-block [data-dl][data-slot='badge'] { padding: 0.16rem 0.42rem; font-size: 0.62rem; }
+.dl-mdx--compact .dl-mdx__unknown-component { gap: 0.2rem; padding: 0.52rem 0.65rem; border-radius: 9px; }
+.dl-mdx--compact .dl-mdx__status { min-height: 1.8rem; padding: 0.3rem 0.55rem; }
+
 .dl-mdx-template { min-width: 0; }
 .dl-mdx-template__error { display: grid; gap: 0.55rem; margin: 1rem; padding: 1rem; border: 1px solid color-mix(in srgb, var(--dl-danger, #ef6b73) 45%, transparent); border-radius: var(--dl-radius-md); color: var(--dl-text-muted); background: color-mix(in srgb, var(--dl-danger, #ef6b73) 8%, var(--dl-surface)); }
 .dl-mdx-template__error strong { color: var(--dl-danger, #ef6b73); font: 800 0.68rem/1 ui-monospace, monospace; letter-spacing: 0.08em; }

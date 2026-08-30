@@ -148,6 +148,8 @@ const document = parseDlMdx('# Archive\n\n- [x] indexed')
 
 `DlMdx` 可以把 MDX 作为主结构文档，并通过 `v-model:script-value`、`v-model:style-value` 分别保存 TypeScript/JavaScript 与 CSS 附加文档。附加脚本只用于提取导出动作的类型提示，不会在预览中执行；真实动作必须由宿主通过 `actions` 注册。
 
+组件源码块默认折叠为一行，可从折叠标记展开；传入 `:fold-components="false"` 可关闭自动折叠。渲染默认使用 `density="compact"`：收紧标题、正文、列表、表格、代码域及组件内部控件，同时保留 `density="comfortable"` 供长文阅读场景切换。紧凑模式中 H2～H6 只比正文逐级略大，不再制造大块标题留白。
+
 ```vue
 <DlMdx
   v-model="document"

@@ -308,7 +308,7 @@ ${vueSfc({
       script: `const status = getDlMdxRustCoreStatus()\nconst document = '# Rust core\\n\\n- [x] synchronous WASM'\nconst stats = parseDlMdx(document).stats`,
       template: `  <section>\n    <code>{{ status.engine }} · ABI {{ status.abiVersion }}</code>\n    <DlMdx :model-value="document" mode="preview" readonly />\n    <output>{{ stats.blockCount }} blocks</output>\n  </section>`,
     }),
-    tips: ['+++slot:default 与 +++endslot 之间保存原始 MDX，注册组件可通过 contentProp 接收并二次渲染。', 'WASM 字节码随组件包内嵌并同步初始化，不依赖运行时网络请求，也不会把 parseDlMdx 改成异步 API。', 'Rust crate 有独立单元测试；TypeScript 集成测试额外验证 ABI、内存释放、Unicode 锚点和重复解析。', 'HTML 不进入 Rust 字符串拼接渲染，仍由 DOMParser 转换为受限 Vue 节点，预览不使用 v-html。'],
+    tips: ['+++slot:default 与 +++endslot 之间保存原始 MDX，注册组件可通过 contentProp 接收并二次渲染。', '组件源码默认折叠为一行，点击折叠标记即可展开；fold-components=false 可关闭自动折叠。', 'density=compact 是默认的高信息密度渲染，comfortable 可恢复宽松长文排版。', 'WASM 字节码随组件包内嵌并同步初始化，不依赖运行时网络请求，也不会把 parseDlMdx 改成异步 API。', 'Rust crate 有独立单元测试；TypeScript 集成测试额外验证 ABI、内存释放、Unicode 锚点和重复解析。', 'HTML 不进入 Rust 字符串拼接渲染，仍由 DOMParser 转换为受限 Vue 节点，预览不使用 v-html。'],
   },
   'security-policy': {
     title: 'main.ts · Rust/WASM 域名白名单',

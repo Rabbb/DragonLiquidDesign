@@ -67,6 +67,8 @@ const props = withDefaults(defineProps<{
   formatOptions?: DlMdxFormatOptions
   sourceLanguage?: DlMdxEditorDocumentLanguage
   runtimeSymbols?: DlMdxRuntimeSymbol[]
+  foldComponents?: boolean
+  density?: 'compact' | 'comfortable'
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -93,6 +95,8 @@ const props = withDefaults(defineProps<{
   formatOptions: undefined,
   sourceLanguage: 'mdx',
   runtimeSymbols: () => [],
+  foldComponents: true,
+  density: 'compact',
 })
 
 const emit = defineEmits<{
@@ -216,8 +220,9 @@ const rootClass = computed(() => tv({
   variants: {
     mode: { edit: 'dl-mdx--edit', preview: 'dl-mdx--preview', split: 'dl-mdx--split' },
     disabled: { true: 'is-disabled', false: '' },
+    density: { compact: 'dl-mdx--compact', comfortable: 'dl-mdx--comfortable' },
   },
-})({ mode: localMode.value, disabled: props.disabled }))
+})({ mode: localMode.value, disabled: props.disabled, density: props.density }))
 const rootStyle = computed(() => ({ '--dl-mdx-min-height': props.minHeight, '--dl-mdx-preview-max-height': props.maxPreviewHeight }))
 
 watch(() => props.modelValue, value => {
@@ -535,6 +540,7 @@ function toggleTask(line: number) {
           :readonly="readonly"
           :disabled="disabled"
           :line-wrapping="lineWrapping"
+          :fold-components="foldComponents"
           :aria-label="`${ariaLabel}编辑器`"
         :document-language="sourceLanguage"
           :registry="activeRegistry"

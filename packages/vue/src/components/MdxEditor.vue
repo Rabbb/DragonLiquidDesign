@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { DlMdxSelection } from './dl-mdx.commands'
+import { findDlMdxComponentFoldRangeAtLine, findDlMdxComponentFoldRanges } from './dl-mdx.folding'
 import { analyzeDlMdx, completeDlMdx, hoverDlMdx, type DlMdxLanguageOptions } from './dl-mdx.language'
 import type { DlMdxRegistry } from './dl-mdx.registry'
 
@@ -14,6 +15,7 @@ const props = withDefaults(defineProps<{
   lineWrapping?: boolean
   ariaLabel?: string
   documentLanguage?: DlMdxEditorDocumentLanguage
+  foldComponents?: boolean
   registry?: DlMdxRegistry
   languageOptions?: DlMdxLanguageOptions
 }>(), {
@@ -22,6 +24,7 @@ const props = withDefaults(defineProps<{
   disabled: false,
   lineWrapping: true,
   documentLanguage: 'mdx',
+  foldComponents: true,
   registry: undefined,
   languageOptions: undefined,
   ariaLabel: 'Markdown 编辑器',
@@ -41,6 +44,7 @@ let wrapping: import('@codemirror/state').Compartment | undefined
 let viewModule: typeof import('@codemirror/view') | undefined
 let stateModule: typeof import('@codemirror/state') | undefined
 let lintModule: typeof import('@codemirror/lint') | undefined
+let languageModule: typeof import('@codemirror/language') | undefined
 let disposed = false
 let pendingSelection: DlMdxSelection | undefined
 let pendingFocus = false
@@ -66,14 +70,15 @@ onMounted(async () => {
     viewModule = loadedView
     stateModule = loadedState
     lintModule = lint
+    languageModule = language
     editable = new loadedState.Compartment()
     wrapping = new loadedState.Compartment()
     const dragonTheme = loadedView.EditorView.theme({
-      '&': { height: '100%', minHeight: 'inherit', color: 'var(--dl-text)', backgroundColor: 'transparent', fontSize: '0.9rem' },
+      '&': { height: '100%', minHeight: 'inherit', color: 'var(--dl-text)', backgroundColor: 'transparent', fontSize: '0.84rem' },
       '&.cm-focused': { outline: 'none' },
-      '.cm-scroller': { minHeight: 'inherit', fontFamily: '"Cascadia Code", "SFMono-Regular", Consolas, monospace', lineHeight: '1.72', overscrollBehavior: 'auto' },
-      '.cm-content': { padding: '1rem 0.9rem 4rem', caretColor: 'var(--dl-accent)' },
-      '.cm-line': { padding: '0 0.5rem' },
+      '.cm-scroller': { minHeight: 'inherit', fontFamily: '"Cascadia Code", "SFMono-Regular", Consolas, monospace', lineHeight: '1.52', overscrollBehavior: 'auto' },
+      '.cm-content': { padding: '0.72rem 0.6rem 2.5rem', caretColor: 'var(--dl-accent)' },
+      '.cm-line': { padding: '0 0.4rem' },
       '.cm-gutters': {
         color: 'var(--dl-text-faint)',
         backgroundColor: 'color-mix(in srgb, var(--dl-night-soft) 84%, var(--dl-surface-solid))',
@@ -92,6 +97,16 @@ onMounted(async () => {
       '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(59, 130, 246, .16)' },
       '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--dl-accent)' },
       '.cm-foldGutter span': { color: 'var(--dl-accent)' },
+      '.cm-foldPlaceholder': {
+        margin: '0 .28rem',
+        padding: '.12rem .42rem',
+        border: '1px solid var(--dl-accent-border)',
+        borderRadius: '999px',
+        color: 'var(--dl-accent-text)',
+        backgroundColor: 'var(--dl-accent-surface)',
+        font: '700 .62rem/1.15 var(--dl-font-sans, sans-serif)',
+        cursor: 'pointer',
+      },
       '.cm-tooltip': { color: 'var(--dl-text)', backgroundColor: 'var(--dl-surface-strong)', border: '1px solid var(--dl-border-strong)', borderRadius: '12px', overflow: 'hidden' },
       '.cm-tooltip-autocomplete > ul': { maxHeight: '20rem', fontFamily: 'var(--dl-font-sans, sans-serif)' },
       '.cm-tooltip-autocomplete > ul > li': { padding: '.38rem .65rem' },
@@ -153,6 +168,24 @@ onMounted(async () => {
 
     const mdxLanguageExtensions = props.documentLanguage === 'mdx' ? [
       markdownModule.markdown({ codeLanguages: languageData.languages }),
+      language.foldService.of((state, lineStart) => {
+        const range = findDlMdxComponentFoldRangeAtLine(state.doc.toString(), lineStart)
+        return range ? { from: range.from, to: range.to } : null
+      }),
+      language.codeFolding({
+        preparePlaceholder(state, range) {
+          return state.doc.lineAt(range.from).text.trimStart().startsWith('+++component:') ? 'component' : 'code'
+        },
+        placeholderDOM(_editorView, onclick, kind) {
+          const marker = document.createElement('span')
+          marker.className = 'cm-foldPlaceholder'
+          marker.textContent = kind === 'component' ? '··· 组件代码' : '···'
+          marker.setAttribute('aria-label', kind === 'component' ? '已折叠组件代码，点击展开' : '已折叠代码，点击展开')
+          marker.title = '点击展开'
+          marker.onclick = onclick
+          return marker
+        },
+      }),
       codeDomainPlugin,
       autocomplete.autocompletion({
         override: [context => {
@@ -214,7 +247,7 @@ onMounted(async () => {
         doc: props.modelValue,
         extensions: [
           loadedView.lineNumbers(),
-          language.foldGutter(),
+          language.foldGutter({ openText: '⌄', closedText: '›' }),
           loadedView.highlightSpecialChars(),
           commands.history(),
           loadedView.drawSelection(),
@@ -233,6 +266,7 @@ onMounted(async () => {
               ...autocomplete.completionKeymap,
             ] : []),
             ...commands.defaultKeymap,
+            ...language.foldKeymap,
             ...commands.historyKeymap,
             commands.indentWithTab,
           ]),
@@ -250,6 +284,7 @@ onMounted(async () => {
         ],
       }),
     })
+    if (props.documentLanguage === 'mdx' && props.foldComponents) setComponentFolding(true)
     if (pendingSelection) {
       const length = view.state.doc.length
       view.dispatch({ selection: { anchor: Math.min(pendingSelection.start, length), head: Math.min(pendingSelection.end, length) } })
@@ -267,7 +302,10 @@ onMounted(async () => {
 watch(() => props.modelValue, value => {
   if (!view || value === view.state.doc.toString()) return
   view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value } })
+  if (props.documentLanguage === 'mdx' && props.foldComponents) setComponentFolding(true)
 })
+
+watch(() => props.foldComponents, value => setComponentFolding(value))
 
 watch(() => [props.readonly, props.disabled] as const, ([readonly, disabled]) => {
   if (!view || !editable || !viewModule || !stateModule) return
@@ -311,6 +349,13 @@ function replaceDocument(source: string, selection: DlMdxSelection) {
 function focus() {
   if (view) view.focus()
   else pendingFocus = true
+}
+
+function setComponentFolding(collapsed: boolean) {
+  if (!view || !languageModule || props.documentLanguage !== 'mdx') return
+  const effect = collapsed ? languageModule.foldEffect : languageModule.unfoldEffect
+  const effects = findDlMdxComponentFoldRanges(view.state.doc.toString()).map(range => effect.of({ from: range.from, to: range.to }))
+  if (effects.length) view.dispatch({ effects })
 }
 
 defineExpose({ getSelection, replaceDocument, focus })

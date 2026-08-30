@@ -5353,6 +5353,18 @@ export default {
         "description": "设置 runtimeSymbols 属性。",
         "type": "DlMdxRuntimeSymbol[]",
         "defaultValue": "() => []"
+      },
+      {
+        "prop": "foldComponents",
+        "description": "设置 foldComponents 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "density",
+        "description": "设置 density 属性。",
+        "type": "'compact' | 'comfortable'",
+        "defaultValue": "'compact'"
       }
     ],
     "relatedTypes": [
