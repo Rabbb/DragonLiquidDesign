@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<{
   items: DlTreeMenuItem[]
   expanded?: string[]
   collapsed?: boolean
+  accordion?: boolean
   autoCollapse?: boolean
   collapseBreakpoint?: number
   label?: string
@@ -34,6 +35,7 @@ const props = withDefaults(defineProps<{
   modelValue: undefined,
   expanded: () => [],
   collapsed: undefined,
+  accordion: true,
   autoCollapse: true,
   collapseBreakpoint: 1024,
   label: '树目录菜单',
@@ -58,7 +60,41 @@ let media: MediaQueryList | null = null
 
 const desktopCollapsed = computed(() => props.collapsed ?? internalCollapsed.value)
 const panelOpen = computed(() => compact.value ? compactOpen.value : !desktopCollapsed.value)
-const expandedSet = computed(() => new Set(props.expanded))
+type BranchMeta = { parentId?: string; descendants: string[] }
+
+const branchMeta = computed(() => {
+  const output = new Map<string, BranchMeta>()
+  const visit = (items: DlTreeMenuItem[], parentId?: string): string[] => {
+    const branchIds: string[] = []
+    for (const item of items) {
+      if (!item.children?.length) continue
+      const descendants = visit(item.children, item.id)
+      output.set(item.id, { parentId, descendants })
+      branchIds.push(item.id, ...descendants)
+    }
+    return branchIds
+  }
+  visit(props.items)
+  return output
+})
+
+const expandedSet = computed(() => {
+  const requested = new Set(props.expanded)
+  if (!props.accordion) return requested
+  const order = new Map(props.expanded.map((id, index) => [id, index]))
+  const normalized = new Set<string>()
+  const visit = (items: DlTreeMenuItem[]) => {
+    const candidates = items
+      .filter(item => item.children?.length && requested.has(item.id))
+      .sort((left, right) => (order.get(right.id) ?? -1) - (order.get(left.id) ?? -1))
+    const active = candidates[0]
+    if (!active) return
+    normalized.add(active.id)
+    visit(active.children ?? [])
+  }
+  visit(props.items)
+  return normalized
+})
 const normalizedQuery = computed(() => normalizeDlSearch(query.value))
 
 function searchFields(item: DlTreeMenuItem): DlSearchFields {
@@ -105,9 +141,21 @@ const visibleMatchCount = computed(() => normalizedQuery.value
   : flatItems.value.length)
 
 function setExpanded(id: string, value: boolean) {
-  const next = new Set(props.expanded)
-  if (value) next.add(id)
-  else next.delete(id)
+  const next = new Set(expandedSet.value)
+  const current = branchMeta.value.get(id)
+  if (value) {
+    if (props.accordion) {
+      for (const [branchId, meta] of branchMeta.value) {
+        if (branchId === id || meta.parentId !== current?.parentId) continue
+        next.delete(branchId)
+        meta.descendants.forEach(descendant => next.delete(descendant))
+      }
+    }
+    next.add(id)
+  } else {
+    next.delete(id)
+    current?.descendants.forEach(descendant => next.delete(descendant))
+  }
   emit('update:expanded', [...next])
 }
 

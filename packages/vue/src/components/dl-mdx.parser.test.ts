@@ -88,6 +88,15 @@ tone = "accent"
     })
   })
 
+  it('treats a named JSX function invocation as a component block', () => {
+    const document = parseDlMdx('# Journal\n\n<Todo_1234 />')
+
+    expect(document.blocks[1]).toMatchObject({
+      type: 'component',
+      context: { name: 'Todo_1234', props: {}, events: {} },
+    })
+  })
+
   it.each([
     ['Rust', parseDlMdx],
     ['TypeScript', parseDlMdxWithTypeScript],

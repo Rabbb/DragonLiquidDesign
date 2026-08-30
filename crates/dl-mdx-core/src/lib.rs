@@ -512,7 +512,17 @@ fn block_start(lines: &[SourceLine], index: usize) -> bool {
         || list_line(&line.text).is_some()
         || divider(&line.text)
         || trimmed.starts_with("+++component:")
+        || jsx_component_invocation(trimmed).is_some()
         || is_table(lines, index)
+}
+
+fn jsx_component_invocation(value: &str) -> Option<&str> {
+    let body = value.strip_prefix('<')?.strip_suffix("/>")?.trim();
+    if body.chars().next().is_some_and(char::is_uppercase) && valid_name(body) {
+        Some(body)
+    } else {
+        None
+    }
 }
 
 fn strip_indent(lines: &[SourceLine], amount: usize) -> Vec<SourceLine> {
@@ -540,6 +550,20 @@ fn parse_blocks(lines: &[SourceLine], slug_counts: &mut HashMap<String, usize>) 
         let line = &lines[index];
         let trimmed = line.text.trim();
         if trimmed.is_empty() {
+            index += 1;
+            continue;
+        }
+
+        if let Some(name) = jsx_component_invocation(trimmed) {
+            blocks.push(json!({
+                "type": "component",
+                "context": {
+                    "name": name,
+                    "props": {},
+                    "events": {},
+                    "sourceLine": line.number,
+                }
+            }));
             index += 1;
             continue;
         }
@@ -911,6 +935,13 @@ mod tests {
     fn keeps_component_default_slot_as_raw_mdx() {
         let document = parse_document("+++component:JournalTodo\nsourceTodoId = \"todo-1\"\n+++slot:default\n## 完整标题\n\n- [ ] 独立的 **MDX** 描述\n+++endslot\n+++end");
         assert_eq!(document["blocks"][0]["context"]["slots"]["default"], "## 完整标题\n\n- [ ] 独立的 **MDX** 描述");
+    }
+
+    #[test]
+    fn parses_named_jsx_function_invocations() {
+        let document = parse_document("# Journal\n\n<Todo_1234 />");
+        assert_eq!(document["blocks"][1]["context"]["name"], "Todo_1234");
+        assert_eq!(document["blocks"][1]["type"], "component");
     }
 
     #[test]

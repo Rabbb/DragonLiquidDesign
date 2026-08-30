@@ -6,12 +6,13 @@ withDefaults(defineProps<{
   panels: DlSplitterPanel[]
   direction?: 'horizontal' | 'vertical'
   keyboardResizeBy?: number
+  autoSaveId?: string
 }>(), { direction: 'horizontal', keyboardResizeBy: 10 })
 const emit = defineEmits<{ layout: [value: number[]] }>()
 </script>
 
 <template>
-  <SplitterGroup data-dl data-slot="splitter" :direction="direction" :keyboard-resize-by="keyboardResizeBy" :class="['flex size-full overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border)] bg-[var(--dl-surface)]', direction === 'vertical' && 'flex-col']" @layout="emit('layout', $event)">
+  <SplitterGroup data-dl data-slot="splitter" :direction="direction" :keyboard-resize-by="keyboardResizeBy" :auto-save-id="autoSaveId" :class="['flex size-full overflow-hidden rounded-[var(--dl-radius-md)] border border-[var(--dl-border)] bg-[var(--dl-surface)]', direction === 'vertical' && 'flex-col']" @layout="emit('layout', $event)">
     <template v-for="(panel, index) in panels" :key="panel.id">
       <SplitterPanel :id="panel.id" :order="index" :default-size="panel.defaultSize" :min-size="panel.minSize" :max-size="panel.maxSize" :collapsible="panel.collapsible" class="min-h-0 min-w-0 overflow-auto">
         <slot :name="`panel-${panel.id}`" :panel="panel"><slot :panel="panel" :index="index" /></slot>

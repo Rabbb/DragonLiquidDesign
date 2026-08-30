@@ -288,6 +288,21 @@ function parseBlocks(lines: SourceLine[], slugCounts: Map<string, number>): DlMd
       continue
     }
 
+    const jsxInvocation = line.text.trim().match(/^<([A-Z][A-Za-z0-9._-]*)\s*\/>$/)
+    if (jsxInvocation) {
+      blocks.push({
+        type: 'component',
+        context: {
+          name: jsxInvocation[1],
+          props: {},
+          events: {},
+          sourceLine: line.number,
+        },
+      })
+      index += 1
+      continue
+    }
+
     const fence = line.text.match(/^\s*(```+|~~~+)\s*([^\s`]*)?.*$/)
     if (fence) {
       const marker = fence[1][0]

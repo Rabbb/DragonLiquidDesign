@@ -134,7 +134,7 @@ function namedChildren(node: Extract<DlMdxTemplateNode, { type: 'element' }>) {
   return { named, defaults }
 }
 
-function templateRenderer(program: DlMdxTemplateProgram, registry: DlMdxRegistry | undefined, hostSlots: Slots, lockLiteralBindings: boolean) {
+function templateRenderer(program: DlMdxTemplateProgram, registry: DlMdxRegistry | undefined, hostSlots: Slots, lockLiteralBindings: boolean, entry?: string) {
   const renderNodes = (nodes: DlMdxTemplateNode[], scope: DlMdxTemplateScope): VNodeChild[] => nodes.flatMap(node => {
     const rendered = renderNode(node, scope)
     return Array.isArray(rendered) ? rendered : [rendered]
@@ -186,8 +186,8 @@ function templateRenderer(program: DlMdxTemplateProgram, registry: DlMdxRegistry
   }
 
   return (scope: DlMdxTemplateScope) => {
-    const entry = program.functions[program.entry]
-    return entry ? renderFunction(entry, scope) : renderError(program)
+    const selected = program.functions[entry || program.entry]
+    return selected ? renderFunction(selected, scope) : renderError(program)
   }
 }
 
@@ -197,6 +197,7 @@ export default defineComponent({
     source: { type: String, required: true },
     context: { type: Object as PropType<DlMdxTemplateContext>, default: () => ({}) },
     registry: { type: Object as PropType<DlMdxRegistry>, default: undefined },
+    entry: { type: String, default: undefined },
     lockLiteralBindings: { type: Boolean, default: true },
     ariaLabel: { type: String, default: 'DL-MDX 函数模板' },
   },
@@ -208,7 +209,7 @@ export default defineComponent({
     useDlMdxSecurityPolicy()
     const registry = computed(() => props.registry ?? injectedRegistry)
     const program = computed(() => parseDlMdxTemplate(props.source, registry.value))
-    const renderer = computed(() => templateRenderer(program.value, registry.value, slots, props.lockLiteralBindings))
+    const renderer = computed(() => templateRenderer(program.value, registry.value, slots, props.lockLiteralBindings, props.entry))
     watch(program, current => emit('diagnostics', current.diagnostics), { immediate: true })
     return () => {
       const current = program.value

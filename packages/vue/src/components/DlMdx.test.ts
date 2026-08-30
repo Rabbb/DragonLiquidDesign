@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import DlMdx from './DlMdx.vue'
+import DlSplitter from './DlSplitter.vue'
 import { createDlMdxRegistry, defineDlMdxComponent } from './dl-mdx.registry'
 
 if (!Range.prototype.getClientRects) {
@@ -308,10 +309,43 @@ describe('DlMdx', () => {
     wrapper.unmount()
   })
 
+  it('inserts companion JSX functions instead of inline component data when script execution is enabled', async () => {
+    const registry = createDlMdxRegistry([
+      defineDlMdxComponent({
+        name: 'Notice',
+        component: defineComponent({ props: { tone: String }, setup: () => () => h('p', 'notice') }),
+        defaultProps: { tone: 'accent' },
+      }),
+    ])
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: { modelValue: '', scriptValue: '', mode: 'edit', debounce: 0, registry, executeCompanionScript: true },
+    })
+    await flushPromises()
+    await wrapper.get('[data-slot="mdx-component-library-trigger"]').trigger('click')
+    await flushPromises()
+    document.body.querySelector<HTMLButtonElement>('[data-component-name="Notice"]')!.click()
+    await flushPromises()
+
+    expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toBe('<NoticeBlock1 />\n')
+    expect(wrapper.emitted('update:scriptValue')?.at(-1)?.[0]).toContain('export function NoticeBlock1()')
+    expect(wrapper.emitted('update:scriptValue')?.at(-1)?.[0]).toContain('tone={"accent"}')
+    wrapper.unmount()
+  })
+
   it('keeps both split panes stretched to the workspace height', () => {
     const css = readFileSync(resolve(process.cwd(), 'src/styles/index.css'), 'utf8')
     expect(css).toContain('.dl-mdx--split .dl-mdx__preview-pane { max-height: none; }')
     expect(css).toContain('height: 100%;\n  min-width: 0;\n  min-height: 0;')
+  })
+
+  it('uses the shared splitter and forwards a local persistence id', () => {
+    const wrapper = mount(DlMdx, {
+      props: { modelValue: '# Split', mode: 'split', debounce: 0, splitAutoSaveId: 'notebook:user-1' },
+    })
+
+    expect(wrapper.get('[data-slot="splitter"]').attributes('data-slot')).toBe('splitter')
+    expect(wrapper.getComponent(DlSplitter).props('autoSaveId')).toBe('notebook:user-1')
   })
 
   it('binds declared component events to host actions without evaluating document code', async () => {
@@ -355,13 +389,37 @@ describe('DlMdx', () => {
     await flushPromises()
 
     expect(wrapper.findAll('.dl-mdx__document-tabs button').map(button => button.text())).toEqual([
-      'MDX STRUCTURE', 'SCRIPT TYPESCRIPT', 'STYLE CSS',
+      'MDX STRUCTURE', 'TS FUNCTIONS', 'CSS STYLES',
     ])
     expect(wrapper.findAll('.cm-content')).toHaveLength(3)
     expect(wrapper.text()).toContain('Main document')
     expect(document.body.textContent).toContain('saveDocument')
     expect(document.body.textContent).toContain('color: red')
     wrapper.unmount()
+  })
+
+  it('executes named JSX functions from the TypeScript companion document without eval', async () => {
+    const registry = createDlMdxRegistry([
+      defineDlMdxComponent({
+        name: 'JournalCard',
+        component: defineComponent({ props: { label: String }, setup: props => () => h('article', { class: 'journal-card' }, props.label) }),
+      }),
+    ])
+    const wrapper = mount(DlMdx, {
+      props: {
+        modelValue: '# Journal\n\n<Todo_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa />',
+        scriptValue: 'export function Todo_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa() { return (<JournalCard label={"Visible Todo"} />) }',
+        styleValue: '.journal-card { color: red; }',
+        executeCompanionScript: true,
+        registry,
+        mode: 'preview',
+        debounce: 0,
+      },
+    })
+    await flushPromises()
+
+    expect(wrapper.get('.journal-card').text()).toBe('Visible Todo')
+    expect(wrapper.get('style').text()).toContain('.journal-card')
   })
 
   it('formats the main document from the toolbar', async () => {

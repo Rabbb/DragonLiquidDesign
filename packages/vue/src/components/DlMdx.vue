@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId, watch, type ComponentPublicInstance } from 'vue'
+import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useId, watch, type ComponentPublicInstance } from 'vue'
 import { tv } from 'tailwind-variants'
 import { applyDlMdxCommand, insertDlMdxSnippet, type DlMdxSelection } from './dl-mdx.commands'
 import {
@@ -13,6 +13,7 @@ import {
 import { parseDlMdx } from './dl-mdx.parser'
 import {
   createDlMdxComponentSnippet,
+  createDlMdxRegistry,
   useDlMdxRegistry,
   type DlMdxComponentCategory,
   type DlMdxComponentDefinition,
@@ -20,6 +21,8 @@ import {
   type DlMdxActionMap,
   type DlMdxRegistry,
 } from './dl-mdx.registry'
+import DlMdxTemplate, { type DlMdxTemplateContext } from './DlMdxTemplate'
+import { parseDlMdxTemplate } from './dl-mdx.template'
 import { useDlMdxSecurityPolicy } from './dl-mdx.security'
 import { parseCachedDlMdx } from './dl-mdx.preview-cache'
 import type {
@@ -30,9 +33,10 @@ import type {
   DlMdxRuntimeSymbol,
   DlMdxToolbarAction,
 } from './dl-mdx.types'
-import type { DlDataTableColumn } from './primitive.types'
+import type { DlDataTableColumn, DlSplitterPanel } from './primitive.types'
 import DlDataTable from './DlDataTable.vue'
 import DlDialog from './DlDialog.vue'
+import DlSplitter from './DlSplitter.vue'
 import MdxEditor, { type DlMdxEditorDocumentLanguage } from './MdxEditor.vue'
 import MdxPreview from './MdxPreview.vue'
 import MdxRuntimeJsonTree from './MdxRuntimeJsonTree.vue'
@@ -84,6 +88,11 @@ const props = withDefaults(defineProps<{
   density?: 'compact' | 'comfortable'
   bordered?: boolean
   optimizePreview?: boolean
+  splitAutoSaveId?: string
+  splitDefaultSize?: number
+  splitMinSize?: number
+  executeCompanionScript?: boolean
+  templateContext?: DlMdxTemplateContext
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -116,6 +125,11 @@ const props = withDefaults(defineProps<{
   density: 'compact',
   bordered: true,
   optimizePreview: true,
+  splitAutoSaveId: undefined,
+  splitDefaultSize: 50,
+  splitMinSize: 20,
+  executeCompanionScript: false,
+  templateContext: () => ({}),
 })
 
 const emit = defineEmits<{
@@ -127,6 +141,7 @@ const emit = defineEmits<{
   error: [error: Error]
   action: [invocation: DlMdxActionInvocation]
   diagnostics: [analysis: DlMdxLanguageAnalysis]
+  splitLayout: [layout: number[]]
 }>()
 
 const defaultToolbar: DlMdxToolbarAction[] = ['bold', 'italic', 'strike', 'inline-code', 'link', 'heading', 'blockquote', 'unordered-list', 'task-list', 'code-block', 'component', 'format']
@@ -161,6 +176,7 @@ const componentCategory = ref<ComponentLibraryCategory>('all')
 const componentLibraryTrigger = ref<HTMLElement>()
 const componentLibraryWindow = ref<HTMLElement>()
 const componentLibraryPosition = ref({ left: 12, top: 12 })
+const resizableSplit = ref(typeof window === 'undefined' || window.innerWidth > 800)
 const componentLibraryId = `dl-mdx-component-library-${useId().replace(/[^A-Za-z0-9_-]/g, '')}`
 const componentLibraryTitleId = `${componentLibraryId}-title`
 const injectedRegistry = useDlMdxRegistry()
@@ -178,12 +194,44 @@ const policy = computed<Required<DlMdxLinkPolicy>>(() => ({
   allowImages: props.linkPolicy?.allowImages ?? true,
   allowDataImages: props.linkPolicy?.allowDataImages ?? false,
 }))
-const activeRegistry = computed(() => props.registry ?? injectedRegistry)
+const baseRegistry = computed(() => props.registry ?? injectedRegistry)
+const companionProgram = computed(() => props.executeCompanionScript ? parseDlMdxTemplate(localScript.value, baseRegistry.value) : null)
+const activeRegistry = computed(() => {
+  const base = baseRegistry.value
+  const program = companionProgram.value
+  if (!program || program.diagnostics.some(item => item.severity === 'error')) return base
+  const merged = createDlMdxRegistry(base?.entries() ?? [])
+  for (const name of Object.keys(program.functions)) {
+    merged.register({
+      name,
+      insertable: false,
+      category: 'general',
+      maturity: 'custom',
+      description: '由当前 TypeScript 伴随文档提供的具名 JSX 函数组件。',
+      render: () => h(DlMdxTemplate, {
+        source: localScript.value,
+        entry: name,
+        context: props.templateContext,
+        registry: merged,
+        lockLiteralBindings: props.lockLiteralBindings,
+      }),
+    })
+  }
+  return merged
+})
 const showDocumentTabs = computed(() => props.showCompanionDocuments || props.scriptValue !== null || props.styleValue !== null)
 const lightweightPreview = computed(() => props.optimizePreview && localMode.value === 'preview' && !showDocumentTabs.value)
 const effectiveShowToolbar = computed(() => props.showToolbar && (localMode.value !== 'preview' || props.showModeSwitch))
 const effectiveShowStatus = computed(() => props.showStatus && localMode.value !== 'preview')
 const effectiveBordered = computed(() => props.bordered && localMode.value !== 'preview')
+const splitPanels = computed<DlSplitterPanel[]>(() => {
+  const minSize = Math.max(10, Math.min(45, props.splitMinSize))
+  const sourceSize = Math.max(minSize, Math.min(100 - minSize, props.splitDefaultSize))
+  return [
+    { id: 'source', defaultSize: sourceSize, minSize },
+    { id: 'preview', defaultSize: 100 - sourceSize, minSize },
+  ]
+})
 const scriptSymbols = computed(() => extractDlMdxActionSymbols(localScript.value))
 const resolvedRuntimeSymbols = computed<RuntimeTableRow[]>(() => props.runtimeSymbols.map((symbol, index) => {
   let value = symbol.value
@@ -300,10 +348,18 @@ watch(componentLibraryOpen, (open) => {
     window.removeEventListener('scroll', positionComponentLibrary, true)
   }
 })
+function syncResizableSplit() {
+  resizableSplit.value = window.innerWidth > 800
+}
+onMounted(() => {
+  syncResizableSplit()
+  window.addEventListener('resize', syncResizableSplit)
+})
 onBeforeUnmount(() => {
   if (parseTimer) clearTimeout(parseTimer)
   window.removeEventListener('resize', positionComponentLibrary)
   window.removeEventListener('scroll', positionComponentLibrary, true)
+  window.removeEventListener('resize', syncResizableSplit)
 })
 
 function scheduleParse() {
@@ -447,10 +503,37 @@ function closeComponentLibrary() {
   void nextTick(() => editorRef.value?.focus())
 }
 
+function companionFunctionFor(definition: DlMdxComponentDefinition) {
+  const stem = definition.name.replace(/[^A-Za-z0-9]+/g, '') || 'Component'
+  const base = `${stem[0].toUpperCase()}${stem.slice(1)}Block`
+  let index = 1
+  while (companionProgram.value?.functions[`${base}${index}`]) index += 1
+  const name = `${base}${index}`
+  const attributes = Object.entries(definition.defaultProps ?? {}).flatMap(([property, value]) => {
+    try {
+      const serialized = JSON.stringify(value)
+      return serialized === undefined ? [] : [`      ${property}={${serialized}}`]
+    } catch { return [] }
+  })
+  const element = attributes.length
+    ? `<${definition.name}\n${attributes.join('\n')}\n    />`
+    : `<${definition.name} />`
+  return {
+    name,
+    source: `export function ${name}() {\n  return (\n    ${element}\n  )\n}`,
+  }
+}
+
 function insertRegisteredComponent(entry: ComponentLibraryEntry) {
   if (!canEdit.value || !componentLibraryEntries.value.includes(entry)) return
   const selection = editorRef.value?.getSelection() ?? lastEditorSelection.value
-  const result = insertDlMdxSnippet({ source: localSource.value, selection }, entry.snippet)
+  let snippet = entry.snippet
+  if (props.executeCompanionScript) {
+    const generated = companionFunctionFor(entry.definition)
+    snippet = `<${generated.name} />`
+    updateScript(`${localScript.value.trimEnd()}${localScript.value.trim() ? '\n\n' : ''}${generated.source}\n`)
+  }
+  const result = insertDlMdxSnippet({ source: localSource.value, selection }, snippet)
   lastEditorSelection.value = result.selection
   if (editorRef.value) editorRef.value.replaceDocument(result.source, result.selection)
   else updateSource(result.source)
@@ -485,6 +568,7 @@ function toggleTask(line: number) {
     :class="rootClass"
     :style="rootStyle"
   >
+    <component :is="'style'" v-if="executeCompanionScript && localStyle">{{ localStyle }}</component>
     <header v-if="effectiveShowToolbar" class="dl-mdx__toolbar">
       <div v-if="localMode !== 'preview' && activeDocument === 'mdx'" class="dl-mdx__format-actions" role="toolbar" aria-label="Markdown 格式工具">
         <slot name="toolbar-start" />
@@ -650,13 +734,64 @@ function toggleTask(line: number) {
 
     <nav v-if="showDocumentTabs" class="dl-mdx__document-tabs" aria-label="MarkdownX 文档工作区">
       <button type="button" :class="{ active: activeDocument === 'mdx' }" :aria-pressed="activeDocument === 'mdx'" @click="activeDocument = 'mdx'">MDX <small>STRUCTURE</small></button>
-      <button type="button" :class="{ active: activeDocument === 'script' }" :aria-pressed="activeDocument === 'script'" @click="activeDocument = 'script'">SCRIPT <small>{{ scriptLanguage.toUpperCase() }}</small></button>
-      <button type="button" :class="{ active: activeDocument === 'style' }" :aria-pressed="activeDocument === 'style'" @click="activeDocument = 'style'">STYLE <small>CSS</small></button>
+      <button type="button" :class="{ active: activeDocument === 'script' }" :aria-pressed="activeDocument === 'script'" @click="activeDocument = 'script'">{{ scriptLanguage === 'typescript' ? 'TS' : 'JS' }} <small>FUNCTIONS</small></button>
+      <button type="button" :class="{ active: activeDocument === 'style' }" :aria-pressed="activeDocument === 'style'" @click="activeDocument = 'style'">CSS <small>STYLES</small></button>
       <span>MDX 为主文档，脚本与样式独立保存</span>
     </nav>
 
     <div class="dl-mdx__workspace" :class="{ 'is-companion': activeDocument !== 'mdx' }">
-      <section v-if="activeDocument === 'mdx' && localMode !== 'preview'" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
+      <DlSplitter
+        v-if="activeDocument === 'mdx' && localMode === 'split' && resizableSplit"
+        class="dl-mdx__splitter"
+        :panels="splitPanels"
+        :auto-save-id="splitAutoSaveId"
+        :keyboard-resize-by="2"
+        @layout="emit('splitLayout', $event)"
+      >
+        <template #panel-source>
+          <section class="dl-mdx__editor-pane" aria-label="Markdown 源码">
+            <MdxEditor
+              :key="`source:${sourceLanguage}`"
+              ref="editorRef"
+              :model-value="localSource"
+              :placeholder="placeholder"
+              :readonly="readonly"
+              :disabled="disabled"
+              :line-wrapping="lineWrapping"
+              :fold-components="foldComponents"
+              :aria-label="`${ariaLabel}编辑器`"
+              :document-language="sourceLanguage"
+              :registry="activeRegistry"
+              :language-options="effectiveLanguageOptions"
+              @update:model-value="updateSource"
+              @selection-change="updateEditorSelection"
+              @command="execute"
+              @error="emit('error', $event)"
+            />
+          </section>
+        </template>
+        <template #panel-preview>
+          <section class="dl-mdx__preview-pane" :aria-busy="parsing">
+            <div v-if="parsing" class="dl-mdx__parsing"><i />正在更新预览</div>
+            <MdxPreview
+              :document="document"
+              :link-policy="policy"
+              :task-interactive="taskInteractive && canEdit"
+              :lock-literal-bindings="lockLiteralBindings"
+              :empty-text="emptyText"
+              :ariaLabel="`${ariaLabel}预览`"
+              :component-slots="$slots"
+              :registry="activeRegistry"
+              :actions="props.actions"
+              :security-policy="injectedSecurityPolicy"
+              @toggle-task="toggleTask"
+              @error="emit('error', $event)"
+              @action="emit('action', $event)"
+            />
+          </section>
+        </template>
+      </DlSplitter>
+      <section v-if="activeDocument === 'mdx' && localMode !== 'preview' && (localMode !== 'split' || !resizableSplit)" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
       <MdxEditor
         :key="`source:${sourceLanguage}`"
         ref="editorRef"
@@ -676,7 +811,7 @@ function toggleTask(line: number) {
           @error="emit('error', $event)"
         />
       </section>
-      <section v-if="activeDocument === 'mdx' && localMode !== 'edit'" class="dl-mdx__preview-pane" :aria-busy="parsing">
+      <section v-if="activeDocument === 'mdx' && localMode !== 'edit' && (localMode !== 'split' || !resizableSplit)" class="dl-mdx__preview-pane" :aria-busy="parsing">
         <div v-if="parsing" class="dl-mdx__parsing"><i />正在更新预览</div>
         <MdxPreview
           :document="document"

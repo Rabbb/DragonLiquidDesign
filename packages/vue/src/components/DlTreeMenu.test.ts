@@ -47,4 +47,20 @@ describe('DlTreeMenu', () => {
     expect(wrapper.get('.dl-tree-menu__matches mark').text()).toBe('Windows')
     expect(wrapper.find('[aria-label="收起Project"]').exists()).toBe(true)
   })
+
+  it('uses accordion expansion by default and removes the closed branch descendants', async () => {
+    const wrapper = mount(DlTreeMenu, {
+      props: {
+        items: [
+          { id: 'docs', label: 'Docs', children: [{ id: 'guides', label: 'Guides', children: [{ id: 'start', label: 'Start' }] }] },
+          { id: 'api', label: 'API', children: [{ id: 'reference', label: 'Reference' }] },
+        ],
+        expanded: ['docs', 'guides'],
+        autoCollapse: false,
+      },
+    })
+
+    await wrapper.get('[aria-label="展开API"]').trigger('click')
+    expect(wrapper.emitted('update:expanded')?.at(-1)).toEqual([['api']])
+  })
 })
