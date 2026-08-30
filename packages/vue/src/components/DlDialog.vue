@@ -458,6 +458,10 @@ onBeforeUnmount(() => {
 
 .dl-dialog {
   --dl-dialog-width: 640px;
+  --dl-dialog-background: var(--dl-panel);
+  --dl-dialog-inset-highlight: rgba(255, 255, 255, 0.9);
+  --dl-dialog-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.65), transparent 24%);
+  --dl-dialog-sheen-opacity: 0.6;
   --dl-overlay-border: rgba(15, 23, 42, 0.14);
   --dl-overlay-rail: linear-gradient(90deg, rgba(164, 105, 11, 0.12), rgba(148, 163, 184, 0.32), rgba(71, 85, 105, 0.08));
   --dl-overlay-glow: rgba(15, 23, 42, 0.04);
@@ -476,9 +480,9 @@ onBeforeUnmount(() => {
   isolation: isolate;
   border: 1px solid var(--dl-overlay-border);
   border-radius: 28px;
-  background: var(--dl-panel);
+  background: var(--dl-dialog-background);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 1px 0 var(--dl-dialog-inset-highlight),
     0 24px 60px rgba(15, 23, 42, 0.18),
     0 0 40px var(--dl-overlay-glow);
   color: var(--dl-text);
@@ -494,8 +498,8 @@ onBeforeUnmount(() => {
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), transparent 24%);
-  opacity: 0.6;
+  background: var(--dl-dialog-sheen);
+  opacity: var(--dl-dialog-sheen-opacity);
 }
 
 .dl-dialog::after {

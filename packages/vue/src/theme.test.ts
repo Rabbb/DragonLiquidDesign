@@ -72,6 +72,9 @@ describe('createDlTheme', () => {
     expect(forest.tokens?.['--dl-surface']).toBe('rgba(14, 39, 26, 0.82)')
     expect(forest.tokens?.['--dl-accent']).toBe('#f4d35e')
     expect(forest.tokens?.['--dl-button-primary-bg']).toContain('#73d8a4')
+    expect(forest.tokens?.['--dl-dialog-background']).not.toContain('244, 211, 94')
+    expect(forest.tokens?.['--dl-dialog-inset-highlight']).toBe('rgba(226, 242, 233, 0.09)')
+    expect(forest.tokens?.['--dl-dialog-sheen-opacity']).toBe('0.42')
 
     const mocha = dlThemePresets.find(theme => theme.name === 'mocha-mauve')!
     expect(mocha.base).toBe('black')
