@@ -22,6 +22,7 @@ import DlColorSwatchPicker from './DlColorSwatchPicker.vue'
 import DlCombobox from './DlCombobox.vue'
 import DlContainer from './DlContainer.vue'
 import DlContextMenu from './DlContextMenu.vue'
+import DlDataTable from './DlDataTable.vue'
 import DlDateField from './DlDateField.vue'
 import DlDatePicker from './DlDatePicker.vue'
 import DlDateRangeField from './DlDateRangeField.vue'
@@ -92,6 +93,7 @@ import DlToast from './DlToast.vue'
 import DlToggle from './DlToggle.vue'
 import DlToggleGroup from './DlToggleGroup.vue'
 import DlToolbar from './DlToolbar.vue'
+import DlToolbarMenu from './DlToolbarMenu.vue'
 import DlTooltip from './DlTooltip.vue'
 import DlTree from './DlTree.vue'
 import DlVirtualList from './DlVirtualList.vue'
@@ -232,6 +234,7 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('Avatar', DlAvatar, 'general', 'stable', { defaultProps: { fallback: 'DL' } }),
   official('Collapsible', DlCollapsible, 'general', 'stable', { defaultProps: { title: '更多资料' }, defaultContent: '按需展开的补充内容。' }),
   official('ContextMenu', DlContextMenu, 'general', 'stable', { defaultProps: { items: menuItems }, defaultContent: '在此区域打开上下文菜单' }),
+  official('DataTable', DlDataTable, 'general', 'custom', { defaultProps: { columns: [{ type: 'checkbox', width: 44 }, { field: 'title', title: '标题' }, { field: 'status', title: '状态', width: 100 }], rows: [{ id: 1, title: '整理 MDX 笔记', status: '进行中' }, { id: 2, title: '刷新 TODO 快照', status: '待办' }] }, description: '适配 DL 主题与选中模型的数据表格。' }),
   official('Dialog', DlDialog, 'general', 'stable', { defaultProps: { title: '编辑条目', description: '修改作品的基础资料。' }, defaultContent: '对话框正文由安全注册定义提供。', triggerLabel: '打开对话框' }),
   official('Drawer', DlDrawer, 'general', 'alpha', { defaultProps: { title: '筛选条件', description: '调整收藏库显示范围。' }, defaultContent: '抽屉正文由安全注册定义提供。', triggerLabel: '打开抽屉' }),
   official('DropdownMenu', DlDropdownMenu, 'general', 'stable', { defaultProps: { items: menuItems, label: '条目操作' }, triggerLabel: '打开菜单' }),
@@ -249,6 +252,7 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('Tabs', DlTabs, 'general', 'stable', { defaultProps: { items: [{ value: 'intro', label: '简介', description: '作品简介内容' }, { value: 'episodes', label: '剧集', description: '剧集列表内容' }], modelValue: 'intro' } }),
   official('Toast', DlToast, 'general', 'stable', { defaultProps: { title: '保存完成', description: 'MarkdownX 注册定义已经生效。', open: false } }),
   official('Toolbar', DlToolbar, 'general', 'stable', { defaultProps: { items: menuItems } }),
+  official('ToolbarMenu', DlToolbarMenu, 'general', 'custom', { defaultProps: { menus: [{ value: 'file', label: '文件', items: menuItems }] }, description: '面向桌面应用场景的分层工具栏菜单与快捷键绑定。' }),
   official('Tooltip', DlTooltip, 'general', 'stable', { defaultProps: { text: '由官方注册表渲染', tone: 'accent' }, defaultContent: '悬停查看提示' }),
   official('Tree', DlTree, 'general', 'alpha', { defaultProps: { items: [{ id: 'season', label: '季度', children: [{ id: 'spring', label: '春季番' }] }] } }),
   official('VirtualList', DlVirtualList, 'general', 'custom', { defaultProps: { items: ['动画', '漫画', '轻小说'], estimatedItemHeight: 48, viewportHeight: 144 } }),

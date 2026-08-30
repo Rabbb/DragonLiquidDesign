@@ -23,6 +23,7 @@ import RawDlColorSwatchPicker from './components/DlColorSwatchPicker.vue'
 import RawDlContainer from './components/DlContainer.vue'
 import RawDlCombobox from './components/DlCombobox.vue'
 import RawDlContextMenu from './components/DlContextMenu.vue'
+import RawDlDataTable from './components/DlDataTable.vue'
 import RawDlDateField from './components/DlDateField.vue'
 import RawDlDatePicker from './components/DlDatePicker.vue'
 import RawDlDateRangeField from './components/DlDateRangeField.vue'
@@ -92,6 +93,7 @@ import RawDlToast from './components/DlToast.vue'
 import RawDlToggle from './components/DlToggle.vue'
 import RawDlToggleGroup from './components/DlToggleGroup.vue'
 import RawDlToolbar from './components/DlToolbar.vue'
+import RawDlToolbarMenu from './components/DlToolbarMenu.vue'
 import RawDlTooltip from './components/DlTooltip.vue'
 import RawDlTree from './components/DlTree.vue'
 import RawDlVirtualList from './components/DlVirtualList.vue'
@@ -271,6 +273,19 @@ export const DlColorSwatchPicker = managed(RawDlColorSwatchPicker, 'DlColorSwatc
 export const DlContainer = managed(RawDlContainer, 'DlContainer')
 export const DlCombobox = managed(RawDlCombobox, 'DlCombobox', { domEvents: fieldEvents })
 export const DlContextMenu = managed(RawDlContextMenu, 'DlContextMenu')
+export const DlDataTable = managed(RawDlDataTable, 'DlDataTable', {
+  domEvents: fieldEvents,
+  methods: {
+    clearSelection: context => { (context.inner as { clearSelection?: () => void } | null)?.clearSelection?.(); return true },
+    getSelectedRows: context => (context.inner as { getSelectedRows?: () => unknown[] } | null)?.getSelectedRows?.() ?? [],
+    recalculate: context => { (context.inner as { recalculate?: () => void } | null)?.recalculate?.(); return true },
+  },
+  methodDefinitions: [
+    method('clearSelection', '清除全部复选行。', '()'),
+    method('getSelectedRows', '返回当前复选行数据。', '()', 'unknown[]'),
+    method('recalculate', '重新计算表格布局。', '()'),
+  ],
+})
 export const DlDateField = managed(RawDlDateField, 'DlDateField', { domEvents: fieldEvents })
 export const DlDatePicker = managed(RawDlDatePicker, 'DlDatePicker', { domEvents: fieldEvents })
 export const DlDateRangeField = managed(RawDlDateRangeField, 'DlDateRangeField', { domEvents: fieldEvents })
@@ -461,6 +476,11 @@ export const DlToolbar = managed(RawDlToolbar, 'DlToolbar', {
   domEvents: actionEvents,
   methods: { triggerAction: (context, value: string) => { context.control.dispatch('action', value); return true } },
   methodDefinitions: [method('triggerAction', '以编程方式派发工具栏 action。', '(value: string)')],
+})
+export const DlToolbarMenu = managed(RawDlToolbarMenu, 'DlToolbarMenu', {
+  domEvents: actionEvents,
+  methods: { triggerAction: (context, value: string) => { context.control.dispatch('select', value); return true } },
+  methodDefinitions: [method('triggerAction', '以编程方式执行一个菜单命令。', '(value: string)')],
 })
 export const DlTooltip = managed(RawDlTooltip, 'DlTooltip')
 export const DlTree = managed(RawDlTree, 'DlTree', {

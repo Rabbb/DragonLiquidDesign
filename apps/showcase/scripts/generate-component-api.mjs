@@ -695,7 +695,7 @@ const mdxRelatedTypes = api.mdx?.relatedTypes.map(type => type.title)
 if (JSON.stringify(mdxRelatedTypes) !== JSON.stringify([
   'DlMdxMode', 'DlMdxToolbarAction[]', 'DlMdxLinkPolicy', 'DlMdxRegistry',
   'DlMdxComponentDefinition[]', 'DlMdxEventSchema', 'DlMdxTypeSchema', 'DlMdxSchemaType[]',
-  'DlMdxComponentCategory', 'DlMdxComponentMaturity', 'DlMdxLanguageOptions', 'DlMdxDiagnosticSeverity', 'DlMdxFormatOptions',
+  'DlMdxComponentCategory', 'DlMdxComponentMaturity', 'DlMdxLanguageOptions', 'DlMdxDiagnosticSeverity', 'DlMdxFormatOptions', 'DlMdxRuntimeSymbol[]',
   'DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind', 'DlMdxRustCoreStatus',
 ])) {
   throw new Error(`Mdx 相关类型 API 顺序不正确：${mdxRelatedTypes?.join(', ')}`)

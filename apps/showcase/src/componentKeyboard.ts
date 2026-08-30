@@ -92,9 +92,15 @@ define(['segmented', 'radio-group', 'toggle-group', 'color-swatch-picker', 'tabs
   keys: ['方向键移动', 'Home / End 首尾', 'Enter / Space 激活'],
 })
 
-define(['split-button', 'context-menu', 'dropdown-menu', 'menubar', 'navigation-menu'], {
+define(['split-button', 'context-menu', 'dropdown-menu', 'menubar', 'navigation-menu', 'toolbar-menu'], {
   summary: '菜单入口和菜单项保持标准菜单键盘模型，并提供明确的关闭与焦点返回。',
   keys: ['Enter / Space / ↓ 打开', 'Shift+F10 / Menu 打开右键菜单', '方向键移动', 'Home / End 首尾', 'Escape 关闭'],
+})
+
+define(['data-table'], {
+  summary: '表头、行与复选项保持表格键盘模型，自定义单元格中的操作按正常 Tab 顺序访问。',
+  keys: ['Tab 进入表格或单元格操作', 'Space 切换复选行', '方向键移动（启用键盘导航时）', 'Enter 激活单元格操作'],
+  paste: '表格本身不改写剪贴板；可编辑单元格应由业务插槽中的字段组件负责粘贴与校验。',
 })
 
 define(['accordion', 'collapsible'], {

@@ -6,18 +6,18 @@ import DlNumberField from './components/DlNumberField.vue'
 
 const componentNames = [
   'DlAccordion', 'DlAlertDialog', 'DlAspectRatio', 'DlAutocomplete', 'DlAvatar', 'DlBadge', 'DlBreadcrumbs', 'DlButton', 'DlCalendar', 'DlCard', 'DlCheckbox',
-  'DlChoicePortal', 'DlCluster', 'DlCollapsible', 'DlColorArea', 'DlColorField', 'DlColorPicker', 'DlColorSlider', 'DlColorSwatch', 'DlColorSwatchPicker', 'DlCombobox', 'DlContainer', 'DlContextMenu', 'DlDateField', 'DlDatePicker', 'DlDateRangeField', 'DlDateRangePicker', 'DlDialog', 'DlDrawer', 'DlDropdownMenu', 'DlEditable', 'DlGrid', 'DlHoverCard',
+  'DlChoicePortal', 'DlCluster', 'DlCollapsible', 'DlColorArea', 'DlColorField', 'DlColorPicker', 'DlColorSlider', 'DlColorSwatch', 'DlColorSwatchPicker', 'DlCombobox', 'DlContainer', 'DlContextMenu', 'DlDataTable', 'DlDateField', 'DlDatePicker', 'DlDateRangeField', 'DlDateRangePicker', 'DlDialog', 'DlDrawer', 'DlDropdownMenu', 'DlEditable', 'DlGrid', 'DlHoverCard',
   'DlIconButton',
   'DlInputButton', 'DlInputCheckbox', 'DlInputColor', 'DlInputDatetimeLocal', 'DlInputEmail', 'DlInputFile', 'DlInputHidden', 'DlInputImage', 'DlInputNumber', 'DlInputPassword', 'DlInputRadio', 'DlInputRange', 'DlInputReset', 'DlInputSearch', 'DlInputSubmit', 'DlInputTel', 'DlInputText', 'DlInputUrl', 'DlInputWeek',
   'DlLabel', 'DlListbox', 'DlMdx', 'DlMenubar', 'DlMultiChoice', 'DlNavigationMenu', 'DlNumberField',
   'DlMonthPicker', 'DlMonthRangePicker', 'DlPagination', 'DlPageFrame', 'DlPinInput', 'DlPopover', 'DlProgress', 'DlRadioGroup', 'DlRangeCalendar', 'DlRating', 'DlScrollArea', 'DlSegmented', 'DlSelect',
   'DlSeparator', 'DlSiteHeader', 'DlSiteNavigation', 'DlSiteShell', 'DlSlider', 'DlSplitButton', 'DlSplitter', 'DlStack', 'DlStepper', 'DlSwitch', 'DlTabs', 'DlTagsInput', 'DlTextarea', 'DlTimeField', 'DlTimePicker', 'DlTimeRangeField',
-  'DlToast', 'DlToggle', 'DlToggleGroup', 'DlToolbar', 'DlTooltip', 'DlTree', 'DlVirtualList', 'DlYearPicker', 'DlYearRangePicker',
+  'DlToast', 'DlToggle', 'DlToggleGroup', 'DlToolbar', 'DlToolbarMenu', 'DlTooltip', 'DlTree', 'DlVirtualList', 'DlYearPicker', 'DlYearRangePicker',
 ]
 
 describe('public component API', () => {
   it('exports every stable catalog component', () => {
-    expect(componentNames).toHaveLength(98)
+    expect(componentNames).toHaveLength(100)
     for (const name of componentNames) expect(library).toHaveProperty(name)
   })
 

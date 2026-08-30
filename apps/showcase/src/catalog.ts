@@ -469,6 +469,7 @@ const rekaSeeds: RekaSeed[] = [
   { id: 'avatar', name: 'Avatar 头像', category: 'general', summary: '展示人物或实体图片，并提供可靠回退内容。' },
   { id: 'collapsible', name: 'Collapsible 折叠容器', category: 'general', summary: '展开或收起一个关联内容面板。' },
   { id: 'context-menu', name: 'Context Menu 上下文菜单', category: 'general', summary: '通过右键或长按在指针位置展示操作菜单。' },
+  { id: 'data-table', name: 'Data Table 数据表格', category: 'general', summary: '以 DL 主题统一呈现、勾选、排序和自定义渲染结构化业务数据。' },
   { id: 'dialog', name: 'Dialog 对话框', category: 'general', summary: '在页面或另一对话框上方呈现模态窗口。' },
   { id: 'drawer', name: 'Drawer 抽屉', category: 'general', maturity: 'alpha', summary: '从屏幕边缘滑入并支持手势关闭的面板。' },
   { id: 'dropdown-menu', name: 'Dropdown Menu 下拉菜单', category: 'general', summary: '通过按钮触发一组操作或功能菜单。' },
@@ -485,6 +486,7 @@ const rekaSeeds: RekaSeed[] = [
   { id: 'tabs', name: 'Tabs 标签页', category: 'general', summary: '一次展示一组分层内容中的一个面板。' },
   { id: 'toast', name: 'Toast 消息提示', category: 'general', summary: '临时展示简洁、非阻塞的反馈消息。' },
   { id: 'toolbar', name: 'Toolbar 工具栏', category: 'general', summary: '组织按钮、切换组和菜单等相关控件。' },
+  { id: 'toolbar-menu', name: 'Toolbar Menu 工具栏菜单', category: 'general', summary: '提供桌面软件式分层文字菜单，并绑定可由用户修改的全局快捷键。' },
   { id: 'tooltip', name: 'Tooltip 文字提示', category: 'general', summary: '在悬停或键盘聚焦时补充简短说明。' },
   { id: 'tree', name: 'Tree 树', category: 'general', maturity: 'alpha', summary: '展示可展开与收起的层级项目列表。' },
 ]
@@ -508,6 +510,16 @@ const scenarioBlueprints: Record<Exclude<ComponentCategoryId, 'foundation'>, Sce
 }
 
 const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> = {
+  'data-table': [
+    { id: 'basic', label: '基础表格', summary: '列模型、主题和溢出处理' },
+    { id: 'selection', label: '批量选择', summary: '受控选中项与批量工作流' },
+    { id: 'states', label: '业务状态', summary: '自定义单元格、加载与空状态' },
+  ],
+  'toolbar-menu': [
+    { id: 'basic', label: '应用菜单', summary: '文字菜单、图标与命令反馈' },
+    { id: 'nested', label: '分层命令', summary: '子菜单、分隔线和禁用状态' },
+    { id: 'shortcuts', label: '用户快捷键', summary: '组合键绑定与命令分发' },
+  ],
   'color-area': [
     { id: 'basic', label: '纯二维色域', summary: '只呈现色域本体与双通道键盘操作' },
     { id: 'theme-editor', label: '主题编辑器', summary: '组合色域、色相、精确值与实时界面预览' },

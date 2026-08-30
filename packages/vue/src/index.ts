@@ -28,7 +28,7 @@ export type { DlColorFormat, DlColorSwatchOption, DlColorSwatchSource } from './
 export {
   DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlBreadcrumbs, DlButton,
   DlCalendar, DlCard, DlCheckbox, DlChoicePortal, DlCluster, DlCollapsible, DlColorArea, DlColorField, DlColorPicker, DlColorSlider,
-  DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContainer, DlContextMenu, DlDateField, DlDatePicker,
+  DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContainer, DlContextMenu, DlDataTable, DlDateField, DlDatePicker,
   DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
   DlGrid, DlHoverCard, DlIconButton,
   DlInputButton, DlInputCheckbox, DlInputColor, DlInputDatetimeLocal, DlInputEmail,
@@ -39,7 +39,7 @@ export {
   DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPageFrame, DlPinInput,
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSegmented, DlSelect,
   DlSeparator, DlSiteHeader, DlSiteNavigation, DlSiteShell, DlSlider, DlSplitButton, DlSplitter, DlStack, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
-  DlTimeField, DlTimePicker, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlTooltip,
+  DlTimeField, DlTimePicker, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlToolbarMenu, DlTooltip,
   DlTree, DlVirtualList, DlYearPicker, DlYearRangePicker,
 } from './managed-components'
 
@@ -73,6 +73,8 @@ export type {
 export type {
   DlAccordionItem,
   DlChoiceOption,
+  DlDataTableColumn,
+  DlDataTableRowKey,
   DlMenuGroup,
   DlMenuItem,
   DlNavigationItem,
@@ -101,6 +103,7 @@ export type {
   DlMdxListItem,
   DlMdxMode,
   DlMdxParseResult,
+  DlMdxRuntimeSymbol,
   DlMdxScalar,
   DlMdxToolbarAction,
   DlMdxValue,

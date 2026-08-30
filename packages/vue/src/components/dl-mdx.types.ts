@@ -21,6 +21,15 @@ export interface DlMdxLinkPolicy {
   allowDataImages?: boolean
 }
 
+export interface DlMdxRuntimeSymbol {
+  name: string
+  kind: 'variable' | 'method'
+  description?: string
+  signature?: string
+  value?: unknown
+  resolve?: () => unknown
+}
+
 export interface DlMdxParseResult {
   sourceLength: number
   lineCount: number

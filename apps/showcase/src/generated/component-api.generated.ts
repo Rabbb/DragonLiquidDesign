@@ -1830,6 +1830,24 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checked",
+            "description": "设置 checked 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "disabled",
             "description": "是否禁用控件及其交互。",
             "type": "boolean",
@@ -1840,10 +1858,174 @@ export default {
             "description": "是否将该项目渲染为菜单分隔线。",
             "type": "boolean",
             "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "当前节点或导航项包含的下一级项目。",
+            "type": "DlMenuItem[]",
+            "defaultValue": "可选"
           }
         ],
         "kind": "structure",
         "title": "DlMenuItem[]"
+      }
+    ]
+  },
+  "data-table": {
+    "props": [
+      {
+        "prop": "rows",
+        "description": "设置 rows 属性。",
+        "type": "TRow[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "columns",
+        "description": "色板网格使用的固定列数；不传时根据容器宽度自动排列。",
+        "type": "DlDataTableColumn[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "selectedKeys",
+        "description": "设置 selectedKeys 属性。",
+        "type": "DlDataTableRowKey[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "rowKey",
+        "description": "设置 rowKey 属性。",
+        "type": "string",
+        "defaultValue": "'id'"
+      },
+      {
+        "prop": "loading",
+        "description": "是否显示加载状态并阻止重复操作。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "border",
+        "description": "设置 border 属性。",
+        "type": "boolean | 'default' | 'full' | 'outer' | 'inner' | 'none'",
+        "defaultValue": "'inner'"
+      },
+      {
+        "prop": "stripe",
+        "description": "设置 stripe 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "round",
+        "description": "设置 round 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "size",
+        "description": "设置控件尺寸。",
+        "type": "'mini' | 'small' | 'medium'",
+        "defaultValue": "'small'"
+      },
+      {
+        "prop": "height",
+        "description": "窗口或区域的高度。",
+        "type": "string | number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "maxHeight",
+        "description": "设置 maxHeight 属性。",
+        "type": "string | number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "emptyText",
+        "description": "文档没有可渲染内容时显示的占位说明。",
+        "type": "string",
+        "defaultValue": "'暂无数据'"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "name": "DlDataTableColumn",
+        "description": "DlDataTableColumn 数据结构。",
+        "rows": [
+          {
+            "prop": "field",
+            "description": "设置 field 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "title",
+            "description": "控件或浮层显示的标题。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "type",
+            "description": "设置组件的选择模式或原生类型。",
+            "type": "'checkbox' | 'seq' | 'radio' | 'expand'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "width",
+            "description": "窗口或区域的宽度。",
+            "type": "string | number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "minWidth",
+            "description": "组件允许使用的最小宽度。",
+            "type": "string | number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "fixed",
+            "description": "设置 fixed 字段。",
+            "type": "'left' | 'right'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "align",
+            "description": "设置浮层相对触发器的对齐方式。",
+            "type": "'left' | 'center' | 'right'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerAlign",
+            "description": "设置 headerAlign 字段。",
+            "type": "'left' | 'center' | 'right'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "sortable",
+            "description": "设置 sortable 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "visible",
+            "description": "设置 visible 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "showOverflow",
+            "description": "设置 showOverflow 字段。",
+            "type": "boolean | 'ellipsis' | 'title' | 'tooltip'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "className",
+            "description": "设置 className 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlDataTableColumn[]"
       }
     ]
   },
@@ -2778,6 +2960,24 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checked",
+            "description": "设置 checked 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "disabled",
             "description": "是否禁用控件及其交互。",
             "type": "boolean",
@@ -2787,6 +2987,12 @@ export default {
             "prop": "separator",
             "description": "是否将该项目渲染为菜单分隔线。",
             "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "当前节点或导航项包含的下一级项目。",
+            "type": "DlMenuItem[]",
             "defaultValue": "可选"
           }
         ],
@@ -5141,6 +5347,12 @@ export default {
         "description": "设置 sourceLanguage 属性。",
         "type": "DlMdxEditorDocumentLanguage",
         "defaultValue": "'mdx'"
+      },
+      {
+        "prop": "runtimeSymbols",
+        "description": "设置 runtimeSymbols 属性。",
+        "type": "DlMdxRuntimeSymbol[]",
+        "defaultValue": "() => []"
       }
     ],
     "relatedTypes": [
@@ -5771,6 +5983,50 @@ export default {
         "title": "DlMdxFormatOptions"
       },
       {
+        "name": "DlMdxRuntimeSymbol",
+        "description": "DlMdxRuntimeSymbol 数据结构。",
+        "rows": [
+          {
+            "prop": "name",
+            "description": "参与表单提交时使用的字段名称。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "kind",
+            "description": "设置 kind 字段。",
+            "type": "'variable' | 'method'",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "signature",
+            "description": "设置 signature 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "value",
+            "description": "表单提交或选择操作使用的值。",
+            "type": "unknown",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "resolve",
+            "description": "按组件名或别名查询当前生效的注册定义。",
+            "type": "() => unknown",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxRuntimeSymbol[]"
+      },
+      {
         "name": "DlMdxSecurityPolicy",
         "description": "由 app.use 安装的全局 MarkdownX URL 安全守卫，负责验证、完整性检查和状态报告。",
         "rows": [
@@ -6089,6 +6345,24 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checked",
+            "description": "设置 checked 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "disabled",
             "description": "是否禁用控件及其交互。",
             "type": "boolean",
@@ -6098,6 +6372,12 @@ export default {
             "prop": "separator",
             "description": "是否将该项目渲染为菜单分隔线。",
             "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "当前节点或导航项包含的下一级项目。",
+            "type": "DlMenuItem[]",
             "defaultValue": "可选"
           }
         ],
@@ -7923,6 +8203,24 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checked",
+            "description": "设置 checked 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "disabled",
             "description": "是否禁用控件及其交互。",
             "type": "boolean",
@@ -7932,6 +8230,12 @@ export default {
             "prop": "separator",
             "description": "是否将该项目渲染为菜单分隔线。",
             "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "当前节点或导航项包含的下一级项目。",
+            "type": "DlMenuItem[]",
             "defaultValue": "可选"
           }
         ],
@@ -9124,6 +9428,24 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checked",
+            "description": "设置 checked 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "disabled",
             "description": "是否禁用控件及其交互。",
             "type": "boolean",
@@ -9133,6 +9455,142 @@ export default {
             "prop": "separator",
             "description": "是否将该项目渲染为菜单分隔线。",
             "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "当前节点或导航项包含的下一级项目。",
+            "type": "DlMenuItem[]",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMenuItem[]"
+      }
+    ]
+  },
+  "toolbar-menu": {
+    "props": [
+      {
+        "prop": "menus",
+        "description": "菜单栏中显示的菜单分组与命令列表。",
+        "type": "DlMenuGroup[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "bindShortcuts",
+        "description": "设置 bindShortcuts 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "active",
+        "description": "设置 active 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "ariaLabel",
+        "description": "提供给辅助技术读取的控件名称。",
+        "type": "string",
+        "defaultValue": "'应用菜单'"
+      },
+      {
+        "prop": "zIndex",
+        "description": "覆盖默认浮层层级；不传时由 Dragon Liquid 层级系统计算。",
+        "type": "number",
+        "defaultValue": "undefined"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "name": "DlMenuGroup",
+        "description": "Menubar 的一级菜单分组，内部通过 items 提供命令。",
+        "rows": [
+          {
+            "prop": "value",
+            "description": "表单提交或选择操作使用的值。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "label",
+            "description": "控件的显示标签或无障碍名称。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "items",
+            "description": "用于渲染控件内容的结构化项目列表。",
+            "type": "DlMenuItem[]",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMenuGroup[]"
+      },
+      {
+        "name": "DlMenuItem",
+        "description": "菜单、下拉菜单、上下文菜单与工具栏使用的命令项。",
+        "rows": [
+          {
+            "prop": "value",
+            "description": "表单提交或选择操作使用的值。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "label",
+            "description": "控件的显示标签或无障碍名称。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "shortcut",
+            "description": "菜单命令旁展示的键盘快捷键说明。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "checked",
+            "description": "设置 checked 字段。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "disabled",
+            "description": "是否禁用控件及其交互。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "separator",
+            "description": "是否将该项目渲染为菜单分隔线。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "当前节点或导航项包含的下一级项目。",
+            "type": "DlMenuItem[]",
             "defaultValue": "可选"
           }
         ],

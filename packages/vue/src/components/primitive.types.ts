@@ -31,14 +31,35 @@ export interface DlMenuItem {
   value: string
   label: string
   shortcut?: string
+  description?: string
+  icon?: string
+  checked?: boolean
   disabled?: boolean
   separator?: boolean
+  children?: DlMenuItem[]
 }
 
 export interface DlMenuGroup {
   value: string
   label: string
   items: DlMenuItem[]
+}
+
+export type DlDataTableRowKey = string | number
+
+export interface DlDataTableColumn {
+  field?: string
+  title?: string
+  type?: 'checkbox' | 'seq' | 'radio' | 'expand'
+  width?: string | number
+  minWidth?: string | number
+  fixed?: 'left' | 'right'
+  align?: 'left' | 'center' | 'right'
+  headerAlign?: 'left' | 'center' | 'right'
+  sortable?: boolean
+  visible?: boolean
+  showOverflow?: boolean | 'ellipsis' | 'title' | 'tooltip'
+  className?: string
 }
 
 export interface DlStepItem {

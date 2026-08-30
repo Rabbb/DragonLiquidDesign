@@ -26,6 +26,7 @@ import type {
   DlMdxLinkPolicy,
   DlMdxMode,
   DlMdxParseResult,
+  DlMdxRuntimeSymbol,
   DlMdxToolbarAction,
 } from './dl-mdx.types'
 import MdxEditor, { type DlMdxEditorDocumentLanguage } from './MdxEditor.vue'
@@ -65,6 +66,7 @@ const props = withDefaults(defineProps<{
   languageOptions?: DlMdxLanguageOptions
   formatOptions?: DlMdxFormatOptions
   sourceLanguage?: DlMdxEditorDocumentLanguage
+  runtimeSymbols?: DlMdxRuntimeSymbol[]
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -90,6 +92,7 @@ const props = withDefaults(defineProps<{
   languageOptions: undefined,
   formatOptions: undefined,
   sourceLanguage: 'mdx',
+  runtimeSymbols: () => [],
 })
 
 const emit = defineEmits<{
@@ -127,6 +130,7 @@ const localMode = ref<DlMdxMode>(props.mode)
 const editorRef = ref<InstanceType<typeof MdxEditor>>()
 const lastEditorSelection = ref<DlMdxSelection>({ start: localSource.value.length, end: localSource.value.length })
 const componentLibraryOpen = ref(false)
+const runtimePanelOpen = ref(false)
 const componentSearch = ref('')
 const componentCategory = ref<ComponentLibraryCategory>('all')
 const componentLibraryTrigger = ref<HTMLElement>()
@@ -150,15 +154,26 @@ const policy = computed<Required<DlMdxLinkPolicy>>(() => ({
 const activeRegistry = computed(() => props.registry ?? injectedRegistry)
 const showDocumentTabs = computed(() => props.showCompanionDocuments || props.scriptValue !== null || props.styleValue !== null)
 const scriptSymbols = computed(() => extractDlMdxActionSymbols(localScript.value))
+const resolvedRuntimeSymbols = computed(() => props.runtimeSymbols.map((symbol) => {
+  let value = symbol.value
+  try {
+    if (symbol.resolve) value = symbol.resolve()
+  } catch (cause) {
+    value = cause instanceof Error ? `读取失败：${cause.message}` : `读取失败：${String(cause)}`
+  }
+  return { ...symbol, preview: runtimePreview(value) }
+}))
 const effectiveLanguageOptions = computed<DlMdxLanguageOptions>(() => {
   const hostActions = Object.keys(props.actions ?? {})
   const documentedActions = scriptSymbols.value.map(symbol => symbol.name)
-  const actionNames = [...new Set([...(props.languageOptions?.actionNames ?? []), ...hostActions, ...documentedActions])]
+  const runtimeActions = props.runtimeSymbols.filter(symbol => symbol.kind === 'method').map(symbol => symbol.name)
+  const actionNames = [...new Set([...(props.languageOptions?.actionNames ?? []), ...hostActions, ...documentedActions, ...runtimeActions])]
   const scriptDescriptions = Object.fromEntries(scriptSymbols.value.filter(symbol => symbol.description).map(symbol => [symbol.name, symbol.description!]))
+  const runtimeDescriptions = Object.fromEntries(props.runtimeSymbols.filter(symbol => symbol.kind === 'method' && symbol.description).map(symbol => [symbol.name, symbol.description!]))
   return {
     ...props.languageOptions,
     actionNames,
-    actionDescriptions: { ...scriptDescriptions, ...(props.languageOptions?.actionDescriptions ?? {}) },
+    actionDescriptions: { ...scriptDescriptions, ...runtimeDescriptions, ...(props.languageOptions?.actionDescriptions ?? {}) },
   }
 })
 const componentLibraryEntries = computed<ComponentLibraryEntry[]>(() => (activeRegistry.value?.entries() ?? [])
@@ -273,6 +288,19 @@ function updateStyle(value: string) {
   emit('update:styleValue', value)
 }
 
+function runtimePreview(value: unknown) {
+  if (value === undefined) return 'undefined'
+  if (value === null) return 'null'
+  if (typeof value === 'string') return value || '""'
+  if (typeof value === 'function') return '[Function]'
+  try {
+    const json = JSON.stringify(value)
+    return json.length > 320 ? `${json.slice(0, 317)}…` : json
+  } catch {
+    return String(value)
+  }
+}
+
 function setMode(value: DlMdxMode) {
   localMode.value = value
   emit('update:mode', value)
@@ -371,6 +399,7 @@ function toggleTask(line: number) {
     :data-toolbar="showToolbar ? 'true' : 'false'"
     :data-status="showStatus ? 'true' : 'false'"
     :data-documents="showDocumentTabs ? 'true' : 'false'"
+    :data-runtime="runtimePanelOpen && runtimeSymbols.length ? 'true' : 'false'"
     :class="rootClass"
     :style="rootStyle"
   >
@@ -403,10 +432,31 @@ function toggleTask(line: number) {
         <slot name="toolbar-end" />
       </div>
       <span v-else class="dl-mdx__preview-label">{{ activeDocument === 'mdx' ? 'DRAGON LIQUID · RENDERED DOCUMENT' : `${activeDocument.toUpperCase()} · COMPANION DOCUMENT` }}</span>
+      <button
+        v-if="runtimeSymbols.length"
+        type="button"
+        class="dl-mdx__runtime-trigger"
+        :class="{ active: runtimePanelOpen }"
+        :aria-expanded="runtimePanelOpen"
+        aria-controls="dl-mdx-runtime-panel"
+        title="查看当前页面可用的变量与方法"
+        @click="runtimePanelOpen = !runtimePanelOpen"
+      >DLENV <small>{{ runtimeSymbols.length }}</small></button>
       <div v-if="activeDocument === 'mdx'" class="dl-mdx__mode-switch" aria-label="视图模式">
         <button v-for="item in ([['edit', '编辑'], ['split', '分栏'], ['preview', '预览']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
       </div>
     </header>
+
+    <section v-if="runtimePanelOpen && runtimeSymbols.length" id="dl-mdx-runtime-panel" class="dl-mdx__runtime-panel" aria-label="当前 MDX 运行时">
+      <header><span><small>LIVE PAGE CONTEXT</small><b>变量与方法</b></span><button type="button" aria-label="关闭运行时面板" @click="runtimePanelOpen = false">×</button></header>
+      <div class="dl-mdx__runtime-grid">
+        <article v-for="symbol in resolvedRuntimeSymbols" :key="`${symbol.kind}:${symbol.name}`" :data-kind="symbol.kind">
+          <span><em>{{ symbol.kind === 'method' ? 'METHOD' : 'VALUE' }}</em><code>{{ symbol.signature || symbol.name }}</code></span>
+          <p v-if="symbol.description">{{ symbol.description }}</p>
+          <output v-if="symbol.kind === 'variable'">{{ symbol.preview }}</output>
+        </article>
+      </div>
+    </section>
 
     <Teleport to="body">
       <section

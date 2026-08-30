@@ -7,6 +7,7 @@ import {
   DlCard,
   DlColorSwatchPicker,
   DlDatePicker,
+  DlDataTable,
   DlDialog,
   DlInputText,
   DlLabel,
@@ -19,7 +20,9 @@ import {
   DlTextarea,
   DlToggle,
   DlToolbar,
+  DlToolbarMenu,
   DlTree,
+  type DlDataTableColumn,
   type DlMenuItem,
   type DlMenuGroup,
   type DlSelectOption,
@@ -42,6 +45,7 @@ const expanded = ref(['document'])
 const publishOpen = ref(false)
 const saving = ref(false)
 const saveProgress = ref(0)
+const selectedChanges = ref<(string | number)[]>([2])
 
 const panels: DlSplitterPanel[] = [
   { id: 'outline', defaultSize: 20, minSize: 14, maxSize: 30, collapsible: true },
@@ -81,6 +85,17 @@ const statusOptions: DlSelectOption[] = [
   { value: 'paused', label: '搁置' },
 ]
 const themeColors = ['#9ad6bf', '#e4b76a', '#8fb9e8', '#ef9fbd', '#78c59e', '#c9a9e8']
+const changeColumns: DlDataTableColumn[] = [
+  { type: 'checkbox', width: 44 },
+  { field: 'document', title: '文档', minWidth: 180 },
+  { field: 'status', title: '状态', width: 100 },
+  { field: 'updatedAt', title: '更新', width: 100 },
+]
+const changeRows = [
+  { id: 1, document: '观看印象', status: '已保存', updatedAt: '刚刚' },
+  { id: 2, document: '人物记录', status: '待校对', updatedAt: '2 分钟前' },
+  { id: 3, document: '制作资料', status: '草稿', updatedAt: '昨天' },
+]
 const dirty = computed(() => title.value !== selectedItem.value.title || summary.value !== selectedItem.value.summary || documentSource.value.length > 0)
 const previewOnly = computed({
   get: () => mdxMode.value === 'preview',
@@ -139,6 +154,7 @@ function publish() {
         </template>
         <template #panel-document>
           <main class="editor-panel document-panel">
+            <DlToolbarMenu :menus="menus" @select="runToolbar" />
             <DlMdx v-model="documentSource" v-model:mode="mdxMode" min-height="36rem" aria-label="收藏笔记" />
           </main>
         </template>
@@ -156,6 +172,11 @@ function publish() {
         </template>
       </DlSplitter>
     </div>
+
+    <DlCard padding="md" class="editor-change-table">
+      <header><span><small>DOCUMENT CHANGES</small><b>最近文档记录</b></span><DlBadge tone="muted">已选择 {{ selectedChanges.length }} 项</DlBadge></header>
+      <DlDataTable v-model:selected-keys="selectedChanges" :rows="changeRows" :columns="changeColumns" row-key="id" max-height="260" />
+    </DlCard>
 
     <div class="editor-footer"><span>所有数据只存在于当前浏览器内存，不会发送到服务器。</span><div><a href="/patterns/detail"><DlButton variant="secondary">返回详情</DlButton></a><DlButton variant="primary" :loading="saving" @click="publishOpen = true">检查并发布</DlButton></div></div>
 
