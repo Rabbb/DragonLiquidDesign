@@ -98,10 +98,10 @@ const statusOptions: DlSelectOption[] = [
 ]
 const themeColors = ['#9ad6bf', '#e4b76a', '#8fb9e8', '#ef9fbd', '#78c59e', '#c9a9e8']
 const changeColumns: DlDataTableColumn[] = [
-  { type: 'checkbox', width: 44 },
-  { field: 'document', title: '文档', minWidth: 180 },
-  { field: 'status', title: '状态', width: 100 },
-  { field: 'updatedAt', title: '更新', width: 100 },
+  { role: 'check', width: 44 },
+  { property: 'document', label: '文档', minWidth: 180 },
+  { property: 'status', label: '状态', width: 100 },
+  { property: 'updatedAt', label: '更新', width: 100 },
 ]
 const changeRows = [
   { id: 1, document: '观看印象', status: '已保存', updatedAt: '刚刚' },
@@ -188,7 +188,7 @@ function publish() {
 
     <DlCard padding="md" class="editor-change-table">
       <header><span><small>DOCUMENT CHANGES</small><b>最近文档记录</b></span><DlBadge tone="muted">已选择 {{ selectedChanges.length }} 项</DlBadge></header>
-      <DlDataTable v-model:selected-keys="selectedChanges" :rows="changeRows" :columns="changeColumns" row-key="id" max-height="260" />
+      <DlDataTable v-model:checked-row-keys="selectedChanges" :rows="changeRows" :columns="changeColumns" row-identity="id" max-height="260" />
     </DlCard>
 
     <div class="editor-footer"><span>所有数据只存在于当前浏览器内存，不会发送到服务器。</span><div><a href="/patterns/detail"><DlButton variant="secondary">返回详情</DlButton></a><DlButton variant="primary" :loading="saving" @click="publishOpen = true">检查并发布</DlButton></div></div>

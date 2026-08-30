@@ -1881,27 +1881,51 @@ export default {
     "props": [
       {
         "prop": "rows",
-        "description": "设置 rows 属性。",
+        "description": "表格当前数据行；替换数组时保留由稳定行键控制的选择和展开状态。",
         "type": "TRow[]",
         "defaultValue": "() => []"
       },
       {
         "prop": "columns",
-        "description": "色板网格使用的固定列数；不传时根据容器宽度自动排列。",
+        "description": "使用 DlDataTableColumn 描述的语义列树，支持分组列与字段专用插槽。",
         "type": "DlDataTableColumn[]",
         "defaultValue": "—"
       },
       {
-        "prop": "selectedKeys",
-        "description": "设置 selectedKeys 属性。",
+        "prop": "checkedRowKeys",
+        "description": "当前复选行的稳定键列表；使用 v-model:checked-row-keys 双向绑定。",
         "type": "DlDataTableRowKey[]",
         "defaultValue": "() => []"
       },
       {
-        "prop": "rowKey",
-        "description": "设置 rowKey 属性。",
+        "prop": "currentRowKey",
+        "description": "当前高亮行的稳定键；使用 v-model:current-row-key 双向绑定。",
+        "type": "DlDataTableRowKey",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "chosenRowKey",
+        "description": "当前单选行的稳定键；使用 v-model:chosen-row-key 双向绑定。",
+        "type": "DlDataTableRowKey",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "expandedRowKeys",
+        "description": "当前详情行或树节点的稳定键列表；使用 v-model:expanded-row-keys 双向绑定。",
+        "type": "DlDataTableRowKey[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "rowIdentity",
+        "description": "从每行读取稳定键的属性名，默认使用 id。",
         "type": "string",
         "defaultValue": "'id'"
+      },
+      {
+        "prop": "storageKey",
+        "description": "保存列个性化等持久状态时使用的表格唯一键。",
+        "type": "string",
+        "defaultValue": "undefined"
       },
       {
         "prop": "loading",
@@ -1910,128 +1934,966 @@ export default {
         "defaultValue": "false"
       },
       {
-        "prop": "border",
-        "description": "设置 border 属性。",
-        "type": "boolean | 'default' | 'full' | 'outer' | 'inner' | 'none'",
-        "defaultValue": "'inner'"
+        "prop": "density",
+        "description": "表格行、字号与交互目标采用的密度等级。",
+        "type": "DlDataTableDensity",
+        "defaultValue": "'compact'"
       },
       {
-        "prop": "stripe",
-        "description": "设置 stripe 属性。",
+        "prop": "gridLines",
+        "description": "表格边线显示为无边线、外框、内部线或完整网格。",
+        "type": "DlDataTableGridLines",
+        "defaultValue": "'inside'"
+      },
+      {
+        "prop": "zebra",
+        "description": "是否使用由 DL 主题计算的斑马行背景。",
         "type": "boolean",
         "defaultValue": "true"
       },
       {
-        "prop": "round",
-        "description": "设置 round 属性。",
+        "prop": "rounded",
+        "description": "是否显示表格圆角。",
         "type": "boolean",
         "defaultValue": "true"
-      },
-      {
-        "prop": "size",
-        "description": "设置控件尺寸。",
-        "type": "'mini' | 'small' | 'medium'",
-        "defaultValue": "'small'"
       },
       {
         "prop": "height",
-        "description": "窗口或区域的高度。",
+        "description": "表格固定高度；可使用 auto 填满具备明确高度的父容器。",
+        "type": "string | number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "minHeight",
+        "description": "表格允许使用的最小高度。",
         "type": "string | number",
         "defaultValue": "undefined"
       },
       {
         "prop": "maxHeight",
-        "description": "设置 maxHeight 属性。",
+        "description": "表格超过该高度后在内部滚动。",
         "type": "string | number",
         "defaultValue": "undefined"
       },
       {
-        "prop": "emptyText",
-        "description": "文档没有可渲染内容时显示的占位说明。",
+        "prop": "emptyMessage",
+        "description": "没有数据且未提供 empty 插槽时显示的说明。",
         "type": "string",
         "defaultValue": "'暂无数据'"
+      },
+      {
+        "prop": "presentation",
+        "description": "表头、表尾、合并、对齐、溢出及样式等纯呈现配置。",
+        "type": "DlDataTablePresentation",
+        "defaultValue": "() => ({})"
+      },
+      {
+        "prop": "features",
+        "description": "排序、筛选、选择、编辑、树、虚拟化、数据交换等完整表格能力配置。",
+        "type": "DlDataTableFeatures",
+        "defaultValue": "() => ({})"
+      },
+      {
+        "prop": "context",
+        "description": "随表格上下文传递给格式器、事件和高级工作流的业务参数。",
+        "type": "Record<string, unknown>",
+        "defaultValue": "() => ({})"
       }
     ],
     "relatedTypes": [
       {
         "name": "DlDataTableColumn",
-        "description": "DlDataTableColumn 数据结构。",
+        "description": "DataTable 的语义列；属性名和角色不直接泄漏 VXETable 的历史字段。",
         "rows": [
           {
-            "prop": "field",
-            "description": "设置 field 字段。",
+            "prop": "id",
+            "description": "列的稳定标识；列个性化、拖动和持久化场景应显式设置。",
             "type": "string",
             "defaultValue": "可选"
           },
           {
-            "prop": "title",
-            "description": "控件或浮层显示的标题。",
+            "prop": "property",
+            "description": "业务行对象中读取、排序、筛选或编辑的属性名。",
             "type": "string",
             "defaultValue": "可选"
           },
           {
-            "prop": "type",
-            "description": "设置组件的选择模式或原生类型。",
-            "type": "'checkbox' | 'seq' | 'radio' | 'expand'",
+            "prop": "label",
+            "description": "显示在表头的列名称。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "role",
+            "description": "复选、序号、单选或详情等内置列职责；普通数据列不传。",
+            "type": "DlDataTableColumnRole",
             "defaultValue": "可选"
           },
           {
             "prop": "width",
-            "description": "窗口或区域的宽度。",
+            "description": "列的固定宽度，可使用像素数值、px 或百分比。",
             "type": "string | number",
             "defaultValue": "可选"
           },
           {
             "prop": "minWidth",
-            "description": "组件允许使用的最小宽度。",
+            "description": "列参与剩余空间分配时允许使用的最小宽度。",
             "type": "string | number",
             "defaultValue": "可选"
           },
           {
-            "prop": "fixed",
-            "description": "设置 fixed 字段。",
-            "type": "'left' | 'right'",
+            "prop": "maxWidth",
+            "description": "列允许增长到的最大宽度。",
+            "type": "string | number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "pin",
+            "description": "把列固定在表格起始侧或结束侧。",
+            "type": "'start' | 'end'",
             "defaultValue": "可选"
           },
           {
             "prop": "align",
-            "description": "设置浮层相对触发器的对齐方式。",
+            "description": "正文单元格的水平对齐方式。",
             "type": "'left' | 'center' | 'right'",
             "defaultValue": "可选"
           },
           {
             "prop": "headerAlign",
-            "description": "设置 headerAlign 字段。",
+            "description": "表头单元格的水平对齐方式。",
             "type": "'left' | 'center' | 'right'",
             "defaultValue": "可选"
           },
           {
-            "prop": "sortable",
-            "description": "设置 sortable 字段。",
-            "type": "boolean",
+            "prop": "footerAlign",
+            "description": "表尾单元格的水平对齐方式。",
+            "type": "'left' | 'center' | 'right'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "verticalAlign",
+            "description": "列内容在可变行高中采用的垂直对齐方式。",
+            "type": "'top' | 'center' | 'bottom'",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "resizable",
+            "description": "是否允许用户拖动表头边界调整列宽。",
+            "type": "VxeColumnPropTypes.Resizable",
             "defaultValue": "可选"
           },
           {
             "prop": "visible",
-            "description": "设置 visible 字段。",
+            "description": "是否渲染当前列。",
             "type": "boolean",
             "defaultValue": "可选"
           },
           {
-            "prop": "showOverflow",
-            "description": "设置 showOverflow 字段。",
-            "type": "boolean | 'ellipsis' | 'title' | 'tooltip'",
+            "prop": "overflow",
+            "description": "正文内容过长时的截断与完整内容提示策略。",
+            "type": "DlDataTableOverflow",
             "defaultValue": "可选"
           },
           {
-            "prop": "className",
-            "description": "设置 className 字段。",
-            "type": "string",
+            "prop": "headerOverflow",
+            "description": "表头内容过长时的截断与提示策略。",
+            "type": "DlDataTableOverflow",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerOverflow",
+            "description": "表尾内容过长时的截断与提示策略。",
+            "type": "DlDataTableOverflow",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "cellClass",
+            "description": "为正文单元格返回类名或类名状态对象。",
+            "type": "VxeColumnPropTypes.ClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerClass",
+            "description": "为表头单元格返回类名或类名状态对象。",
+            "type": "VxeColumnPropTypes.HeaderClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerClass",
+            "description": "为表尾单元格返回类名或类名状态对象。",
+            "type": "VxeColumnPropTypes.FooterClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "format",
+            "description": "把当前单元格值转换为显示文字。",
+            "type": "VxeColumnPropTypes.Formatter<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerFormat",
+            "description": "把列标题转换为显示文字。",
+            "type": "VxeColumnPropTypes.HeaderFormatter",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerFormat",
+            "description": "把表尾聚合值转换为显示文字。",
+            "type": "VxeColumnPropTypes.FooterFormatter<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "padded",
+            "description": "是否为当前列单元格保留标准内边距。",
+            "type": "VxeColumnPropTypes.Padding",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "sortable",
+            "description": "是否允许按当前属性排序。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "sortBy",
+            "description": "排序时读取的替代属性或值解析函数。",
+            "type": "VxeColumnPropTypes.SortBy<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "sortAs",
+            "description": "把排序值按字符串、数字或自动类型比较。",
+            "type": "VxeColumnPropTypes.SortType",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "filters",
+            "description": "当前列可供用户选择的筛选条件。",
+            "type": "VxeColumnPropTypes.Filters",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "multipleFilters",
+            "description": "筛选面板是否允许同时选择多个条件。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "filter",
+            "description": "判断一行是否满足当前筛选条件的函数。",
+            "type": "VxeColumnPropTypes.FilterMethod<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "filterRenderer",
+            "description": "当前列使用的筛选控件渲染配置。",
+            "type": "VxeColumnPropTypes.FilterRender",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "resetFilter",
+            "description": "重置当前列筛选条件时执行的函数。",
+            "type": "VxeColumnPropTypes.FilterResetMethod",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "recoverFilter",
+            "description": "筛选面板取消更改时恢复条件的函数。",
+            "type": "VxeColumnPropTypes.FilterRecoverMethod",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "floatingFilter",
+            "description": "是否在表头下方显示常驻筛选入口。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "rules",
+            "description": "当前列的编辑校验规则。",
+            "type": "VxeColumnPropTypes.Rules<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "groupNode",
+            "description": "是否把当前列渲染为数据聚合分组节点。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "treeToggle",
+            "description": "是否在当前列显示树节点展开控件。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "draggable",
+            "description": "是否把当前列作为行拖动排序手柄。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "rowResizable",
+            "description": "是否把当前列作为行高调整手柄。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "aggregate",
+            "description": "分组聚合时采用的统计函数。",
+            "type": "VxeColumnPropTypes.AggFunc",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "exportHeader",
+            "description": "导出时生成当前列表头值的函数。",
+            "type": "VxeColumnPropTypes.HeaderExportMethod<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "exportCell",
+            "description": "导出时生成当前列正文值的函数。",
+            "type": "VxeColumnPropTypes.ExportMethod<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "exportFooter",
+            "description": "导出时生成当前列表尾值的函数。",
+            "type": "VxeColumnPropTypes.FooterExportMethod<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "labelPrefix",
+            "description": "列标题前方的提示图标和内容配置。",
+            "type": "VxeColumnPropTypes.TitlePrefix",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "labelSuffix",
+            "description": "列标题后方的提示图标和内容配置。",
+            "type": "VxeColumnPropTypes.TitleSuffix",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "valueType",
+            "description": "单元格在复制、粘贴和编辑流程中的值类型。",
+            "type": "VxeColumnPropTypes.CellType",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "renderer",
+            "description": "使用已注册渲染器显示正文单元格。",
+            "type": "VxeColumnPropTypes.CellRender<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "editor",
+            "description": "使用已注册渲染器编辑单元格。",
+            "type": "VxeColumnPropTypes.EditRender<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "detailsRenderer",
+            "description": "详情展开区域使用的已注册渲染器。",
+            "type": "VxeColumnPropTypes.ContentRender",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "copyValue",
+            "description": "复制当前单元格时生成剪贴板值。",
+            "type": "VxeColumnPropTypes.CopyMethod",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "clearCutValue",
+            "description": "剪切后清除当前单元格值。",
+            "type": "VxeColumnPropTypes.CutMethod",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "pasteValue",
+            "description": "把剪贴板值转换并写入当前单元格。",
+            "type": "VxeColumnPropTypes.PasteMethod",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "context",
+            "description": "仅随当前列传递给格式器、渲染器与事件的业务参数。",
+            "type": "Record<string, unknown>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "下一级列；存在子列时当前项渲染为分组表头。",
+            "type": "DlDataTableColumn[]",
             "defaultValue": "可选"
           }
         ],
         "kind": "structure",
         "title": "DlDataTableColumn[]"
+      },
+      {
+        "kind": "enum",
+        "name": "DlDataTableColumnRole",
+        "title": "DlDataTableColumnRole",
+        "description": "DataTable 内置的复选、序号、单选与详情列职责。",
+        "rows": [
+          {
+            "prop": "check",
+            "description": "渲染复选列并接入 checkedRowKeys。",
+            "type": "'check'",
+            "defaultValue": "复选"
+          },
+          {
+            "prop": "number",
+            "description": "渲染由排序、筛选和树结构感知的行序号。",
+            "type": "'number'",
+            "defaultValue": "序号"
+          },
+          {
+            "prop": "choice",
+            "description": "渲染单选列并接入 chosenRowKey。",
+            "type": "'choice'",
+            "defaultValue": "单选"
+          },
+          {
+            "prop": "details",
+            "description": "渲染详情展开列并接入 expandedRowKeys。",
+            "type": "'details'",
+            "defaultValue": "详情"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlDataTableDensity",
+        "title": "DlDataTableDensity",
+        "description": "DataTable 的行高和字号密度。",
+        "rows": [
+          {
+            "prop": "dense",
+            "description": "最紧凑的表格密度。",
+            "type": "'dense'",
+            "defaultValue": "高密度"
+          },
+          {
+            "prop": "compact",
+            "description": "默认的业务表格密度。",
+            "type": "'compact'",
+            "defaultValue": "紧凑"
+          },
+          {
+            "prop": "comfortable",
+            "description": "增大行高和交互目标。",
+            "type": "'comfortable'",
+            "defaultValue": "舒适"
+          }
+        ]
+      },
+      {
+        "kind": "enum",
+        "name": "DlDataTableGridLines",
+        "title": "DlDataTableGridLines",
+        "description": "DataTable 的边线范围。",
+        "rows": [
+          {
+            "prop": "none",
+            "description": "不显示表格边线。",
+            "type": "'none'",
+            "defaultValue": "无"
+          },
+          {
+            "prop": "frame",
+            "description": "只显示表格外框。",
+            "type": "'frame'",
+            "defaultValue": "外框"
+          },
+          {
+            "prop": "inside",
+            "description": "只显示内部行列分隔线。",
+            "type": "'inside'",
+            "defaultValue": "内部"
+          },
+          {
+            "prop": "all",
+            "description": "显示外框和全部内部边线。",
+            "type": "'all'",
+            "defaultValue": "完整"
+          }
+        ]
+      },
+      {
+        "name": "DlDataTablePresentation",
+        "description": "DataTable 的纯呈现配置，包括表头表尾、样式、合并和溢出策略。",
+        "rows": [
+          {
+            "prop": "align",
+            "description": "所有正文列的默认水平对齐方式。",
+            "type": "VxeTablePropTypes.Align",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerAlign",
+            "description": "所有表头列的默认水平对齐方式。",
+            "type": "VxeTablePropTypes.HeaderAlign",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerAlign",
+            "description": "所有表尾列的默认水平对齐方式。",
+            "type": "VxeTablePropTypes.FooterAlign",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "showHeader",
+            "description": "是否显示表头。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "showFooter",
+            "description": "是否显示表尾。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerRows",
+            "description": "直接提供的表尾行数据。",
+            "type": "VxeTablePropTypes.FooterData",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "summarizeFooter",
+            "description": "根据当前列和数据生成表尾二维数据。",
+            "type": "VxeTablePropTypes.FooterMethod<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "rowClass",
+            "description": "为正文行返回类名或类名状态对象。",
+            "type": "VxeTablePropTypes.RowClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "cellClass",
+            "description": "为正文单元格返回类名或类名状态对象。",
+            "type": "VxeTablePropTypes.CellClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerRowClass",
+            "description": "为表头行返回类名或类名状态对象。",
+            "type": "VxeTablePropTypes.HeaderRowClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerCellClass",
+            "description": "为表头单元格返回类名或类名状态对象。",
+            "type": "VxeTablePropTypes.HeaderCellClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerRowClass",
+            "description": "为表尾行返回类名或类名状态对象。",
+            "type": "VxeTablePropTypes.FooterRowClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerCellClass",
+            "description": "为表尾单元格返回类名或类名状态对象。",
+            "type": "VxeTablePropTypes.FooterCellClassName<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "rowStyle",
+            "description": "为正文行返回内联样式。",
+            "type": "VxeTablePropTypes.RowStyle<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "cellStyle",
+            "description": "为正文单元格返回内联样式。",
+            "type": "VxeTablePropTypes.CellStyle<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerRowStyle",
+            "description": "为表头行返回内联样式。",
+            "type": "VxeTablePropTypes.HeaderRowStyle<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerCellStyle",
+            "description": "为表头单元格返回内联样式。",
+            "type": "VxeTablePropTypes.HeaderCellStyle<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerRowStyle",
+            "description": "为表尾行返回内联样式。",
+            "type": "VxeTablePropTypes.FooterRowStyle<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerCellStyle",
+            "description": "为表尾单元格返回内联样式。",
+            "type": "VxeTablePropTypes.FooterCellStyle<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "customHeader",
+            "description": "是否启用可配合 headerMerges 使用的自定义分组表头。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerMerges",
+            "description": "声明需要临时合并的表头单元格。",
+            "type": "VxeTablePropTypes.MergeHeaderCells",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "bodyMerges",
+            "description": "声明需要临时合并的正文单元格。",
+            "type": "VxeTablePropTypes.MergeCells<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerMerges",
+            "description": "声明需要临时合并的表尾单元格。",
+            "type": "VxeTablePropTypes.MergeFooterCells<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "mergeBody",
+            "description": "按当前行列动态计算正文跨行与跨列。",
+            "type": "VxeTablePropTypes.SpanMethod<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "mergeFooter",
+            "description": "按当前表尾行列动态计算跨行与跨列。",
+            "type": "VxeTablePropTypes.FooterSpanMethod<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "overflow",
+            "description": "所有正文列默认采用的溢出策略。",
+            "type": "VxeTablePropTypes.ShowOverflow",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerOverflow",
+            "description": "所有表头列默认采用的溢出策略。",
+            "type": "VxeTablePropTypes.ShowHeaderOverflow",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerOverflow",
+            "description": "所有表尾列默认采用的溢出策略。",
+            "type": "VxeTablePropTypes.ShowFooterOverflow",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlDataTablePresentation"
+      },
+      {
+        "name": "DlDataTableFeatures",
+        "description": "DataTable 的完整工作流能力；每项映射到 VXETable 4.20 对应的稳定配置。",
+        "rows": [
+          {
+            "prop": "trackOriginal",
+            "description": "保留初始数据快照，使还原、变更检测和编辑记录可用。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "autoResize",
+            "description": "监听父容器尺寸并自动重新计算表格。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "resizeSignal",
+            "description": "该值变化时触发一次表格尺寸重算。",
+            "type": "boolean | string | number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "columns",
+            "description": "列键、悬停、高亮、调整宽度和拖动等全局列行为。",
+            "type": "VxeTablePropTypes.ColumnConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "rows",
+            "description": "行键、悬停、高亮、自定义行高和拖动等全局行行为。",
+            "type": "VxeTablePropTypes.RowConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "cells",
+            "description": "正文单元格内边距、高度和交互行为。",
+            "type": "VxeTablePropTypes.CellConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerCells",
+            "description": "表头单元格高度、内边距和交互行为。",
+            "type": "VxeTablePropTypes.HeaderCellConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerCells",
+            "description": "表尾单元格高度、内边距和交互行为。",
+            "type": "VxeTablePropTypes.FooterCellConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "aggregation",
+            "description": "数据分组与聚合显示规则。",
+            "type": "VxeTablePropTypes.AggregateConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "aggregationPrecision",
+            "description": "各聚合函数的数值计算精度。",
+            "type": "VxeTablePropTypes.AggregateAccuracyConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "currentRow",
+            "description": "当前高亮行的选择前守卫等行为。",
+            "type": "VxeTablePropTypes.CurrentRowConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "currentColumn",
+            "description": "当前高亮列的选择前守卫等行为。",
+            "type": "VxeTablePropTypes.CurrentColumnConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "rowDrag",
+            "description": "行拖动排序、跨层级与落点守卫。",
+            "type": "VxeTablePropTypes.RowDragConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "columnDrag",
+            "description": "列拖动排序、跨层级与落点守卫。",
+            "type": "VxeTablePropTypes.ColumnDragConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "personalization",
+            "description": "列显示、宽度、固定位置、顺序及持久化策略。",
+            "type": "VxeTablePropTypes.CustomConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "resize",
+            "description": "容器尺寸变化后的刷新延迟。",
+            "type": "VxeTablePropTypes.ResizeConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "resizing",
+            "description": "列宽与行高调整的限制和守卫。",
+            "type": "VxeTablePropTypes.ResizableConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "numbering",
+            "description": "序号列起点、格式和树结构序号规则。",
+            "type": "VxeTablePropTypes.SeqConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "sorting",
+            "description": "本地或远程、单列或多列排序规则和默认顺序。",
+            "type": "VxeTablePropTypes.SortConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "filtering",
+            "description": "本地或远程筛选、恢复与面板行为。",
+            "type": "VxeTablePropTypes.FilterConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "floatingFilter",
+            "description": "常驻表头筛选区的显示和交互规则。",
+            "type": "VxeTablePropTypes.FloatingFilterConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "singleSelection",
+            "description": "单选行高亮、保留、禁用和选择守卫。",
+            "type": "VxeTablePropTypes.RadioConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "multipleSelection",
+            "description": "复选行高亮、保留、联动、范围选择和选择守卫。",
+            "type": "VxeTablePropTypes.CheckboxConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "tooltip",
+            "description": "正文溢出提示的主题、延迟和交互行为。",
+            "type": "VxeTablePropTypes.TooltipConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "headerTooltip",
+            "description": "表头溢出提示的主题、延迟和交互行为。",
+            "type": "VxeTablePropTypes.HeaderTooltipConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "footerTooltip",
+            "description": "表尾溢出提示的主题、延迟和交互行为。",
+            "type": "VxeTablePropTypes.FooterTooltipConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "exporting",
+            "description": "文件名、类型、字段、数据范围和导出转换规则。",
+            "type": "VxeTablePropTypes.ExportConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "importing",
+            "description": "文件类型、插入方式、字段映射和导入转换规则。",
+            "type": "VxeTablePropTypes.ImportConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "printing",
+            "description": "打印标题、样式、字段和数据范围。",
+            "type": "VxeTablePropTypes.PrintConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "expansion",
+            "description": "详情行展开、懒加载、保留和展开守卫。",
+            "type": "VxeTablePropTypes.ExpandConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "tree",
+            "description": "子节点字段、手风琴、懒加载、连线和展开守卫。",
+            "type": "VxeTablePropTypes.TreeConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "contextMenu",
+            "description": "表头、正文与表尾的右键菜单及命令。",
+            "type": "VxeTablePropTypes.MenuConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "pointer",
+            "description": "鼠标选中单元格、区域和编辑触发行为。",
+            "type": "VxeTablePropTypes.MouseConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "areaSelection",
+            "description": "Excel 式区域选取、扩展和多区域规则。",
+            "type": "VxeTablePropTypes.AreaConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "findReplace",
+            "description": "查找、替换与全部替换的作用域和守卫。",
+            "type": "VxeTablePropTypes.FnrConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "keyboard",
+            "description": "方向键、Tab、Enter、Delete 和编辑快捷键行为。",
+            "type": "VxeTablePropTypes.KeyboardConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "clipboard",
+            "description": "复制、剪切、粘贴的格式、守卫和转换规则。",
+            "type": "VxeTablePropTypes.ClipConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "editing",
+            "description": "行或单元格编辑模式、触发方式和进入编辑守卫。",
+            "type": "VxeTablePropTypes.EditConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "dirtyTracking",
+            "description": "编辑后的脏数据检测策略。",
+            "type": "VxeTablePropTypes.EditDirtyConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "validation",
+            "description": "校验消息位置、自动定位和显示行为。",
+            "type": "VxeTablePropTypes.ValidConfig<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "validationRules",
+            "description": "按业务属性配置编辑校验规则。",
+            "type": "VxeTablePropTypes.EditRules<Record<string, unknown>>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "history",
+            "description": "撤销和重做记录的启用范围与容量。",
+            "type": "VxeTablePropTypes.UndoRedoHistoryConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "emptyRenderer",
+            "description": "无数据状态使用的已注册渲染器。",
+            "type": "VxeTablePropTypes.EmptyRender",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "loadingIndicator",
+            "description": "加载遮罩的图标和说明。",
+            "type": "VxeTablePropTypes.LoadingConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "virtualColumns",
+            "description": "横向虚拟渲染的启用阈值与缓冲范围。",
+            "type": "VxeTablePropTypes.VirtualXConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "virtualRows",
+            "description": "纵向虚拟渲染的启用阈值、行高与缓冲范围。",
+            "type": "VxeTablePropTypes.VirtualYConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "scrollbars",
+            "description": "横纵滚动条的位置、尺寸和显示行为。",
+            "type": "VxeTablePropTypes.ScrollbarConfig",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "layer",
+            "description": "表格内部浮层使用的层级起点。",
+            "type": "number",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlDataTableFeatures"
       }
     ]
   },
@@ -2167,7 +3029,7 @@ export default {
       },
       {
         "prop": "presentation",
-        "description": "选择器入口使用可编辑字段或紧凑按钮呈现；不改变值模型和选择面板。",
+        "description": "表头、表尾、合并、对齐、溢出及样式等纯呈现配置。",
         "type": "DlDatePickerPresentation",
         "defaultValue": "'button'"
       },
@@ -2449,7 +3311,7 @@ export default {
       },
       {
         "prop": "presentation",
-        "description": "选择器入口使用可编辑字段或紧凑按钮呈现；不改变值模型和选择面板。",
+        "description": "表头、表尾、合并、对齐、溢出及样式等纯呈现配置。",
         "type": "DlDateRangePickerPresentation",
         "defaultValue": "'button'"
       },
@@ -2682,6 +3544,30 @@ export default {
       {
         "prop": "fullscreen",
         "description": "设置 fullscreen 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "modal",
+        "description": "是否启用模态交互与焦点限制。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "overlay",
+        "description": "设置浮层固定为模态面板、底部抽屉或按视口自动适配。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "dismissOnInteractOutside",
+        "description": "设置 dismissOnInteractOutside 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "floating",
+        "description": "设置 floating 属性。",
         "type": "boolean",
         "defaultValue": "false"
       }
@@ -5392,7 +6278,7 @@ export default {
       },
       {
         "prop": "density",
-        "description": "设置 density 属性。",
+        "description": "表格行、字号与交互目标采用的密度等级。",
         "type": "'compact' | 'comfortable'",
         "defaultValue": "'compact'"
       },
@@ -5407,6 +6293,36 @@ export default {
         "description": "设置 optimizePreview 属性。",
         "type": "boolean",
         "defaultValue": "true"
+      },
+      {
+        "prop": "splitAutoSaveId",
+        "description": "设置 splitAutoSaveId 属性。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "splitDefaultSize",
+        "description": "设置 splitDefaultSize 属性。",
+        "type": "number",
+        "defaultValue": "50"
+      },
+      {
+        "prop": "splitMinSize",
+        "description": "设置 splitMinSize 属性。",
+        "type": "number",
+        "defaultValue": "20"
+      },
+      {
+        "prop": "executeCompanionScript",
+        "description": "设置 executeCompanionScript 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "templateContext",
+        "description": "设置 templateContext 属性。",
+        "type": "DlMdxTemplateContext",
+        "defaultValue": "() => ({})"
       }
     ],
     "relatedTypes": [
@@ -8393,6 +9309,12 @@ export default {
         "description": "键盘操作每次调整面板的百分比。",
         "type": "number",
         "defaultValue": "10"
+      },
+      {
+        "prop": "autoSaveId",
+        "description": "设置 autoSaveId 属性。",
+        "type": "string",
+        "defaultValue": "undefined"
       }
     ],
     "relatedTypes": [
@@ -8924,7 +9846,7 @@ export default {
       },
       {
         "prop": "presentation",
-        "description": "选择器入口使用可编辑字段或紧凑按钮呈现；不改变值模型和选择面板。",
+        "description": "表头、表尾、合并、对齐、溢出及样式等纯呈现配置。",
         "type": "DlTimePickerPresentation",
         "defaultValue": "'field'"
       },
@@ -10046,6 +10968,12 @@ export default {
         "description": "设置 collapsed 属性。",
         "type": "boolean",
         "defaultValue": "undefined"
+      },
+      {
+        "prop": "accordion",
+        "description": "设置 accordion 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
       },
       {
         "prop": "autoCollapse",

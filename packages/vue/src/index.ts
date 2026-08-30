@@ -73,8 +73,6 @@ export type {
 export type {
   DlAccordionItem,
   DlChoiceOption,
-  DlDataTableColumn,
-  DlDataTableRowKey,
   DlMenuGroup,
   DlMenuItem,
   DlNavigationItem,
@@ -85,6 +83,20 @@ export type {
   DlTreeNode,
   DlTreeMenuItem,
 } from './components/primitive.types'
+export type {
+  DlDataTableCellActivate,
+  DlDataTableCheckedRowsChange,
+  DlDataTableColumn,
+  DlDataTableColumnRole,
+  DlDataTableDensity,
+  DlDataTableFeatures,
+  DlDataTableGridLines,
+  DlDataTableOverflow,
+  DlDataTablePresentation,
+  DlDataTableRowChange,
+  DlDataTableRowKey,
+  DlDataTableSortChange,
+} from './components/data-table.types'
 export type { DlSelectOption } from './components/select.types'
 export type {
   DlChoicePortalEntry,

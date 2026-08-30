@@ -103,7 +103,7 @@ export const componentGuidance: Record<string, ComponentGuidance> = {
     ['用户需要对结构化记录进行比较、选择、排序或批量处理时。', '表格需要自动跟随 DL 主题，同时保留业务自定义单元格时。'],
     '少量简单信息应使用 Card 或普通列表；超长等高列表只浏览不比较时优先 VirtualList。',
     '列标题必须清楚，复选列要暴露选中状态；自定义单元格中的按钮仍需独立名称和合理焦点顺序。',
-    '案例展示受控 selectedKeys、业务单元格插槽、加载状态和空状态，而不是直接暴露 VXE 私有配置。',
+    '案例展示受控 checkedRowKeys、语义列、业务单元格插槽、加载状态和空状态；完整工作流通过 presentation 与 features 分组配置。',
   ),
   'multi-choice': guide(
     ['用户需要从较多候选项中同时选择多个结果时。', '已选结果需要以紧凑标签回显，并支持分组检索时。'],

@@ -1,5 +1,5 @@
 import { createDlManagedComponent } from './component-behavior'
-import type { DlComponentBehaviorContext, DlComponentMethodDefinition, DlManagedComponent, DlManagedComponentOptions } from './control.types'
+import type { DlComponentBehaviorContext, DlComponentEventDefinition, DlComponentMethodDefinition, DlManagedComponent, DlManagedComponentOptions } from './control.types'
 import type { Component } from 'vue'
 import RawDlAccordion from './components/DlAccordion.vue'
 import RawDlAlertDialog from './components/DlAlertDialog.vue'
@@ -107,6 +107,11 @@ const actionEvents = ['click', 'focus', 'blur', 'keydown', 'keyup'] as const
 const fieldEvents = ['focus', 'blur', 'input', 'change', 'keydown', 'keyup'] as const
 
 const method = (name: string, description: string, signature: string, returns = 'boolean'): DlComponentMethodDefinition => ({ name, description, signature, returns })
+const event = (name: string, description: string, payload: string): DlComponentEventDefinition => ({ name, description, payload })
+
+function callInner(context: DlComponentBehaviorContext, name: string, ...args: unknown[]) {
+  return (context.inner as Record<string, (...values: unknown[]) => unknown> | null)?.[name]?.(...args)
+}
 
 function managed<T extends Component>(component: T, name: string, options: Omit<DlManagedComponentOptions, 'name'> = {}): DlManagedComponent<T> {
   return createDlManagedComponent(component, { name, ...options })
@@ -275,16 +280,77 @@ export const DlContainer = managed(RawDlContainer, 'DlContainer')
 export const DlCombobox = managed(RawDlCombobox, 'DlCombobox', { domEvents: fieldEvents })
 export const DlContextMenu = managed(RawDlContextMenu, 'DlContextMenu')
 export const DlDataTable = managed(RawDlDataTable, 'DlDataTable', {
-  domEvents: fieldEvents,
+  domEvents: ['focus', 'blur', 'keydown', 'keyup'],
+  eventDefinitions: [
+    event('checkedRowsChange', '复选行键或对应行集合发生变化。', '{ keys: DlDataTableRowKey[]; rows: TRow[] }'),
+    event('currentRowChange', '当前高亮行发生变化。', 'DlDataTableRowChange<TRow>'),
+    event('chosenRowChange', '单选行发生变化。', 'DlDataTableRowChange<TRow>'),
+    event('expandedRowsChange', '详情行或树节点的展开集合发生变化。', '{ keys: DlDataTableRowKey[]; rows: TRow[] }'),
+    event('rowActivate', '用户点击或激活一行。', '{ row: TRow; rowKey?: DlDataTableRowKey; event: Event }'),
+    event('cellActivate', '用户点击或激活一个单元格。', 'DlDataTableCellActivate<TRow>'),
+    event('sortChange', '排序列与方向发生变化。', 'DlDataTableSortChange'),
+    event('filterChange', '筛选条件发生变化。', 'unknown'),
+    event('editBegin', '单元格进入编辑状态。', 'unknown'),
+    event('editEnd', '单元格结束编辑状态。', 'unknown'),
+    event('validationError', '编辑校验失败。', 'unknown'),
+    event('contextAction', '执行表格上下文菜单命令。', 'unknown'),
+    event('rowDragEnd', '行拖动排序结束。', 'unknown'),
+    event('columnDragEnd', '列拖动排序结束。', 'unknown'),
+    event('scroll', '表格视口滚动。', 'unknown'),
+  ],
   methods: {
-    clearSelection: context => { (context.inner as { clearSelection?: () => void } | null)?.clearSelection?.(); return true },
-    getSelectedRows: context => (context.inner as { getSelectedRows?: () => unknown[] } | null)?.getSelectedRows?.() ?? [],
-    recalculate: context => { (context.inner as { recalculate?: () => void } | null)?.recalculate?.(); return true },
+    getRows: context => callInner(context, 'getRows') ?? [],
+    getVisibleRows: context => callInner(context, 'getVisibleRows') ?? [],
+    getCheckedRows: context => callInner(context, 'getCheckedRows') ?? [],
+    setCheckedRows: (context, keys, checked) => callInner(context, 'setCheckedRows', keys, checked),
+    clearCheckedRows: context => callInner(context, 'clearCheckedRows'),
+    setCurrentRow: (context, key) => callInner(context, 'setCurrentRow', key),
+    setChosenRow: (context, key) => callInner(context, 'setChosenRow', key),
+    setExpandedRows: (context, keys) => callInner(context, 'setExpandedRows', keys),
+    sortRows: (context, sorts) => callInner(context, 'sortRows', sorts),
+    clearSorting: (context, property) => callInner(context, 'clearSorting', property),
+    clearFilters: (context, property) => callInner(context, 'clearFilters', property),
+    beginEdit: (context, key, property) => callInner(context, 'beginEdit', key, property),
+    finishEdit: context => callInner(context, 'finishEdit'),
+    validateRows: (context, keys) => callInner(context, 'validateRows', keys),
+    insertRows: (context, rows, beforeKey) => callInner(context, 'insertRows', rows, beforeKey),
+    removeRows: (context, keys) => callInner(context, 'removeRows', keys),
+    getChanges: context => callInner(context, 'getChanges'),
+    scrollToRow: (context, key, property) => callInner(context, 'scrollToRow', key, property),
+    scrollToColumn: (context, property) => callInner(context, 'scrollToColumn', property),
+    exportRows: (context, options) => callInner(context, 'exportRows', options),
+    importRows: (context, options) => callInner(context, 'importRows', options),
+    printRows: (context, options) => callInner(context, 'printRows', options),
+    resetState: context => callInner(context, 'resetState'),
+    recalculate: (context, full) => callInner(context, 'recalculate', full),
+    undo: context => callInner(context, 'undo'),
+    redo: context => callInner(context, 'redo'),
+    clearHistory: context => callInner(context, 'clearHistory'),
   },
   methodDefinitions: [
-    method('clearSelection', '清除全部复选行。', '()'),
-    method('getSelectedRows', '返回当前复选行数据。', '()', 'unknown[]'),
-    method('recalculate', '重新计算表格布局。', '()'),
+    method('getRows', '返回包含树层级在内的完整行集合。', '()', 'TRow[]'),
+    method('getVisibleRows', '返回排序和筛选后的可见行集合。', '()', 'TRow[]'),
+    method('getCheckedRows', '返回当前复选行数据。', '()', 'TRow[]'),
+    method('setCheckedRows', '按稳定行键勾选或取消多行。', '(keys: DlDataTableRowKey[], checked = true)', 'Promise<void>'),
+    method('clearCheckedRows', '清除全部复选行。', '()', 'Promise<void>'),
+    method('setCurrentRow', '按稳定行键设置或清除当前高亮行。', '(key?: DlDataTableRowKey)', 'Promise<void>'),
+    method('setChosenRow', '按稳定行键设置或清除单选行。', '(key?: DlDataTableRowKey)', 'Promise<void>'),
+    method('setExpandedRows', '按稳定行键控制详情行或树节点展开集合。', '(keys: DlDataTableRowKey[])', 'Promise<void>'),
+    method('sortRows', '以 DL property / direction 模型执行单列或多列排序。', '(sorts: Array<{ property: string; direction?: "asc" | "desc" }>)', 'Promise<void>'),
+    method('clearSorting', '清除指定属性或全部排序。', '(property?: string)', 'Promise<void>'),
+    method('clearFilters', '清除指定属性或全部筛选。', '(property?: string)', 'Promise<void>'),
+    method('beginEdit', '按行键和属性名进入单元格编辑。', '(key: DlDataTableRowKey, property: string)', 'Promise<unknown>'),
+    method('finishEdit', '结束当前单元格编辑。', '()', 'Promise<unknown>'),
+    method('validateRows', '完整校验指定行键或整张表格。', '(keys?: DlDataTableRowKey[])', 'Promise<unknown>'),
+    method('insertRows', '插入行；提供 beforeKey 时插入到指定行之前。', '(rows: TRow | TRow[], beforeKey?: DlDataTableRowKey)', 'Promise<unknown>'),
+    method('removeRows', '按稳定行键删除表格行。', '(keys: DlDataTableRowKey[])', 'Promise<unknown>'),
+    method('getChanges', '返回新增、删除、修改与待处理记录集。', '()', 'DlDataTableChanges<TRow>'),
+    method('scrollToRow', '滚动到指定行键，可同时定位属性列。', '(key: DlDataTableRowKey, property?: string)', 'Promise<unknown>'),
+    method('scrollToColumn', '滚动到指定属性列。', '(property: string)', 'Promise<unknown>'),
+    method('exportRows / importRows / printRows', '执行 features 中配置的数据交换或打印流程。', '(options?: Record<string, unknown>)', 'Promise<unknown>'),
+    method('resetState', '清除排序、筛选、编辑、选择与滚动等运行状态。', '()', 'Promise<void>'),
+    method('recalculate', '重新计算表格布局；full=true 时完整重算。', '(full = false)', 'Promise<void>'),
+    method('undo / redo / clearHistory', '控制 features.history 启用后的撤销与重做历史。', '()', 'Promise<unknown>'),
   ],
 })
 export const DlDateField = managed(RawDlDateField, 'DlDateField', { domEvents: fieldEvents })

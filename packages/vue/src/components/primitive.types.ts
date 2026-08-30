@@ -47,23 +47,6 @@ export interface DlMenuGroup {
   items: DlMenuItem[]
 }
 
-export type DlDataTableRowKey = string | number
-
-export interface DlDataTableColumn {
-  field?: string
-  title?: string
-  type?: 'checkbox' | 'seq' | 'radio' | 'expand'
-  width?: string | number
-  minWidth?: string | number
-  fixed?: 'left' | 'right'
-  align?: 'left' | 'center' | 'right'
-  headerAlign?: 'left' | 'center' | 'right'
-  sortable?: boolean
-  visible?: boolean
-  showOverflow?: boolean | 'ellipsis' | 'title' | 'tooltip'
-  className?: string
-}
-
 export interface DlStepItem {
   step: number
   title: string

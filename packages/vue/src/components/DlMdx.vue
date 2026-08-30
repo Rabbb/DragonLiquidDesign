@@ -33,7 +33,8 @@ import type {
   DlMdxRuntimeSymbol,
   DlMdxToolbarAction,
 } from './dl-mdx.types'
-import type { DlDataTableColumn, DlSplitterPanel } from './primitive.types'
+import type { DlSplitterPanel } from './primitive.types'
+import type { DlDataTableColumn } from './data-table.types'
 import DlDataTable from './DlDataTable.vue'
 import DlDialog from './DlDialog.vue'
 import DlSplitter from './DlSplitter.vue'
@@ -250,10 +251,10 @@ const resolvedRuntimeSymbols = computed<RuntimeTableRow[]>(() => props.runtimeSy
   }
 }))
 const runtimeColumns: DlDataTableColumn[] = [
-  { field: 'kindLabel', title: '类型', width: 88 },
-  { field: 'displayName', title: '名称 / 签名', minWidth: 250 },
-  { field: 'description', title: '说明', minWidth: 260 },
-  { field: 'resolvedValue', title: '当前值', minWidth: 360, className: 'dl-mdx__runtime-value-cell' },
+  { property: 'kindLabel', label: '类型', width: 88 },
+  { property: 'displayName', label: '名称 / 签名', minWidth: 250 },
+  { property: 'description', label: '说明', minWidth: 260 },
+  { property: 'resolvedValue', label: '当前值', minWidth: 360, cellClass: 'dl-mdx__runtime-value-cell' },
 ]
 const runtimeValueDetailSource = computed(() => {
   if (!runtimeValueDetailRow.value) return ''
@@ -430,8 +431,8 @@ function normalizeRuntimeValue(value: unknown, seen = new WeakSet<object>(), dep
   }
 }
 
-function openRuntimeValueCell(payload: { row: RuntimeTableRow; field?: string }) {
-  if (payload.field !== 'resolvedValue' || payload.row.kind !== 'variable') return
+function openRuntimeValueCell(payload: { row: RuntimeTableRow; property?: string }) {
+  if (payload.property !== 'resolvedValue' || payload.row.kind !== 'variable') return
   runtimeValueDetailRow.value = payload.row
   runtimeValueDetailOpen.value = true
 }
@@ -613,8 +614,8 @@ function toggleTask(line: number) {
           <path d="m7.5 9 3 3-3 3M13 15h3.5" />
         </svg>
       </button>
-      <div v-if="showModeSwitch && activeDocument === 'mdx'" class="dl-mdx__mode-switch" aria-label="视图模式">
-        <button v-for="item in ([['edit', '编辑'], ['split', '分栏'], ['preview', '预览']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
+      <div v-if="showModeSwitch" class="dl-mdx__mode-switch" aria-label="编辑模式">
+        <button v-for="item in ([['edit', '编辑'], ['preview', '渲染'], ['split', '编辑 + 渲染']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
       </div>
     </header>
 
@@ -636,12 +637,12 @@ function toggleTask(line: number) {
         <DlDataTable
           :rows="resolvedRuntimeSymbols"
           :columns="runtimeColumns"
-          row-key="id"
+          row-identity="id"
           height="100%"
-          border="inner"
-          :stripe="false"
-          empty-text="当前页面没有公开的运行时信息"
-          @cell-click="openRuntimeValueCell"
+          grid-lines="inside"
+          :zebra="false"
+          empty-message="当前页面没有公开的运行时信息"
+          @cell-activate="openRuntimeValueCell"
         >
           <template #cell-displayName="{ row }"><code class="dl-mdx__runtime-name">{{ row.displayName }}</code></template>
           <template #cell-description="{ row }"><span class="dl-mdx__runtime-description">{{ row.description || '—' }}</span></template>
@@ -739,9 +740,9 @@ function toggleTask(line: number) {
       <span>MDX 为主文档，脚本与样式独立保存</span>
     </nav>
 
-    <div class="dl-mdx__workspace" :class="{ 'is-companion': activeDocument !== 'mdx' }">
+    <div class="dl-mdx__workspace">
       <DlSplitter
-        v-if="activeDocument === 'mdx' && localMode === 'split' && resizableSplit"
+        v-if="localMode === 'split' && resizableSplit"
         class="dl-mdx__splitter"
         :panels="splitPanels"
         :auto-save-id="splitAutoSaveId"
@@ -749,8 +750,9 @@ function toggleTask(line: number) {
         @layout="emit('splitLayout', $event)"
       >
         <template #panel-source>
-          <section class="dl-mdx__editor-pane" aria-label="Markdown 源码">
+          <section class="dl-mdx__editor-pane" :class="{ 'dl-mdx__editor-pane--companion': activeDocument !== 'mdx' }" :aria-label="activeDocument === 'mdx' ? 'Markdown 源码' : activeDocument === 'script' ? '脚本附加文档' : '样式附加文档'">
             <MdxEditor
+              v-if="activeDocument === 'mdx'"
               :key="`source:${sourceLanguage}`"
               ref="editorRef"
               :model-value="localSource"
@@ -766,6 +768,31 @@ function toggleTask(line: number) {
               @update:model-value="updateSource"
               @selection-change="updateEditorSelection"
               @command="execute"
+              @error="emit('error', $event)"
+            />
+            <MdxEditor
+              v-else-if="activeDocument === 'script'"
+              :key="scriptLanguage"
+              :model-value="localScript"
+              placeholder="export function actionName(context) { }"
+              :readonly="readonly"
+              :disabled="disabled"
+              :line-wrapping="lineWrapping"
+              :aria-label="`${ariaLabel}脚本附加文档`"
+              :document-language="scriptLanguage"
+              @update:model-value="updateScript"
+              @error="emit('error', $event)"
+            />
+            <MdxEditor
+              v-else
+              :model-value="localStyle"
+              placeholder=".document-card { color: var(--dl-text); }"
+              :readonly="readonly"
+              :disabled="disabled"
+              :line-wrapping="lineWrapping"
+              :aria-label="`${ariaLabel}样式附加文档`"
+              document-language="css"
+              @update:model-value="updateStyle"
               @error="emit('error', $event)"
             />
           </section>
@@ -791,10 +818,11 @@ function toggleTask(line: number) {
           </section>
         </template>
       </DlSplitter>
-      <section v-if="activeDocument === 'mdx' && localMode !== 'preview' && (localMode !== 'split' || !resizableSplit)" class="dl-mdx__editor-pane" aria-label="Markdown 源码">
-      <MdxEditor
-        :key="`source:${sourceLanguage}`"
-        ref="editorRef"
+      <section v-if="localMode !== 'preview' && (localMode !== 'split' || !resizableSplit)" class="dl-mdx__editor-pane" :class="{ 'dl-mdx__editor-pane--companion': activeDocument !== 'mdx' }" :aria-label="activeDocument === 'mdx' ? 'Markdown 源码' : activeDocument === 'script' ? '脚本附加文档' : '样式附加文档'">
+        <MdxEditor
+          v-if="activeDocument === 'mdx'"
+          :key="`source:${sourceLanguage}`"
+          ref="editorRef"
           :model-value="localSource"
           :placeholder="placeholder"
           :readonly="readonly"
@@ -810,8 +838,33 @@ function toggleTask(line: number) {
           @command="execute"
           @error="emit('error', $event)"
         />
+        <MdxEditor
+          v-else-if="activeDocument === 'script'"
+          :key="scriptLanguage"
+          :model-value="localScript"
+          placeholder="export function actionName(context) { }"
+          :readonly="readonly"
+          :disabled="disabled"
+          :line-wrapping="lineWrapping"
+          :aria-label="`${ariaLabel}脚本附加文档`"
+          :document-language="scriptLanguage"
+          @update:model-value="updateScript"
+          @error="emit('error', $event)"
+        />
+        <MdxEditor
+          v-else
+          :model-value="localStyle"
+          placeholder=".document-card { color: var(--dl-text); }"
+          :readonly="readonly"
+          :disabled="disabled"
+          :line-wrapping="lineWrapping"
+          :aria-label="`${ariaLabel}样式附加文档`"
+          document-language="css"
+          @update:model-value="updateStyle"
+          @error="emit('error', $event)"
+        />
       </section>
-      <section v-if="activeDocument === 'mdx' && localMode !== 'edit' && (localMode !== 'split' || !resizableSplit)" class="dl-mdx__preview-pane" :aria-busy="parsing">
+      <section v-if="localMode !== 'edit' && (localMode !== 'split' || !resizableSplit)" class="dl-mdx__preview-pane" :aria-busy="parsing">
         <div v-if="parsing" class="dl-mdx__parsing"><i />正在更新预览</div>
         <MdxPreview
           :document="document"
@@ -827,33 +880,6 @@ function toggleTask(line: number) {
           @toggle-task="toggleTask"
           @error="emit('error', $event)"
           @action="emit('action', $event)"
-        />
-      </section>
-      <section v-show="activeDocument === 'script'" class="dl-mdx__editor-pane dl-mdx__editor-pane--companion" aria-label="脚本附加文档">
-        <MdxEditor
-          :key="scriptLanguage"
-          :model-value="localScript"
-          placeholder="export function actionName(context) { }"
-          :readonly="readonly"
-          :disabled="disabled"
-          :line-wrapping="lineWrapping"
-          :aria-label="`${ariaLabel}脚本附加文档`"
-          :document-language="scriptLanguage"
-          @update:model-value="updateScript"
-          @error="emit('error', $event)"
-        />
-      </section>
-      <section v-show="activeDocument === 'style'" class="dl-mdx__editor-pane dl-mdx__editor-pane--companion" aria-label="样式附加文档">
-        <MdxEditor
-          :model-value="localStyle"
-          placeholder=".document-card { color: var(--dl-text); }"
-          :readonly="readonly"
-          :disabled="disabled"
-          :line-wrapping="lineWrapping"
-          :aria-label="`${ariaLabel}样式附加文档`"
-          document-language="css"
-          @update:model-value="updateStyle"
-          @error="emit('error', $event)"
         />
       </section>
     </div>

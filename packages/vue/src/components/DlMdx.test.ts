@@ -201,7 +201,7 @@ describe('DlMdx', () => {
     expect(document.body.querySelector('.dl-mdx-runtime-tree')).not.toBeNull()
 
     const table = wrapper.findComponent({ name: 'DlDataTable' })
-    table.vm.$emit('cellClick', { row: table.props('rows')[0], field: 'resolvedValue' })
+    table.vm.$emit('cellActivate', { row: table.props('rows')[0], property: 'resolvedValue' })
     await flushPromises()
     expect(document.body.textContent).toContain('JSON 数据详情')
     expect(document.body.querySelectorAll('[data-slot="dialog"]')).toHaveLength(2)
@@ -225,7 +225,7 @@ describe('DlMdx', () => {
     expect(wrapper.get('h1').text()).toContain('Controlled view')
 
     await wrapper.setProps({ showModeSwitch: true })
-    expect(wrapper.findAll('.dl-mdx__mode-switch button').map(button => button.text())).toEqual(['编辑', '分栏', '预览'])
+    expect(wrapper.findAll('.dl-mdx__mode-switch button').map(button => button.text())).toEqual(['编辑', '渲染', '编辑 + 渲染'])
     await wrapper.findAll('.dl-mdx__mode-switch button')[0]!.trigger('click')
     expect(wrapper.emitted('update:mode')?.at(-1)).toEqual(['edit'])
   })
@@ -391,10 +391,16 @@ describe('DlMdx', () => {
     expect(wrapper.findAll('.dl-mdx__document-tabs button').map(button => button.text())).toEqual([
       'MDX STRUCTURE', 'TS FUNCTIONS', 'CSS STYLES',
     ])
-    expect(wrapper.findAll('.cm-content')).toHaveLength(3)
+    expect(wrapper.findAll('.cm-content')).toHaveLength(1)
     expect(wrapper.text()).toContain('Main document')
-    expect(document.body.textContent).toContain('saveDocument')
-    expect(document.body.textContent).toContain('color: red')
+    await wrapper.findAll('.dl-mdx__document-tabs button')[1]!.trigger('click')
+    await vi.waitFor(() => expect(wrapper.findAll('.cm-content')).toHaveLength(1))
+    expect(wrapper.get('.cm-content').text()).toContain('saveDocument')
+    expect(wrapper.get('h1').text()).toContain('Main document')
+    await wrapper.findAll('.dl-mdx__document-tabs button')[2]!.trigger('click')
+    await vi.waitFor(() => expect(wrapper.findAll('.cm-content')).toHaveLength(1))
+    expect(wrapper.get('.cm-content').text()).toContain('color: red')
+    expect(wrapper.get('h1').text()).toContain('Main document')
     wrapper.unmount()
   })
 
