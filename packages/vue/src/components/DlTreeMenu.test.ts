@@ -48,7 +48,7 @@ describe('DlTreeMenu', () => {
     expect(wrapper.find('[aria-label="收起Project"]').exists()).toBe(true)
   })
 
-  it('uses accordion expansion by default and removes the closed branch descendants', async () => {
+  it('keeps sibling branches open by default and renders hierarchy guides', async () => {
     const wrapper = mount(DlTreeMenu, {
       props: {
         items: [
@@ -60,6 +60,24 @@ describe('DlTreeMenu', () => {
       },
     })
 
+    await wrapper.get('[aria-label="展开API"]').trigger('click')
+    expect(wrapper.emitted('update:expanded')?.at(-1)).toEqual([['docs', 'guides', 'api']])
+    expect(wrapper.findAll('.dl-tree-menu__guides').length).toBeGreaterThan(0)
+    expect(wrapper.find('[aria-label="收起Docs"] [aria-hidden="true"]').exists()).toBe(true)
+  })
+
+  it('still supports explicit accordion expansion', async () => {
+    const wrapper = mount(DlTreeMenu, {
+      props: {
+        items: [
+          { id: 'docs', label: 'Docs', children: [{ id: 'guide', label: 'Guide' }] },
+          { id: 'api', label: 'API', children: [{ id: 'reference', label: 'Reference' }] },
+        ],
+        expanded: ['docs'],
+        accordion: true,
+        autoCollapse: false,
+      },
+    })
     await wrapper.get('[aria-label="展开API"]').trigger('click')
     expect(wrapper.emitted('update:expanded')?.at(-1)).toEqual([['api']])
   })

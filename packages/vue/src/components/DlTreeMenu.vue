@@ -13,6 +13,8 @@ interface FlatTreeMenuItem {
   item: DlTreeMenuItem
   level: number
   parentId?: string
+  ancestorContinuation: boolean[]
+  hasNextSibling: boolean
   hasChildren: boolean
   expanded: boolean
   directMatch: boolean
@@ -25,6 +27,7 @@ const props = withDefaults(defineProps<{
   expanded?: string[]
   collapsed?: boolean
   accordion?: boolean
+  showHierarchyLines?: boolean
   autoCollapse?: boolean
   collapseBreakpoint?: number
   label?: string
@@ -35,7 +38,8 @@ const props = withDefaults(defineProps<{
   modelValue: undefined,
   expanded: () => [],
   collapsed: undefined,
-  accordion: true,
+  accordion: false,
+  showHierarchyLines: true,
   autoCollapse: true,
   collapseBreakpoint: 1024,
   label: '树目录菜单',
@@ -108,14 +112,15 @@ function searchFields(item: DlTreeMenuItem): DlSearchFields {
 
 const flatItems = computed<FlatTreeMenuItem[]>(() => {
   const keyword = normalizedQuery.value
-  const visit = (items: DlTreeMenuItem[], level: number, parentId?: string): FlatTreeMenuItem[] => {
+  const visit = (items: DlTreeMenuItem[], level: number, parentId?: string, ancestorContinuation: boolean[] = []): FlatTreeMenuItem[] => {
     const output: FlatTreeMenuItem[] = []
-    for (const item of items) {
+    for (const [itemIndex, item] of items.entries()) {
+      const hasNextSibling = itemIndex < items.length - 1
       const hasChildren = Boolean(item.children?.length)
       const fields = searchFields(item)
       const directMatch = !keyword || matchesDlSearchFields(fields, keyword)
       const matchingChildren = keyword && hasChildren
-        ? visit(item.children ?? [], level + 1, item.id)
+        ? visit(item.children ?? [], level + 1, item.id, [...ancestorContinuation, hasNextSibling])
         : []
       if (keyword && !directMatch && !matchingChildren.length) continue
       const visibleHasChildren = keyword ? matchingChildren.length > 0 : hasChildren
@@ -124,13 +129,15 @@ const flatItems = computed<FlatTreeMenuItem[]>(() => {
         item,
         level,
         parentId,
+        ancestorContinuation,
+        hasNextSibling,
         hasChildren: visibleHasChildren,
         expanded,
         directMatch,
         presentation: buildDlSearchMatchPresentation(fields, keyword),
       })
       if (keyword) output.push(...matchingChildren)
-      else if (expanded) output.push(...visit(item.children ?? [], level + 1, item.id))
+      else if (expanded) output.push(...visit(item.children ?? [], level + 1, item.id, [...ancestorContinuation, hasNextSibling]))
     }
     return output
   }
@@ -278,18 +285,34 @@ onUnmounted(() => media?.removeEventListener('change', syncCompact))
             class="dl-tree-menu__row"
             :data-selected="modelValue === row.item.id || undefined"
             :data-disabled="row.item.disabled || undefined"
+            :data-branch-expanded="row.hasChildren && row.expanded || undefined"
             :style="{ '--dl-tree-level': row.level }"
             role="none"
           >
+            <span v-if="showHierarchyLines && row.level > 1" class="dl-tree-menu__guides" aria-hidden="true">
+              <i
+                v-for="(continues, guideIndex) in row.ancestorContinuation.slice(0, -1)"
+                v-show="continues"
+                :key="guideIndex"
+                class="dl-tree-menu__guide"
+                :style="{ '--dl-tree-guide': guideIndex }"
+              />
+              <i
+                class="dl-tree-menu__guide dl-tree-menu__guide--elbow"
+                :data-continues="(row.ancestorContinuation.at(-1) || row.hasNextSibling) || undefined"
+                :style="{ '--dl-tree-guide': row.level - 2 }"
+              />
+            </span>
             <button
               v-if="row.hasChildren"
               type="button"
               class="dl-tree-menu__branch"
+              :data-expanded="row.expanded || undefined"
               tabindex="-1"
               :aria-label="row.expanded ? `收起${row.item.label}` : `展开${row.item.label}`"
               :aria-expanded="row.expanded"
               @click="setExpanded(row.item.id, !row.expanded)"
-            >{{ row.expanded ? '▾' : '▸' }}</button>
+            ><span aria-hidden="true" /></button>
             <span v-else class="dl-tree-menu__leaf" aria-hidden="true">•</span>
             <button
               type="button"
@@ -349,8 +372,9 @@ onUnmounted(() => media?.removeEventListener('change', syncCompact))
 .dl-tree-menu__toggle{display:grid;width:2rem;aspect-ratio:1;flex:none;place-items:center;border-radius:.6rem;color:var(--dl-text-muted)}.dl-tree-menu__toggle:hover{color:var(--dl-accent-text);background:var(--dl-accent-surface)}
 .dl-tree-menu__search{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:.35rem;margin:.4rem .4rem 0;padding:.38rem .5rem;border:1px solid var(--dl-border);border-radius:.65rem;background:var(--dl-surface-solid);color:var(--dl-text-faint)}.dl-tree-menu__search:focus-within{border-color:var(--dl-border-focus);box-shadow:var(--dl-focus)}.dl-tree-menu__search input{min-width:0;border:0;outline:0;background:transparent;color:var(--dl-text);font:inherit;font-size:.68rem}.dl-tree-menu__search small{font-size:.56rem}.dl-tree-menu__search button{display:grid;width:1.25rem;aspect-ratio:1;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--dl-text-faint);cursor:pointer}.dl-tree-menu__search button:hover{background:var(--dl-surface-hover);color:var(--dl-text)}
 .dl-tree-menu__scroll{min-height:0;overflow:auto;padding:.35rem}
-.dl-tree-menu__row{display:grid;grid-template-columns:1.15rem minmax(0,1fr);align-items:center;padding-left:calc((var(--dl-tree-level) - 1) * .9rem);border-radius:.65rem}.dl-tree-menu__row:hover{background:var(--dl-surface-hover)}.dl-tree-menu__row[data-selected]{color:var(--dl-accent-text);background:var(--dl-accent-surface);box-shadow:inset 2px 0 var(--dl-accent)}.dl-tree-menu__row[data-disabled]{opacity:.42}
-.dl-tree-menu__branch,.dl-tree-menu__leaf{display:grid;width:1.15rem;height:100%;place-items:center;color:var(--dl-text-faint);font-size:.66rem}.dl-tree-menu__branch:hover{color:var(--dl-accent-text)}
+.dl-tree-menu__row{position:relative;display:grid;grid-template-columns:1.35rem minmax(0,1fr);align-items:center;padding-left:calc((var(--dl-tree-level) - 1) * .9rem);border-radius:.65rem}.dl-tree-menu__row:hover{background:var(--dl-surface-hover)}.dl-tree-menu__row[data-branch-expanded]{background:color-mix(in srgb,var(--dl-surface-hover) 66%,transparent)}.dl-tree-menu__row[data-selected]{color:var(--dl-accent-text);background:var(--dl-accent-surface);box-shadow:inset 2px 0 var(--dl-accent)}.dl-tree-menu__row[data-disabled]{opacity:.42}
+.dl-tree-menu__guides{position:absolute;inset:0 auto 0 0;z-index:0;pointer-events:none}.dl-tree-menu__guide{position:absolute;top:0;bottom:0;left:calc(var(--dl-tree-guide) * .9rem + .675rem);width:1px;background:color-mix(in srgb,var(--dl-border-strong) 72%,transparent)}.dl-tree-menu__guide--elbow{bottom:50%}.dl-tree-menu__guide--elbow::after{position:absolute;top:100%;left:0;width:.68rem;height:1px;background:color-mix(in srgb,var(--dl-border-strong) 78%,transparent);content:''}.dl-tree-menu__guide--elbow[data-continues]{bottom:0}.dl-tree-menu__guide--elbow[data-continues]::after{top:50%}
+.dl-tree-menu__branch,.dl-tree-menu__leaf{position:relative;z-index:1;display:grid;width:1.25rem;height:1.25rem;place-items:center;color:var(--dl-text-faint);font-size:.66rem}.dl-tree-menu__branch{border:1px solid color-mix(in srgb,var(--dl-border-strong) 82%,transparent);border-radius:.35rem;background:var(--dl-surface-solid)}.dl-tree-menu__branch:hover{border-color:var(--dl-accent-border);color:var(--dl-accent-text);background:var(--dl-accent-surface)}.dl-tree-menu__branch>span{width:.42rem;height:.42rem;border-right:1.75px solid currentColor;border-bottom:1.75px solid currentColor;transform:translate(-.07rem,0) rotate(-45deg);transition:transform .14s ease}.dl-tree-menu__branch[data-expanded]>span{transform:translate(0,-.08rem) rotate(45deg)}
 .dl-tree-menu__select{display:flex;min-width:0;align-items:center;gap:.5rem;padding:.55rem .45rem;text-align:left;outline:none}.dl-tree-menu__select:focus-visible{border-radius:.55rem;box-shadow:var(--dl-focus)}
 .dl-tree-menu__icon{display:grid;width:1.45rem;aspect-ratio:1;flex:none;place-items:center;color:var(--dl-accent-text)}.dl-tree-menu__copy{display:grid;min-width:0;flex:1;gap:.18rem}.dl-tree-menu__copy b,.dl-tree-menu__copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dl-tree-menu__copy b{font-size:.72rem}.dl-tree-menu__copy small{color:var(--dl-text-faint);font-size:.58rem}.dl-tree-menu__copy mark{padding:0 .08em;border-radius:.2em;background:color-mix(in srgb,var(--dl-accent) 30%,transparent);color:var(--dl-text);font-weight:850}.dl-tree-menu__matches{display:flex;min-width:0;flex-wrap:wrap;gap:.22rem}.dl-tree-menu__matches>span{display:inline-flex;min-width:0;align-items:baseline;gap:.2rem;padding:.08rem .3rem;border:1px solid var(--dl-accent-border);border-radius:999px;background:var(--dl-accent-surface);color:var(--dl-text-muted);font-size:.52rem;line-height:1.25}.dl-tree-menu__matches i{color:var(--dl-accent-text);font-size:.46rem;font-style:normal;font-weight:850}.dl-tree-menu__trailing{flex:none;color:var(--dl-text-faint);font-size:.58rem}
 .dl-tree-menu__empty{padding:1rem;color:var(--dl-text-faint);font-size:.7rem;text-align:center}.dl-tree-menu__footer{padding:.45rem;border-top:1px solid var(--dl-border)}.dl-tree-menu__collapsed{display:grid;place-items:center;padding:.45rem}

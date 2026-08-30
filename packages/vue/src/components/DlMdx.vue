@@ -443,6 +443,18 @@ function setMode(value: DlMdxMode) {
   if (value !== 'preview') nextTick(() => editorRef.value?.focus())
 }
 
+function openRuntimeEnvironment() {
+  if (!props.runtimeSymbols.length || localMode.value === 'preview') return false
+  runtimePanelOpen.value = true
+  return true
+}
+
+defineExpose({
+  focus: () => editorRef.value?.focus(),
+  openRuntimeEnvironment,
+  closeRuntimeEnvironment: () => { runtimePanelOpen.value = false },
+})
+
 function execute(action: DlMdxToolbarAction) {
   if (!canEdit.value) return
   if (action === 'format') {

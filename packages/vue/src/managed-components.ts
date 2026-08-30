@@ -442,10 +442,12 @@ export const DlMdx = managed(RawDlMdx, 'DlMdx', {
   methods: {
     setMode: (context, mode: 'edit' | 'preview' | 'split') => context.set('mode', mode),
     setSource: (context, source: string) => context.set('modelValue', source),
+    openRuntimeEnvironment: context => callInner(context, 'openRuntimeEnvironment'),
   },
   methodDefinitions: [
     method('setMode', '切换编辑、预览或分栏模式。', "(mode: 'edit' | 'preview' | 'split')"),
     method('setSource', '替换 MarkdownX 文档源。', '(source: string)'),
+    method('openRuntimeEnvironment', '打开当前文档的 DLENV 变量与开放方法页面。', '()', 'boolean'),
   ],
 })
 export const DlMarkdownX = DlMdx

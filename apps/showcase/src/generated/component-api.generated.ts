@@ -10971,19 +10971,25 @@ export default {
       },
       {
         "prop": "accordion",
-        "description": "设置 accordion 属性。",
+        "description": "是否限制每一层同时只展开一个分支；TreeMenu 默认允许多个分支保持展开。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "showHierarchyLines",
+        "description": "是否按真实父子层级绘制连续引导线，帮助辨认深层目录归属。",
         "type": "boolean",
         "defaultValue": "true"
       },
       {
         "prop": "autoCollapse",
-        "description": "设置 autoCollapse 属性。",
+        "description": "是否在平板和手机断点自动收为图标，并以覆盖层方式展开目录。",
         "type": "boolean",
         "defaultValue": "true"
       },
       {
         "prop": "collapseBreakpoint",
-        "description": "设置 collapseBreakpoint 属性。",
+        "description": "TreeMenu 自动切换到紧凑覆盖层的最大视口宽度，单位像素。",
         "type": "number",
         "defaultValue": "1024"
       },
