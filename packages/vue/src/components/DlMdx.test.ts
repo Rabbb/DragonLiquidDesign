@@ -146,6 +146,25 @@ describe('DlMdx', () => {
     expect(wrapper.classes()).not.toContain('dl-mdx--compact')
   })
 
+  it('lets the host hide the mode switch and control edit or preview directly', async () => {
+    const wrapper = mount(DlMdx, {
+      props: { modelValue: '# Controlled view', mode: 'edit', showModeSwitch: false, debounce: 0 },
+    })
+
+    expect(wrapper.attributes('data-mode-switch')).toBe('false')
+    expect(wrapper.find('.dl-mdx__mode-switch').exists()).toBe(false)
+    expect(wrapper.classes()).toContain('dl-mdx--edit')
+
+    await wrapper.setProps({ mode: 'preview' })
+    expect(wrapper.classes()).toContain('dl-mdx--preview')
+    expect(wrapper.get('h1').text()).toContain('Controlled view')
+
+    await wrapper.setProps({ showModeSwitch: true })
+    expect(wrapper.findAll('.dl-mdx__mode-switch button').map(button => button.text())).toEqual(['编辑', '分栏', '预览'])
+    await wrapper.findAll('.dl-mdx__mode-switch button')[0]!.trigger('click')
+    expect(wrapper.emitted('update:mode')?.at(-1)).toEqual(['edit'])
+  })
+
   it('does not expose a component insertion control without an insertable registry entry', async () => {
     const wrapper = mount(DlMdx, { props: { modelValue: '', mode: 'edit', debounce: 0 } })
     await flushPromises()

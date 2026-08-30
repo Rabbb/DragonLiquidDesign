@@ -51,6 +51,7 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   lineWrapping?: boolean
   showToolbar?: boolean
+  showModeSwitch?: boolean
   showStatus?: boolean
   taskInteractive?: boolean
   debounce?: number
@@ -80,6 +81,7 @@ const props = withDefaults(defineProps<{
   disabled: false,
   lineWrapping: true,
   showToolbar: true,
+  showModeSwitch: true,
   showStatus: true,
   taskInteractive: true,
   debounce: 120,
@@ -402,6 +404,7 @@ function toggleTask(line: number) {
     data-dl
     data-slot="mdx"
     :data-toolbar="showToolbar ? 'true' : 'false'"
+    :data-mode-switch="showModeSwitch ? 'true' : 'false'"
     :data-status="showStatus ? 'true' : 'false'"
     :data-documents="showDocumentTabs ? 'true' : 'false'"
     :data-runtime="runtimePanelOpen && runtimeSymbols.length ? 'true' : 'false'"
@@ -447,7 +450,7 @@ function toggleTask(line: number) {
         title="查看当前页面可用的变量与方法"
         @click="runtimePanelOpen = !runtimePanelOpen"
       >DLENV <small>{{ runtimeSymbols.length }}</small></button>
-      <div v-if="activeDocument === 'mdx'" class="dl-mdx__mode-switch" aria-label="视图模式">
+      <div v-if="showModeSwitch && activeDocument === 'mdx'" class="dl-mdx__mode-switch" aria-label="视图模式">
         <button v-for="item in ([['edit', '编辑'], ['split', '分栏'], ['preview', '预览']] as const)" :key="item[0]" type="button" :class="{ active: localMode === item[0] }" :aria-pressed="localMode === item[0]" @click="setMode(item[0])">{{ item[1] }}</button>
       </div>
     </header>

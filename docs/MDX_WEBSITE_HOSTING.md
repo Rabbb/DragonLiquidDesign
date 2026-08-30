@@ -24,6 +24,24 @@ createApp(App)
   .mount('#app')
 ```
 
+## 编辑、分栏与预览
+
+`mode` 是 `DlMdx` 的唯一视图状态：`edit` 只显示编辑器，`preview` 只显示渲染结果，`split` 同时显示两者。宿主可以直接绑定 `v-model:mode`；`show-mode-switch` 只决定是否显示内置的“编辑 / 分栏 / 预览”切换器，不会创建第二份状态。
+
+```vue
+<!-- 页面自己的工具栏负责切换，DlMdx 只显示编辑器 -->
+<DlMdx v-model="source" mode="edit" :show-mode-switch="false" />
+
+<!-- 发布页只渲染文档，不保留编辑工具栏和状态栏 -->
+<DlMdx
+  :model-value="source"
+  mode="preview"
+  readonly
+  :show-toolbar="false"
+  :show-status="false"
+/>
+```
+
 ## 从项目源码构建网站
 
 一个项目快照由 `manifest`、`entries` 和 `revision` 组成。页面放在 `/pages`，共享脚本与样式可放在 `/shared`，图片和数据可放在 `/assets`。

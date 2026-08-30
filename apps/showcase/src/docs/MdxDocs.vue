@@ -323,7 +323,7 @@ ${vueSfc({
 <template>
   <DocExampleShell v-bind="content">
     <div class="mdx-doc-demo">
-      <DlMdx v-if="scenario === 'basic'" v-model="writingSource" min-height="31rem" aria-label="作品资料草稿" />
+      <DlMdx v-if="scenario === 'basic'" v-model="writingSource" show-mode-switch min-height="31rem" aria-label="作品资料草稿" />
 
       <DlMdx v-else-if="scenario === 'archive-document'" v-model="archiveSource" mode="split" min-height="31rem" />
 

@@ -120,6 +120,7 @@ const descriptions = {
   emptyText: '文档没有可渲染内容时显示的占位说明。',
   lineWrapping: '是否在编辑器中启用长行自动换行。',
   showToolbar: '是否显示格式操作和视图模式工具栏。',
+  showModeSwitch: '是否显示内置的“编辑 / 分栏 / 预览”切换器；隐藏后由宿主通过 mode 或 v-model:mode 控制视图。',
   showCreate: '是否在日期单元格中显示新建事项入口。',
   showFormat: '是否显示颜色格式切换入口。',
   showLabels: '是否在颜色样本旁显示名称和说明。',

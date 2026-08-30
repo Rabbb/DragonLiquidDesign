@@ -5259,6 +5259,12 @@ export default {
         "defaultValue": "true"
       },
       {
+        "prop": "showModeSwitch",
+        "description": "是否显示内置的“编辑 / 分栏 / 预览”切换器；隐藏后由宿主通过 mode 或 v-model:mode 控制视图。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "showStatus",
         "description": "是否显示行数、字符数、阅读时间和解析状态。",
         "type": "boolean",
