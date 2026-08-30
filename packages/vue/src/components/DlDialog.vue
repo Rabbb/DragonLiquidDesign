@@ -48,6 +48,7 @@ const props = withDefaults(defineProps<{
   minWidth?: number
   minHeight?: number
   resetGeometryOnClose?: boolean
+  fullscreen?: boolean
 }>(), {
   open: false,
   description: undefined,
@@ -62,6 +63,7 @@ const props = withDefaults(defineProps<{
   minWidth: 320,
   minHeight: 200,
   resetGeometryOnClose: true,
+  fullscreen: false,
 })
 
 const emit = defineEmits<{
@@ -88,7 +90,7 @@ let previousBodyUserSelect = ''
 
 const contentStyle = computed(() => {
   const style: Record<string, string> = { zIndex: contentZIndex.value }
-  if (compactLayout.value) return style
+  if (compactLayout.value || props.fullscreen) return style
 
   if (localPosition.value) {
     style.left = `${localPosition.value.x}px`
@@ -182,7 +184,7 @@ function updateDimensions(value: DlDialogDimensions, notify = true) {
 }
 
 function beginInteraction(type: DialogInteraction['type'], event: PointerEvent) {
-  if (event.button !== 0 || event.isPrimary === false || compactLayout.value) return
+  if (event.button !== 0 || event.isPrimary === false || compactLayout.value || props.fullscreen) return
   if (type === 'drag' && !props.draggable) return
   if (type === 'resize' && !props.resizable) return
 
@@ -388,8 +390,9 @@ onBeforeUnmount(() => {
         data-dl-layer="modal"
         data-guide-surface="dialog"
         :data-size="size"
-        :data-draggable="draggable && !compactLayout ? 'true' : 'false'"
-        :data-resizable="resizable && !compactLayout ? 'true' : 'false'"
+        :data-fullscreen="fullscreen ? 'true' : 'false'"
+        :data-draggable="draggable && !compactLayout && !fullscreen ? 'true' : 'false'"
+        :data-resizable="resizable && !compactLayout && !fullscreen ? 'true' : 'false'"
         :data-interaction="interaction?.type"
         :style="contentStyle"
         :class="dialogStyles({ size, tone })"
@@ -401,7 +404,7 @@ onBeforeUnmount(() => {
           </div>
           <div class="dl-dialog__window-actions">
             <button
-              v-if="draggable"
+              v-if="draggable && !fullscreen"
               data-slot="dialog-drag-handle"
               class="dl-dialog__drag-handle"
               type="button"
@@ -428,7 +431,7 @@ onBeforeUnmount(() => {
           <slot name="footer" />
         </footer>
         <button
-          v-if="resizable"
+          v-if="resizable && !fullscreen"
           data-slot="dialog-resize-handle"
           class="dl-dialog__resize-handle"
           type="button"
@@ -508,6 +511,7 @@ onBeforeUnmount(() => {
 .dl-dialog--sm { --dl-dialog-width: 500px; gap: 16px; padding: 20px; border-radius: 22px; }
 .dl-dialog--md { --dl-dialog-width: 640px; }
 .dl-dialog--lg { --dl-dialog-width: 840px; gap: 24px; padding: 28px; border-radius: 32px; }
+.dl-dialog[data-fullscreen='true']{inset:12px;width:auto;max-width:none;height:auto;max-height:none;transform:none;border-radius:20px}
 .dl-tone-accent { --dl-overlay-border: rgba(255, 223, 128, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(104, 225, 255, 0.18), rgba(255, 215, 110, 0.74), rgba(104, 225, 255, 0.24)); --dl-overlay-glow: rgba(104, 225, 255, 0.12); }
 .dl-tone-success { --dl-overlay-border: rgba(113, 209, 173, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(124, 255, 190, 0.22), rgba(0, 206, 209, 0.62), rgba(124, 255, 190, 0.18)); --dl-overlay-glow: rgba(124, 255, 190, 0.12); }
 .dl-tone-warning { --dl-overlay-border: rgba(255, 179, 71, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(255, 178, 89, 0.24), rgba(255, 215, 110, 0.74), rgba(255, 178, 89, 0.2)); --dl-overlay-glow: rgba(255, 178, 89, 0.14); }

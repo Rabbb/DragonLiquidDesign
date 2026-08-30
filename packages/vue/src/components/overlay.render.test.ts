@@ -465,6 +465,21 @@ describe('ported overlay presentation', () => {
     expect(dialog?.querySelector('[data-slot="dialog-resize-handle"]')).toBeNull()
   })
 
+  it('renders a fullscreen dialog without movable window controls', async () => {
+    mountOverlay(DlDialog, {
+      attachTo: document.body,
+      props: { open: true, title: 'Fullscreen dialog', fullscreen: true },
+    })
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('[data-slot="dialog"]')
+    expect(dialog?.dataset.fullscreen).toBe('true')
+    expect(dialog?.dataset.draggable).toBe('false')
+    expect(dialog?.dataset.resizable).toBe('false')
+    expect(dialog?.querySelector('[data-slot="dialog-drag-handle"]')).toBeNull()
+    expect(dialog?.querySelector('[data-slot="dialog-resize-handle"]')).toBeNull()
+  })
+
   it('renders the popover surface through its portal with the migrated class', async () => {
     mountOverlay(DlPopover, {
       attachTo: document.body,

@@ -42,6 +42,7 @@ export interface DlMenuItem {
 export interface DlMenuGroup {
   value: string
   label: string
+  icon?: string
   items: DlMenuItem[]
 }
 

@@ -2672,6 +2672,12 @@ export default {
         "description": "关闭后是否恢复居中位置与 size 对应的初始尺寸。",
         "type": "boolean",
         "defaultValue": "true"
+      },
+      {
+        "prop": "fullscreen",
+        "description": "设置 fullscreen 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
       }
     ],
     "relatedTypes": [
@@ -6337,6 +6343,12 @@ export default {
             "defaultValue": "必填"
           },
           {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "items",
             "description": "用于渲染控件内容的结构化项目列表。",
             "type": "DlMenuItem[]",
@@ -9548,6 +9560,12 @@ export default {
             "description": "控件的显示标签或无障碍名称。",
             "type": "string",
             "defaultValue": "必填"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
           },
           {
             "prop": "items",

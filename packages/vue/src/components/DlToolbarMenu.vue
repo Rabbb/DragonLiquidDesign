@@ -50,7 +50,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown, true)
     @update:model-value="emit('update:modelValue', $event as unknown as string)"
   >
     <MenubarMenu v-for="menu in menus" :key="menu.value" :value="menu.value">
-      <MenubarTrigger class="dl-toolbar-menu__trigger">{{ menu.label }}</MenubarTrigger>
+      <MenubarTrigger class="dl-toolbar-menu__trigger"><i v-if="menu.icon" aria-hidden="true">{{ menu.icon }}</i><span>{{ menu.label }}</span></MenubarTrigger>
       <MenubarPortal>
         <MenubarContent data-dl data-slot="toolbar-menu-content" data-dl-layer="popover" :style="{ zIndex: layer }" :side-offset="5" align="start" class="dl-toolbar-menu__content">
           <ToolbarMenuItems :items="menu.items" @select="emit('select', $event)" />
@@ -62,7 +62,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown, true)
 
 <style>
 .dl-toolbar-menu{display:inline-flex;align-items:center;gap:1px;min-width:0;padding:2px;border:0;background:transparent;color:var(--dl-text)}
-.dl-toolbar-menu__trigger{min-height:30px;padding:0 10px;border:0;border-radius:7px;color:var(--dl-text-muted);background:transparent;font:600 .78rem/1 var(--dl-font-sans,system-ui,sans-serif);outline:0;cursor:default}
+.dl-toolbar-menu__trigger{display:inline-flex;min-height:30px;align-items:center;gap:6px;padding:0 10px;border:0;border-radius:7px;color:var(--dl-text-muted);background:transparent;font:600 .78rem/1 var(--dl-font-sans,system-ui,sans-serif);outline:0;cursor:default}.dl-toolbar-menu__trigger>i{display:grid;width:1rem;place-items:center;font-style:normal}
 .dl-toolbar-menu__trigger:hover,.dl-toolbar-menu__trigger[data-state="open"]{color:var(--dl-text);background:var(--dl-surface-hover)}
 .dl-toolbar-menu__trigger:focus-visible{box-shadow:var(--dl-focus)}
 .dl-toolbar-menu__content{min-width:230px;padding:5px;border:1px solid var(--dl-border-strong);border-radius:var(--dl-radius-md);color:var(--dl-text);background:var(--dl-panel);box-shadow:0 24px 70px rgba(0,0,0,.38);outline:0;backdrop-filter:blur(22px)}
@@ -70,4 +70,3 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown, true)
 .dl-toolbar-menu__item[data-highlighted]{color:var(--dl-accent-text);background:var(--dl-surface-hover)}
 .dl-toolbar-menu__item[data-disabled]{opacity:.38}.dl-toolbar-menu__item-main,.dl-toolbar-menu__item-end{display:flex;align-items:center;gap:8px}.dl-toolbar-menu__item-main i{display:grid;width:18px;place-items:center;color:var(--dl-text-faint);font-style:normal}.dl-toolbar-menu__item-main small{max-width:190px;color:var(--dl-text-faint);font-size:.66rem}.dl-toolbar-menu__item-end{margin-left:auto;color:var(--dl-text-faint)}.dl-toolbar-menu__item kbd{padding:2px 5px;border:1px solid var(--dl-border);border-radius:5px;background:var(--dl-night-soft);font:600 .61rem/1.2 ui-monospace,monospace}.dl-toolbar-menu__item--sub b{font-size:1rem;font-weight:500}.dl-toolbar-menu__separator{height:1px;margin:4px 7px;background:var(--dl-border)}
 </style>
-
