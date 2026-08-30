@@ -5,9 +5,10 @@ import { useDlModalLayer } from '../composables/useDlLayer'
 import type { DlSize } from '../types'
 import type { DlChoicePortalOverlay } from './choice-portal.types'
 import type { DlMultiChoiceEntry, DlMultiChoiceGroup, DlMultiChoiceOption } from './multi-choice.types'
+import { buildDlSearchMatchPresentation, matchesDlSearchFields, normalizeDlSearch, type DlSearchFields } from './search-match'
 
 type MultiChoiceStatus = 'default' | 'success' | 'warning' | 'error'
-type IndexedOption = DlMultiChoiceOption & { groupLabel?: string; searchText: string }
+type IndexedOption = DlMultiChoiceOption & { groupLabel?: string; searchFields: DlSearchFields }
 
 const props = withDefaults(defineProps<{
   open?: boolean
@@ -68,16 +69,20 @@ const indexedOptions = computed<IndexedOption[]>(() => props.options.flatMap(ent
   : [indexOption(entry)]))
 const selectedSet = computed(() => new Set(props.modelValue))
 const selectedOptions = computed(() => props.modelValue.map(value => indexedOptions.value.find(option => option.value === value)
-  ?? { value, label: value, searchText: value.toLocaleLowerCase() }))
+  ?? { value, label: value, searchFields: { label: value, value, description: '', keywords: [] } }))
 const visibleTags = computed(() => selectedOptions.value.slice(0, Math.max(0, props.maxTagCount)))
 const hiddenTagCount = computed(() => Math.max(0, selectedOptions.value.length - visibleTags.value.length))
 const resolvedOpen = computed(() => props.open ?? internalOpen.value)
 const resolvedSearchable = computed(() => props.searchable === true
   || (props.searchable === undefined && indexedOptions.value.length >= props.searchThreshold))
-const normalizedQuery = computed(() => query.value.normalize('NFKC').trim().toLocaleLowerCase())
+const normalizedQuery = computed(() => normalizeDlSearch(query.value))
 const filteredOptions = computed(() => normalizedQuery.value
-  ? indexedOptions.value.filter(option => option.searchText.includes(normalizedQuery.value) || fuzzyMatch(option.searchText, normalizedQuery.value))
+  ? indexedOptions.value.filter(option => matchesDlSearchFields(option.searchFields, normalizedQuery.value))
   : indexedOptions.value)
+const matchPresentations = computed(() => new Map(filteredOptions.value.map(option => [
+  option.value,
+  buildDlSearchMatchPresentation(option.searchFields, normalizedQuery.value),
+])))
 const visibleGroups = computed(() => {
   const groups = new Map<string, IndexedOption[]>()
   for (const option of filteredOptions.value) {
@@ -90,17 +95,11 @@ const enabledOptions = computed(() => filteredOptions.value.filter(option => !op
 const activeDescendant = computed(() => highlightedValue.value ? `${listboxId}-${safeId(highlightedValue.value)}` : undefined)
 
 function indexOption(option: DlMultiChoiceOption, groupLabel?: string): IndexedOption {
-  return { ...option, groupLabel, searchText: [option.label, option.value, option.description, ...(option.keywords ?? [])].filter(Boolean).join(' ').normalize('NFKC').toLocaleLowerCase() }
+  return { ...option, groupLabel, searchFields: { label: option.label, value: option.value, description: option.description ?? '', keywords: option.keywords ?? [] } }
 }
 
-function fuzzyMatch(source: string, keyword: string) {
-  let cursor = 0
-  for (const character of keyword) {
-    cursor = source.indexOf(character, cursor)
-    if (cursor < 0) return false
-    cursor += 1
-  }
-  return true
+function presentationFor(option: IndexedOption) {
+  return matchPresentations.value.get(option.value) ?? buildDlSearchMatchPresentation(option.searchFields, '')
 }
 
 function safeId(value: string) {
@@ -252,7 +251,7 @@ watch(filteredOptions, options => {
         <label v-if="resolvedSearchable" class="dl-multi-choice__search"><span aria-hidden="true">⌕</span><input ref="searchInput" type="search" role="combobox" autocomplete="off" :value="query" :placeholder="searchPlaceholder" :aria-controls="listboxId" :aria-activedescendant="activeDescendant" @input="updateSearch(($event.target as HTMLInputElement).value)" /><kbd>↑↓</kbd><kbd>↵</kbd></label>
         <div ref="list" :id="listboxId" class="dl-multi-choice__list" role="listbox" aria-multiselectable="true" :aria-activedescendant="activeDescendant">
           <template v-if="visibleGroups.length">
-            <section v-for="group in visibleGroups" :key="group.label" class="dl-multi-choice__group" role="group" :aria-label="group.label || undefined"><h4 v-if="group.label">{{ group.label }}</h4><button v-for="option in group.options" :id="`${listboxId}-${safeId(option.value)}`" :key="option.value" type="button" role="option" class="dl-multi-choice__option" :class="{ 'is-selected': selectedSet.has(option.value), 'is-highlighted': option.value === highlightedValue }" :aria-selected="selectedSet.has(option.value)" :data-choice-value="safeId(option.value)" :disabled="option.disabled" @mouseenter="highlightedValue = option.disabled ? highlightedValue : option.value" @click="toggleValue(option.value)"><span><strong>{{ option.label }}</strong><small v-if="option.description">{{ option.description }}</small></span><b aria-hidden="true">{{ selectedSet.has(option.value) ? '✓' : '+' }}</b></button></section>
+            <section v-for="group in visibleGroups" :key="group.label" class="dl-multi-choice__group" role="group" :aria-label="group.label || undefined"><h4 v-if="group.label">{{ group.label }}</h4><button v-for="option in group.options" :id="`${listboxId}-${safeId(option.value)}`" :key="option.value" type="button" role="option" class="dl-multi-choice__option" :class="{ 'is-selected': selectedSet.has(option.value), 'is-highlighted': option.value === highlightedValue }" :aria-selected="selectedSet.has(option.value)" :data-choice-value="safeId(option.value)" :disabled="option.disabled" @mouseenter="highlightedValue = option.disabled ? highlightedValue : option.value" @click="toggleValue(option.value)"><span><strong><template v-for="(segment, index) in presentationFor(option).label" :key="index"><mark v-if="segment.matched">{{ segment.text }}</mark><template v-else>{{ segment.text }}</template></template></strong><small v-if="option.description"><template v-for="(segment, index) in presentationFor(option).description" :key="index"><mark v-if="segment.matched">{{ segment.text }}</mark><template v-else>{{ segment.text }}</template></template></small><span v-if="presentationFor(option).hidden.length" class="dl-multi-choice__matches"><span v-for="match in presentationFor(option).hidden" :key="match.key"><i>{{ match.kind }}</i><template v-for="(segment, index) in match.segments" :key="index"><mark v-if="segment.matched">{{ segment.text }}</mark><template v-else>{{ segment.text }}</template></template></span></span></span><b aria-hidden="true">{{ selectedSet.has(option.value) ? '✓' : '+' }}</b></button></section>
           </template>
           <div v-else class="dl-multi-choice__empty">没有匹配的选项</div>
         </div>
@@ -275,6 +274,7 @@ watch(filteredOptions, options => {
 .dl-multi-choice__search { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--dl-border); border-radius: 14px; background: var(--dl-surface-solid); color: var(--dl-text-faint); }.dl-multi-choice__search:focus-within { border-color: var(--dl-border-focus); box-shadow: var(--dl-focus); }.dl-multi-choice__search input { min-width: 0; border: 0; background: transparent; color: var(--dl-text); outline: none; }.dl-multi-choice__search kbd { padding: 2px 5px; border: 1px solid var(--dl-border); border-radius: 5px; background: var(--dl-night-soft); font: .58rem/1.2 monospace; }
 .dl-multi-choice__list { min-height: 160px; overflow: auto; overscroll-behavior: contain; scrollbar-color: var(--dl-border-strong) transparent; }.dl-multi-choice__group { display: grid; gap: 5px; }.dl-multi-choice__group + .dl-multi-choice__group { margin-top: 14px; }.dl-multi-choice__group h4 { margin: 0; padding: 2px 7px; color: var(--dl-text-faint); font-size: .62rem; letter-spacing: .08em; }
 .dl-multi-choice__option { display: flex; width: 100%; min-height: 50px; align-items: center; justify-content: space-between; gap: 14px; padding: 9px 12px; border: 1px solid transparent; border-radius: 13px; background: transparent; color: var(--dl-text); text-align: left; cursor: pointer; outline: none; }.dl-multi-choice__option:hover, .dl-multi-choice__option.is-highlighted { border-color: var(--dl-border); background: var(--dl-surface-hover); }.dl-multi-choice__option.is-selected { border-color: var(--dl-accent-border); background: var(--dl-accent-surface); }.dl-multi-choice__option:focus-visible { box-shadow: var(--dl-focus); }.dl-multi-choice__option:disabled { cursor: not-allowed; opacity: .4; }.dl-multi-choice__option > span { display: grid; min-width: 0; gap: 3px; }.dl-multi-choice__option strong { font-size: .82rem; }.dl-multi-choice__option small { color: var(--dl-text-faint); font-size: .67rem; }.dl-multi-choice__option b { color: var(--dl-accent-text); }
+.dl-multi-choice__option mark{padding:0 .08em;border-radius:.22em;background:color-mix(in srgb,var(--dl-accent) 30%,transparent);color:var(--dl-text);font-weight:850}.dl-multi-choice__matches{display:flex!important;min-width:0;flex-wrap:wrap;gap:5px;margin-top:2px}.dl-multi-choice__matches>span{display:inline-flex;min-width:0;align-items:baseline;gap:4px;padding:2px 6px;border:1px solid var(--dl-accent-border);border-radius:999px;background:var(--dl-accent-surface);color:var(--dl-text-muted);font-size:.62rem;line-height:1.25}.dl-multi-choice__matches i{color:var(--dl-accent-text);font-size:.52rem;font-style:normal;font-weight:850;letter-spacing:.06em}
 .dl-multi-choice__empty { display: grid; min-height: 170px; place-items: center; color: var(--dl-text-faint); }.dl-multi-choice__panel footer { display: flex; align-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid var(--dl-border); }.dl-multi-choice__panel footer > span { flex: 1; color: var(--dl-text-faint); font-size: .68rem; text-align: right; }.dl-multi-choice__ghost, .dl-multi-choice__primary { min-height: 36px; padding: 0 14px; border-radius: 10px; font-size: .72rem; font-weight: 800; cursor: pointer; }.dl-multi-choice__ghost { border: 1px solid var(--dl-border); background: var(--dl-surface); color: var(--dl-text-muted); }.dl-multi-choice__primary { border: 1px solid var(--dl-button-primary-border); background: var(--dl-button-primary-bg); color: var(--dl-button-primary-text); }.dl-multi-choice__ghost:disabled { cursor: not-allowed; opacity: .4; }
 .dl-multi-choice__panel[data-overlay='drawer'] { top: auto; bottom: 0; width: min(100vw, 760px); border-bottom: 0; border-radius: 28px 28px 0 0; transform: translate(-50%, 0); }
 @media (max-width: 720px) { .dl-multi-choice__panel[data-overlay='auto'] { top: auto; bottom: 0; left: 0; width: 100%; max-height: 88dvh; padding: 18px 16px max(18px, env(safe-area-inset-bottom)); border-right: 0; border-bottom: 0; border-left: 0; border-radius: 26px 26px 0 0; transform: none; }.dl-multi-choice__search kbd { display: none; }.dl-multi-choice__option { min-height: 54px; } }

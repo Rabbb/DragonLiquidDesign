@@ -167,6 +167,7 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   'year-range-picker': () => import('../docs/AlphaDateDocs.vue'),
   drawer: () => import('../docs/AlphaGeneralDocs.vue'),
   tree: () => import('../docs/AlphaGeneralDocs.vue'),
+  'tree-menu': () => import('../docs/AlphaGeneralDocs.vue'),
   'virtual-list': () => import('../docs/RecommendedControlDocs.vue'),
   container: () => import('../docs/SiteLayoutDocs.vue'),
   stack: () => import('../docs/SiteLayoutDocs.vue'),
@@ -188,7 +189,7 @@ const sharedDocIds = new Set([
   'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'tags-input', 'toggle', 'toggle-group',
   'alert-dialog', 'aspect-ratio', 'context-menu', 'dropdown-menu', 'hover-card', 'menubar', 'navigation-menu', 'pagination', 'scroll-area', 'splitter', 'stepper', 'toast', 'toolbar',
   'autocomplete', 'rating', 'color-area', 'color-field', 'color-picker', 'color-slider', 'color-swatch', 'color-swatch-picker',
-  'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree',
+  'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree', 'tree-menu',
   'multi-choice', 'segmented', 'virtual-list',
   'container', 'stack', 'cluster', 'grid', 'page-frame', 'breadcrumbs', 'site-navigation', 'site-header', 'site-shell',
 ])

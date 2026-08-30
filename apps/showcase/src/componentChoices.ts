@@ -37,7 +37,7 @@ const recommendedIds = new Set([
   'pin-input', 'radio-group', 'rating', 'select', 'slider', 'switch', 'tags-input', 'color-picker', 'color-swatch-picker', 'time-picker',
   'calendar', 'date-picker', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'mdx', 'virtual-list',
   'accordion', 'alert-dialog', 'avatar', 'context-menu', 'dialog', 'drawer', 'dropdown-menu', 'navigation-menu',
-  'pagination', 'popover', 'progress', 'stepper', 'tabs', 'toast', 'tooltip', 'tree',
+  'pagination', 'popover', 'progress', 'stepper', 'tabs', 'toast', 'tooltip', 'tree', 'tree-menu',
   'container', 'grid', 'page-frame', 'breadcrumbs', 'site-shell',
 ])
 

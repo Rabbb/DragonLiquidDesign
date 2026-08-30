@@ -40,7 +40,7 @@ export {
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSegmented, DlSelect,
   DlSeparator, DlSiteHeader, DlSiteNavigation, DlSiteShell, DlSlider, DlSplitButton, DlSplitter, DlStack, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
   DlTimeField, DlTimePicker, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlToolbarMenu, DlTooltip,
-  DlTree, DlVirtualList, DlYearPicker, DlYearRangePicker,
+  DlTree, DlTreeMenu, DlVirtualList, DlYearPicker, DlYearRangePicker,
 } from './managed-components'
 
 export { createDlManagedComponent, getDlComponentBehavior, getDlComponentBehaviors } from './component-behavior'
@@ -83,6 +83,7 @@ export type {
   DlStepItem,
   DlTabItem,
   DlTreeNode,
+  DlTreeMenuItem,
 } from './components/primitive.types'
 export type { DlSelectOption } from './components/select.types'
 export type {

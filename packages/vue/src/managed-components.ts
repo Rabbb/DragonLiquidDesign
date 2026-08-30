@@ -96,6 +96,7 @@ import RawDlToolbar from './components/DlToolbar.vue'
 import RawDlToolbarMenu from './components/DlToolbarMenu.vue'
 import RawDlTooltip from './components/DlTooltip.vue'
 import RawDlTree from './components/DlTree.vue'
+import RawDlTreeMenu from './components/DlTreeMenu.vue'
 import RawDlVirtualList from './components/DlVirtualList.vue'
 import RawDlGrid from './components/DlGrid.vue'
 import RawDlBreadcrumbs from './components/DlBreadcrumbs.vue'
@@ -488,6 +489,13 @@ export const DlTree = managed(RawDlTree, 'DlTree', {
   methodDefinitions: [
     method('expand / collapse', '展开或折叠指定节点。', '(value: string)'),
     method('collapseAll', '折叠全部节点。', '()'),
+  ],
+})
+export const DlTreeMenu = managed(RawDlTreeMenu, 'DlTreeMenu', {
+  methods: treeMethods,
+  methodDefinitions: [
+    method('expand / collapse', '展开或折叠指定目录节点。', '(value: string)'),
+    method('collapseAll', '折叠全部目录节点。', '()'),
   ],
 })
 export const DlVirtualList = managed(RawDlVirtualList, 'DlVirtualList', {

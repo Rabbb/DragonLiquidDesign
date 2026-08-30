@@ -96,6 +96,7 @@ import DlToolbar from './DlToolbar.vue'
 import DlToolbarMenu from './DlToolbarMenu.vue'
 import DlTooltip from './DlTooltip.vue'
 import DlTree from './DlTree.vue'
+import DlTreeMenu from './DlTreeMenu.vue'
 import DlVirtualList from './DlVirtualList.vue'
 import DlYearPicker from './DlYearPicker.vue'
 import DlYearRangePicker from './DlYearRangePicker.vue'
@@ -255,6 +256,7 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('ToolbarMenu', DlToolbarMenu, 'general', 'custom', { defaultProps: { menus: [{ value: 'file', label: '文件', items: menuItems }] }, description: '面向桌面应用场景的分层工具栏菜单与快捷键绑定。' }),
   official('Tooltip', DlTooltip, 'general', 'stable', { defaultProps: { text: '由官方注册表渲染', tone: 'accent' }, defaultContent: '悬停查看提示' }),
   official('Tree', DlTree, 'general', 'alpha', { defaultProps: { items: [{ id: 'season', label: '季度', children: [{ id: 'spring', label: '春季番' }] }] } }),
+  official('TreeMenu', DlTreeMenu, 'general', 'stable', { defaultProps: { label: '文档目录', items: [{ id: 'home', label: '首页', description: '/' }, { id: 'docs', label: '文档', children: [{ id: 'start', label: '开始使用', description: '/docs/start' }] }] } }),
   official('VirtualList', DlVirtualList, 'general', 'custom', { defaultProps: { items: ['动画', '漫画', '轻小说'], estimatedItemHeight: 48, viewportHeight: 144 } }),
 ]
 

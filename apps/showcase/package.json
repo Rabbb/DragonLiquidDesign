@@ -14,7 +14,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@dragon-liquid/vue": "file:../../registry/dragon-liquid-vue-0.6.0-alpha.49.tgz",
+    "@dragon-liquid/vue": "file:../../registry/dragon-liquid-vue-0.6.0-alpha.50.tgz",
     "vue": "^3.5.40",
     "vxe-pc-ui": "~4.16.24",
     "vxe-table": "~4.20.9"

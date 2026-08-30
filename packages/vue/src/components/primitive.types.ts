@@ -94,3 +94,15 @@ export interface DlTreeNode {
   disabled?: boolean
   children?: DlTreeNode[]
 }
+
+export interface DlTreeMenuItem {
+  id: string
+  label: string
+  description?: string
+  keywords?: string[]
+  icon?: string
+  trailing?: string
+  disabled?: boolean
+  children?: DlTreeMenuItem[]
+  metadata?: Record<string, unknown>
+}

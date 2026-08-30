@@ -260,6 +260,7 @@ const structureDescriptions = {
   DlStepItem: 'Stepper 中一个流程步骤的标题与状态。',
   DlTabItem: 'Tabs 中一个标签及对应内容入口的配置。',
   DlTreeNode: 'Tree 使用的可递归树节点。',
+  DlTreeMenuItem: 'TreeMenu 使用的可递归目录节点，可附带图标、尾部信息和业务元数据。',
   DlMdxLinkPolicy: 'MarkdownX 对外部链接、打开方式和图片资源的安全策略。',
   DlMdxParseResult: 'MarkdownX 完成解析后返回的文档统计结果。',
   DlMdxComponentContext: '安全组件块插槽收到的名称、属性和源码位置。',

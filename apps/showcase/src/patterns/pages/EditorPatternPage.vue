@@ -22,12 +22,14 @@ import {
   DlToolbar,
   DlToolbarMenu,
   DlTree,
+  DlTreeMenu,
   type DlDataTableColumn,
   type DlMenuItem,
   type DlMenuGroup,
   type DlSelectOption,
   type DlSplitterPanel,
   type DlTreeNode,
+  type DlTreeMenuItem,
 } from '@dragon-liquid/vue'
 import { useArchiveDemo } from '../useArchiveDemo'
 
@@ -42,6 +44,8 @@ const mdxMode = ref<'edit' | 'split' | 'preview'>('split')
 const documentSource = ref(`# ${selectedItem.value.title}\n\n> 一份由 Dragon Liquid 工作台维护的收藏笔记。\n\n## 观看印象\n\n${selectedItem.value.summary}\n\n- [x] 建立收藏记录\n- [x] 补充标签与评分\n- [ ] 完成长评\n\n::Callout{tone="accent" title="编辑提示"}`)
 const selectedSection = ref<DlTreeNode>()
 const expanded = ref(['document'])
+const routeExpanded = ref(['project', 'notes'])
+const selectedRoute = ref('impression-page')
 const publishOpen = ref(false)
 const saving = ref(false)
 const saveProgress = ref(0)
@@ -61,6 +65,14 @@ const outline: DlTreeNode[] = [
   { id: 'metadata', label: '条目资料', children: [
     { id: 'classification', label: '分类与标签' },
     { id: 'release', label: '发布设置' },
+  ] },
+]
+const projectRoutes: DlTreeMenuItem[] = [
+  { id: 'project', label: '收藏网站', description: '/', icon: 'A', children: [
+    { id: 'notes', label: '笔记页面', description: '/notes', children: [
+      { id: 'impression-page', label: '观看印象', description: '/notes/impression', keywords: ['review', '长评'], trailing: 'MDX' },
+      { id: 'production-page', label: '制作资料', description: '/notes/production', keywords: ['staff'], trailing: 'MDX' },
+    ] },
   ] },
 ]
 const toolbarItems: DlMenuItem[] = [
@@ -148,6 +160,7 @@ function publish() {
         <template #panel-outline>
           <aside class="editor-panel outline-panel">
             <header><small>DOCUMENT OUTLINE</small><b>内容结构</b></header>
+            <DlTreeMenu v-model="selectedRoute" v-model:expanded="routeExpanded" :items="projectRoutes" label="项目路由" search-placeholder="检索页面或路径" />
             <DlTree v-model="selectedSection" v-model:expanded="expanded" :items="outline" />
             <DlCard padding="md"><small>工作台原则</small><p>树负责导航，工具栏负责命令，编辑器负责内容，右侧面板负责持久属性。</p></DlCard>
           </aside>

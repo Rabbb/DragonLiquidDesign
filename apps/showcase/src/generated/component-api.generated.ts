@@ -9955,6 +9955,134 @@ export default {
       }
     ]
   },
+  "tree-menu": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "string",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "DlTreeMenuItem[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "expanded",
+        "description": "当前已展开节点的标识列表。",
+        "type": "string[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "collapsed",
+        "description": "设置 collapsed 属性。",
+        "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "autoCollapse",
+        "description": "设置 autoCollapse 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "collapseBreakpoint",
+        "description": "设置 collapseBreakpoint 属性。",
+        "type": "number",
+        "defaultValue": "1024"
+      },
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "'树目录菜单'"
+      },
+      {
+        "prop": "emptyText",
+        "description": "文档没有可渲染内容时显示的占位说明。",
+        "type": "string",
+        "defaultValue": "'暂无目录'"
+      },
+      {
+        "prop": "searchable",
+        "description": "是否始终显示选项搜索框；不传时根据选项数量自动判断。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "searchPlaceholder",
+        "description": "搜索输入框为空时显示的提示文字。",
+        "type": "string",
+        "defaultValue": "'检索名称、路径或关键字'"
+      }
+    ],
+    "relatedTypes": [
+      {
+        "name": "DlTreeMenuItem",
+        "description": "TreeMenu 使用的可递归目录节点，可附带图标、尾部信息和业务元数据。",
+        "rows": [
+          {
+            "prop": "id",
+            "description": "控件或输入元素使用的唯一标识。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "label",
+            "description": "控件的显示标签或无障碍名称。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "description",
+            "description": "补充说明文字；不传时隐藏说明区域。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "keywords",
+            "description": "设置 keywords 字段。",
+            "type": "string[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "icon",
+            "description": "自定义状态图标；不传时按色调选择默认图标。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "trailing",
+            "description": "设置 trailing 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "disabled",
+            "description": "是否禁用控件及其交互。",
+            "type": "boolean",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "children",
+            "description": "当前节点或导航项包含的下一级项目。",
+            "type": "DlTreeMenuItem[]",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "metadata",
+            "description": "设置 metadata 字段。",
+            "type": "Record<string, unknown>",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlTreeMenuItem[]"
+      }
+    ]
+  },
   "virtual-list": {
     "props": [
       {

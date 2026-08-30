@@ -159,7 +159,7 @@ const readyComponents: ComponentDefinition[] = [
     id: 'multi-choice',
     name: 'MultiChoice 多选器',
     category: 'form',
-    summary: '在自适应浮层中完成分组检索、多项选择，并把结果压缩为紧凑标签。',
+    summary: '在自适应浮层中完成分组检索、多项选择；检索与 Choice 共用可见文字及隐藏关键字高亮。',
     since: '0.6.0-alpha.15',
     implementation: 'ready',
     maturity: 'custom',
@@ -489,6 +489,7 @@ const rekaSeeds: RekaSeed[] = [
   { id: 'toolbar-menu', name: 'Toolbar Menu 工具栏菜单', category: 'general', summary: '提供桌面软件式分层文字菜单，并绑定可由用户修改的全局快捷键。' },
   { id: 'tooltip', name: 'Tooltip 文字提示', category: 'general', summary: '在悬停或键盘聚焦时补充简短说明。' },
   { id: 'tree', name: 'Tree 树', category: 'general', maturity: 'alpha', summary: '展示可展开与收起的层级项目列表。' },
+  { id: 'tree-menu', name: 'Tree Menu 树目录菜单', category: 'general', summary: '用于项目、文档和路由的多级响应式目录导航，支持祖先路径检索、命中高亮、节点插槽与窄屏收起。' },
 ]
 
 const scenarioBlueprints: Record<Exclude<ComponentCategoryId, 'foundation'>, ScenarioDefinition[]> = {

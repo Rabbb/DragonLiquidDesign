@@ -56,6 +56,29 @@ describe('DlMultiChoice', () => {
     expect(wrapper.emitted('clear')).toHaveLength(1)
   })
 
+  it('shares Choice matching and reveals highlighted hidden keywords', async () => {
+    const wrapper = mount(DlMultiChoice, {
+      attachTo: document.body,
+      props: {
+        open: true,
+        modelValue: [],
+        searchable: true,
+        options: [{ value: 'node-runtime', label: 'Node.js', description: 'JavaScript 运行时', keywords: ['server runtime'] }],
+      },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    const input = document.body.querySelector<HTMLInputElement>('[data-slot="multi-choice-panel"] input[type="search"]')!
+    input.value = 'server'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    await nextTick()
+
+    const option = document.body.querySelector<HTMLElement>('.dl-multi-choice__option')!
+    expect(option.textContent).toContain('关键词server runtime')
+    expect(option.querySelector('.dl-multi-choice__matches mark')?.textContent).toBe('server')
+  })
+
   it('adds multiple exact labels from one clipboard operation', async () => {
     const wrapper = mount(DlMultiChoice, { props: { modelValue: ['vue'], options } })
     paste(wrapper.get('.dl-multi-choice__trigger').element, 'Solid, .NET')

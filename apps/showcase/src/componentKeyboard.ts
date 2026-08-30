@@ -139,9 +139,9 @@ define(['pagination', 'stepper'], {
   keys: ['Tab 聚焦', 'Enter / Space 激活', 'Home / End 首尾（提供时）'],
 })
 
-define(['tree'], {
-  summary: '树节点使用层级导航，左右键负责折叠、展开或父子移动，上下键负责同层浏览。',
-  keys: ['↑ / ↓ 移动', '← 折叠/父级', '→ 展开/子级', 'Home / End 首尾', 'Enter 选择'],
+define(['tree', 'tree-menu'], {
+  summary: '树节点使用层级导航；TreeMenu 可先检索，再在保留的祖先路径中定位。',
+  keys: ['检索框输入筛选', 'Escape 清除检索', '↑ / ↓ 移动', '← 折叠/父级', '→ 展开/子级', 'Home / End 首尾', 'Enter 选择'],
 })
 
 define(['scroll-area'], {

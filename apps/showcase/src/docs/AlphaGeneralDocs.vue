@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlButton, DlDrawer, DlInputText, DlSelect, DlSwitch, DlTree, type DlSelectOption, type DlTone, type DlTreeNode } from '@dragon-liquid/vue'
+import { DlButton, DlDrawer, DlInputText, DlSelect, DlSwitch, DlTree, DlTreeMenu, type DlSelectOption, type DlTone, type DlTreeMenuItem, type DlTreeNode } from '@dragon-liquid/vue'
 import type { ComponentDefinition } from '../catalog'
 import { componentGuidanceFor } from '../componentGuidance'
 import DocExampleShell from '../components/DocExampleShell.vue'
@@ -31,6 +31,17 @@ const toneOptions: { value: DlTone; label: string; description: string }[] = [
 const expanded = ref(['library'])
 const selected = ref<DlTreeNode | DlTreeNode[]>()
 const nodes: DlTreeNode[] = [{ id: 'library', label: '动漫收藏', children: [{ id: 'watching', label: '正在观看', description: '12 部作品' }, { id: 'completed', label: '已经看完', description: '86 部作品' }] }, { id: 'settings', label: '系统设置' }]
+const menuExpanded = ref(['docs', 'guides'])
+const selectedMenu = ref('start')
+const menuNodes: DlTreeMenuItem[] = [
+  { id: 'home', label: '首页', description: '/', icon: '⌂' },
+  { id: 'docs', label: '文档', description: '/docs', icon: 'D', children: [
+    { id: 'guides', label: '指南', description: '/docs/guides', children: [
+      { id: 'start', label: '开始使用', description: '/docs/guides/start', keywords: ['安装', 'quick start'], trailing: 'MDX' },
+      { id: 'deploy', label: '部署', description: '/docs/guides/deploy', trailing: 'MDX' },
+    ] },
+  ] },
+]
 
 const drawerCodes: Record<string, string> = {
   basic: vueSfc({ imports: ['DlButton', 'DlDrawer'], script: `import { ref } from 'vue'\n\ntype Placement = 'left' | 'right' | 'bottom'\nconst open = ref(false)\nconst placement = ref<Placement>('right')\n\nfunction show(next: Placement) {\n  placement.value = next\n  open.value = true\n}`, template: `  <div class="actions">
@@ -157,7 +168,8 @@ function showTone(tone: DlTone) {
 }
 
 const treeCode = vueSfc({ imports: ['DlTree', 'type DlTreeNode'], script: `import { ref } from 'vue'\n\nconst expanded = ref(['library'])\nconst selected = ref<DlTreeNode>()\nconst nodes: DlTreeNode[] = [\n  { id: 'library', label: '动漫收藏', children: [\n    { id: 'watching', label: '正在观看' },\n    { id: 'completed', label: '已经看完' },\n  ] },\n]`, template: `  <DlTree v-model="selected" v-model:expanded="expanded" :items="nodes" />` })
-const code = computed(() => props.componentDefinition.id === 'drawer' ? drawerCodes[props.scenario] ?? drawerCodes.basic : treeCode)
+const treeMenuCode = vueSfc({ imports: ['DlTreeMenu', 'type DlTreeMenuItem'], script: `import { ref } from 'vue'\n\nconst selected = ref('start')\nconst expanded = ref(['docs', 'guides'])\nconst items: DlTreeMenuItem[] = [\n  { id: 'home', label: '首页', description: '/', icon: '⌂' },\n  { id: 'docs', label: '文档', children: [\n    { id: 'guides', label: '指南', children: [\n      { id: 'start', label: '开始使用', description: '/docs/guides/start', keywords: ['安装', 'quick start'], trailing: 'MDX' },\n    ] },\n  ] },\n]`, template: `  <DlTreeMenu v-model="selected" v-model:expanded="expanded" :items="items" label="文档目录">\n    <template #trailing="{ item }"><code>{{ item.trailing }}</code></template>\n  </DlTreeMenu>` })
+const code = computed(() => props.componentDefinition.id === 'drawer' ? drawerCodes[props.scenario] ?? drawerCodes.basic : props.componentDefinition.id === 'tree-menu' ? treeMenuCode : treeCode)
 const content = computed(() => ({
   title: `${props.componentDefinition.name} · ${props.componentDefinition.scenarios.find(item => item.id === props.scenario)?.label ?? 'Alpha 先行体验'}`,
   description: componentGuidanceFor(props.componentDefinition.id).example,
@@ -203,6 +215,7 @@ function showDrawer(next: 'right' | 'bottom' | 'left') {
         <DlDrawer v-model:open="drawerOpen" title="筛选收藏库" description="适合窄屏操作的低优先级辅助面板" placement="bottom" size="md" tone="muted"><div class="filter-form"><label><span>观看状态</span><DlSelect v-model="filterStatus" :options="filterOptions" /></label><div class="switch-row"><span><b>仅显示未看剧集</b><small>隐藏已完成的单集</small></span><DlSwitch v-model="onlyUnwatched" /></div></div><template #footer><DlButton variant="ghost" @click="filterStatus = 'all'; onlyUnwatched = false">重置</DlButton><DlButton variant="primary" @click="drawerOpen = false">查看结果</DlButton></template></DlDrawer>
       </template>
     </template>
+    <DlTreeMenu v-else-if="componentDefinition.id === 'tree-menu'" v-model="selectedMenu" v-model:expanded="menuExpanded" :items="menuNodes" label="文档目录"><template #trailing="{ item }"><code>{{ item.trailing }}</code></template></DlTreeMenu>
     <DlTree v-else v-model="selected" v-model:expanded="expanded" :items="nodes" />
   </div></DocExampleShell>
 </template>

@@ -16,18 +16,12 @@ import type {
   DlChoicePortalOption,
   DlChoicePortalOverlay,
 } from './choice-portal.types'
+import { buildDlSearchMatchPresentation, matchesDlSearchFields, normalizeDlSearch, type DlSearchFields } from './search-match'
 
 type ChoicePortalStatus = 'default' | 'success' | 'warning' | 'error'
-type MatchSegment = { text: string; matched: boolean }
-type HiddenMatch = { key: string; kind: '关键词' | '值'; segments: MatchSegment[] }
-type MatchPresentation = {
-  label: MatchSegment[]
-  description: MatchSegment[]
-  hidden: HiddenMatch[]
-}
 type IndexedOption = DlChoicePortalOption & {
   groupLabel?: string
-  searchFields: { label: string; value: string; description: string; keywords: string[] }
+  searchFields: DlSearchFields
   custom?: boolean
 }
 
@@ -98,7 +92,7 @@ const isPlaceholder = computed(() => !selectedOption.value && !props.modelValue)
 const resolvedOpen = computed(() => props.open ?? internalOpen.value)
 const resolvedSearchable = computed(() => props.allowCustom || props.searchable === true
   || (props.searchable === undefined && indexedOptions.value.length >= props.searchThreshold))
-const normalizedQuery = computed(() => query.value.normalize('NFKC').trim().toLocaleLowerCase())
+const normalizedQuery = computed(() => normalizeDlSearch(query.value))
 
 function indexOption(option: DlChoicePortalOption, groupLabel?: string): IndexedOption {
   return {
@@ -111,64 +105,6 @@ function indexOption(option: DlChoicePortalOption, groupLabel?: string): Indexed
       keywords: option.keywords ?? [],
     },
   }
-}
-
-function normalizeSearch(value: string) {
-  return value.normalize('NFKC').toLocaleLowerCase()
-}
-
-function matchCharacterIndexes(source: string, keyword: string): number[] | null {
-  if (!keyword) return null
-  const sourceCharacters = [...source]
-  const normalizedCharacters: string[] = []
-  const sourceIndexes: number[] = []
-
-  sourceCharacters.forEach((character, sourceIndex) => {
-    for (const normalizedCharacter of normalizeSearch(character)) {
-      normalizedCharacters.push(normalizedCharacter)
-      sourceIndexes.push(sourceIndex)
-    }
-  })
-
-  const keywordCharacters = [...keyword]
-  const exactLimit = normalizedCharacters.length - keywordCharacters.length
-  for (let start = 0; start <= exactLimit; start += 1) {
-    if (!keywordCharacters.every((character, offset) => normalizedCharacters[start + offset] === character)) continue
-    return [...new Set(keywordCharacters.map((_, offset) => sourceIndexes[start + offset]))]
-  }
-
-  const fuzzyIndexes: number[] = []
-  let cursor = 0
-  for (const character of keywordCharacters) {
-    const matchedIndex = normalizedCharacters.indexOf(character, cursor)
-    if (matchedIndex < 0) return null
-    fuzzyIndexes.push(sourceIndexes[matchedIndex]!)
-    cursor = matchedIndex + 1
-  }
-  return [...new Set(fuzzyIndexes)]
-}
-
-function matchesField(source: string, keyword: string) {
-  return matchCharacterIndexes(source, keyword) !== null
-}
-
-function matchSegments(source: string, keyword: string): MatchSegment[] {
-  if (!source) return []
-  const matchedIndexes = new Set(matchCharacterIndexes(source, keyword) ?? [])
-  const segments: MatchSegment[] = []
-
-  for (const [index, character] of [...source].entries()) {
-    const matched = matchedIndexes.has(index)
-    const previous = segments.at(-1)
-    if (previous?.matched === matched) previous.text += character
-    else segments.push({ text: character, matched })
-  }
-  return segments
-}
-
-function optionMatches(option: IndexedOption, keyword: string) {
-  const { label, value, description, keywords } = option.searchFields
-  return [label, value, description, ...keywords].some(field => matchesField(field, keyword))
 }
 
 function sanitizeCustomValue(value: string) {
@@ -191,45 +127,18 @@ const customOption = computed<IndexedOption | null>(() => {
 const filteredOptions = computed(() => {
   const keyword = normalizedQuery.value
   const matches = keyword
-    ? indexedOptions.value.filter(option => optionMatches(option, keyword))
+    ? indexedOptions.value.filter(option => matchesDlSearchFields(option.searchFields, keyword))
     : indexedOptions.value
   return customOption.value ? [customOption.value, ...matches] : matches
 })
 
-function buildMatchPresentation(option: IndexedOption, keyword: string): MatchPresentation {
-  const { label, value, description, keywords } = option.searchFields
-  const hidden: HiddenMatch[] = []
-  const shownHiddenValues = new Set<string>()
-
-  keywords.forEach((candidate, index) => {
-    if (!matchesField(candidate, keyword)) return
-    const normalizedCandidate = normalizeSearch(candidate)
-    if (shownHiddenValues.has(normalizedCandidate)) return
-    shownHiddenValues.add(normalizedCandidate)
-    hidden.push({ key: `keyword-${index}`, kind: '关键词', segments: matchSegments(candidate, keyword) })
-  })
-
-  const normalizedValue = normalizeSearch(value)
-  if (matchesField(value, keyword)
-    && normalizedValue !== normalizeSearch(label)
-    && !shownHiddenValues.has(normalizedValue)) {
-    hidden.push({ key: 'value', kind: '值', segments: matchSegments(value, keyword) })
-  }
-
-  return {
-    label: matchSegments(label, keyword),
-    description: matchSegments(description, keyword),
-    hidden,
-  }
-}
-
 const matchPresentations = computed(() => new Map(filteredOptions.value.map(option => [
   option.value,
-  buildMatchPresentation(option, normalizedQuery.value),
+  buildDlSearchMatchPresentation(option.searchFields, normalizedQuery.value),
 ])))
 
 function presentationFor(option: IndexedOption) {
-  return matchPresentations.value.get(option.value) ?? buildMatchPresentation(option, '')
+  return matchPresentations.value.get(option.value) ?? buildDlSearchMatchPresentation(option.searchFields, '')
 }
 
 const visibleGroups = computed(() => {
@@ -278,9 +187,9 @@ function handleTriggerPaste(event: ClipboardEvent) {
   const source = event.clipboardData?.getData('text/plain').normalize('NFKC').trim() ?? ''
   if (!source) return
   event.preventDefault()
-  const normalized = normalizeSearch(source)
+  const normalized = normalizeDlSearch(source)
   const exact = indexedOptions.value.find(option => !option.disabled
-    && [option.value, option.label].some(value => normalizeSearch(value) === normalized))
+    && [option.value, option.label].some(value => normalizeDlSearch(value) === normalized))
   if (exact) {
     choose(exact.value)
     emit('paste', source, exact.value)

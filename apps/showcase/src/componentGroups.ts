@@ -43,7 +43,7 @@ const familyGroups: ComponentGroupDefinition[] = [
   group('day-date', '日期与日历', 'DAY & DATE', '选择单日、日期范围或直接编辑日期。', ['calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker']),
   group('period-pickers', '月年周期', 'MONTH & YEAR', '选择月份、年份及其范围。', ['month-picker', 'month-range-picker', 'year-picker', 'year-range-picker']),
   group('time-controls', '时间控件', 'TIME', '选择具体时间、时间段和触控时间。', ['time-field', 'time-range-field', 'time-picker']),
-  group('navigation', '导航与流程', 'NAVIGATION', '在页面、步骤和层级结构之间移动。', ['navigation-menu', 'menubar', 'tabs', 'pagination', 'stepper', 'tree', 'segmented']),
+  group('navigation', '导航与流程', 'NAVIGATION', '在页面、步骤和层级结构之间移动。', ['navigation-menu', 'menubar', 'tabs', 'pagination', 'stepper', 'tree', 'tree-menu', 'segmented']),
   group('command-menus', '命令与菜单', 'COMMAND MENUS', '组织工具命令和上下文操作。', ['dropdown-menu', 'context-menu', 'toolbar', 'toolbar-menu', 'menubar', 'split-button', 'icon-button']),
   group('overlays', '浮层与提示', 'OVERLAYS', '在当前页面之上承载任务、提示和补充信息。', ['dialog', 'alert-dialog', 'drawer', 'popover', 'hover-card', 'tooltip', 'dropdown-menu', 'context-menu', 'toast']),
   group('disclosure', '展开与收起', 'DISCLOSURE', '按需展开章节或单个补充区域。', ['accordion', 'collapsible', 'tabs']),
@@ -62,7 +62,7 @@ const purposeGroups: ComponentGroupDefinition[] = [
   group('choose-filter', '选择与筛选', 'CHOOSE & FILTER', '从候选项中搜索、比较或筛选结果。', ['autocomplete', 'combobox', 'select', 'choice-portal', 'multi-choice', 'listbox', 'checkbox', 'radio-group', 'segmented', 'toggle-group', 'slider', 'rating', 'color-picker', 'color-swatch-picker']),
   group('preference', '状态与偏好', 'PREFERENCE', '维护立即生效的布尔状态与显示偏好。', ['checkbox', 'radio-group', 'segmented', 'switch', 'toggle', 'toggle-group', 'select', 'color-picker', 'color-swatch-picker']),
   group('schedule', '日期与排期', 'SCHEDULE', '选择日期、时间、周期和统计范围。', ['calendar', 'range-calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'time-field', 'time-range-field', 'time-picker']),
-  group('navigate', '导航与流程推进', 'NAVIGATE', '定位页面、步骤、页码和层级节点。', ['navigation-menu', 'menubar', 'tabs', 'pagination', 'stepper', 'tree', 'accordion', 'collapsible']),
+  group('navigate', '导航与流程推进', 'NAVIGATE', '定位页面、步骤、页码和层级节点。', ['navigation-menu', 'menubar', 'tabs', 'pagination', 'stepper', 'tree', 'tree-menu', 'accordion', 'collapsible']),
   group('context-task', '浮层与上下文任务', 'CONTEXT TASK', '不离开当前上下文完成任务或查看补充信息。', ['dialog', 'alert-dialog', 'drawer', 'popover', 'hover-card', 'tooltip', 'dropdown-menu', 'context-menu', 'choice-portal', 'multi-choice']),
   group('compose-layout', '布局与内容承载', 'COMPOSE LAYOUT', '建立内容比例、区块层级和可调整布局。', ['card', 'aspect-ratio', 'separator', 'splitter', 'accordion', 'collapsible', 'scroll-area']),
   group('status-result', '状态与结果反馈', 'STATUS & RESULT', '显示身份、状态、进度和操作结果。', ['badge', 'avatar', 'progress', 'toast', 'rating']),
@@ -72,7 +72,7 @@ const purposeGroups: ComponentGroupDefinition[] = [
 ]
 
 const siteGroups: ComponentGroupDefinition[] = [
-  group('site-builder', '活网站与站点生成器', 'SITE BUILDER', '在线编辑、预览并发布具有目录导航的多页面网站。', ['site-shell', 'site-header', 'site-navigation', 'breadcrumbs', 'page-frame', 'container', 'stack', 'cluster', 'grid', 'mdx']),
+  group('site-builder', '活网站与站点生成器', 'SITE BUILDER', '在线编辑、预览并发布具有目录导航的多页面网站。', ['site-shell', 'site-header', 'site-navigation', 'tree-menu', 'breadcrumbs', 'page-frame', 'container', 'stack', 'cluster', 'grid', 'mdx']),
   group('admin', '管理后台', 'ADMIN CONSOLE', '高密度表单、数据管理、批量操作和权限配置。', ['button', 'split-button', 'icon-button', ...inputControlIds, 'textarea', 'select', 'multi-choice', 'segmented', 'autocomplete', 'checkbox', 'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'radio-group', 'slider', 'switch', 'tags-input', 'toggle', 'toggle-group', 'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'alert-dialog', 'context-menu', 'data-table', 'dialog', 'drawer', 'dropdown-menu', 'menubar', 'navigation-menu', 'pagination', 'progress', 'scroll-area', 'separator', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'toolbar-menu', 'tooltip', 'tree', 'virtual-list']),
   group('productivity', '效率与待办', 'PRODUCTIVITY', '任务、日程、文档、项目工作台和个人效率产品。', ['button', 'split-button', 'icon-button', ...textInputControlIds, 'textarea', 'choice-portal', 'multi-choice', 'segmented', 'checkbox', 'editable', 'tags-input', 'toggle', 'switch', 'calendar', 'date-picker', 'date-range-picker', 'time-field', 'time-range-field', 'time-picker', 'month-picker', 'year-picker', 'mdx', 'virtual-list', 'accordion', 'dialog', 'drawer', 'dropdown-menu', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'splitter', 'stepper', 'tabs', 'toast', 'toolbar', 'tooltip', 'tree']),
   group('content-community', '内容与社区', 'CONTENT & COMMUNITY', '内容流、个人资料、评论、收藏和社区互动。', ['button', 'badge', 'card', 'icon-button', ...textInputControlIds, 'textarea', 'autocomplete', 'checkbox', 'editable', 'multi-choice', 'radio-group', 'rating', 'select', 'switch', 'tags-input', 'toggle', 'toggle-group', 'aspect-ratio', 'avatar', 'collapsible', 'dialog', 'drawer', 'dropdown-menu', 'hover-card', 'navigation-menu', 'pagination', 'popover', 'progress', 'scroll-area', 'tabs', 'toast', 'tooltip']),
@@ -89,7 +89,7 @@ const siteGroups: ComponentGroupDefinition[] = [
 
 const flowGroups: ComponentGroupDefinition[] = [
   group('frame-site', '建立站点框架', 'FRAME SITE', '先组织网站母版、导航和页面插槽，再填充业务内容。', ['site-shell', 'site-header', 'site-navigation', 'breadcrumbs', 'page-frame', 'container', 'stack', 'cluster', 'grid']),
-  group('discover-explore', '发现与浏览', 'DISCOVER', '搜索、预览并浏览可用内容和功能入口。', ['navigation-menu', 'menubar', 'tabs', 'tree', 'pagination', 'scroll-area', 'virtual-list', 'autocomplete', 'combobox', 'listbox', 'hover-card', 'card']),
+  group('discover-explore', '发现与浏览', 'DISCOVER', '搜索、预览并浏览可用内容和功能入口。', ['navigation-menu', 'menubar', 'tabs', 'tree', 'tree-menu', 'pagination', 'scroll-area', 'virtual-list', 'autocomplete', 'combobox', 'listbox', 'hover-card', 'card']),
   group('native-input-flow', '类型化输入流程', 'PACKAGED INPUT FLOW', '按固定数据语义使用经过交互增强的录入、选择与提交控件。', inputControlIds),
   group('capture-write', '录入与编辑', 'CAPTURE & WRITE', '创建或修改文本、数值、标签和结构化文档。', ['textarea', 'editable', 'number-field', 'pin-input', 'tags-input', 'mdx', 'label', ...textInputControlIds]),
   group('choose-decide', '选择与决策', 'CHOOSE & DECIDE', '比较候选项并确定单选、多选或连续范围。', ['select', 'choice-portal', 'multi-choice', 'checkbox', 'radio-group', 'segmented', 'toggle', 'toggle-group', 'switch', 'slider', 'rating', 'color-swatch-picker', 'listbox', 'autocomplete', 'combobox']),
@@ -117,7 +117,7 @@ const dataGroups: ComponentGroupDefinition[] = [
   group('color-value', '颜色与色彩通道', 'COLOR', '处理颜色值、色彩通道和预设色板。', ['color-picker', 'color-field', 'color-area', 'color-slider', 'color-swatch', 'color-swatch-picker']),
   group('identity-media', '身份与媒体', 'IDENTITY & MEDIA', '呈现人物身份、图片、媒体比例和摘要卡片。', ['avatar', 'aspect-ratio', 'card', 'hover-card', 'badge']),
   group('command-event', '命令与事件', 'COMMAND & EVENT', '产生操作事件而非直接维护业务字段值。', ['button', 'split-button', 'icon-button', 'dropdown-menu', 'context-menu', 'toolbar', 'toolbar-menu', 'menubar', 'navigation-menu', 'toggle']),
-  group('collection-tree', '列表、集合与层级', 'COLLECTION & TREE', '呈现列表、分页集合、菜单和层级节点。', ['data-table', 'listbox', 'accordion', 'collapsible', 'tabs', 'tree', 'pagination', 'scroll-area', 'virtual-list', 'navigation-menu', 'dropdown-menu', 'context-menu', 'menubar', 'toolbar']),
+  group('collection-tree', '列表、集合与层级', 'COLLECTION & TREE', '呈现列表、分页集合、菜单和层级节点。', ['data-table', 'listbox', 'accordion', 'collapsible', 'tabs', 'tree', 'tree-menu', 'pagination', 'scroll-area', 'virtual-list', 'navigation-menu', 'dropdown-menu', 'context-menu', 'menubar', 'toolbar']),
   group('document-content', '文档与富内容', 'DOCUMENT & CONTENT', '承载文档、长文本、内容区块和补充说明。', ['mdx', 'textarea', 'editable', 'card', 'label', 'badge', 'separator', 'tooltip', 'popover', 'drawer', 'dialog', 'hover-card']),
   group('status-message', '状态与消息', 'STATUS & MESSAGE', '呈现进度、状态、警告和瞬时消息。', ['badge', 'progress', 'toast', 'tooltip', 'alert-dialog', 'stepper', 'switch', 'checkbox', 'dialog']),
   group('layout-geometry', '布局与几何', 'LAYOUT & GEOMETRY', '维护尺寸、比例、滚动边界和空间分割。', ['splitter', 'scroll-area', 'aspect-ratio', 'separator', 'drawer', 'popover', 'card']),
