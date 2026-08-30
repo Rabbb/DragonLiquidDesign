@@ -12,7 +12,7 @@ import {
 } from 'reka-ui'
 import { useDlModalLayer } from '../composables/useDlLayer'
 import type { DlTone } from '../types'
-import type { DlDialogDimensions, DlDialogPosition } from './dialog.types'
+import type { DlDialogDimensions, DlDialogDock, DlDialogPosition } from './dialog.types'
 import { dialogStyles } from './overlay.styles'
 
 type DialogInteraction =
@@ -53,6 +53,11 @@ const props = withDefaults(defineProps<{
   overlay?: boolean
   dismissOnInteractOutside?: boolean
   floating?: boolean
+  collapsible?: boolean
+  collapsed?: boolean
+  collapsedWidth?: number
+  dockable?: boolean
+  dock?: DlDialogDock
 }>(), {
   open: false,
   description: undefined,
@@ -72,12 +77,21 @@ const props = withDefaults(defineProps<{
   overlay: true,
   dismissOnInteractOutside: true,
   floating: false,
+  collapsible: false,
+  collapsed: false,
+  collapsedWidth: 320,
+  dockable: false,
+  dock: 'none',
 })
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
   'update:position': [value: DlDialogPosition | null]
   'update:dimensions': [value: DlDialogDimensions | null]
+  'update:collapsed': [value: boolean]
+  'update:dock': [value: DlDialogDock]
+  'collapse-change': [value: boolean]
+  'dock-change': [value: DlDialogDock]
   'drag-start': [value: DlDialogPosition]
   'drag-end': [value: DlDialogPosition]
   'resize-start': [value: DlDialogDimensions]
@@ -98,7 +112,61 @@ let previousBodyUserSelect = ''
 
 const contentStyle = computed(() => {
   const style: Record<string, string> = { zIndex: contentZIndex.value }
-  if (compactLayout.value || props.fullscreen) return style
+  if (props.fullscreen) return style
+
+  if (props.collapsed) {
+    style.width = `min(${finitePositive(props.collapsedWidth, 320)}px, calc(100vw - ${viewportMargin * 2}px))`
+    style.height = 'auto'
+    style.maxWidth = 'none'
+    style.maxHeight = 'none'
+    style.transform = 'none'
+    if (props.dock === 'left') {
+      style.left = `${viewportMargin}px`
+      style.top = `${viewportMargin}px`
+    } else if (props.dock === 'bottom') {
+      style.right = `${viewportMargin}px`
+      style.bottom = `${viewportMargin}px`
+      style.left = 'auto'
+      style.top = 'auto'
+    } else if (props.dock === 'right') {
+      style.right = `${viewportMargin}px`
+      style.top = `${viewportMargin}px`
+      style.left = 'auto'
+    } else if (localPosition.value && !compactLayout.value) {
+      style.left = `${localPosition.value.x}px`
+      style.top = `${localPosition.value.y}px`
+    } else {
+      style.right = `${viewportMargin}px`
+      style.bottom = `${viewportMargin}px`
+      style.left = 'auto'
+      style.top = 'auto'
+    }
+    return style
+  }
+
+  if (compactLayout.value) return style
+
+  if (props.dock !== 'none') {
+    style.transform = 'none'
+    style.maxWidth = 'none'
+    style.maxHeight = 'none'
+    if (props.dock === 'left' || props.dock === 'right') {
+      style.top = `${viewportMargin}px`
+      style.bottom = `${viewportMargin}px`
+      style.left = props.dock === 'left' ? `${viewportMargin}px` : 'auto'
+      style.right = props.dock === 'right' ? `${viewportMargin}px` : 'auto'
+      style.width = `${Math.min(localDimensions.value?.width ?? 860, window.innerWidth - viewportMargin * 2)}px`
+      style.height = 'auto'
+    } else {
+      style.left = `${viewportMargin}px`
+      style.right = `${viewportMargin}px`
+      style.bottom = `${viewportMargin}px`
+      style.top = 'auto'
+      style.width = 'auto'
+      style.height = `${Math.min(localDimensions.value?.height ?? 520, window.innerHeight - viewportMargin * 2)}px`
+    }
+    return style
+  }
 
   if (localPosition.value) {
     style.left = `${localPosition.value.x}px`
@@ -173,7 +241,9 @@ function contentElement() {
 function currentGeometry() {
   const rect = contentElement()?.getBoundingClientRect()
   if (!rect) return null
-  const dimensions = localDimensions.value ?? { width: rect.width, height: rect.height }
+  const dimensions = props.collapsed
+    ? { width: rect.width, height: rect.height }
+    : localDimensions.value ?? { width: rect.width, height: rect.height }
   const position = localPosition.value ?? { x: rect.left, y: rect.top }
   return {
     dimensions,
@@ -193,6 +263,7 @@ function updateDimensions(value: DlDialogDimensions, notify = true) {
 
 function beginInteraction(type: DialogInteraction['type'], event: PointerEvent) {
   if (event.button !== 0 || event.isPrimary === false || compactLayout.value || props.fullscreen) return
+  if (props.dock !== 'none') return
   if (type === 'drag' && !props.draggable) return
   if (type === 'resize' && !props.resizable) return
 
@@ -282,7 +353,7 @@ function moveWithKeyboard(event: KeyboardEvent) {
 }
 
 function resizeWithKeyboard(event: KeyboardEvent) {
-  if (!props.resizable || compactLayout.value) return
+  if (!props.resizable || compactLayout.value || props.collapsed || props.dock !== 'none') return
   const directions: Record<string, [number, number]> = {
     ArrowLeft: [-1, 0],
     ArrowRight: [1, 0],
@@ -355,6 +426,43 @@ function handleInteractOutside(event: Event) {
   if (!props.dismissOnInteractOutside) event.preventDefault()
 }
 
+function handleHeaderDoubleClick(event: MouseEvent) {
+  const target = event.target as HTMLElement | null
+  if (target?.closest('button, a, input, textarea, select, [contenteditable="true"], [data-dl-no-drag]')) return
+  toggleCollapsed()
+}
+
+function toggleCollapsed() {
+  if (!props.collapsible || props.fullscreen) return
+  const value = !props.collapsed
+  emit('update:collapsed', value)
+  emit('collapse-change', value)
+}
+
+const dockSequence: DlDialogDock[] = ['none', 'right', 'bottom', 'left']
+
+function cycleDock() {
+  if (!props.dockable || props.fullscreen) return
+  const currentIndex = dockSequence.indexOf(props.dock)
+  const value = dockSequence[(currentIndex + 1) % dockSequence.length]
+  emit('update:dock', value)
+  emit('dock-change', value)
+}
+
+const dockActionLabel = computed(() => ({
+  none: '停靠到右侧',
+  right: '停靠到底部',
+  bottom: '停靠到左侧',
+  left: '恢复为浮动窗口',
+}[props.dock]))
+
+const dockGlyph = computed(() => ({
+  none: '◧',
+  right: '▐',
+  bottom: '▄',
+  left: '▌',
+}[props.dock]))
+
 watch(() => [props.position?.x, props.position?.y], () => {
   localPosition.value = copyPosition(props.position)
   if (!props.open) initialPosition = copyPosition(props.position)
@@ -406,21 +514,23 @@ onBeforeUnmount(() => {
         :data-fullscreen="fullscreen ? 'true' : 'false'"
         :data-modal="modal ? 'true' : 'false'"
         :data-floating="floating ? 'true' : 'false'"
-        :data-draggable="draggable && !compactLayout && !fullscreen ? 'true' : 'false'"
-        :data-resizable="resizable && !compactLayout && !fullscreen ? 'true' : 'false'"
+        :data-collapsed="collapsed ? 'true' : 'false'"
+        :data-dock="dock"
+        :data-draggable="draggable && !compactLayout && !fullscreen && dock === 'none' ? 'true' : 'false'"
+        :data-resizable="resizable && !compactLayout && !fullscreen && !collapsed && dock === 'none' ? 'true' : 'false'"
         :data-interaction="interaction?.type"
         :style="contentStyle"
         :class="dialogStyles({ size, tone })"
         @interact-outside="handleInteractOutside"
       >
-        <header class="dl-dialog__header" @pointerdown="startHeaderDrag">
+        <header class="dl-dialog__header" @pointerdown="startHeaderDrag" @dblclick="handleHeaderDoubleClick">
           <div class="dl-dialog__meta">
             <DialogTitle class="dl-dialog__title">{{ title }}</DialogTitle>
-            <DialogDescription v-if="description" class="dl-dialog__description">{{ description }}</DialogDescription>
+            <DialogDescription v-if="description" v-show="!collapsed" class="dl-dialog__description">{{ description }}</DialogDescription>
           </div>
           <div class="dl-dialog__window-actions">
             <button
-              v-if="draggable && !fullscreen"
+              v-if="draggable && !fullscreen && dock === 'none'"
               data-slot="dialog-drag-handle"
               class="dl-dialog__drag-handle"
               type="button"
@@ -432,6 +542,27 @@ onBeforeUnmount(() => {
             >
               <span aria-hidden="true">⠿</span>
             </button>
+            <button
+              v-if="dockable && !fullscreen"
+              data-dl-no-drag
+              data-slot="dialog-dock-control"
+              class="dl-dialog__window-button dl-dialog__dock-control"
+              type="button"
+              :aria-label="dockActionLabel"
+              :title="`${dockActionLabel}；依次切换右侧、底部、左侧和浮动`"
+              @click.stop="cycleDock"
+            ><span aria-hidden="true">{{ dockGlyph }}</span></button>
+            <button
+              v-if="collapsible && !fullscreen"
+              data-dl-no-drag
+              data-slot="dialog-collapse-control"
+              class="dl-dialog__window-button dl-dialog__collapse-control"
+              type="button"
+              :aria-label="collapsed ? '展开对话框' : '折叠对话框'"
+              :title="collapsed ? '展开对话框' : '折叠为标题条；也可以双击标题栏'"
+              :aria-expanded="!collapsed"
+              @click.stop="toggleCollapsed"
+            ><span aria-hidden="true">{{ collapsed ? '□' : '−' }}</span></button>
             <DialogClose
               v-if="closable"
               data-guide-closes="dialog"
@@ -442,12 +573,12 @@ onBeforeUnmount(() => {
             </DialogClose>
           </div>
         </header>
-        <div class="dl-dialog__body"><slot /></div>
-        <footer v-if="$slots.footer" class="dl-dialog__footer">
+        <div v-show="!collapsed" class="dl-dialog__body"><slot /></div>
+        <footer v-if="$slots.footer" v-show="!collapsed" class="dl-dialog__footer">
           <slot name="footer" />
         </footer>
         <button
-          v-if="resizable && !fullscreen"
+          v-if="resizable && !fullscreen && !collapsed && dock === 'none'"
           data-slot="dialog-resize-handle"
           class="dl-dialog__resize-handle"
           type="button"
@@ -538,6 +669,12 @@ onBeforeUnmount(() => {
 .dl-dialog[data-floating='true'] .dl-dialog__meta{gap:2px}.dl-dialog[data-floating='true'] .dl-dialog__title{font-size:.74rem;line-height:1.15;letter-spacing:.02em}.dl-dialog[data-floating='true'] .dl-dialog__description{font-size:.62rem;line-height:1.25}
 .dl-dialog[data-floating='true'] .dl-dialog__body{gap:4px;padding:6px}.dl-dialog[data-floating='true'] .dl-dialog__footer{gap:5px;padding:6px;border-top:1px solid var(--dl-border)}
 .dl-dialog[data-floating='true'] .dl-dialog__window-actions{gap:3px}.dl-dialog[data-floating='true'] .dl-dialog__drag-handle,.dl-dialog[data-floating='true'] .dl-dialog__close{width:26px;height:26px;border-radius:7px;font-size:.76rem}.dl-dialog[data-floating='true'] .dl-dialog__drag-handle{height:26px}.dl-dialog[data-floating='true'] .dl-dialog__resize-handle{right:2px;bottom:2px;width:18px;height:18px}
+.dl-dialog[data-floating='true'] .dl-dialog__window-button{width:26px;height:26px;border-radius:7px;font-size:.72rem}
+.dl-dialog[data-collapsed='true']{display:block;min-height:0;padding:0;border-radius:9px}
+.dl-dialog[data-collapsed='true'] .dl-dialog__header{min-height:34px;padding:4px 5px 4px 9px;border:0}
+.dl-dialog[data-collapsed='true'] .dl-dialog__meta{display:block;overflow:hidden}
+.dl-dialog[data-collapsed='true'] .dl-dialog__title{overflow:hidden;font-size:.72rem;line-height:1.1;text-overflow:ellipsis;white-space:nowrap}
+.dl-dialog[data-collapsed='true'] .dl-dialog__drag-handle{display:none}
 .dl-tone-accent { --dl-overlay-border: rgba(255, 223, 128, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(104, 225, 255, 0.18), rgba(255, 215, 110, 0.74), rgba(104, 225, 255, 0.24)); --dl-overlay-glow: rgba(104, 225, 255, 0.12); }
 .dl-tone-success { --dl-overlay-border: rgba(113, 209, 173, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(124, 255, 190, 0.22), rgba(0, 206, 209, 0.62), rgba(124, 255, 190, 0.18)); --dl-overlay-glow: rgba(124, 255, 190, 0.12); }
 .dl-tone-warning { --dl-overlay-border: rgba(255, 179, 71, 0.34); --dl-overlay-rail: linear-gradient(90deg, rgba(255, 178, 89, 0.24), rgba(255, 215, 110, 0.74), rgba(255, 178, 89, 0.2)); --dl-overlay-glow: rgba(255, 178, 89, 0.14); }
@@ -555,6 +692,9 @@ onBeforeUnmount(() => {
 .dl-dialog__body { position: relative; z-index: 1; min-height: 0; display: grid; gap: 14px; overflow: auto; overscroll-behavior: contain; }
 .dl-dialog__footer { position: relative; z-index: 1; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .dl-dialog__window-actions { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
+.dl-dialog__window-button { display: grid; place-items: center; width: 34px; height: 38px; padding: 0; border: 0; border-radius: 16px; background: transparent; color: var(--dl-text-faint); font-size: .88rem; line-height: 1; cursor: pointer; outline: none; transition: .18s ease; }
+.dl-dialog__window-button:hover { background: var(--dl-surface-hover); color: var(--dl-accent-text); }
+.dl-dialog__window-button:focus-visible { box-shadow: var(--dl-focus); color: var(--dl-text); }
 .dl-dialog__drag-handle { display: grid; place-items: center; width: 34px; height: 38px; padding: 0; border: 0; border-radius: 16px; background: transparent; color: var(--dl-text-faint); font-size: 1.15rem; line-height: 1; cursor: grab; outline: none; touch-action: none; transition: 0.18s ease; }
 .dl-dialog__drag-handle:hover { background: var(--dl-surface-hover); color: var(--dl-text-muted); }
 .dl-dialog__drag-handle:active { cursor: grabbing; }
@@ -579,6 +719,7 @@ onBeforeUnmount(() => {
   .dl-dialog, .dl-dialog--sm, .dl-dialog--md, .dl-dialog--lg { width: calc(100vw - 1.75rem); }
   .dl-dialog__header { cursor: default !important; touch-action: auto !important; }
   .dl-dialog__drag-handle, .dl-dialog__resize-handle { display: none; }
+  .dl-dialog[data-collapsed='true'] { width: min(320px, calc(100vw - 1.5rem)); min-height: 0; }
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
@@ -591,5 +732,6 @@ onBeforeUnmount(() => {
   .dl-dialog__close { width: 34px; height: 34px; border-radius: 16px; }
   .dl-dialog__header { cursor: default !important; touch-action: auto !important; }
   .dl-dialog__drag-handle, .dl-dialog__resize-handle { display: none; }
+  .dl-dialog[data-collapsed='true'] { width: min(320px, calc(100vw - 1.5rem)); min-height: 0; max-height: none; padding: 0; border-radius: 9px; }
 }
 </style>

@@ -3570,6 +3570,36 @@ export default {
         "description": "设置 floating 属性。",
         "type": "boolean",
         "defaultValue": "false"
+      },
+      {
+        "prop": "collapsible",
+        "description": "单选模式下是否允许收起当前已展开项。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "collapsed",
+        "description": "设置 collapsed 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "collapsedWidth",
+        "description": "设置 collapsedWidth 属性。",
+        "type": "number",
+        "defaultValue": "320"
+      },
+      {
+        "prop": "dockable",
+        "description": "设置 dockable 属性。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "dock",
+        "description": "设置 dock 属性。",
+        "type": "DlDialogDock",
+        "defaultValue": "'none'"
       }
     ],
     "relatedTypes": [
@@ -3656,6 +3686,38 @@ export default {
         ],
         "kind": "structure",
         "title": "DlDialogDimensions"
+      },
+      {
+        "kind": "enum",
+        "name": "DlDialogDock",
+        "title": "DlDialogDock",
+        "description": "DlDialogDock 可用的枚举值。",
+        "rows": [
+          {
+            "prop": "none",
+            "description": "DlDialogDock 的 none 选项。",
+            "type": "'none'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "left",
+            "description": "DlDialogDock 的 left 选项。",
+            "type": "'left'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "right",
+            "description": "DlDialogDock 的 right 选项。",
+            "type": "'right'",
+            "defaultValue": "枚举值"
+          },
+          {
+            "prop": "bottom",
+            "description": "DlDialogDock 的 bottom 选项。",
+            "type": "'bottom'",
+            "defaultValue": "枚举值"
+          }
+        ]
       }
     ]
   },

@@ -501,6 +501,43 @@ describe('ported overlay presentation', () => {
     expect(document.body.querySelector('.dl-dialog-overlay')).toBeNull()
   })
 
+  it('docks and collapses a modeless dialog without destroying its body', async () => {
+    const wrapper = mountOverlay(DlDialog, {
+      attachTo: document.body,
+      props: {
+        open: true,
+        title: 'Todo editor',
+        modal: false,
+        overlay: false,
+        floating: true,
+        dockable: true,
+        collapsible: true,
+        dock: 'none',
+        collapsed: false,
+      },
+      slots: { default: '<label><input value="draft">Draft todo</label>' },
+    })
+    await nextTick()
+
+    document.body.querySelector<HTMLElement>('[data-slot="dialog-dock-control"]')?.click()
+    expect(wrapper.emitted('update:dock')?.at(-1)).toEqual(['right'])
+    expect(wrapper.emitted('dock-change')?.at(-1)).toEqual(['right'])
+
+    await wrapper.setProps({ dock: 'right' })
+    document.body.querySelector<HTMLElement>('[data-slot="dialog-collapse-control"]')?.click()
+    expect(wrapper.emitted('update:collapsed')?.at(-1)).toEqual([true])
+    expect(wrapper.emitted('collapse-change')?.at(-1)).toEqual([true])
+
+    await wrapper.setProps({ collapsed: true })
+    await nextTick()
+    const dialog = document.body.querySelector<HTMLElement>('[data-slot="dialog"]')
+    expect(dialog?.dataset.dock).toBe('right')
+    expect(dialog?.dataset.collapsed).toBe('true')
+    expect(dialog?.querySelector('.dl-dialog__body')).not.toBeNull()
+    expect(dialog?.querySelector<HTMLElement>('.dl-dialog__body')?.style.display).toBe('none')
+    expect(dialog?.querySelector('[data-slot="dialog-resize-handle"]')).toBeNull()
+  })
+
   it('renders the popover surface through its portal with the migrated class', async () => {
     mountOverlay(DlPopover, {
       attachTo: document.body,

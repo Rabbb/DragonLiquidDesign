@@ -106,7 +106,7 @@ export type {
 } from './components/choice-portal.types'
 export type { DlMultiChoiceEntry, DlMultiChoiceGroup, DlMultiChoiceOption } from './components/multi-choice.types'
 export type { DlCalendarDay, DlCalendarItem } from './components/calendar.types'
-export type { DlDialogDimensions, DlDialogPosition } from './components/dialog.types'
+export type { DlDialogDimensions, DlDialogDock, DlDialogPosition } from './components/dialog.types'
 export type {
   DlMdxBlock,
   DlMdxComponentContext,

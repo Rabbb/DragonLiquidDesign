@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DlBadge, DlButton, DlDialog, DlInputText, DlSelect, type DlSelectOption, type DlTone } from '@dragon-liquid/vue'
+import { DlBadge, DlButton, DlDialog, DlInputText, DlSelect, type DlDialogDock, type DlSelectOption, type DlTone } from '@dragon-liquid/vue'
 import DocExampleShell from '../components/DocExampleShell.vue'
 import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string }>()
 const basicOpen = ref(false)
 const basicSize = ref<'sm' | 'md' | 'lg'>('md')
+const workspaceOpen = ref(false)
+const workspaceCollapsed = ref(false)
+const workspaceDock = ref<DlDialogDock>('right')
 const toneGalleryOpen = ref(false)
 const activeTone = ref<DlTone>('default')
 const createOpen = ref(false)
@@ -76,6 +79,33 @@ function showDialog(nextSize: DialogSize) {
     </template>
   </DlDialog>`, style: `.size-actions { display: flex; flex-wrap: wrap; gap: 10px; }` }),
     tips: ['拖动标题栏或顶部拖动柄可移动窗口，右下角缩放柄用于调整尺寸；双击对应控制柄可重置。', '控制柄支持方向键微调，按住 Shift 时使用更大的步长；窄屏和横屏低高度下会自动回到固定布局。', 'sm、md、lg 控制初始宽度；minWidth、minHeight 约束用户可调整的最小尺寸。', '打开后焦点应进入对话框，关闭后返回触发元素。'],
+  },
+  'workspace-editor': {
+    title: '不阻断页面的停靠编辑器',
+    description: '适合文档、画布和工作台中的长期编辑：窗口可停靠、折叠，并允许继续操作背后内容。',
+    code: vueSfc({ imports: ['DlButton', 'DlDialog', 'type DlDialogDock'], script: `import { ref } from 'vue'
+
+const open = ref(false)
+const collapsed = ref(false)
+const dock = ref<DlDialogDock>('right')`, template: `  <DlButton variant="primary" @click="open = true; collapsed = false">编辑当前 TODO</DlButton>
+  <DlDialog
+    v-model:open="open"
+    v-model:collapsed="collapsed"
+    v-model:dock="dock"
+    title="编辑 TODO · 完成 Dialog 停靠能力"
+    description="非模态窗口不会锁住后面的工作区。"
+    :modal="false"
+    :overlay="false"
+    :dismiss-on-interact-outside="false"
+    :reset-geometry-on-close="false"
+    :dimensions="{ width: 760, height: 620 }"
+    floating
+    dockable
+    collapsible
+  >
+    <p>停靠按钮依次切换右侧、底部、左侧与浮动；折叠不会销毁这里的表单状态。</p>
+  </DlDialog>` }),
+    tips: ['非模态模式必须同时关闭 overlay 与外部点击关闭，避免用户在编辑其他内容时意外丢失窗口。', 'collapsed 只隐藏内容区，组件实例与未保存输入保持不变；也可双击标题栏折叠或展开。', 'dock 依次支持 none、right、bottom、left，并可通过 v-model 保存到本地偏好。'],
   },
   'tone-gallery': {
     title: 'Dialog 全部语义色调',
@@ -227,6 +257,11 @@ function showTone(tone: DlTone) {
     <div v-if="scenario === 'basic'" class="dialog-trigger-grid">
       <div v-for="size in (['sm', 'md', 'lg'] as const)" :key="size"><span>{{ size.toUpperCase() }}</span><p>{{ size === 'sm' ? '确认与简短反馈' : size === 'md' ? '小型表单与配置' : '较宽内容与预览' }}</p><DlButton variant="secondary" @click="openBasicDialog(size)">打开 {{ size }}</DlButton></div>
       <DlDialog v-model:open="basicOpen" :title="`Dragon Liquid Dialog · ${basicSize.toUpperCase()}`" description="拖动标题栏移动窗口，拖动右下角调整尺寸。" :size="basicSize"><div class="dialog-inline-demo"><span>龍</span><p>当前初始宽度规格为 <strong>{{ basicSize }}</strong>。也可以用控制柄的方向键精确移动和缩放。</p></div><template #footer><DlButton variant="ghost" @click="basicOpen = false">取消</DlButton><DlButton variant="primary" @click="basicOpen = false">完成</DlButton></template></DlDialog>
+    </div>
+
+    <div v-else-if="scenario === 'workspace-editor'" class="center-trigger">
+      <DlButton variant="primary" size="lg" @click="workspaceOpen = true; workspaceCollapsed = false">编辑当前 TODO</DlButton>
+      <DlDialog v-model:open="workspaceOpen" v-model:collapsed="workspaceCollapsed" v-model:dock="workspaceDock" title="编辑 TODO · 完成 Dialog 停靠能力" description="非模态窗口不会锁住后面的工作区。" :modal="false" :overlay="false" :dismiss-on-interact-outside="false" :reset-geometry-on-close="false" :dimensions="{ width: 760, height: 620 }" floating dockable collapsible><div class="dialog-form"><label class="scenario-field"><span>TODO 标题</span><DlInputText v-model="title" /></label><p>可以折叠窗口，再继续操作文档案例。</p></div></DlDialog>
     </div>
 
     <div v-else-if="scenario === 'tone-gallery'" class="tone-gallery-grid">
