@@ -166,6 +166,22 @@ const document = parseDlMdx('# Archive\n\n- [x] indexed')
 
 `DlMdx` 继续负责单文档编辑；`createDlMdxEngine()` 在它下面增加项目级虚拟文件系统、清单、原子事务、自动页面路由、跨文件诊断和存储协议。这样用户可以从一份文档平滑扩展为包含 `/pages`、脚本、样式、数据与资源的线上项目，而不必更换文档语言。
 
+普通段落中的单个换行会按文本文档原样显示，无需在行尾额外输入两个空格。需要强调连续文本时，可使用内置 `Highlight` 组件：
+
+```md
++++component:Highlight
+variant = "gradient"
+color = "#ffd76e"
+colorEnd = "#68e1ff"
++++slot:default
+第一行高亮文本
+第二行仍然保留换行
++++endslot
++++end
+```
+
+`variant` 支持 `solid`、`gradient`、`rainbow`、`breathing`、`wavy` 和 `underline`。彩虹与呼吸灯可用 `colors = ["#ff5f6d", "#68e1ff", "#a78bfa"]` 自定义色序，呼吸周期可通过 `speed`（0.6–12 秒）调整。
+
 ```ts
 import {
   createDlMdxEngine,

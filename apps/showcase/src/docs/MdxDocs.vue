@@ -48,6 +48,15 @@ const archiveSource = ref([
   '```',
 ].join('\n'))
 
+const htmlPasteSource = ref([
+  '# HTML 富文本粘贴',
+  '',
+  '从网页、邮件或办公文档复制内容，然后直接粘贴到左侧编辑区。',
+  '',
+  '- 标题、段落、显式换行、列表与表格会转成 MDX',
+  '- 图片交给 attachmentAdapter 持久化后再写入正文',
+].join('\n'))
+
 const syntaxSource = ref([
   '# 编程代码高亮',
   '',
@@ -286,6 +295,33 @@ ${vueSfc({
     }),
     tips: ['javascript:、vbscript: 和非图片 Data URL 不会进入 DOM 链接属性。', '外部链接启用时自动附加 noopener noreferrer。'],
   },
+  'html-paste': {
+    title: 'HTML 富文本直接转换为 MDX',
+    description: '编辑器优先读取剪贴板的 text/html，将常见语义结构转换为可维护的 MDX；图片通过宿主附件适配器上传，正文只保存返回的资源地址。',
+    code: vueSfc({
+      imports: ['DlMdx', 'type DlMdxAttachmentAdapter'],
+      script: `import { ref } from 'vue'
+
+const source = ref('把网页内容粘贴到这里')
+const attachmentAdapter: DlMdxAttachmentAdapter = {
+  async upload({ blob, fileName }) {
+    if (!blob) throw new Error('图片内容不可读取')
+    const body = new FormData()
+    body.append('file', blob, fileName)
+    const response = await fetch('/api/mdx-files/attachments', { method: 'POST', body })
+    const { data } = await response.json()
+    return data
+  },
+}`,
+      template: `  <DlMdx
+    v-model="source"
+    mode="split"
+    :attachment-adapter="attachmentAdapter"
+    @html-paste="result => console.log(result.failures)"
+  />`,
+    }),
+    tips: ['未提供 attachmentAdapter 时仍会转换文本结构，并保留安全的原图片地址。', '脚本、iframe、对象标签和 javascript: URL 不会进入转换结果。', '每张图片独立上传；局部失败会出现在 html-paste 事件的 failures 中，不会丢失整段文字。'],
+  },
   'syntax-highlight': {
     title: '编程代码与代码域高亮',
     description: '编辑器按围栏语言加载 CodeMirror 解析器并标识完整代码域；预览由 Rust/WASM 同步生成文本 token，不执行代码，也不注入 HTML。',
@@ -326,6 +362,8 @@ ${vueSfc({
       <DlMdx v-if="scenario === 'basic'" v-model="writingSource" show-mode-switch min-height="31rem" aria-label="作品资料草稿" />
 
       <DlMdx v-else-if="scenario === 'archive-document'" v-model="archiveSource" mode="split" min-height="31rem" />
+
+      <DlMdx v-else-if="scenario === 'html-paste'" v-model="htmlPasteSource" mode="split" min-height="31rem" />
 
       <DlMdx v-else-if="scenario === 'syntax-highlight'" v-model="syntaxSource" mode="split" min-height="31rem" />
 

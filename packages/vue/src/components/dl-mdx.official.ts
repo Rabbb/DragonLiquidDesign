@@ -5,6 +5,7 @@ import DlAspectRatio from './DlAspectRatio.vue'
 import DlAutocomplete from './DlAutocomplete.vue'
 import DlAvatar from './DlAvatar.vue'
 import DlBadge from './DlBadge.vue'
+import MdxTextHighlight from './MdxTextHighlight.vue'
 import DlBreadcrumbs from './DlBreadcrumbs.vue'
 import DlButton from './DlButton.vue'
 import DlCalendar from './DlCalendar.vue'
@@ -165,6 +166,21 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   }),
   official('SplitButton', DlSplitButton, 'foundation', 'custom', { defaultProps: { label: '发布', items: menuItems }, description: '主操作与相关菜单操作。' }),
   official('Badge', DlBadge, 'foundation', 'custom', { contentProp: 'text', defaultContent: 'DRAGON', description: '状态与标签。' }),
+  official('Highlight', MdxTextHighlight, 'foundation', 'custom', {
+    aliases: ['Highlighter', 'TextHighlight'],
+    contentProp: 'text',
+    defaultProps: { variant: 'solid', speed: 2.4 },
+    defaultContent: '高亮文本',
+    description: '保留文本换行的主题高亮，支持纯色、渐变、彩虹、呼吸灯、波浪线和下横线。',
+    propSchema: {
+      variant: { type: 'string', enum: ['solid', 'gradient', 'rainbow', 'breathing', 'wavy', 'underline'], description: '高亮效果。' },
+      color: { type: 'string', description: '主色，支持 CSS 颜色或 Dragon Liquid 主题变量。' },
+      colorEnd: { type: 'string', description: '渐变结束色。' },
+      colors: { type: 'array', items: { type: 'string' }, description: '彩虹或呼吸灯的自定义颜色序列。' },
+      textColor: { type: 'string', description: '可选文字颜色。' },
+      speed: { type: 'number', minimum: 0.6, maximum: 12, description: '呼吸动画周期，单位秒。' },
+    },
+  }),
   official('Card', DlCard, 'foundation', 'custom', { defaultProps: { padding: 'md' }, defaultContent: 'Dragon Liquid 内容卡片', description: '内容分组容器。' }),
   official('IconButton', DlIconButton, 'foundation', 'custom', { defaultProps: { label: '快捷操作' }, defaultContent: '✦', description: '紧凑图标操作。' }),
   official('InputButton', DlInputButton, 'form', 'custom', { defaultProps: { value: '执行操作' }, description: '固定为 button 的输入按钮。' }),

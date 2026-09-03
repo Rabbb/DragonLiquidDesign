@@ -156,6 +156,21 @@ const readyComponents: ComponentDefinition[] = [
     ],
   },
   {
+    id: 'path-picker',
+    name: 'PathPicker 路径选择器',
+    category: 'form',
+    summary: '沿层级路径浏览、自由收起分支、持续多选，并为末级结果填写动态参数。',
+    since: '0.6.0-alpha.70',
+    implementation: 'ready',
+    maturity: 'custom',
+    scenarios: [
+      { id: 'class-student', label: '班级与学生', summary: '简单两级路径和完整上下文结果' },
+      { id: 'region', label: '国家省市', summary: '异步层级加载与三级定位' },
+      { id: 'product-parameters', label: '商品动态参数', summary: '分类决定字段，字段之间继续联动' },
+      { id: 'multi-branch', label: '跨分支多选', summary: '自由收起分支并持续加入选择托盘' },
+    ],
+  },
+  {
     id: 'multi-choice',
     name: 'MultiChoice 多选器',
     category: 'form',
@@ -344,6 +359,7 @@ const readyComponents: ComponentDefinition[] = [
     scenarios: [
       { id: 'basic', label: '双栏写作', summary: '全高预览与安全组件浮动插入库' },
       { id: 'archive-document', label: '内容档案', summary: '标题、表格、任务、引用与代码块' },
+      { id: 'html-paste', label: 'HTML 粘贴', summary: '富文本转 MDX 与图片附件适配器' },
       { id: 'component-blocks', label: '安全组件块', summary: '通过显式 Vue 插槽扩展 MarkdownX' },
       { id: 'official-foundation', label: '官方注册 · 基础', summary: '基础视觉与文本输入组件定义' },
       { id: 'official-layout', label: '官方注册 · 布局', summary: '网站母版页、导航与响应式内容布局' },

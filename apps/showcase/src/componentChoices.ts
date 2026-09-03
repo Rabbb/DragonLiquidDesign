@@ -124,6 +124,19 @@ export const componentChoiceFamilies: ComponentChoiceFamily[] = [
     ],
   },
   {
+    id: 'hierarchical-choice',
+    label: '层级选择',
+    question: '层级数据是浏览、导航，还是要形成带上下文的选择结果？',
+    summary: 'PathPicker 负责临时路径选择与动态参数；Tree 和 TreeMenu 分别负责层级展示与长期导航。',
+    preferredId: 'path-picker',
+    options: [
+      { id: 'path-picker', useWhen: '逐级选择路径、跨分支多选或末级需要动态参数' },
+      { id: 'tree', useWhen: '常驻展示层级，并直接选择树节点' },
+      { id: 'tree-menu', useWhen: '网站、文档或项目目录的长期导航' },
+      { id: 'choice-portal', useWhen: '候选项虽多但本质仍是扁平或分组选项' },
+    ],
+  },
+  {
     id: 'number',
     label: '数值与程度',
     question: '用户要输入精确值，还是表达一个视觉程度？',

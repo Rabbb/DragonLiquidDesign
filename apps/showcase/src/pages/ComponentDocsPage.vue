@@ -103,6 +103,7 @@ const docLoaders: Record<string, () => Promise<{ default: Component }>> = {
   'input-week': () => import('../docs/InputControlDocs.vue'),
   select: () => import('../docs/SelectDocs.vue'),
   'choice-portal': () => import('../docs/ChoicePortalDocs.vue'),
+  'path-picker': () => import('../docs/PathPickerDocs.vue'),
   'multi-choice': () => import('../docs/RecommendedControlDocs.vue'),
   segmented: () => import('../docs/RecommendedControlDocs.vue'),
   'time-picker': () => import('../docs/TimePickerDocs.vue'),
@@ -190,7 +191,7 @@ const sharedDocIds = new Set([
   'alert-dialog', 'aspect-ratio', 'context-menu', 'dropdown-menu', 'hover-card', 'menubar', 'navigation-menu', 'pagination', 'scroll-area', 'splitter', 'stepper', 'toast', 'toolbar',
   'autocomplete', 'rating', 'color-area', 'color-field', 'color-picker', 'color-slider', 'color-swatch', 'color-swatch-picker',
   'calendar', 'date-field', 'date-picker', 'date-range-field', 'date-range-picker', 'range-calendar', 'time-field', 'time-range-field', 'month-picker', 'month-range-picker', 'year-picker', 'year-range-picker', 'drawer', 'tree', 'tree-menu',
-  'multi-choice', 'segmented', 'virtual-list',
+  'path-picker', 'multi-choice', 'segmented', 'virtual-list',
   'container', 'stack', 'cluster', 'grid', 'page-frame', 'breadcrumbs', 'site-navigation', 'site-header', 'site-shell',
 ])
 

@@ -80,6 +80,25 @@ tone = "accent"
     expect(tokens.some(token => token.type === 'image')).toBe(true)
   })
 
+  it.each([
+    ['Rust', parseDlMdx],
+    ['TypeScript', parseDlMdxWithTypeScript],
+  ])('preserves author-entered paragraph line breaks with the %s parser', (_, parse) => {
+    const document = parse('第一行\n第二行\n第三行')
+    const paragraph = document.blocks[0]
+
+    expect(paragraph).toMatchObject({
+      type: 'paragraph',
+      tokens: [
+        { type: 'text', value: '第一行' },
+        { type: 'break' },
+        { type: 'text', value: '第二行' },
+        { type: 'break' },
+        { type: 'text', value: '第三行' },
+      ],
+    })
+  })
+
   it('accepts bounded JSON data for official component props', () => {
     const document = parseDlMdx('+++component:Select\noptions = [{"value":"anime","label":"动画"}]\n+++end')
     expect(document.blocks[0]).toMatchObject({

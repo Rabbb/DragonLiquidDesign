@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { DlMdxSelection } from './dl-mdx.commands'
+import { convertDlHtmlToMdx } from './dl-mdx.html'
 import { findDlMdxComponentFoldRangeAtLine, findDlMdxComponentFoldRanges } from './dl-mdx.folding'
 import { analyzeDlMdx, completeDlMdx, hoverDlMdx, type DlMdxLanguageOptions } from './dl-mdx.language'
 import type { DlMdxRegistry } from './dl-mdx.registry'
+import type { DlMdxAttachmentAdapter, DlMdxHtmlPasteResult } from './dl-mdx.types'
 
 export type DlMdxEditorDocumentLanguage = 'mdx' | 'javascript' | 'typescript' | 'json' | 'css'
 
@@ -18,6 +20,8 @@ const props = withDefaults(defineProps<{
   foldComponents?: boolean
   registry?: DlMdxRegistry
   languageOptions?: DlMdxLanguageOptions
+  attachmentAdapter?: DlMdxAttachmentAdapter
+  htmlPaste?: boolean
 }>(), {
   placeholder: '开始书写 Markdown…',
   readonly: false,
@@ -27,6 +31,8 @@ const props = withDefaults(defineProps<{
   foldComponents: true,
   registry: undefined,
   languageOptions: undefined,
+  attachmentAdapter: undefined,
+  htmlPaste: true,
   ariaLabel: 'Markdown 编辑器',
 })
 
@@ -35,6 +41,7 @@ const emit = defineEmits<{
   'selection-change': [selection: DlMdxSelection]
   command: [action: 'bold' | 'italic' | 'link' | 'format']
   error: [error: Error]
+  'html-paste': [result: DlMdxHtmlPasteResult]
 }>()
 
 const host = ref<HTMLElement>()
@@ -241,6 +248,36 @@ onMounted(async () => {
         ? [jsonLanguage.json()]
       : [javascriptLanguage.javascript({ typescript: props.documentLanguage === 'typescript' })]
 
+    const htmlPasteExtension = props.documentLanguage === 'mdx'
+      ? loadedView.EditorView.domEventHandlers({
+        paste(event, editorView) {
+          if (!props.htmlPaste || props.readonly || props.disabled) return false
+          const html = event.clipboardData?.getData('text/html')
+          if (!html?.trim()) return false
+          event.preventDefault()
+          const clipboardFiles = [...(event.clipboardData?.items ?? [])]
+            .filter(item => item.kind === 'file' && item.type.startsWith('image/'))
+            .map(item => item.getAsFile())
+            .filter((file): file is File => file !== null)
+          const startDocument = editorView.state.doc
+          const startSelection = editorView.state.selection.main
+          void convertDlHtmlToMdx(html, { attachmentAdapter: props.attachmentAdapter, clipboardFiles })
+            .then(result => {
+              if (disposed || !view || !result.mdx) return
+              const selection = view.state.doc === startDocument ? startSelection : view.state.selection.main
+              view.dispatch({
+                changes: { from: selection.from, to: selection.to, insert: result.mdx },
+                selection: { anchor: selection.from + result.mdx.length },
+                scrollIntoView: true,
+              })
+              emit('html-paste', result)
+            })
+            .catch(cause => emit('error', cause instanceof Error ? cause : new Error(String(cause))))
+          return true
+        },
+      })
+      : []
+
     view = new loadedView.EditorView({
       parent: host.value,
       state: loadedState.EditorState.create({
@@ -255,6 +292,7 @@ onMounted(async () => {
           language.bracketMatching(),
           language.syntaxHighlighting(dragonHighlightStyle, { fallback: true }),
           ...mdxLanguageExtensions,
+          htmlPasteExtension,
           loadedView.highlightActiveLine(),
           loadedView.placeholder(props.placeholder),
           loadedView.keymap.of([

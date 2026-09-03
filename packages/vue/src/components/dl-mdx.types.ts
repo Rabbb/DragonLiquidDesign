@@ -1,5 +1,37 @@
 export type DlMdxMode = 'edit' | 'preview' | 'split'
 
+export interface DlMdxAttachmentUpload {
+  sourceUrl: string
+  fileName: string
+  contentType: string
+  alt: string
+  title?: string
+  blob?: Blob
+}
+
+export interface DlMdxAttachment {
+  id?: string
+  url: string
+  fileName?: string
+  contentType?: string
+  byteLength?: number
+}
+
+export interface DlMdxAttachmentAdapter {
+  upload: (input: DlMdxAttachmentUpload) => Promise<DlMdxAttachment>
+}
+
+export interface DlMdxHtmlPasteFailure {
+  sourceUrl: string
+  message: string
+}
+
+export interface DlMdxHtmlPasteResult {
+  mdx: string
+  attachments: DlMdxAttachment[]
+  failures: DlMdxHtmlPasteFailure[]
+}
+
 export type DlMdxToolbarAction =
   'bold'
   | 'italic'

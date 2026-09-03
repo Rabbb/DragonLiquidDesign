@@ -47,7 +47,7 @@ function parseMarkdownInline(source: string): DlMdxInlineToken[] {
     } else if ((match = rest.match(/^ {2,}\n/)) || (match = rest.match(/^\\\n/))) {
       tokens.push({ type: 'break' })
     } else if (rest[0] === '\n') {
-      tokens.push({ type: 'text', value: ' ' })
+      tokens.push({ type: 'break' })
       match = ['\n'] as RegExpMatchArray
     } else {
       const next = rest.slice(1).search(/[\\`*_[\]!<~\n]/)

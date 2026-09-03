@@ -33,7 +33,7 @@ function collectVueFiles(directory) {
 }
 
 const ids = componentCatalog.map(component => component.id)
-report(ids.length === 101, `组件目录应为 101 项，当前为 ${ids.length} 项。`)
+report(ids.length === 102, `组件目录应为 102 项，当前为 ${ids.length} 项。`)
 report(new Set(ids).size === ids.length, '组件目录存在重复 id。')
 report(recommendedComponentCount >= 40 && recommendedComponentCount <= 65, `精简目录应收敛为 40–65 个高频控件，当前为 ${recommendedComponentCount} 个。`)
 

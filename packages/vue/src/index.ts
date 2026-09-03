@@ -36,7 +36,7 @@ export {
   DlInputRadio, DlInputRange, DlInputReset, DlInputSearch, DlInputSubmit, DlInputTel, DlInputText,
   DlInputUrl, DlInputWeek,
   DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
-  DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPageFrame, DlPinInput,
+  DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPageFrame, DlPathPicker, DlPinInput,
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSegmented, DlSelect,
   DlSeparator, DlSiteHeader, DlSiteNavigation, DlSiteShell, DlSlider, DlSplitButton, DlSplitter, DlStack, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
   DlTimeField, DlTimePicker, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlToolbarMenu, DlTooltip,
@@ -99,6 +99,32 @@ export type {
 } from './components/data-table.types'
 export type { DlSelectOption } from './components/select.types'
 export type {
+  DlPathContext,
+  DlPathField,
+  DlPathFieldType,
+  DlPathFieldValue,
+  DlPathNode,
+  DlPathOption,
+  DlPathParameters,
+  DlPathPickerAdapter,
+  DlPathPickerConfig,
+  DlPathPickerEvent,
+  DlPathPickerLoadError,
+  DlPathPickerState,
+  DlPathValidationIssue,
+  DlPathValue,
+} from './components/path-picker.types'
+export {
+  createDlPathValue,
+  dlPathKey,
+  findDlPath,
+  isDlPathNodeSelectable,
+  reduceDlPathPicker,
+  sameDlPath,
+  validateDlPathValue,
+  visibleDlPathFields,
+} from './components/path-picker'
+export type {
   DlChoicePortalEntry,
   DlChoicePortalGroup,
   DlChoicePortalOption,
@@ -109,10 +135,15 @@ export type { DlCalendarDay, DlCalendarItem } from './components/calendar.types'
 export type { DlDialogDimensions, DlDialogDock, DlDialogPosition } from './components/dialog.types'
 export type {
   DlMdxBlock,
+  DlMdxAttachment,
+  DlMdxAttachmentAdapter,
+  DlMdxAttachmentUpload,
   DlMdxComponentContext,
   DlMdxDocument,
   DlMdxInlineToken,
   DlMdxLinkPolicy,
+  DlMdxHtmlPasteFailure,
+  DlMdxHtmlPasteResult,
   DlMdxListItem,
   DlMdxMode,
   DlMdxParseResult,
@@ -121,6 +152,8 @@ export type {
   DlMdxToolbarAction,
   DlMdxValue,
 } from './components/dl-mdx.types'
+export { convertDlHtmlToMdx } from './components/dl-mdx.html'
+export type { DlMdxHtmlConversionOptions } from './components/dl-mdx.html'
 export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
 export { default as DlMdxTemplate } from './components/DlMdxTemplate'
 export { analyzeDlMdxTemplate, evaluateDlMdxTemplateExpression, parseDlMdxTemplate, parseDlMdxTemplateExpression } from './components/dl-mdx.template'

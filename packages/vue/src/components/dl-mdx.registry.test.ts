@@ -92,9 +92,9 @@ describe('MarkdownX component registry', () => {
     expect(wrapper.get('[data-journal-content]').text()).toContain('正文 **保留 MDX**')
   })
 
-  it('ships a unique official definition for every public component', () => {
-    expect(dlMdxOfficialComponents).toHaveLength(101)
-    expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(101)
+  it('ships unique official definitions for public and MDX-native components', () => {
+    expect(dlMdxOfficialComponents).toHaveLength(102)
+    expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(102)
     expect(dlMdxOfficialComponents.filter(item => item.maturity === 'alpha').length).toBeGreaterThan(10)
     expect(dlMdxOfficialComponents.every(item => item.component || item.render)).toBe(true)
   })
@@ -111,6 +111,33 @@ describe('MarkdownX component registry', () => {
     expect(invalidDefaults).toEqual([])
   })
 
+  it('renders wrapped text with configurable Highlight effects', () => {
+    const registry = createDlMdxOfficialRegistry()
+    const source = [
+      '+++component:Highlight',
+      'variant = "breathing"',
+      'color = "#ffcc66"',
+      'colorEnd = "#68e1ff"',
+      'colors = ["#ff5f6d", "#68e1ff", "#a78bfa"]',
+      'speed = 1.8',
+      '+++slot:default',
+      '第一行高亮',
+      '第二行仍然换行',
+      '+++endslot',
+      '+++end',
+    ].join('\n')
+    const wrapper = mount(DlMdx, {
+      global: { plugins: [registry] },
+      props: { modelValue: source, mode: 'preview', debounce: 0 },
+    })
+
+    const highlight = wrapper.get('.dl-mdx-highlight')
+    expect(highlight.attributes('data-variant')).toBe('breathing')
+    expect(highlight.element.textContent).toBe('第一行高亮\n第二行仍然换行')
+    expect(highlight.attributes('style')).toContain('--dl-highlight-color: #ffcc66')
+    expect(highlight.attributes('style')).toContain('--dl-highlight-speed: 1.8s')
+  })
+
   it('resolves all official component blocks without unsafe fallbacks', () => {
     const registry = createDlMdxOfficialRegistry()
     const source = dlMdxOfficialComponents.map(item => `+++component:${item.name}\n+++end`).join('\n\n')
@@ -119,7 +146,7 @@ describe('MarkdownX component registry', () => {
       props: { modelValue: source, mode: 'preview', debounce: 0, taskInteractive: false },
     })
 
-    expect(wrapper.findAll('.dl-mdx__component-block')).toHaveLength(101)
+    expect(wrapper.findAll('.dl-mdx__component-block')).toHaveLength(102)
     expect(wrapper.findAll('.dl-mdx__unknown-component')).toHaveLength(0)
   })
 })

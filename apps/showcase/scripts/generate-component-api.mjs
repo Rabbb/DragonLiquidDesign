@@ -8,6 +8,7 @@ const outputFile = resolve(showcaseRoot, 'src/generated/component-api.generated.
 const inputControls = JSON.parse(await readFile(resolve(showcaseRoot, 'src/input-controls.json'), 'utf8'))
 
 const descriptions = {
+  adapter: '集中处理异步子节点、动态字段和联动选项的数据适配器。',
   actionLabel: '操作按钮显示的文字；不传时不显示该操作。',
   allowExternal: '是否允许 http 与 https 外部链接；关闭后相对路径仍然可用。',
   openExternal: '是否在新标签页打开外部链接；外部链接始终带有 noopener noreferrer。',
@@ -95,6 +96,7 @@ const descriptions = {
   itemsPerPage: '每页显示的数据条数。',
   keyboardResizeBy: '键盘操作每次调整面板的百分比。',
   label: '控件的显示标签或无障碍名称。',
+  levelLabels: '按层级提供列标题；缺省层级使用自动编号。',
   length: '需要渲染或允许输入的项目数量。',
   linear: '是否要求按顺序完成步骤。',
   loading: '是否显示加载状态并阻止重复操作。',
@@ -117,7 +119,9 @@ const descriptions = {
   mode: '编辑器当前视图模式；使用 v-model:mode 进行双向绑定。',
   toolbar: '格式工具栏中启用的动作及排列顺序；不传时显示全部内置动作。',
   linkPolicy: '链接、外部页面与图片资源的安全渲染策略。',
-  emptyText: '文档没有可渲染内容时显示的占位说明。',
+  emptyText: '当前没有可显示内容时使用的占位说明。',
+  maxSelections: '多选模式允许保留的最大路径数量。',
+  selectionLabel: '选择托盘显示的标题。',
   lineWrapping: '是否在编辑器中启用长行自动换行。',
   lockLiteralBindings: '是否锁定组件的 modelValue 字面量绑定；变量引用保持可交互，适合发布或实时网站。',
   showToolbar: '是否显示格式操作和视图模式工具栏。',
@@ -898,6 +902,7 @@ if (JSON.stringify(mdxRelatedTypes) !== JSON.stringify([
   'DlMdxMode', 'DlMdxToolbarAction[]', 'DlMdxLinkPolicy', 'DlMdxRegistry',
   'DlMdxComponentDefinition[]', 'DlMdxEventSchema', 'DlMdxTypeSchema', 'DlMdxSchemaType[]',
   'DlMdxComponentCategory', 'DlMdxComponentMaturity', 'DlMdxLanguageOptions', 'DlMdxDiagnosticSeverity', 'DlMdxFormatOptions', 'DlMdxRuntimeSymbol[]',
+  'DlMdxAttachmentAdapter', 'DlMdxAttachmentUpload', 'DlMdxAttachment',
   'DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind', 'DlMdxRustCoreStatus',
 ])) {
   throw new Error(`Mdx 相关类型 API 顺序不正确：${mdxRelatedTypes?.join(', ')}`)

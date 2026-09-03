@@ -87,6 +87,11 @@ define(['choice-portal', 'multi-choice', 'autocomplete', 'combobox', 'listbox', 
   paste: 'ChoicePortal 可粘贴标签或值；MultiChoice 可一次粘贴逗号、分号或换行分隔的多项。',
 })
 
+define(['path-picker'], {
+  summary: '每一级保持独立路径列表；展开、选择与参数录入使用标准按钮和字段语义。',
+  keys: ['Tab 在展开、选择和参数字段间移动', '↑ / ↓ 在同一级移动', '→ 展开下一级', '← 收起当前分支', 'Enter 打开节点', 'Space 执行聚焦的选择按钮'],
+})
+
 define(['segmented', 'radio-group', 'toggle-group', 'color-swatch-picker', 'tabs', 'toolbar'], {
   summary: '同组控件使用 roving tabindex，仅当前项进入 Tab 顺序，方向键在组内移动。',
   keys: ['方向键移动', 'Home / End 首尾', 'Enter / Space 激活'],

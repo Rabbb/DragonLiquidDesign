@@ -10,14 +10,14 @@ const componentNames = [
   'DlIconButton',
   'DlInputButton', 'DlInputCheckbox', 'DlInputColor', 'DlInputDatetimeLocal', 'DlInputEmail', 'DlInputFile', 'DlInputHidden', 'DlInputImage', 'DlInputNumber', 'DlInputPassword', 'DlInputRadio', 'DlInputRange', 'DlInputReset', 'DlInputSearch', 'DlInputSubmit', 'DlInputTel', 'DlInputText', 'DlInputUrl', 'DlInputWeek',
   'DlLabel', 'DlListbox', 'DlMdx', 'DlMenubar', 'DlMultiChoice', 'DlNavigationMenu', 'DlNumberField',
-  'DlMonthPicker', 'DlMonthRangePicker', 'DlPagination', 'DlPageFrame', 'DlPinInput', 'DlPopover', 'DlProgress', 'DlRadioGroup', 'DlRangeCalendar', 'DlRating', 'DlScrollArea', 'DlSegmented', 'DlSelect',
+  'DlMonthPicker', 'DlMonthRangePicker', 'DlPagination', 'DlPageFrame', 'DlPathPicker', 'DlPinInput', 'DlPopover', 'DlProgress', 'DlRadioGroup', 'DlRangeCalendar', 'DlRating', 'DlScrollArea', 'DlSegmented', 'DlSelect',
   'DlSeparator', 'DlSiteHeader', 'DlSiteNavigation', 'DlSiteShell', 'DlSlider', 'DlSplitButton', 'DlSplitter', 'DlStack', 'DlStepper', 'DlSwitch', 'DlTabs', 'DlTagsInput', 'DlTextarea', 'DlTimeField', 'DlTimePicker', 'DlTimeRangeField',
   'DlToast', 'DlToggle', 'DlToggleGroup', 'DlToolbar', 'DlToolbarMenu', 'DlTooltip', 'DlTree', 'DlTreeMenu', 'DlVirtualList', 'DlYearPicker', 'DlYearRangePicker',
 ]
 
 describe('public component API', () => {
   it('exports every stable catalog component', () => {
-    expect(componentNames).toHaveLength(101)
+    expect(componentNames).toHaveLength(102)
     for (const name of componentNames) expect(library).toHaveProperty(name)
   })
 

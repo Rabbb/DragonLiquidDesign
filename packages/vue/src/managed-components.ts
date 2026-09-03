@@ -64,6 +64,7 @@ import RawDlNavigationMenu from './components/DlNavigationMenu.vue'
 import RawDlNumberField from './components/DlNumberField.vue'
 import RawDlPagination from './components/DlPagination.vue'
 import RawDlPageFrame from './components/DlPageFrame.vue'
+import RawDlPathPicker from './components/DlPathPicker.vue'
 import RawDlPinInput from './components/DlPinInput.vue'
 import RawDlPopover from './components/DlPopover.vue'
 import RawDlProgress from './components/DlProgress.vue'
@@ -478,6 +479,19 @@ export const DlPagination = managed(RawDlPagination, 'DlPagination', {
   ],
 })
 export const DlPageFrame = managed(RawDlPageFrame, 'DlPageFrame')
+export const DlPathPicker = managed(RawDlPathPicker, 'DlPathPicker', {
+  domEvents: fieldEvents,
+  methods: {
+    clear: context => context.set('modelValue', []),
+    openPath: (context, path) => callInner(context, 'openPath', path),
+    validate: context => callInner(context, 'validate') ?? false,
+  },
+  methodDefinitions: [
+    method('clear', '清除全部路径选择及其参数。', '()'),
+    method('openPath', '展开指定值路径。', '(path: string[])'),
+    method('validate', '校验所有已选路径的必填动态参数。', '()', 'boolean'),
+  ],
+})
 export const DlPinInput = managed(RawDlPinInput, 'DlPinInput', { domEvents: fieldEvents })
 export const DlPopover = managed(RawDlPopover, 'DlPopover')
 export const DlProgress = managed(RawDlProgress, 'DlProgress', {

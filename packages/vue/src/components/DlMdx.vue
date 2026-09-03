@@ -27,6 +27,8 @@ import { useDlMdxSecurityPolicy } from './dl-mdx.security'
 import { parseCachedDlMdx } from './dl-mdx.preview-cache'
 import type {
   DlMdxDocument,
+  DlMdxAttachmentAdapter,
+  DlMdxHtmlPasteResult,
   DlMdxLinkPolicy,
   DlMdxMode,
   DlMdxParseResult,
@@ -94,6 +96,8 @@ const props = withDefaults(defineProps<{
   splitMinSize?: number
   executeCompanionScript?: boolean
   templateContext?: DlMdxTemplateContext
+  attachmentAdapter?: DlMdxAttachmentAdapter
+  htmlPaste?: boolean
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -131,6 +135,8 @@ const props = withDefaults(defineProps<{
   splitMinSize: 20,
   executeCompanionScript: false,
   templateContext: () => ({}),
+  attachmentAdapter: undefined,
+  htmlPaste: true,
 })
 
 const emit = defineEmits<{
@@ -143,6 +149,7 @@ const emit = defineEmits<{
   action: [invocation: DlMdxActionInvocation]
   diagnostics: [analysis: DlMdxLanguageAnalysis]
   splitLayout: [layout: number[]]
+  'html-paste': [result: DlMdxHtmlPasteResult]
 }>()
 
 const defaultToolbar: DlMdxToolbarAction[] = ['bold', 'italic', 'strike', 'inline-code', 'link', 'heading', 'blockquote', 'unordered-list', 'task-list', 'code-block', 'component', 'format']
@@ -777,10 +784,13 @@ function toggleTask(line: number) {
               :document-language="sourceLanguage"
               :registry="activeRegistry"
               :language-options="effectiveLanguageOptions"
+              :attachment-adapter="attachmentAdapter"
+              :html-paste="htmlPaste"
               @update:model-value="updateSource"
               @selection-change="updateEditorSelection"
               @command="execute"
               @error="emit('error', $event)"
+              @html-paste="emit('html-paste', $event)"
             />
             <MdxEditor
               v-else-if="activeDocument === 'script'"
@@ -845,10 +855,13 @@ function toggleTask(line: number) {
         :document-language="sourceLanguage"
           :registry="activeRegistry"
           :language-options="effectiveLanguageOptions"
+          :attachment-adapter="attachmentAdapter"
+          :html-paste="htmlPaste"
           @update:model-value="updateSource"
           @selection-change="updateEditorSelection"
           @command="execute"
           @error="emit('error', $event)"
+          @html-paste="emit('html-paste', $event)"
         />
         <MdxEditor
           v-else-if="activeDocument === 'script'"

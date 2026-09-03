@@ -16,6 +16,7 @@ import {
   DlInputText,
   DlLabel,
   DlNumberField,
+  DlPathPicker,
   DlPopover,
   DlRadioGroup,
   DlRating,
@@ -26,6 +27,8 @@ import {
   DlTextarea,
   DlTooltip,
   type DlChoiceOption,
+  type DlPathNode,
+  type DlPathValue,
   type DlRadioOption,
   type DlSelectOption,
 } from '@dragon-liquid/vue'
@@ -42,6 +45,7 @@ const status = ref<ArchiveStatus>('planned')
 const episodes = ref(12)
 const ratingRange = ref([4])
 const tags = ref<string[]>([])
+const catalogPaths = ref<DlPathValue[]>([])
 const accent = ref('#9ad6bf')
 const releaseDate = shallowRef(new CalendarDate(2026, 10, 1))
 const sourceLanguage = ref('ja')
@@ -85,6 +89,19 @@ const languageOptions: DlSelectOption[] = [
 ]
 const studioSuggestions = ['Madhouse', 'Kyoto Animation', 'CloverWorks', 'TRIGGER', 'Bones', 'Science SARU']
 const themeColors = ['#9ad6bf', '#e4b76a', '#8fb9e8', '#ef9fbd', '#78c59e', '#c9a9e8']
+const archiveCategories: DlPathNode[] = [
+  {
+    value: 'animation', label: '动画', selectable: false, children: [
+      { value: 'series', label: '系列作品', selectable: false, children: [{ value: 'tv', label: 'TV 动画' }, { value: 'web', label: '网络动画' }] },
+      { value: 'film', label: '电影作品', selectable: false, children: [{ value: 'theatrical', label: '剧场版' }] },
+    ],
+  },
+  {
+    value: 'special', label: '特别发行', selectable: false, children: [
+      { value: 'disc', label: '实体发行', selectable: false, children: [{ value: 'ova', label: 'OVA / OAD' }] },
+    ],
+  },
+]
 
 function resetForm() {
   title.value = ''
@@ -96,6 +113,7 @@ function resetForm() {
   episodes.value = 12
   ratingRange.value = [4]
   tags.value = []
+  catalogPaths.value = []
   hasRights.value = false
   submitted.value = false
 }
@@ -174,6 +192,7 @@ function createRecord() {
               <div class="form-field"><DlLabel>作品形式</DlLabel><DlCombobox v-model="format" :options="formatOptions" placeholder="选择作品形式" /></div>
               <div class="form-field"><DlLabel>总集数</DlLabel><DlNumberField v-model="episodes" :min="1" :max="999" /></div>
               <div class="form-field create-span"><DlLabel>初始观看状态</DlLabel><DlRadioGroup v-model="status" :options="statusOptions" orientation="horizontal" /></div>
+              <div class="form-field create-span"><DlLabel>归档路径</DlLabel><DlPathPicker v-model="catalogPaths" :items="archiveCategories" :level-labels="['内容大类', '发行分类', '具体形式']" label="选择归档位置" description="展开路径和加入选择分开操作，结果保留完整上下文。" /></div>
               <div class="form-field create-span"><DlLabel>检索标签</DlLabel><DlTagsInput v-model="tags" :max="8" placeholder="输入标签后回车" /></div>
             </div>
           </section>

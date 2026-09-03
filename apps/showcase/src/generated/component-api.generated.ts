@@ -6196,7 +6196,7 @@ export default {
       },
       {
         "prop": "emptyText",
-        "description": "文档没有可渲染内容时显示的占位说明。",
+        "description": "当前没有可显示内容时使用的占位说明。",
         "type": "string",
         "defaultValue": "'还没有可预览的内容。'"
       },
@@ -6385,6 +6385,18 @@ export default {
         "description": "设置 templateContext 属性。",
         "type": "DlMdxTemplateContext",
         "defaultValue": "() => ({})"
+      },
+      {
+        "prop": "attachmentAdapter",
+        "description": "设置 attachmentAdapter 属性。",
+        "type": "DlMdxAttachmentAdapter",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "htmlPaste",
+        "description": "设置 htmlPaste 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
       }
     ],
     "relatedTypes": [
@@ -7057,6 +7069,102 @@ export default {
         ],
         "kind": "structure",
         "title": "DlMdxRuntimeSymbol[]"
+      },
+      {
+        "name": "DlMdxAttachmentAdapter",
+        "description": "DlMdxAttachmentAdapter 数据结构。",
+        "rows": [
+          {
+            "prop": "upload",
+            "description": "设置 upload 字段。",
+            "type": "(input: DlMdxAttachmentUpload) => Promise<DlMdxAttachment>",
+            "defaultValue": "必填"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxAttachmentAdapter"
+      },
+      {
+        "name": "DlMdxAttachmentUpload",
+        "description": "DlMdxAttachmentUpload 数据结构。",
+        "rows": [
+          {
+            "prop": "sourceUrl",
+            "description": "设置 sourceUrl 字段。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "fileName",
+            "description": "设置 fileName 字段。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "contentType",
+            "description": "设置 contentType 字段。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "alt",
+            "description": "图片无法展示时使用的替代文本。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "title",
+            "description": "控件或浮层显示的标题。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "blob",
+            "description": "设置 blob 字段。",
+            "type": "Blob",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxAttachmentUpload"
+      },
+      {
+        "name": "DlMdxAttachment",
+        "description": "DlMdxAttachment 数据结构。",
+        "rows": [
+          {
+            "prop": "id",
+            "description": "控件或输入元素使用的唯一标识。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "url",
+            "description": "设置 url 字段。",
+            "type": "string",
+            "defaultValue": "必填"
+          },
+          {
+            "prop": "fileName",
+            "description": "设置 fileName 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "contentType",
+            "description": "设置 contentType 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "byteLength",
+            "description": "设置 byteLength 字段。",
+            "type": "number",
+            "defaultValue": "可选"
+          }
+        ],
+        "kind": "structure",
+        "title": "DlMdxAttachment"
       },
       {
         "name": "DlMdxSecurityPolicy",
@@ -7896,6 +8004,77 @@ export default {
         "description": "是否显示首页与末页导航按钮。",
         "type": "boolean",
         "defaultValue": "true"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "relatedTypes": []
+  },
+  "path-picker": {
+    "props": [
+      {
+        "prop": "modelValue",
+        "description": "组件当前值；使用 v-model 进行双向绑定。",
+        "type": "DlPathValue[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "DlPathNode[]",
+        "defaultValue": "—"
+      },
+      {
+        "prop": "adapter",
+        "description": "集中处理异步子节点、动态字段和联动选项的数据适配器。",
+        "type": "DlPathPickerAdapter",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "multiple",
+        "description": "是否允许同时选择多个值。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "maxSelections",
+        "description": "多选模式允许保留的最大路径数量。",
+        "type": "number",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "levelLabels",
+        "description": "按层级提供列标题；缺省层级使用自动编号。",
+        "type": "string[]",
+        "defaultValue": "() => []"
+      },
+      {
+        "prop": "label",
+        "description": "控件的显示标签或无障碍名称。",
+        "type": "string",
+        "defaultValue": "'路径选择'"
+      },
+      {
+        "prop": "description",
+        "description": "补充说明文字；不传时隐藏说明区域。",
+        "type": "string",
+        "defaultValue": "'沿层级浏览，并把需要的路径加入选择。'"
+      },
+      {
+        "prop": "selectionLabel",
+        "description": "选择托盘显示的标题。",
+        "type": "string",
+        "defaultValue": "'已选择'"
+      },
+      {
+        "prop": "emptyText",
+        "description": "当前没有可显示内容时使用的占位说明。",
+        "type": "string",
+        "defaultValue": "'当前层级没有可用项目'"
       },
       {
         "prop": "disabled",
@@ -11063,7 +11242,7 @@ export default {
       },
       {
         "prop": "emptyText",
-        "description": "文档没有可渲染内容时显示的占位说明。",
+        "description": "当前没有可显示内容时使用的占位说明。",
         "type": "string",
         "defaultValue": "'暂无目录'"
       },

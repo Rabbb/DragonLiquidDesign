@@ -287,7 +287,7 @@ fn parse_inline(source: &str) -> Vec<Value> {
             continue;
         }
         if rest.starts_with('\n') {
-            push_text(&mut tokens, " ");
+            tokens.push(json!({ "type": "break" }));
             index += 1;
             continue;
         }
@@ -942,6 +942,13 @@ mod tests {
         let document = parse_document("# Journal\n\n<Todo_1234 />");
         assert_eq!(document["blocks"][1]["context"]["name"], "Todo_1234");
         assert_eq!(document["blocks"][1]["type"], "component");
+    }
+
+    #[test]
+    fn preserves_paragraph_line_breaks() {
+        let document = parse_document("第一行\n第二行\n第三行");
+        assert_eq!(document["blocks"][0]["tokens"][1]["type"], "break");
+        assert_eq!(document["blocks"][0]["tokens"][3]["type"], "break");
     }
 
     #[test]
