@@ -24,6 +24,7 @@ export interface DlMdxAttachmentAdapter {
   upload: (input: DlMdxAttachmentUpload) => Promise<DlMdxAttachment>
   list?: () => Promise<DlMdxAttachment[]>
   remove?: (attachment: DlMdxAttachment) => Promise<void>
+  referenceMode?: 'immediate' | 'document-save'
 }
 
 export interface DlMdxHtmlPasteFailure {

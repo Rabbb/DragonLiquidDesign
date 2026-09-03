@@ -166,7 +166,7 @@ const document = parseDlMdx('# Archive\n\n- [x] indexed')
 
 普通复制会同时写入精确 MarkdownX、`text/markdown`、纯文本和语义 HTML：粘贴回 `DlMdx` 时使用私有 MIME 保持组件源码无损，粘贴到邮件、Word 等富编辑器时使用 HTML。渲染态双击正文即可进入源码编辑，按 `Escape` 返回渲染，保留“预览优先、需要时看源码”的文档体验。
 
-`attachmentAdapter` 除 `upload()` 外可选实现 `list()` 与 `remove()`。实现后工具栏自动出现“文档图片”，集中提供上传并插入、重新插入、替换、下载和二次确认移除；宿主仍负责鉴权、持久化和引用计数。
+`attachmentAdapter` 除 `upload()` 外可选实现 `list()` 与 `remove()`。实现后工具栏自动出现“文档图片”，集中提供上传并插入、重新插入、替换、下载和二次确认移除；宿主仍负责鉴权、持久化和引用计数。若后端只在 MDX 保存成功后同步引用，请设置 `referenceMode: 'document-save'`：组件会乐观更新管理器，但不会提前调用 `remove()` 改变正式引用。
 
 ## MarkdownX 项目引擎
 

@@ -576,10 +576,19 @@ async function handleAttachmentFile(event: Event) {
     if (replaced) {
       const updated = localSource.value.split(replaced.url).join(uploaded.url)
       updateSource(updated)
-      if (attachmentIdentity(replaced) !== attachmentIdentity(uploaded)) await props.attachmentAdapter.remove?.(replaced)
+      managedAttachments.value = managedAttachments.value.map(item =>
+        attachmentIdentity(item) === attachmentIdentity(replaced) ? uploaded : item)
+      if (
+        props.attachmentAdapter.referenceMode !== 'document-save'
+        && attachmentIdentity(replaced) !== attachmentIdentity(uploaded)
+      ) await props.attachmentAdapter.remove?.(replaced)
       emit('attachment-change', 'replace', uploaded)
-    } else await insertManagedAttachment(uploaded)
-    await loadManagedAttachments()
+    } else {
+      if (!managedAttachments.value.some(item => attachmentIdentity(item) === attachmentIdentity(uploaded))) {
+        managedAttachments.value = [...managedAttachments.value, uploaded]
+      }
+      await insertManagedAttachment(uploaded)
+    }
   } catch (cause) {
     attachmentManagerError.value = cause instanceof Error ? cause.message : String(cause)
     emit('error', cause instanceof Error ? cause : new Error(String(cause)))
@@ -604,9 +613,11 @@ async function removeManagedAttachment(attachment: DlMdxAttachment) {
   attachmentManagerError.value = ''
   try {
     updateSource(withoutAttachment(localSource.value, attachment))
-    await props.attachmentAdapter?.remove?.(attachment)
+    managedAttachments.value = managedAttachments.value.filter(item => attachmentIdentity(item) !== identity)
+    if (props.attachmentAdapter?.referenceMode !== 'document-save') {
+      await props.attachmentAdapter?.remove?.(attachment)
+    }
     emit('attachment-change', 'remove', attachment)
-    await loadManagedAttachments()
   } catch (cause) {
     attachmentManagerError.value = cause instanceof Error ? cause.message : String(cause)
     emit('error', cause instanceof Error ? cause : new Error(String(cause)))

@@ -7109,6 +7109,12 @@ export default {
             "description": "设置 remove 字段。",
             "type": "(attachment: DlMdxAttachment) => Promise<void>",
             "defaultValue": "可选"
+          },
+          {
+            "prop": "referenceMode",
+            "description": "设置 referenceMode 字段。",
+            "type": "'immediate' | 'document-save'",
+            "defaultValue": "可选"
           }
         ],
         "kind": "structure",

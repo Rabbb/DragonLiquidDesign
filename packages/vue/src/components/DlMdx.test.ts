@@ -496,4 +496,43 @@ describe('DlMdx', () => {
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['界面'])
     wrapper.unmount()
   })
+
+  it('defers reference removal to document persistence when requested by the adapter', async () => {
+    const attachment = {
+      fileId: 'file-2',
+      url: 'https://todo.moe/image/file-2',
+      fileName: 'pending.png',
+      contentType: 'image/png',
+      byteLength: 1024,
+      referenceCount: 1,
+    }
+    const remove = vi.fn(async () => undefined)
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: {
+        modelValue: `![待保存](${attachment.url})`,
+        mode: 'edit',
+        debounce: 0,
+        attachmentAdapter: {
+          upload: vi.fn(),
+          list: vi.fn(async () => [attachment]),
+          remove,
+          referenceMode: 'document-save',
+        },
+      },
+    })
+    await flushPromises()
+
+    await wrapper.get('button[aria-label="文档图片"]').trigger('click')
+    await flushPromises()
+    ;[...document.body.querySelectorAll<HTMLButtonElement>('button')].find(button => button.textContent === '移除')?.click()
+    await nextTick()
+    ;[...document.body.querySelectorAll<HTMLButtonElement>('button')].find(button => button.textContent === '确认移除')?.click()
+    await flushPromises()
+
+    expect(remove).not.toHaveBeenCalled()
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['待保存'])
+    expect(document.body.textContent).not.toContain('pending.png')
+    wrapper.unmount()
+  })
 })

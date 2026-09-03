@@ -304,6 +304,7 @@ ${vueSfc({
 
 const source = ref('把网页内容粘贴到这里')
 const attachmentAdapter: DlMdxAttachmentAdapter = {
+  referenceMode: 'document-save',
   async upload({ blob, fileName }) {
     if (!blob) throw new Error('图片内容不可读取')
     const body = new FormData()
@@ -327,7 +328,7 @@ const attachmentAdapter: DlMdxAttachmentAdapter = {
     @html-paste="result => console.log(result.failures)"
   />`,
     }),
-    tips: ['识别 Word/WPS 的标题、粗斜体、下划线、背景标记和 mso-list 层级，并把合并单元格展开成规则表格。', '普通复制同时写入精确 MDX、Markdown、纯文本和语义 HTML；同一编辑器内粘贴优先恢复无损 MDX。', '提供 list/remove 后，工具栏会出现文档图片管理器，可插入、替换、下载和二次确认移除。', '脚本、iframe、对象标签和 javascript: URL 不会进入转换结果；单张图片失败不会丢失整段文字。'],
+    tips: ['识别 Word/WPS 的标题、粗斜体、下划线、背景标记和 mso-list 层级，并把合并单元格展开成规则表格。', '普通复制同时写入精确 MDX、Markdown、纯文本和语义 HTML；同一编辑器内粘贴优先恢复无损 MDX。', '提供 list/remove 后，工具栏会出现文档图片管理器，可插入、替换、下载和二次确认移除。', `referenceMode: 'document-save' 会把引用增减推迟到 MDX 保存成功后，适合带引用计数和暂存回收的后端。`, '脚本、iframe、对象标签和 javascript: URL 不会进入转换结果；单张图片失败不会丢失整段文字。'],
   },
   'syntax-highlight': {
     title: '编程代码与代码域高亮',
