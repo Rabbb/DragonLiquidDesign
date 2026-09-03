@@ -65,12 +65,12 @@ describe('TimeWheelPanel', () => {
 
     document.body.querySelector<HTMLButtonElement>('[aria-label="分钟增加 1"]')?.click()
     await nextTick()
-    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('09:31')
+    expect(document.body.querySelector<HTMLInputElement>('[data-slot="time-wheel-panel"] .dl-time-wheel__summary input')?.value).toBe('09:31')
     expect(document.body.querySelector('[aria-label="分钟"] [data-cycle="2"][data-wheel-value="31"]')?.getAttribute('aria-selected')).toBe('true')
 
     document.body.querySelector<HTMLButtonElement>('[aria-label="小时减少 1"]')?.click()
     await nextTick()
-    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('08:31')
+    expect(document.body.querySelector<HTMLInputElement>('[data-slot="time-wheel-panel"] .dl-time-wheel__summary input')?.value).toBe('08:31')
   })
 
   it('wraps minute fine-tuning across midnight and blocks disabled targets', async () => {
@@ -83,7 +83,7 @@ describe('TimeWheelPanel', () => {
 
     document.body.querySelector<HTMLButtonElement>('[aria-label="分钟增加 1"]')?.click()
     await nextTick()
-    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('00:00')
+    expect(document.body.querySelector<HTMLInputElement>('[data-slot="time-wheel-panel"] .dl-time-wheel__summary input')?.value).toBe('00:00')
     expect(document.body.querySelector<HTMLButtonElement>('[aria-label="分钟增加 1"]')?.disabled).toBe(true)
   })
 
@@ -111,10 +111,50 @@ describe('TimeWheelPanel', () => {
     const hour = document.body.querySelector<HTMLElement>('[aria-label="小时"]')!
     hour.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
     await nextTick()
-    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('10:30')
+    expect(document.body.querySelector<HTMLInputElement>('[data-slot="time-wheel-panel"] .dl-time-wheel__summary input')?.value).toBe('10:30')
 
     hour.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }))
     await nextTick()
-    expect(document.body.querySelector('[data-slot="time-wheel-panel"] .dl-time-wheel__summary strong')?.textContent).toBe('23:30')
+    expect(document.body.querySelector<HTMLInputElement>('[data-slot="time-wheel-panel"] .dl-time-wheel__summary input')?.value).toBe('23:30')
+  })
+
+  it('accepts direct HH:mm input and commits it through the shared draft value', async () => {
+    const wrapper = mount(TimeWheelPanel, {
+      attachTo: document.body,
+      props: { open: true, modelValue: '09:30', minuteStep: 5 },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    const input = document.body.querySelector<HTMLInputElement>('[data-slot="time-wheel-panel"] .dl-time-wheel__summary input')!
+    input.value = '13:47'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    await nextTick()
+    expect(input.value).toBe('13:47')
+    expect(document.body.querySelector('[aria-label="小时"] [data-cycle="2"][data-wheel-value="13"]')?.getAttribute('aria-selected')).toBe('true')
+    expect(document.body.querySelector('[aria-label="分钟"] [data-cycle="2"][data-wheel-value="47"]')?.getAttribute('aria-selected')).toBe('true')
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['13:47'])
+  })
+
+  it('quantizes a mouse-wheel event burst to one visible row', async () => {
+    const wrapper = mount(TimeWheelPanel, {
+      attachTo: document.body,
+      props: { open: true, modelValue: '09:30', minuteStep: 5 },
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+
+    const minuteWheel = document.body.querySelector<HTMLElement>('[aria-label="分钟"]')!
+    const first = new WheelEvent('wheel', { deltaY: 120, bubbles: true, cancelable: true })
+    minuteWheel.dispatchEvent(first)
+    minuteWheel.dispatchEvent(new WheelEvent('wheel', { deltaY: 120, bubbles: true, cancelable: true }))
+    minuteWheel.dispatchEvent(new WheelEvent('wheel', { deltaY: 120, bubbles: true, cancelable: true }))
+    await nextTick()
+
+    expect(first.defaultPrevented).toBe(true)
+    expect(document.body.querySelector<HTMLInputElement>('[data-slot="time-wheel-panel"] .dl-time-wheel__summary input')?.value).toBe('09:35')
   })
 })

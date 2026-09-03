@@ -10,15 +10,15 @@ const disabledTime = (value: string) => value < '09:00' || value > '18:00'
 const content = computed(() => ({
   basic: {
     title: '同一个值，两种输入方式',
-    description: 'TimePicker 直接复用 TimeField；用户既能键盘精确输入，也能打开滚轮选择。',
+    description: 'TimePicker 直接复用 TimeField；打开 TIME WHEEL 后仍可精确键入，也可以滚动或拖动选择。',
     code: vueSfc({ imports: ['DlTimePicker', 'Time'], script: `import { shallowRef } from 'vue'\n\nconst time = shallowRef(new Time(20, 30))`, template: `  <DlTimePicker v-model="time" clearable />` }),
-    tips: ['TimeField 与 TimePicker 是两个正式控件，但共享 TimeValue、范围、状态和清除语义。', '只需要高密度键盘录入时直接使用 TimeField。'],
+    tips: ['面板输入框、小时与分钟滚轮、微调按钮共享同一个草稿值。', '鼠标滚轮的一次连续事件只移动一个可用选项；指针拖动仍按实际位移滚动，不受限速影响。', 'TimeField 与 TimePicker 是两个正式控件，但共享 TimeValue、范围、状态和清除语义。'],
   },
   'minute-step': {
     title: '紧凑按钮与分钟步长',
     description: 'presentation 只改变入口呈现，不会复制或改变滚轮选择逻辑。',
     code: vueSfc({ imports: ['DlTimePicker', 'Time'], script: `import { shallowRef } from 'vue'\n\nconst time = shallowRef(new Time(20, 30))`, template: `  <DlTimePicker\n    v-model="time"\n    presentation="button"\n    :minute-step="15"\n    shortcut-value="20:30"\n    shortcut-label="晚间摘要"\n  />` }),
-    tips: ['按钮入口适合工具栏和紧凑表单，默认字段入口适合直接编辑。', '滚轮箭头仍可按 1 分钟微调。'],
+    tips: ['按钮入口适合工具栏和紧凑表单，默认字段入口适合直接编辑。', '面板可输入任意有效分钟；滚轮按 minute-step 移动可见选项，箭头仍可按 1 分钟微调。'],
   },
   'disabled-time': {
     title: '统一限制可用时段',

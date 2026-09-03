@@ -228,6 +228,7 @@ await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' 
 
 - 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.75` 为 TimePicker 的 TIME WHEEL 面板增加直接时间输入，并把鼠标滚轮事件量化为一次一格；指针拖动继续按真实位移滚动，不受滚轮节流影响。
 - `0.6.0-alpha.34` 将 MarkdownX 提升为项目引擎：新增受限虚拟文件系统、原子事务、项目清单、自动路由、跨文件构建诊断，以及 Memory、LocalStorage、HTTP 存储适配器和可操作的线上项目工作台。
 - `0.6.0-alpha.33` 新增 MarkdownX 类型提示、诊断、格式化、安全声明式事件，以及 MDX 主文档配合 Script/Style 附加文档的编辑工作区。
 - `0.6.0-alpha.32` 为 MarkdownX 增加 Rust/WASM 预览语法高亮、CodeMirror 多语言解析和围栏代码域高亮；未知语言安全降级为原文。

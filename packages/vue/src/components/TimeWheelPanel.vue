@@ -58,6 +58,8 @@ const emit = defineEmits<{
 const internalOpen = ref(false)
 const draftHour = ref(9)
 const draftMinute = ref(0)
+const draftInput = ref('09:00')
+const draftInputElement = ref<HTMLInputElement | null>(null)
 const hourWheel = ref<HTMLElement | null>(null)
 const minuteWheel = ref<HTMLElement | null>(null)
 const wheelId = useId()
@@ -67,12 +69,17 @@ const steppedMinutes = computed(() => props.granularity === 'hour' ? [0] : build
 const minutes = computed(() => props.granularity === 'hour' ? [0] : [...new Set([...steppedMinutes.value, draftMinute.value])].sort((left, right) => left - right))
 const resolvedOpen = computed(() => props.open ?? internalOpen.value)
 const draftValue = computed(() => formatDlTimeWheelValue(draftHour.value, draftMinute.value))
-const draftDisabled = computed(() => props.disabledTime?.(draftValue.value) ?? false)
+const draftInputValid = computed(() => parseDlTimeWheelValue(draftInput.value) !== null)
+const draftDisabled = computed(() => !draftInputValid.value || (props.disabledTime?.(draftValue.value) ?? false))
 const virtualHours = computed(() => virtualValues(hours))
 const virtualMinutes = computed(() => virtualValues(minutes.value))
 
 let hourSnapTimer: ReturnType<typeof setTimeout> | undefined
 let minuteSnapTimer: ReturnType<typeof setTimeout> | undefined
+let hourWheelGestureTimer: ReturnType<typeof setTimeout> | undefined
+let minuteWheelGestureTimer: ReturnType<typeof setTimeout> | undefined
+let hourWheelGestureLocked = false
+let minuteWheelGestureLocked = false
 let suppressScroll = false
 let suppressClickUntil = 0
 let dragState: { kind: WheelKind; pointerId: number; startY: number; lastY: number; moved: boolean } | null = null
@@ -145,6 +152,102 @@ function selectValue(kind: WheelKind, value: number, smooth = true) {
     draftMinute.value = value
   }
   nextTick(() => scrollToValue(kind, value, smooth ? 'smooth' : 'auto'))
+}
+
+function selectableWheelValue(kind: WheelKind, value: number) {
+  return kind === 'hour' ? !hourDisabled(value) : !isDisabled(draftHour.value, value)
+}
+
+function stepWheel(kind: WheelKind, direction: -1 | 1) {
+  const values = valuesFor(kind)
+  const current = kind === 'hour' ? draftHour.value : draftMinute.value
+  const currentIndex = Math.max(0, values.indexOf(current))
+  for (let offset = 1; offset <= values.length; offset += 1) {
+    const candidate = values[(currentIndex + direction * offset + values.length) % values.length]
+    if (candidate !== undefined && selectableWheelValue(kind, candidate)) {
+      selectValue(kind, candidate)
+      return
+    }
+  }
+}
+
+function releaseWheelGesture(kind: WheelKind) {
+  if (kind === 'hour') hourWheelGestureLocked = false
+  else minuteWheelGestureLocked = false
+}
+
+function handleMouseWheel(kind: WheelKind, event: WheelEvent) {
+  if (props.disabled || dragState) return
+  const delta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX
+  if (!Number.isFinite(delta) || delta === 0) return
+
+  const locked = kind === 'hour' ? hourWheelGestureLocked : minuteWheelGestureLocked
+  const timer = kind === 'hour' ? hourWheelGestureTimer : minuteWheelGestureTimer
+  if (timer) clearTimeout(timer)
+  if (!locked) {
+    if (kind === 'hour') hourWheelGestureLocked = true
+    else minuteWheelGestureLocked = true
+    stepWheel(kind, delta < 0 ? -1 : 1)
+  }
+  const nextTimer = setTimeout(() => releaseWheelGesture(kind), 72)
+  if (kind === 'hour') hourWheelGestureTimer = nextTimer
+  else minuteWheelGestureTimer = nextTimer
+}
+
+function cleanDraftInput(value: string) {
+  const normalized = value.replace(/：/g, ':').replace(/[^\d:]/g, '')
+  if (normalized.includes(':')) {
+    const [hour = '', minute = ''] = normalized.split(':')
+    return `${hour.slice(0, 2)}:${minute.slice(0, 2)}`
+  }
+  const digits = normalized.slice(0, 4)
+  return digits.length > 2 ? `${digits.slice(0, 2)}:${digits.slice(2)}` : digits
+}
+
+function applyDraftInput(value: string, normalize = false) {
+  const next = cleanDraftInput(value)
+  draftInput.value = next
+  let parsed = parseDlTimeWheelValue(next)
+
+  if (!parsed && normalize) {
+    const matched = /^(\d{1,2})(?::(\d{1,2}))?$/.exec(next)
+    if (matched) {
+      const hour = Number(matched[1])
+      const minute = props.granularity === 'hour' ? 0 : Number(matched[2] ?? 0)
+      const candidate = formatDlTimeWheelValue(hour, minute)
+      parsed = parseDlTimeWheelValue(candidate)
+      if (parsed) draftInput.value = candidate
+    }
+  }
+
+  if (!parsed) {
+    if (normalize) draftInput.value = draftValue.value
+    return
+  }
+
+  draftHour.value = parsed.hour
+  draftMinute.value = props.granularity === 'hour' ? 0 : parsed.minute
+  if (props.granularity === 'hour') draftInput.value = formatDlTimeWheelValue(parsed.hour, 0)
+  syncWheels()
+}
+
+function handleDraftInput(event: Event) {
+  applyDraftInput((event.currentTarget as HTMLInputElement).value)
+}
+
+function handleDraftInputKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    applyDraftInput(draftInput.value, true)
+    nextTick(commitValue)
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    closeWheel()
+  }
+}
+
+function selectDraftInput(event: FocusEvent) {
+  ;(event.currentTarget as HTMLInputElement).select()
 }
 
 function selectClicked(kind: WheelKind, value: number) {
@@ -315,7 +418,10 @@ function commitValue() {
 
 function focusPanel(event: Event) {
   event.preventDefault()
-  nextTick(() => hourWheel.value?.focus())
+  nextTick(() => {
+    draftInputElement.value?.focus()
+    draftInputElement.value?.select()
+  })
 }
 
 watch(resolvedOpen, open => {
@@ -329,9 +435,13 @@ watch(() => props.minuteStep, () => {
   if (resolvedOpen.value) syncWheels()
 })
 
+watch(draftValue, value => { draftInput.value = value }, { immediate: true })
+
 onBeforeUnmount(() => {
   if (hourSnapTimer) clearTimeout(hourSnapTimer)
   if (minuteSnapTimer) clearTimeout(minuteSnapTimer)
+  if (hourWheelGestureTimer) clearTimeout(hourWheelGestureTimer)
+  if (minuteWheelGestureTimer) clearTimeout(minuteWheelGestureTimer)
 })
 </script>
 
@@ -349,19 +459,37 @@ onBeforeUnmount(() => {
         @open-auto-focus="focusPanel"
       >
         <header class="dl-time-wheel__header">
-          <div><small>TIME WHEEL</small><DialogTitle>{{ placeholder }}</DialogTitle><DialogDescription>滚动或拖动小时与分钟，停下后自动对齐。</DialogDescription></div>
+          <div><small>TIME WHEEL</small><DialogTitle>{{ placeholder }}</DialogTitle><DialogDescription>直接输入时间，或滚动、拖动小时与分钟；鼠标滚轮每次移动一格。</DialogDescription></div>
           <button type="button" class="dl-time-wheel__close" aria-label="关闭时间选择器" @click="closeWheel">×</button>
         </header>
 
         <div class="dl-time-wheel__summary" :data-disabled="draftDisabled || undefined">
-          <span>当前选择</span>
-          <strong class="dl-time-wheel__summary-value" :aria-label="draftValue"><b>{{ String(draftHour).padStart(2, '0') }}</b><i aria-hidden="true">:</i><b>{{ String(draftMinute).padStart(2, '0') }}</b></strong>
-          <small v-if="draftDisabled">该时间不可用</small>
+          <label :for="`${wheelId}-input`">输入时间</label>
+          <input
+            ref="draftInputElement"
+            :id="`${wheelId}-input`"
+            class="dl-time-wheel__summary-input"
+            :value="draftInput"
+            inputmode="numeric"
+            maxlength="5"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="HH:mm"
+            aria-label="输入时间，格式为小时冒号分钟"
+            :aria-invalid="draftDisabled || undefined"
+            :disabled="disabled"
+            @input="handleDraftInput"
+            @blur="applyDraftInput(draftInput, true)"
+            @focus="selectDraftInput"
+            @keydown="handleDraftInputKeydown"
+          >
+          <small v-if="!draftInputValid">请输入 00:00–23:59</small>
+          <small v-else-if="draftDisabled">该时间不可用</small>
         </div>
 
         <div class="dl-time-wheel__columns" :data-granularity="granularity">
           <section><h3>小时</h3><span class="dl-time-wheel__band" aria-hidden="true" />
-            <div ref="hourWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="小时" :aria-activedescendant="`${wheelId}-hour-${draftHour}`" aria-keyshortcuts="ArrowUp ArrowDown PageUp PageDown Home End Enter Escape" tabindex="0" @keydown="handleWheelKeydown('hour', $event)" @scroll.passive="handleScroll('hour')" @pointerdown.capture="beginDrag('hour', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
+            <div ref="hourWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="小时" :aria-activedescendant="`${wheelId}-hour-${draftHour}`" aria-keyshortcuts="ArrowUp ArrowDown PageUp PageDown Home End Enter Escape" tabindex="0" @keydown="handleWheelKeydown('hour', $event)" @wheel.prevent="handleMouseWheel('hour', $event)" @scroll.passive="handleScroll('hour')" @pointerdown.capture="beginDrag('hour', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
               <button v-for="item in virtualHours" :id="item.cycle === 2 ? `${wheelId}-hour-${item.value}` : undefined" :key="item.key" type="button" :role="item.cycle === 2 ? 'option' : 'presentation'" :aria-hidden="item.cycle === 2 ? undefined : true" :aria-selected="item.cycle === 2 ? item.value === draftHour : undefined" :data-cycle="item.cycle" :data-wheel-value="item.value" tabindex="-1" :class="{ 'is-selected': item.value === draftHour }" :disabled="hourDisabled(item.value)" @click="selectClicked('hour', item.value)">{{ item.value }}</button>
             </div>
             <span class="dl-time-wheel__stepper" data-slot="time-wheel-hour-stepper">
@@ -371,7 +499,7 @@ onBeforeUnmount(() => {
           </section>
           <i v-if="granularity === 'minute'" aria-hidden="true">:</i>
           <section v-if="granularity === 'minute'"><h3>分钟</h3><span class="dl-time-wheel__band" aria-hidden="true" />
-            <div ref="minuteWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="分钟" :aria-activedescendant="`${wheelId}-minute-${draftMinute}`" aria-keyshortcuts="ArrowUp ArrowDown PageUp PageDown Home End Enter Escape" tabindex="0" @keydown="handleWheelKeydown('minute', $event)" @scroll.passive="handleScroll('minute')" @pointerdown.capture="beginDrag('minute', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
+            <div ref="minuteWheel" class="dl-time-wheel__viewport" role="listbox" aria-label="分钟" :aria-activedescendant="`${wheelId}-minute-${draftMinute}`" aria-keyshortcuts="ArrowUp ArrowDown PageUp PageDown Home End Enter Escape" tabindex="0" @keydown="handleWheelKeydown('minute', $event)" @wheel.prevent="handleMouseWheel('minute', $event)" @scroll.passive="handleScroll('minute')" @pointerdown.capture="beginDrag('minute', $event)" @pointermove="moveDrag" @pointerup="endDrag" @pointercancel="endDrag">
               <button v-for="item in virtualMinutes" :id="item.cycle === 2 ? `${wheelId}-minute-${item.value}` : undefined" :key="item.key" type="button" :role="item.cycle === 2 ? 'option' : 'presentation'" :aria-hidden="item.cycle === 2 ? undefined : true" :aria-selected="item.cycle === 2 ? item.value === draftMinute : undefined" :data-cycle="item.cycle" :data-wheel-value="item.value" tabindex="-1" :class="{ 'is-selected': item.value === draftMinute }" :disabled="isDisabled(draftHour, item.value)" @click="selectClicked('minute', item.value)">{{ String(item.value).padStart(2, '0') }}</button>
             </div>
             <span class="dl-time-wheel__stepper" data-slot="time-wheel-minute-stepper">
@@ -406,10 +534,10 @@ onBeforeUnmount(() => {
 .dl-time-wheel__close { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 1px solid var(--dl-border); border-radius: 50%; background: var(--dl-surface); color: var(--dl-text-faint); font-size: 1.15rem; cursor: pointer; }
 .dl-time-wheel__close:hover { border-color: var(--dl-border-strong); background: var(--dl-surface-hover); color: var(--dl-text); }
 .dl-time-wheel__summary { position: relative; display: grid; min-height: 76px; gap: 3px; padding: 10px 0 8px; border: 1px solid var(--dl-accent-border); border-radius: 16px; background: var(--dl-accent-surface); }
-.dl-time-wheel__summary > span { padding-inline: 16px; color: var(--dl-text-faint); font-size: .66rem; }
-.dl-time-wheel__summary-value { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr); align-items: center; gap: 12px; color: var(--dl-accent-text); font: 800 1.65rem/1 monospace; }
-.dl-time-wheel__summary-value b { font: inherit; text-align: center; }
-.dl-time-wheel__summary-value i { display: grid; place-items: center; font: inherit; font-style: normal; }
+.dl-time-wheel__summary > label { padding-inline: 16px; color: var(--dl-text-faint); font-size: .66rem; }
+.dl-time-wheel__summary-input { width: calc(100% - 24px); min-height: 40px; margin-inline: 12px; border: 0; border-radius: 10px; background: transparent; color: var(--dl-accent-text); font: 800 1.65rem/1 monospace; letter-spacing: .08em; text-align: center; outline: none; }
+.dl-time-wheel__summary-input::placeholder { color: var(--dl-text-faint); opacity: .55; }
+.dl-time-wheel__summary-input:focus-visible { background: color-mix(in srgb, var(--dl-surface) 46%, transparent); box-shadow: inset var(--dl-focus); }
 .dl-time-wheel__summary small { position: absolute; top: 11px; right: 16px; color: #d84d57; font-size: .65rem; }
 .dl-time-wheel__summary[data-disabled] { border-color: color-mix(in srgb, #d84d57 48%, var(--dl-border)); }
 .dl-time-wheel__columns { display: grid; min-height: 0; grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr); align-items: center; gap: 12px; }

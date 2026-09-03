@@ -282,5 +282,5 @@ npm run build:showcase
 当前版本下载地址为：
 
 ```text
-http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.68.tgz
+http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.75.tgz
 ```

@@ -47,7 +47,7 @@ MarkdownX 文档使用 `/mdx/{page}` 深链和固定侧栏分页展示概览、�
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.74.tgz"
+    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.75.tgz"
   }
 }
 ```
