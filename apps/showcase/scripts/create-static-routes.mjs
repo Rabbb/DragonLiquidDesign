@@ -6,6 +6,15 @@ const dist = resolve(root, 'dist')
 const index = resolve(dist, 'index.html')
 const routes = [
   'mdx',
+  'mdx/overview',
+  'mdx/project',
+  'mdx/integration',
+  'mdx/api',
+  'mdx/editing',
+  'mdx/language',
+  'mdx/core',
+  'mdx/extensions',
+  'mdx/security',
   'themes',
   'keyboard',
   'patterns',

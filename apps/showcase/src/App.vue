@@ -26,6 +26,7 @@ type ShowcaseRoute = {
   page: 'home' | 'components' | 'instance-api' | 'keyboard' | 'mdx' | 'patterns' | 'themes'
   componentId?: string
   scenarioId?: string
+  mdxPageId?: string
   patternPageId?: string
   guideComponentId?: string
 }
@@ -45,7 +46,7 @@ const currentSearch = ref(window.location.search)
 const route = computed<ShowcaseRoute>(() => {
   const parts = currentPath.value.replace(/^\//, '').split('/').filter(Boolean)
   if (parts[0] === 'keyboard') return { page: 'keyboard' }
-  if (parts[0] === 'mdx') return { page: 'mdx' }
+  if (parts[0] === 'mdx') return { page: 'mdx', mdxPageId: parts[1] ?? 'overview' }
   if (parts[0] === 'themes') return { page: 'themes' }
   if (parts[0] === 'instance-api') return { page: 'instance-api' }
   if (parts[0] === 'patterns') return {
@@ -121,7 +122,8 @@ onBeforeUnmount(() => {
       </a>
       <nav aria-label="主导航">
         <a href="/" :class="{ active: route.page === 'home' }">首页</a>
-        <a href="/components/button/basic" :class="{ active: route.page === 'components' }">组件</a>
+        <a href="/components/button/basic" :class="{ active: route.page === 'components' && route.componentId !== 'path-picker' }">组件</a>
+        <a href="/components/path-picker/class-student" :class="{ active: route.page === 'components' && route.componentId === 'path-picker' }">路径选择器</a>
         <a href="/mdx" :class="{ active: route.page === 'mdx' }">MDX</a>
         <a href="/keyboard" :class="{ active: route.page === 'keyboard' }">键盘指南</a>
         <a href="/themes" :class="{ active: route.page === 'themes' }">主题</a>
@@ -165,7 +167,7 @@ onBeforeUnmount(() => {
       :guide-component-id="route.guideComponentId"
     />
     <KeyboardGuidePage v-else-if="route.page === 'keyboard'" />
-    <MdxLanguagePage v-else-if="route.page === 'mdx'" />
+    <MdxLanguagePage v-else-if="route.page === 'mdx'" :page-id="route.mdxPageId" />
     <ThemePage v-else-if="route.page === 'themes'" />
     <InstanceArchitecturePage v-else-if="route.page === 'instance-api'" />
 
