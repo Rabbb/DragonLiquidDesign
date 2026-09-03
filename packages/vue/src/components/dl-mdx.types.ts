@@ -11,14 +11,19 @@ export interface DlMdxAttachmentUpload {
 
 export interface DlMdxAttachment {
   id?: string
+  fileId?: string
   url: string
   fileName?: string
   contentType?: string
   byteLength?: number
+  referenceCount?: number
+  createdAt?: string
 }
 
 export interface DlMdxAttachmentAdapter {
   upload: (input: DlMdxAttachmentUpload) => Promise<DlMdxAttachment>
+  list?: () => Promise<DlMdxAttachment[]>
+  remove?: (attachment: DlMdxAttachment) => Promise<void>
 }
 
 export interface DlMdxHtmlPasteFailure {
@@ -44,6 +49,7 @@ export type DlMdxToolbarAction =
   | 'task-list'
   | 'code-block'
   | 'component'
+  | 'attachments'
   | 'format'
 
 export interface DlMdxLinkPolicy {
@@ -113,7 +119,7 @@ export type DlMdxInlineToken =
   | { type: 'text'; value: string }
   | { type: 'break' }
   | { type: 'code'; value: string }
-  | { type: 'strong' | 'em' | 'strike' | 'mark' | 'sub' | 'sup' | 'kbd'; children: DlMdxInlineToken[] }
+  | { type: 'strong' | 'em' | 'strike' | 'underline' | 'mark' | 'sub' | 'sup' | 'kbd'; children: DlMdxInlineToken[] }
   | { type: 'link'; href: string; title?: string; children: DlMdxInlineToken[] }
   | { type: 'image'; src: string; alt: string; title?: string }
 

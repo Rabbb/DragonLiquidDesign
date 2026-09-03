@@ -6397,6 +6397,18 @@ export default {
         "description": "设置 htmlPaste 属性。",
         "type": "boolean",
         "defaultValue": "true"
+      },
+      {
+        "prop": "richCopy",
+        "description": "设置 richCopy 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "prop": "previewEditable",
+        "description": "设置 previewEditable 属性。",
+        "type": "boolean",
+        "defaultValue": "true"
       }
     ],
     "relatedTypes": [
@@ -6497,6 +6509,12 @@ export default {
             "description": "插入显式插槽渲染的安全组件块。",
             "type": "'component'",
             "defaultValue": "组件块"
+          },
+          {
+            "prop": "attachments",
+            "description": "DlMdxToolbarAction 的 attachments 选项。",
+            "type": "'attachments'",
+            "defaultValue": "枚举值"
           },
           {
             "prop": "format",
@@ -7079,6 +7097,18 @@ export default {
             "description": "设置 upload 字段。",
             "type": "(input: DlMdxAttachmentUpload) => Promise<DlMdxAttachment>",
             "defaultValue": "必填"
+          },
+          {
+            "prop": "list",
+            "description": "设置 list 字段。",
+            "type": "() => Promise<DlMdxAttachment[]>",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "remove",
+            "description": "设置 remove 字段。",
+            "type": "(attachment: DlMdxAttachment) => Promise<void>",
+            "defaultValue": "可选"
           }
         ],
         "kind": "structure",
@@ -7139,6 +7169,12 @@ export default {
             "defaultValue": "可选"
           },
           {
+            "prop": "fileId",
+            "description": "设置 fileId 字段。",
+            "type": "string",
+            "defaultValue": "可选"
+          },
+          {
             "prop": "url",
             "description": "设置 url 字段。",
             "type": "string",
@@ -7161,10 +7197,22 @@ export default {
             "description": "设置 byteLength 字段。",
             "type": "number",
             "defaultValue": "可选"
+          },
+          {
+            "prop": "referenceCount",
+            "description": "设置 referenceCount 字段。",
+            "type": "number",
+            "defaultValue": "可选"
+          },
+          {
+            "prop": "createdAt",
+            "description": "设置 createdAt 字段。",
+            "type": "string",
+            "defaultValue": "可选"
           }
         ],
         "kind": "structure",
-        "title": "DlMdxAttachment"
+        "title": "DlMdxAttachment[]"
       },
       {
         "name": "DlMdxSecurityPolicy",

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { DlMdxSelection } from './dl-mdx.commands'
+import { DL_MDX_CLIPBOARD_TYPE, writeDlMdxClipboard } from './dl-mdx.clipboard'
 import { convertDlHtmlToMdx } from './dl-mdx.html'
 import { findDlMdxComponentFoldRangeAtLine, findDlMdxComponentFoldRanges } from './dl-mdx.folding'
 import { analyzeDlMdx, completeDlMdx, hoverDlMdx, type DlMdxLanguageOptions } from './dl-mdx.language'
@@ -22,6 +23,7 @@ const props = withDefaults(defineProps<{
   languageOptions?: DlMdxLanguageOptions
   attachmentAdapter?: DlMdxAttachmentAdapter
   htmlPaste?: boolean
+  richCopy?: boolean
 }>(), {
   placeholder: '开始书写 Markdown…',
   readonly: false,
@@ -33,6 +35,7 @@ const props = withDefaults(defineProps<{
   languageOptions: undefined,
   attachmentAdapter: undefined,
   htmlPaste: true,
+  richCopy: true,
   ariaLabel: 'Markdown 编辑器',
 })
 
@@ -42,6 +45,7 @@ const emit = defineEmits<{
   command: [action: 'bold' | 'italic' | 'link' | 'format']
   error: [error: Error]
   'html-paste': [result: DlMdxHtmlPasteResult]
+  'preview-request': []
 }>()
 
 const host = ref<HTMLElement>()
@@ -248,10 +252,22 @@ onMounted(async () => {
         ? [jsonLanguage.json()]
       : [javascriptLanguage.javascript({ typescript: props.documentLanguage === 'typescript' })]
 
-    const htmlPasteExtension = props.documentLanguage === 'mdx'
+    const clipboardExtension = props.documentLanguage === 'mdx'
       ? loadedView.EditorView.domEventHandlers({
         paste(event, editorView) {
-          if (!props.htmlPaste || props.readonly || props.disabled) return false
+          if (props.readonly || props.disabled) return false
+          const nativeMdx = event.clipboardData?.getData(DL_MDX_CLIPBOARD_TYPE)
+          if (nativeMdx) {
+            event.preventDefault()
+            const selection = editorView.state.selection.main
+            editorView.dispatch({
+              changes: { from: selection.from, to: selection.to, insert: nativeMdx },
+              selection: { anchor: selection.from + nativeMdx.length },
+              scrollIntoView: true,
+            })
+            return true
+          }
+          if (!props.htmlPaste) return false
           const html = event.clipboardData?.getData('text/html')
           if (!html?.trim()) return false
           event.preventDefault()
@@ -275,6 +291,23 @@ onMounted(async () => {
             .catch(cause => emit('error', cause instanceof Error ? cause : new Error(String(cause))))
           return true
         },
+        copy(event, editorView) {
+          if (!props.richCopy || !event.clipboardData) return false
+          const selection = editorView.state.selection.main
+          if (selection.empty) return false
+          event.preventDefault()
+          writeDlMdxClipboard(event.clipboardData, editorView.state.sliceDoc(selection.from, selection.to))
+          return true
+        },
+        cut(event, editorView) {
+          if (!props.richCopy || props.readonly || props.disabled || !event.clipboardData) return false
+          const selection = editorView.state.selection.main
+          if (selection.empty) return false
+          event.preventDefault()
+          writeDlMdxClipboard(event.clipboardData, editorView.state.sliceDoc(selection.from, selection.to))
+          editorView.dispatch({ changes: { from: selection.from, to: selection.to }, selection: { anchor: selection.from } })
+          return true
+        },
       })
       : []
 
@@ -292,7 +325,7 @@ onMounted(async () => {
           language.bracketMatching(),
           language.syntaxHighlighting(dragonHighlightStyle, { fallback: true }),
           ...mdxLanguageExtensions,
-          htmlPasteExtension,
+          clipboardExtension,
           loadedView.highlightActiveLine(),
           loadedView.placeholder(props.placeholder),
           loadedView.keymap.of([
@@ -301,6 +334,7 @@ onMounted(async () => {
               { key: 'Mod-i', run: () => { emit('command', 'italic'); return true } },
               { key: 'Mod-k', run: () => { emit('command', 'link'); return true } },
               { key: 'Shift-Alt-f', run: () => { emit('command', 'format'); return true } },
+              { key: 'Escape', run: () => { emit('preview-request'); return true } },
               ...autocomplete.completionKeymap,
             ] : []),
             ...commands.defaultKeymap,

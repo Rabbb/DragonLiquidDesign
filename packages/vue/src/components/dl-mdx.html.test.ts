@@ -38,4 +38,34 @@ describe('convertDlHtmlToMdx', () => {
     const result = await convertDlHtmlToMdx('<script>alert(1)</script><p><a href="javascript:alert(1)">危险</a><img src="javascript:x"></p>')
     expect(result.mdx).toBe('危险')
   })
+
+  it('infers semantic formatting and list levels from Word-style HTML', async () => {
+    const result = await convertDlHtmlToMdx(`
+      <p class="MsoHeading2">接口说明</p>
+      <p><span style="font-weight: 700; background-color: yellow">重要内容</span>和<span style="text-decoration: underline">下划线</span></p>
+      <p class="MsoListParagraph" style="mso-list:l0 level1 lfo1"><span style="mso-list:Ignore">1.&nbsp;</span>第一项</p>
+      <p class="MsoListParagraph" style="mso-list:l0 level2 lfo1"><span style="mso-list:Ignore">a.&nbsp;</span>子项</p>
+    `)
+
+    expect(result.mdx).toContain('## 接口说明')
+    expect(result.mdx).toContain('<mark>**重要内容**</mark>和<u>下划线</u>')
+    expect(result.mdx).toContain('1. 第一项\n  1. 子项')
+  })
+
+  it('flattens merged table cells and keeps column alignment', async () => {
+    const result = await convertDlHtmlToMdx(`
+      <table>
+        <tr><th rowspan="2" style="text-align:center">班级</th><th colspan="2">学生</th></tr>
+        <tr><th>姓名</th><th style="text-align:right">分数</th></tr>
+        <tr><td>一班</td><td>张三</td><td>98</td></tr>
+      </table>
+    `)
+
+    expect(result.mdx).toBe([
+      '| 班级 | 学生 |  |',
+      '| :---: | --- | ---: |',
+      '| 班级 | 姓名 | 分数 |',
+      '| 一班 | 张三 | 98 |',
+    ].join('\n'))
+  })
 })

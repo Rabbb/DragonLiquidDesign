@@ -162,6 +162,12 @@ const document = parseDlMdx('# Archive\n\n- [x] indexed')
 
 语言服务提供组件、属性、事件、动作和枚举补全，悬浮类型说明、可修复诊断，以及由 `formatOptions` 控制的确定性格式化。按 `Ctrl+Space` 主动补全，按 `Shift+Alt+F` 格式化 MDX 主文档。
 
+编辑态粘贴富文本时优先读取 `text/html`：标题、段落、显式换行、粗斜体、删除线、下划线、背景标记、上下标、链接、嵌套/任务列表、引用、代码块和表格都会转换为可维护的 MarkdownX。Word/WPS 的 `MsoHeading`、`mso-list` 与常见内联样式会先归一为语义结构；`rowspan` / `colspan` 会展开为规则表格，并保留列对齐。脚本、iframe、对象节点、危险 URL 和网页布局样式始终丢弃。
+
+普通复制会同时写入精确 MarkdownX、`text/markdown`、纯文本和语义 HTML：粘贴回 `DlMdx` 时使用私有 MIME 保持组件源码无损，粘贴到邮件、Word 等富编辑器时使用 HTML。渲染态双击正文即可进入源码编辑，按 `Escape` 返回渲染，保留“预览优先、需要时看源码”的文档体验。
+
+`attachmentAdapter` 除 `upload()` 外可选实现 `list()` 与 `remove()`。实现后工具栏自动出现“文档图片”，集中提供上传并插入、重新插入、替换、下载和二次确认移除；宿主仍负责鉴权、持久化和引用计数。
+
 ## MarkdownX 项目引擎
 
 `DlMdx` 继续负责单文档编辑；`createDlMdxEngine()` 在它下面增加项目级虚拟文件系统、清单、原子事务、自动页面路由、跨文件诊断和存储协议。这样用户可以从一份文档平滑扩展为包含 `/pages`、脚本、样式、数据与资源的线上项目，而不必更换文档语言。

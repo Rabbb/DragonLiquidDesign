@@ -442,4 +442,58 @@ describe('DlMdx', () => {
     expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toBe('+++component:Notice\ntone = "accent"\n+++end\n')
     wrapper.unmount()
   })
+
+  it('opens source editing by double-clicking rendered content', async () => {
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: { modelValue: '双击编辑正文', mode: 'preview', showModeSwitch: false, debounce: 0 },
+    })
+
+    await wrapper.get('.dl-mdx__document').trigger('dblclick')
+    await flushPromises()
+    expect(wrapper.emitted('update:mode')?.at(-1)).toEqual(['edit'])
+    expect(wrapper.find('.cm-editor').exists()).toBe(true)
+
+    wrapper.unmount()
+  })
+
+  it('manages document images through an optional attachment adapter', async () => {
+    const attachment = {
+      fileId: 'file-1',
+      url: 'https://todo.moe/image/file-1',
+      fileName: 'screen.png',
+      contentType: 'image/png',
+      byteLength: 2048,
+      referenceCount: 1,
+    }
+    const list = vi.fn(async () => [attachment])
+    const remove = vi.fn(async () => undefined)
+    const wrapper = mount(DlMdx, {
+      attachTo: document.body,
+      props: {
+        modelValue: `![界面](${attachment.url})`,
+        mode: 'edit',
+        debounce: 0,
+        attachmentAdapter: { upload: vi.fn(), list, remove },
+      },
+    })
+    await flushPromises()
+
+    await wrapper.get('button[aria-label="文档图片"]').trigger('click')
+    await flushPromises()
+    expect(list).toHaveBeenCalled()
+    expect(document.body.textContent).toContain('screen.png')
+    expect(document.body.textContent).toContain('2.0 KiB')
+
+    const removeButton = [...document.body.querySelectorAll<HTMLButtonElement>('button')].find(button => button.textContent === '移除')
+    removeButton?.click()
+    await nextTick()
+    const confirmButton = [...document.body.querySelectorAll<HTMLButtonElement>('button')].find(button => button.textContent === '确认移除')
+    confirmButton?.click()
+    await flushPromises()
+
+    expect(remove).toHaveBeenCalledWith(attachment)
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['界面'])
+    wrapper.unmount()
+  })
 })

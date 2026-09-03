@@ -154,6 +154,7 @@ export type {
 } from './components/dl-mdx.types'
 export { convertDlHtmlToMdx } from './components/dl-mdx.html'
 export type { DlMdxHtmlConversionOptions } from './components/dl-mdx.html'
+export { convertDlMdxToHtml, writeDlMdxClipboard, DL_MDX_CLIPBOARD_TYPE } from './components/dl-mdx.clipboard'
 export { parseDlMdx, parseDlMdxInline, safeDlMdxUrl } from './components/dl-mdx.parser'
 export { default as DlMdxTemplate } from './components/DlMdxTemplate'
 export { analyzeDlMdxTemplate, evaluateDlMdxTemplateExpression, parseDlMdxTemplate, parseDlMdxTemplateExpression } from './components/dl-mdx.template'

@@ -12,7 +12,7 @@ import { inspectDlMdxUrlWithRust, parseDlMdxWithRust, type DlMdxUrlInspection } 
 type SourceLine = { text: string; number: number }
 
 const htmlBlockStart = /^\s*<(?:h[1-6]|p|div|blockquote|ul|ol|pre|hr)(?:\s|>|\/)/i
-const inlineHtmlTag = /<\/?(?:strong|b|em|i|del|s|strike|code|br|a|img|mark|sub|sup|kbd|span)(?:\s|>|\/)/i
+const inlineHtmlTag = /<\/?(?:strong|b|em|i|del|s|strike|u|code|br|a|img|mark|sub|sup|kbd|span)(?:\s|>|\/)/i
 const blockStart = /^(?:\s*$|#{1,6}\s+|```|~~~|>\s?|\s*(?:[-+*]|\d+[.)])\s+|\s*(?:-{3,}|\*{3,}|_{3,})\s*$|\+\+\+component:|\s*<(?:h[1-6]|p|div|blockquote|ul|ol|pre|hr)(?:\s|>|\/))/i
 const listLine = /^(\s*)([-+*]|\d+[.)])\s+(?:\[([ xX])\]\s+)?(.*)$/
 const dividerLine = /^\s*(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$/
@@ -70,6 +70,7 @@ function htmlNodeToInline(node: Node): DlMdxInlineToken[] {
   if (tag === 'strong' || tag === 'b') return [{ type: 'strong', children: children() }]
   if (tag === 'em' || tag === 'i') return [{ type: 'em', children: children() }]
   if (tag === 'del' || tag === 's' || tag === 'strike') return [{ type: 'strike', children: children() }]
+  if (tag === 'u') return [{ type: 'underline', children: children() }]
   if (tag === 'mark' || tag === 'sub' || tag === 'sup' || tag === 'kbd') return [{ type: tag, children: children() }]
   if (tag === 'code') return [{ type: 'code', value: element.textContent ?? '' }]
   if (tag === 'br') return [{ type: 'break' }]

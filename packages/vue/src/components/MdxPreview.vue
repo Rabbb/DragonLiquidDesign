@@ -16,12 +16,14 @@ defineProps<{
   registry?: DlMdxRegistry
   actions?: DlMdxActionMap
   securityPolicy?: DlMdxSecurityPolicy
+  editable?: boolean
 }>()
 
 const emit = defineEmits<{
   'toggle-task': [line: number]
   error: [error: Error]
   action: [invocation: DlMdxActionInvocation]
+  'edit-request': []
 }>()
 
 const copiedCodeId = ref<string>()
@@ -53,10 +55,15 @@ function blockKey(block: DlMdxBlockValue, index: number): string {
   if (block.type === 'heading' || block.type === 'code') return `${block.type}:${block.id}`
   return `${block.type}:${index}`
 }
+
+function requestEdit(event: MouseEvent) {
+  if (!event.currentTarget || (event.target as Element | null)?.closest('a, button, input, textarea, select, [contenteditable="true"]')) return
+  emit('edit-request')
+}
 </script>
 
 <template>
-  <article class="dl-mdx__document" :aria-label="ariaLabel">
+  <article class="dl-mdx__document" :class="{ 'is-editable': editable }" :aria-label="ariaLabel" :title="editable ? '双击进入源码编辑，Esc 返回渲染' : undefined" @dblclick="editable && requestEdit($event)">
     <div v-if="!document.blocks.length" class="dl-mdx__empty">
       <component v-if="componentSlots.empty" :is="componentSlots.empty" />
       <template v-else>{{ emptyText }}</template>

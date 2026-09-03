@@ -27,6 +27,7 @@ import { useDlMdxSecurityPolicy } from './dl-mdx.security'
 import { parseCachedDlMdx } from './dl-mdx.preview-cache'
 import type {
   DlMdxDocument,
+  DlMdxAttachment,
   DlMdxAttachmentAdapter,
   DlMdxHtmlPasteResult,
   DlMdxLinkPolicy,
@@ -98,6 +99,8 @@ const props = withDefaults(defineProps<{
   templateContext?: DlMdxTemplateContext
   attachmentAdapter?: DlMdxAttachmentAdapter
   htmlPaste?: boolean
+  richCopy?: boolean
+  previewEditable?: boolean
 }>(), {
   modelValue: '',
   mode: 'split',
@@ -137,6 +140,8 @@ const props = withDefaults(defineProps<{
   templateContext: () => ({}),
   attachmentAdapter: undefined,
   htmlPaste: true,
+  richCopy: true,
+  previewEditable: true,
 })
 
 const emit = defineEmits<{
@@ -150,9 +155,10 @@ const emit = defineEmits<{
   diagnostics: [analysis: DlMdxLanguageAnalysis]
   splitLayout: [layout: number[]]
   'html-paste': [result: DlMdxHtmlPasteResult]
+  'attachment-change': [action: 'insert' | 'replace' | 'remove', attachment: DlMdxAttachment]
 }>()
 
-const defaultToolbar: DlMdxToolbarAction[] = ['bold', 'italic', 'strike', 'inline-code', 'link', 'heading', 'blockquote', 'unordered-list', 'task-list', 'code-block', 'component', 'format']
+const defaultToolbar: DlMdxToolbarAction[] = ['bold', 'italic', 'strike', 'inline-code', 'link', 'heading', 'blockquote', 'unordered-list', 'task-list', 'code-block', 'attachments', 'component', 'format']
 const toolbarLabels: Record<DlMdxToolbarAction, { symbol: string; label: string; shortcut?: string }> = {
   bold: { symbol: 'B', label: '粗体', shortcut: 'Ctrl+B' },
   italic: { symbol: 'I', label: '斜体', shortcut: 'Ctrl+I' },
@@ -164,6 +170,7 @@ const toolbarLabels: Record<DlMdxToolbarAction, { symbol: string; label: string;
   'unordered-list': { symbol: '•', label: '无序列表' },
   'task-list': { symbol: '☑', label: '任务列表' },
   'code-block': { symbol: '{}', label: '代码块' },
+  attachments: { symbol: '▧', label: '文档图片' },
   component: { symbol: '◇', label: '安全组件块' },
   format: { symbol: '↹', label: '格式化主文档', shortcut: 'Shift+Alt+F' },
 }
@@ -176,6 +183,13 @@ const localMode = ref<DlMdxMode>(props.mode)
 const editorRef = ref<InstanceType<typeof MdxEditor>>()
 const lastEditorSelection = ref<DlMdxSelection>({ start: localSource.value.length, end: localSource.value.length })
 const componentLibraryOpen = ref(false)
+const attachmentManagerOpen = ref(false)
+const attachmentManagerLoading = ref(false)
+const attachmentManagerError = ref('')
+const managedAttachments = ref<DlMdxAttachment[]>([])
+const attachmentFileInput = ref<HTMLInputElement>()
+const replacingAttachment = ref<DlMdxAttachment>()
+const pendingAttachmentRemoval = ref('')
 const runtimePanelOpen = ref(false)
 const runtimeValueDetailOpen = ref(false)
 const runtimeValueDetailRow = ref<RuntimeTableRow>()
@@ -288,7 +302,8 @@ const componentLibraryEntries = computed<ComponentLibraryEntry[]>(() => (activeR
   })
   .sort((left, right) => left.definition.name.localeCompare(right.definition.name, 'en')))
 const toolbarActions = computed(() => (props.toolbar ?? defaultToolbar)
-  .filter(action => action !== 'component' || componentLibraryEntries.value.length > 0))
+  .filter(action => action !== 'component' || componentLibraryEntries.value.length > 0)
+  .filter(action => action !== 'attachments' || Boolean(props.attachmentAdapter?.list)))
 const componentCategoryLabels: Record<ComponentLibraryCategory, string> = {
   all: '全部',
   foundation: '基础',
@@ -478,10 +493,126 @@ function execute(action: DlMdxToolbarAction) {
     componentLibraryOpen.value = true
     return
   }
+  if (action === 'attachments') {
+    attachmentManagerOpen.value = true
+    void loadManagedAttachments()
+    return
+  }
   const selection = editorRef.value?.getSelection() ?? { start: localSource.value.length, end: localSource.value.length }
   const result = applyDlMdxCommand(action, { source: localSource.value, selection })
   if (editorRef.value) editorRef.value.replaceDocument(result.source, result.selection)
   else updateSource(result.source)
+}
+
+function attachmentIdentity(attachment: DlMdxAttachment) {
+  return attachment.fileId ?? attachment.id ?? attachment.url
+}
+
+function attachmentName(attachment: DlMdxAttachment) {
+  return attachment.fileName || attachment.url.split('/').at(-1) || '图片'
+}
+
+function attachmentSize(value?: number) {
+  if (!value || value < 1) return '未知大小'
+  if (value < 1024) return `${value} B`
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KiB`
+  return `${(value / 1024 / 1024).toFixed(1)} MiB`
+}
+
+function attachmentPreviewUrl(attachment: DlMdxAttachment) {
+  return /^(?:https?:|\/|\.\/|\.\.\/|data:image\/(?:png|jpeg|gif|webp|avif);base64,|blob:)/i.test(attachment.url) ? attachment.url : undefined
+}
+
+async function loadManagedAttachments() {
+  if (!props.attachmentAdapter?.list) return
+  attachmentManagerLoading.value = true
+  attachmentManagerError.value = ''
+  try {
+    managedAttachments.value = await props.attachmentAdapter.list()
+  } catch (cause) {
+    attachmentManagerError.value = cause instanceof Error ? cause.message : String(cause)
+    emit('error', cause instanceof Error ? cause : new Error(String(cause)))
+  } finally {
+    attachmentManagerLoading.value = false
+  }
+}
+
+async function insertManagedAttachment(attachment: DlMdxAttachment) {
+  if (!canEdit.value) return
+  if (localMode.value === 'preview') {
+    setMode('edit')
+    await nextTick()
+  }
+  const label = attachmentName(attachment).replace(/\.[A-Za-z0-9]{2,5}$/, '').replace(/[\\\]]/g, '\\$&')
+  const selection = editorRef.value?.getSelection() ?? lastEditorSelection.value
+  const result = insertDlMdxSnippet({ source: localSource.value, selection }, `![${label}](${attachment.url})`)
+  if (editorRef.value) editorRef.value.replaceDocument(result.source, result.selection)
+  else updateSource(result.source)
+  emit('attachment-change', 'insert', attachment)
+}
+
+function chooseAttachmentFile(replace?: DlMdxAttachment) {
+  replacingAttachment.value = replace
+  attachmentFileInput.value?.click()
+}
+
+async function handleAttachmentFile(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file || !props.attachmentAdapter) return
+  attachmentManagerLoading.value = true
+  attachmentManagerError.value = ''
+  const replaced = replacingAttachment.value
+  replacingAttachment.value = undefined
+  try {
+    const uploaded = await props.attachmentAdapter.upload({
+      sourceUrl: '',
+      fileName: file.name,
+      contentType: file.type,
+      alt: file.name.replace(/\.[A-Za-z0-9]{2,5}$/, ''),
+      blob: file,
+    })
+    if (replaced) {
+      const updated = localSource.value.split(replaced.url).join(uploaded.url)
+      updateSource(updated)
+      if (attachmentIdentity(replaced) !== attachmentIdentity(uploaded)) await props.attachmentAdapter.remove?.(replaced)
+      emit('attachment-change', 'replace', uploaded)
+    } else await insertManagedAttachment(uploaded)
+    await loadManagedAttachments()
+  } catch (cause) {
+    attachmentManagerError.value = cause instanceof Error ? cause.message : String(cause)
+    emit('error', cause instanceof Error ? cause : new Error(String(cause)))
+  } finally {
+    attachmentManagerLoading.value = false
+  }
+}
+
+function withoutAttachment(source: string, attachment: DlMdxAttachment) {
+  const escaped = attachment.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return source.replace(new RegExp(`!\\[([^\\]]*)\\]\\(${escaped}(?:\\s+["'][^"']*["'])?\\)`, 'g'), '$1')
+}
+
+async function removeManagedAttachment(attachment: DlMdxAttachment) {
+  const identity = attachmentIdentity(attachment)
+  if (pendingAttachmentRemoval.value !== identity) {
+    pendingAttachmentRemoval.value = identity
+    return
+  }
+  pendingAttachmentRemoval.value = ''
+  attachmentManagerLoading.value = true
+  attachmentManagerError.value = ''
+  try {
+    updateSource(withoutAttachment(localSource.value, attachment))
+    await props.attachmentAdapter?.remove?.(attachment)
+    emit('attachment-change', 'remove', attachment)
+    await loadManagedAttachments()
+  } catch (cause) {
+    attachmentManagerError.value = cause instanceof Error ? cause.message : String(cause)
+    emit('error', cause instanceof Error ? cause : new Error(String(cause)))
+  } finally {
+    attachmentManagerLoading.value = false
+  }
 }
 
 function rememberEditorSelection() {
@@ -692,6 +823,39 @@ function toggleTask(line: number) {
       </div>
     </DlDialog>
 
+    <DlDialog
+      v-model:open="attachmentManagerOpen"
+      title="文档图片"
+      description="浏览、重新插入、替换或移除当前 MDX 文档绑定的图片。"
+      size="lg"
+      :draggable="false"
+      @update:open="value => value && loadManagedAttachments()"
+    >
+      <section class="dl-mdx__attachment-manager" :aria-busy="attachmentManagerLoading">
+        <header>
+          <span><b>{{ managedAttachments.length }}</b> 张图片</span>
+          <button type="button" :disabled="attachmentManagerLoading || !canEdit" @click="chooseAttachmentFile()">上传并插入</button>
+          <input ref="attachmentFileInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" @change="handleAttachmentFile">
+        </header>
+        <p v-if="attachmentManagerError" class="dl-mdx__attachment-error">{{ attachmentManagerError }}</p>
+        <div v-if="managedAttachments.length" class="dl-mdx__attachment-grid">
+          <article v-for="attachment in managedAttachments" :key="attachmentIdentity(attachment)">
+            <img v-if="attachmentPreviewUrl(attachment)" :src="attachmentPreviewUrl(attachment)" :alt="attachmentName(attachment)" loading="lazy">
+            <div v-else class="dl-mdx__attachment-placeholder">IMG</div>
+            <span><b :title="attachmentName(attachment)">{{ attachmentName(attachment) }}</b><small>{{ attachmentSize(attachment.byteLength) }} · {{ attachment.referenceCount ?? 1 }} 个引用</small></span>
+            <footer>
+              <button type="button" @click="insertManagedAttachment(attachment)">插入</button>
+              <button type="button" @click="chooseAttachmentFile(attachment)">替换</button>
+              <a v-if="attachmentPreviewUrl(attachment)" :href="attachmentPreviewUrl(attachment)" :download="attachmentName(attachment)" target="_blank" rel="noopener noreferrer">下载</a>
+              <button type="button" class="danger" @click="removeManagedAttachment(attachment)">{{ pendingAttachmentRemoval === attachmentIdentity(attachment) ? '确认移除' : '移除' }}</button>
+            </footer>
+          </article>
+        </div>
+        <p v-else-if="!attachmentManagerLoading" class="dl-mdx__attachment-empty">当前文档还没有托管图片，可粘贴图片或从这里上传。</p>
+        <p v-if="attachmentManagerLoading" class="dl-mdx__attachment-loading">正在同步文档图片…</p>
+      </section>
+    </DlDialog>
+
     <Teleport to="body">
       <section
         v-if="componentLibraryOpen"
@@ -786,11 +950,13 @@ function toggleTask(line: number) {
               :language-options="effectiveLanguageOptions"
               :attachment-adapter="attachmentAdapter"
               :html-paste="htmlPaste"
+              :rich-copy="richCopy"
               @update:model-value="updateSource"
               @selection-change="updateEditorSelection"
               @command="execute"
               @error="emit('error', $event)"
               @html-paste="emit('html-paste', $event)"
+              @preview-request="setMode('preview')"
             />
             <MdxEditor
               v-else-if="activeDocument === 'script'"
@@ -833,9 +999,11 @@ function toggleTask(line: number) {
               :registry="activeRegistry"
               :actions="props.actions"
               :security-policy="injectedSecurityPolicy"
+              :editable="previewEditable && canEdit"
               @toggle-task="toggleTask"
               @error="emit('error', $event)"
               @action="emit('action', $event)"
+              @edit-request="setMode('edit')"
             />
           </section>
         </template>
@@ -857,11 +1025,13 @@ function toggleTask(line: number) {
           :language-options="effectiveLanguageOptions"
           :attachment-adapter="attachmentAdapter"
           :html-paste="htmlPaste"
+          :rich-copy="richCopy"
           @update:model-value="updateSource"
           @selection-change="updateEditorSelection"
           @command="execute"
           @error="emit('error', $event)"
           @html-paste="emit('html-paste', $event)"
+          @preview-request="setMode('preview')"
         />
         <MdxEditor
           v-else-if="activeDocument === 'script'"
@@ -902,9 +1072,11 @@ function toggleTask(line: number) {
           :registry="activeRegistry"
           :actions="props.actions"
           :security-policy="injectedSecurityPolicy"
+          :editable="previewEditable && canEdit"
           @toggle-task="toggleTask"
           @error="emit('error', $event)"
           @action="emit('action', $event)"
+          @edit-request="setMode('edit')"
         />
       </section>
     </div>

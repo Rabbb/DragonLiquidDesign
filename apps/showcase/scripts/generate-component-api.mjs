@@ -902,7 +902,7 @@ if (JSON.stringify(mdxRelatedTypes) !== JSON.stringify([
   'DlMdxMode', 'DlMdxToolbarAction[]', 'DlMdxLinkPolicy', 'DlMdxRegistry',
   'DlMdxComponentDefinition[]', 'DlMdxEventSchema', 'DlMdxTypeSchema', 'DlMdxSchemaType[]',
   'DlMdxComponentCategory', 'DlMdxComponentMaturity', 'DlMdxLanguageOptions', 'DlMdxDiagnosticSeverity', 'DlMdxFormatOptions', 'DlMdxRuntimeSymbol[]',
-  'DlMdxAttachmentAdapter', 'DlMdxAttachmentUpload', 'DlMdxAttachment',
+  'DlMdxAttachmentAdapter', 'DlMdxAttachmentUpload', 'DlMdxAttachment[]',
   'DlMdxSecurityPolicy', 'DlMdxSecurityOptions', 'DlMdxDomainAllowlist', 'DlMdxSecurityStatus', 'DlMdxUrlKind', 'DlMdxRustCoreStatus',
 ])) {
   throw new Error(`Mdx 相关类型 API 顺序不正确：${mdxRelatedTypes?.join(', ')}`)
