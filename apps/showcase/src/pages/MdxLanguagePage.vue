@@ -22,7 +22,22 @@ import {
 } from '@dragon-liquid/vue'
 import MdxProjectWorkbench from '../components/MdxProjectWorkbench.vue'
 
-type MdxDocumentationPageId = 'overview' | 'project' | 'integration' | 'api' | 'editing' | 'language' | 'core' | 'extensions' | 'security'
+type MdxDocumentationPageId =
+  | 'overview'
+  | 'project-engine'
+  | 'site-layout'
+  | 'host-integration'
+  | 'attachments'
+  | 'component-api'
+  | 'component-registry'
+  | 'document-model'
+  | 'formatter'
+  | 'syntax'
+  | 'language-service'
+  | 'events'
+  | 'rust-core'
+  | 'userscripts'
+  | 'security'
 
 interface MdxDocumentationPage {
   id: MdxDocumentationPageId
@@ -32,40 +47,74 @@ interface MdxDocumentationPage {
   description: string
 }
 
+interface MdxDocumentationGroup {
+  id: string
+  label: string
+  description: string
+  pages: MdxDocumentationPage[]
+}
+
 const props = defineProps<{ pageId?: string }>()
-const documentationGroups: Array<{ label: string; pages: MdxDocumentationPage[] }> = [
+const documentationGroups: MdxDocumentationGroup[] = [
   {
-    label: '开始',
+    id: 'start', label: '开始', description: '定位能力与阅读路径',
     pages: [
       { id: 'overview', label: '概览与最新能力', eyebrow: 'MARKDOWNX LANGUAGE', title: '让 MDX 成为主文档', description: '用 Markdown 保持可读写的正文，用安全组件补足交互；脚本、样式与附件由宿主按明确边界管理。' },
     ],
   },
   {
-    label: '构建与接入',
+    id: 'project', label: '项目与网站', description: '项目模型、路由与母版',
     pages: [
-      { id: 'project', label: '项目引擎与整站', eyebrow: 'PROJECT & WEBSITE', title: '从一份文档扩展成有目录的网站', description: '用虚拟文件系统、页面隐藏域、自动路由和同构母版连接编辑、预览与发布。' },
-      { id: 'integration', label: '宿主接入与附件', eyebrow: 'HOST INTEGRATION', title: '后端契约、附件引用与回收', description: '组件库提供前端适配器契约；业务系统负责鉴权、文件持久化、文档事务与定时回收。' },
+      { id: 'project-engine', label: '项目引擎', eyebrow: 'PROJECT ENGINE', title: '从一份文档扩展成完整项目', description: '用虚拟文件系统、项目清单和事务模型连接页面、脚本、样式、数据与资源。' },
+      { id: 'site-layout', label: '整站母版与路由', eyebrow: 'SITE SHELL & ROUTING', title: '目录生成导航，母版承载页面', description: '页面隐藏域、目录配置与宿主环境共同生成可编辑、可预览、可发布的网站。' },
     ],
   },
   {
-    label: '写作与组件',
+    id: 'integration', label: '接入与资源', description: '后端契约与文件生命周期',
     pages: [
-      { id: 'api', label: '接口与组件语法', eyebrow: 'MDX API & COMPONENT SYNTAX', title: 'DlMdx 接口与受控组件语法', description: '从 DlMdx 自身的 props、事件和数据结构，到文档内可用的组件块，全部由源码生成并保持同步。' },
-      { id: 'editing', label: '编辑、格式与语法', eyebrow: 'AUTHORING', title: '编辑体验回归文本文档', description: '保留自然换行、中文阅读字体、富文本粘贴、高亮语法和确定性格式化，同时让源码随时可见。' },
-      { id: 'language', label: '语言服务与事件', eyebrow: 'LANGUAGE SERVICE', title: '让文档拥有类型提示', description: '组件 props、事件和宿主动作汇合为补全、悬浮说明、诊断与快速修复。' },
+      { id: 'host-integration', label: '宿主接入', eyebrow: 'HOST INTEGRATION', title: '安装引擎并接入业务后端', description: '组件库提供前端适配器契约；业务系统负责账号、鉴权、持久化与发布。' },
+      { id: 'attachments', label: '附件与引用回收', eyebrow: 'ATTACHMENT LIFECYCLE', title: '保存后建立引用，保护期后安全回收', description: '二进制文件与文档附件关系分离，引用计数由保存事务维护，临时文件按窗口回收。' },
     ],
   },
   {
-    label: '扩展与安全',
+    id: 'authoring', label: '接口与写作', description: '组件接口、编辑与格式化',
     pages: [
-      { id: 'core', label: 'Rust / WASM 内核', eyebrow: 'RUST / WASM CORE', title: '同步、内嵌且可回退的解析内核', description: '核心负责 MarkdownX 解析、代码着色、文档统计、URL 协议识别与策略指纹；Vue 层负责安全节点渲染和编辑交互。' },
-      { id: 'extensions', label: '共享脚本', eyebrow: 'USERSCRIPT ENGINE', title: '构建可审核、可共享的扩展脚本', description: '在线处理元数据、权限、匹配范围和源码构建，但不在组件库上下文执行用户代码。' },
+      { id: 'component-api', label: 'DlMdx 公共接口', eyebrow: 'DLMDX PUBLIC API', title: '属性、事件与类型以源码为准', description: 'DlMdx 自身的 props、事件和公开数据结构由源码生成并保持同步。' },
+      { id: 'component-registry', label: '文档组件注册表', eyebrow: 'DOCUMENT COMPONENT BLOCKS', title: '受控组件块拥有可检索接口', description: '文档只引用注册表中明确允许的组件、属性与事件，并可跳转到对应组件文档。' },
+      { id: 'document-model', label: '主文档与附加文档', eyebrow: 'DOCUMENT MODEL', title: '一份主文档，两份附加文档', description: 'MDX、Script 与 Style 分开持有，源码边界清晰并可独立持久化。' },
+      { id: 'formatter', label: '确定性格式化', eyebrow: 'CONFIGURABLE FORMATTER', title: '格式可配置，也可重复得到同一结果', description: '统一属性顺序、等号间距、引号、列表符号与空行，同时保留语义。' },
+      { id: 'syntax', label: '语法与编辑体验', eyebrow: 'EDITABLE FEATURE TOUR', title: '在真实编辑中验证文档能力', description: '自然换行、中文阅读、富文本粘贴、高亮、表格和安全组件在同一写作链路中工作。' },
+    ],
+  },
+  {
+    id: 'runtime', label: '类型与内核', description: '语言服务、事件与解析器',
+    pages: [
+      { id: 'language-service', label: '语言服务', eyebrow: 'LANGUAGE SERVICE', title: '让文档拥有类型提示', description: '组件 props、事件和宿主动作汇合为补全、悬浮说明、诊断与快速修复。' },
+      { id: 'events', label: '声明式事件', eyebrow: 'DECLARATIVE EVENTS', title: '文档引用动作，宿主掌握执行权', description: '文档声明事件与动作名称，语言服务负责检查，宿主负责可信实现和最终执行。' },
+      { id: 'rust-core', label: 'Rust / WASM 内核', eyebrow: 'RUST / WASM CORE', title: '同步、内嵌且可回退的解析内核', description: '核心负责 MarkdownX 解析、代码着色、文档统计、URL 协议识别与策略指纹；Vue 层负责安全节点渲染和编辑交互。' },
+    ],
+  },
+  {
+    id: 'extension', label: '扩展与安全', description: '共享能力与信任边界',
+    pages: [
+      { id: 'userscripts', label: '共享脚本', eyebrow: 'USERSCRIPT ENGINE', title: '构建可审核、可共享的扩展脚本', description: '在线处理元数据、权限、匹配范围和源码构建，但不在组件库上下文执行用户代码。' },
       { id: 'security', label: '安全边界', eyebrow: 'TRUST BOUNDARY', title: '默认拒绝隐式执行', description: '结构、行为、样式和资源地址各有边界；宿主始终掌握最终的信任与执行权。' },
     ],
   },
 ]
+const legacyPageAliases: Record<string, MdxDocumentationPageId> = {
+  project: 'project-engine',
+  integration: 'host-integration',
+  api: 'component-api',
+  editing: 'document-model',
+  language: 'language-service',
+  core: 'rust-core',
+  extensions: 'userscripts',
+}
 const documentationPages = documentationGroups.flatMap(group => group.pages)
-const activePage = computed(() => documentationPages.find(page => page.id === props.pageId) ?? documentationPages[0])
+const activePageId = computed(() => legacyPageAliases[props.pageId ?? 'overview'] ?? props.pageId ?? 'overview')
+const activePage = computed(() => documentationPages.find(page => page.id === activePageId.value) ?? documentationPages[0])
+const activeGroup = computed(() => documentationGroups.find(group => group.pages.some(page => page.id === activePage.value.id)) ?? documentationGroups[0])
 const activePageIndex = computed(() => documentationPages.findIndex(page => page.id === activePage.value.id))
 const previousPage = computed(() => documentationPages[activePageIndex.value - 1])
 const nextPage = computed(() => documentationPages[activePageIndex.value + 1])
@@ -166,7 +215,7 @@ const componentInterfaces = computed(() => {
 })
 
 function componentDocPath(name: string) {
-  if (['Container', 'Stack', 'Cluster', 'Grid', 'PageFrame', 'Breadcrumbs', 'SiteNavigation', 'SiteHeader', 'SiteShell'].includes(name)) return '/mdx/project#site-layout'
+  if (['Container', 'Stack', 'Cluster', 'Grid', 'PageFrame', 'Breadcrumbs', 'SiteNavigation', 'SiteHeader', 'SiteShell'].includes(name)) return '/mdx/site-layout'
   if (name === 'PathPicker') return '/components/path-picker/class-student'
   const slug = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLocaleLowerCase()
   return `/components/${slug}/basic`
@@ -196,27 +245,41 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
           <span>MX</span>
           <span><b>MarkdownX</b><small>语言与运行时</small></span>
         </a>
-        <nav aria-label="MarkdownX 文档分页">
-          <section v-for="group in documentationGroups" :key="group.label">
-            <h2>{{ group.label }}</h2>
-            <a
-              v-for="page in group.pages"
-              :key="page.id"
-              :href="`/mdx/${page.id}`"
-              :class="{ active: activePage.id === page.id }"
-              :aria-current="activePage.id === page.id ? 'page' : undefined"
-            >
-              <span>{{ page.label }}</span><small>→</small>
-            </a>
-          </section>
-          <section>
+        <nav aria-label="MarkdownX 文档目录">
+          <details
+            v-for="(group, groupIndex) in documentationGroups"
+            :key="group.id"
+            class="mdx-documentation-menu"
+            :open="activeGroup.id === group.id"
+          >
+            <summary>
+              <span class="mdx-documentation-menu-index">{{ String(groupIndex + 1).padStart(2, '0') }}</span>
+              <span><b>{{ group.label }}</b><small>{{ group.description }}</small></span>
+              <i aria-hidden="true">⌄</i>
+            </summary>
+            <div class="mdx-documentation-submenu">
+              <a
+                v-for="page in group.pages"
+                :key="page.id"
+                :href="`/mdx/${page.id}`"
+                :class="{ active: activePage.id === page.id }"
+                :aria-current="activePage.id === page.id ? 'page' : undefined"
+              >
+                <span>{{ page.label }}</span><small>→</small>
+              </a>
+            </div>
+          </details>
+          <section class="mdx-documentation-reference">
             <h2>组件参考</h2>
-            <a href="/components/mdx/basic"><span>DlMdx 组件页</span><small>↗</small></a>
+            <a href="/components/mdx/basic"><span>DlMdx 交互案例</span><small>↗</small></a>
           </section>
         </nav>
       </aside>
 
       <div class="mdx-documentation-content">
+        <nav class="mdx-documentation-breadcrumb" aria-label="MarkdownX 面包屑">
+          <a href="/mdx">MDX</a><span>/</span><b>{{ activeGroup.label }}</b><span>/</span><strong>{{ activePage.label }}</strong>
+        </nav>
         <header v-if="activePage.id === 'overview'" class="mdx-language-hero">
           <div>
             <DlBadge tone="accent" variant="outline">{{ activePage.eyebrow }}</DlBadge>
@@ -239,7 +302,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
           <header><small>WHAT'S NEW</small><h2>最新能力已经汇入同一条写作链路</h2><p>从外部内容进入编辑器，到图片持久化、文档保存和最终回收，每个阶段都有明确契约；组件语法仍保持可读、可复制、可版本管理。</p></header>
           <div class="mdx-overview-grid">
             <a href="/components/mdx/html-paste"><b>HTML / Word / WPS 粘贴</b><span>转换标题、列表、表格、样式与图片，优先保留可维护的 MDX。</span><small>打开交互案例 →</small></a>
-            <a href="/mdx/integration#attachments"><b>附件引用生命周期</b><span>上传先暂存，保存后再建立引用；无引用文件由宿主按窗口回收。</span><small>查看接入契约 →</small></a>
+            <a href="/mdx/attachments"><b>附件引用生命周期</b><span>上传先暂存，保存后再建立引用；无引用文件由宿主按窗口回收。</span><small>查看接入契约 →</small></a>
             <a href="/components/mdx/basic"><b>中文文档阅读</b><span>自然换行、阅读字体切换、渲染优先与图标工具栏共同降低编辑干扰。</span><small>进入 DlMdx →</small></a>
             <a href="/components/mdx/component-blocks"><b>安全组件与高亮</b><span>纯色、渐变、彩虹、呼吸灯、下划线与波浪线都使用受控组件表达。</span><small>查看组件语法 →</small></a>
           </div>
@@ -250,7 +313,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
           </div>
         </section>
 
-    <section v-if="activePage.id === 'project'" id="project-engine" class="mdx-language-section">
+    <section v-if="activePage.id === 'project-engine'" id="project-engine" class="mdx-language-section">
       <header><small>01 · PROJECT ENGINE</small><h2>从一份文档，扩展成有目录的线上项目</h2><p>项目模式以虚拟文件系统和清单为核心：页面、脚本、样式、数据与资源各自保存；自动发现路由、执行整项目诊断，并通过存储适配器持久化。下面不是静态示意图，而是可创建、移动、删除、导入、导出和自动保存的项目工作台。</p></header>
       <div class="mdx-engine-model">
         <article><b>DOCUMENT</b><span>单个 <code>DlMdx</code> 仍可作为轻量文档编辑器。</span></article>
@@ -260,7 +323,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
       <MdxProjectWorkbench />
     </section>
 
-    <section v-if="activePage.id === 'project'" id="site-layout" class="mdx-language-section">
+    <section v-if="activePage.id === 'site-layout'" id="site-layout" class="mdx-language-section">
       <header><small>02 · SITE SHELL & ROUTING</small><h2>母版页套内容插槽，目录生成导航</h2><p>这不是静态截图。左侧直接编辑页面 front matter 和正文，右侧使用发布时相同的 SiteShell、分组导航和设备宽度渲染；页面元数据不会出现在正文。</p></header>
       <div class="mdx-site-preview-toolbar"><DlSegmented v-model="layoutDevice" :items="layoutDevices" size="sm" aria-label="整站预览设备" /><code>{{ layoutRoute?.route }} · {{ layoutRoute?.file }}</code></div>
       <div class="mdx-site-preview-grid">
@@ -284,7 +347,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
       <div class="mdx-engine-model"><article><b>PAGE FRONT MATTER</b><span><code>title / route / group / order / layout</code> 保存在 MDX 顶部隐藏域。</span></article><article><b>DIRECTORY CONFIG</b><span><code>_group.json</code> 自定义目录组名、顺序、折叠和隐藏状态。</span></article><article><b>HOST ENVIRONMENT</b><span>宿主传入网站名、基础路径、用户与项目变量，页面不硬编码部署环境。</span></article></div>
     </section>
 
-    <section v-if="activePage.id === 'integration'" id="installation" class="mdx-language-section mdx-language-prose">
+    <section v-if="activePage.id === 'host-integration'" id="installation" class="mdx-language-section mdx-language-prose">
       <header><small>02 · LIVE WEBSITE HOST</small><h2>安装引擎，后端由宿主提供</h2><p>npm 包包含虚拟文件系统、构建器、官方控件注册表和存储适配器；账号、数据库、租户隔离、发布 URL 与 Git 仍由接入网站负责。</p></header>
       <div class="mdx-install-grid">
         <article>
@@ -309,7 +372,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
       <p>附加脚本只参与动作类型、补全和诊断，绝不隐式 eval。宿主通过 <code>actions</code> 注册可信实现，并负责权限、容量、CSP 与资源 URL 校验。仓库中的 <code>docs/MDX_WEBSITE_HOSTING.md</code> 提供完整源码和后端检查清单。</p>
     </section>
 
-    <section v-if="activePage.id === 'integration'" id="attachments" class="mdx-language-section mdx-language-prose">
+    <section v-if="activePage.id === 'attachments'" id="attachments" class="mdx-language-section mdx-language-prose">
       <header><small>ATTACHMENT LIFECYCLE</small><h2>上传只产生暂存文件，保存才改变正式引用</h2><p>推荐把二进制文件与文档附件关系分开存储。<code>DlMdx</code> 只通过适配器处理上传、列举和移除，不绑定某个数据库；宿主在文档保存事务里根据正文资源地址同步指针表和引用计数。</p></header>
       <div class="mdx-lifecycle" aria-label="附件生命周期">
         <article><span>1</span><b>上传</b><p>文件表写入二进制与内容哈希，引用数保持 0，并记录 <code>unreferenced_at</code>。</p></article>
@@ -338,7 +401,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
       <p>引用计数应由指针关系推导和校验，而不是相信浏览器传入的增减值。删除 MDX、替换附件和临时分享链接到期，都应走同一套引用释放逻辑；只有计数归零并越过保护窗口后，物理文件才进入回收。</p>
     </section>
 
-    <section v-if="activePage.id === 'api'" id="mdx-api" class="mdx-language-section">
+    <section v-if="activePage.id === 'component-api'" id="mdx-api" class="mdx-language-section">
       <header><small>DLMDX PUBLIC API</small><h2>组件属性、事件和数据结构由源码生成</h2><p>下面只描述 <code>DlMdx</code> 自身的公共接口。生成器直接读取组件 props、受管行为和公开 TypeScript 类型，避免文档与实际发布包发生偏差。</p></header>
       <Suspense>
         <ComponentApiTable component-id="mdx" component-name="DlMdx" />
@@ -346,7 +409,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
       </Suspense>
     </section>
 
-    <section v-if="activePage.id === 'api'" id="component-interface" class="mdx-language-section">
+    <section v-if="activePage.id === 'component-registry'" id="component-interface" class="mdx-language-section">
       <header><small>DOCUMENT COMPONENT BLOCKS</small><h2>{{ dlMdxOfficialComponents.length }} 个受控组件块，共用一份可检索接口源</h2><p>这是 MarkdownX 文档语法能够引用的官方注册表，不是组件库目录。搜索组件块名称、属性或事件，可核对文档源码在渲染时允许使用的明确边界。</p></header>
       <div class="mdx-interface-toolbar">
         <DlInputSearch v-model="componentInterfaceQuery" placeholder="搜索 Button、modelValue、click…" aria-label="搜索 MDX 控件接口" />
@@ -364,7 +427,7 @@ const userscriptBuild = computed(() => buildDlMdxUserscript({
       </div>
     </section>
 
-    <section v-if="activePage.id === 'core'" id="rust-core" class="mdx-language-section mdx-language-prose">
+    <section v-if="activePage.id === 'rust-core'" id="rust-core" class="mdx-language-section mdx-language-prose">
       <header><small>RUST / WASM CORE</small><h2>解析内核随包内嵌，公共解析 API 保持同步</h2><p>构建阶段把 Rust crate 编译成 WASM 并编码进 npm 包，不发起运行时网络请求。纯 Markdown、MarkdownX 组件块、代码高亮、统计和 URL 协议识别优先走内核；受支持 HTML 仍交给浏览器 DOM 安全适配层。</p></header>
       <div class="mdx-core-status">
         <article><small>ENGINE</small><b>{{ rustCoreStatus.engine }}</b><span>{{ rustCoreStatus.available ? 'READY' : 'FALLBACK' }}</span></article>
@@ -390,7 +453,7 @@ const document = parseDlMdx('# 中文文档\n\n- [x] 同步解析')
 // parseDlMdx 始终是同步 API；WASM 不可用时自动使用 TypeScript 兼容实现。</code></pre>
     </section>
 
-    <section v-if="activePage.id === 'extensions'" id="userscripts" class="mdx-language-section mdx-language-prose">
+    <section v-if="activePage.id === 'userscripts'" id="userscripts" class="mdx-language-section mdx-language-prose">
       <header><small>04 · USERSCRIPT ENGINE</small><h2>把扩展脚本构建成可审核、可共享的安装源</h2><p>DL-MDX userscript 引擎理解标准元数据、权限、目标网站和版本，并生成 Tampermonkey / Violentmonkey 可安装的 <code>.user.js</code>。它可以解析既有脚本、判断 URL 是否匹配，但构建时永远不执行源码。</p></header>
       <div class="mdx-userscript-grid">
         <div><DlTextarea v-model="userscriptSource" :rows="12" aria-label="可编辑 userscript 源码" /></div>
@@ -406,13 +469,13 @@ const document = parseDlMdx('# 中文文档\n\n- [x] 同步解析')
       </div>
     </section>
 
-    <section v-if="activePage.id === 'editing'" id="workspace" class="mdx-language-section">
+    <section v-if="activePage.id === 'document-model'" id="workspace" class="mdx-language-section">
       <header><small>05 · DOCUMENT MODEL</small><h2>一份主文档，两份附加文档</h2><p>切换 MDX、SCRIPT、STYLE 标签即可编辑。三份源码分别通过 v-model 持有，不再把脚本和样式塞进文档正文。</p></header>
       <DlMdx v-model="workspaceMdx" v-model:script-value="workspaceScript" v-model:style-value="workspaceStyle" :actions="actions" show-companion-documents mode="split" min-height="31rem" aria-label="MDX 主文档工作区" />
       <output class="mdx-action-log">{{ eventLog }}</output>
     </section>
 
-    <section v-if="activePage.id === 'language'" id="language-service" class="mdx-language-section">
+    <section v-if="activePage.id === 'language-service'" id="language-service" class="mdx-language-section">
       <header><small>06 · LANGUAGE SERVICE</small><h2>类型提示不是属性清单</h2><p>注册组件的 Vue props、显式 schema、emits 和 Script 导出动作会汇合成文档语言模型。</p></header>
       <div class="mdx-capability-grid">
         <article><b>Ctrl + Space</b><span>组件、属性、事件、动作与枚举值补全</span></article>
@@ -427,18 +490,18 @@ const document = parseDlMdx('# 中文文档\n\n- [x] 同步解析')
       </ul>
     </section>
 
-    <section v-if="activePage.id === 'language'" id="events" class="mdx-language-section mdx-language-prose">
+    <section v-if="activePage.id === 'events'" id="events" class="mdx-language-section mdx-language-prose">
       <header><small>07 · DECLARATIVE EVENTS</small><h2>文档引用动作，宿主掌握执行权</h2></header>
       <pre><code>+++component:Button · @click = saveDocument · +++end</code></pre>
       <p><code>@click</code> 必须是组件 schema 声明的事件，<code>saveDocument</code> 必须来自附加脚本的导出契约或宿主 action map。附加脚本不会在预览中自动执行；生产应用决定如何编译、装载并注册真正的处理器。</p>
     </section>
 
-    <section v-if="activePage.id === 'editing'" id="formatter" class="mdx-language-section">
+    <section v-if="activePage.id === 'formatter'" id="formatter" class="mdx-language-section">
       <header><small>08 · CONFIGURABLE FORMATTER</small><h2>格式可配置，也可重复得到同一结果</h2><p>点击工具栏末尾的 ↹，或按 Shift+Alt+F。下面启用了 schema 顺序、等号对齐、双引号和统一列表符号。</p></header>
       <DlMdx v-model="formatterSource" :format-options="formatOptions" :language-options="{ actionNames: ['publishRelease'] }" mode="split" min-height="24rem" />
     </section>
 
-    <section v-if="activePage.id === 'editing'" id="syntax" class="mdx-language-section">
+    <section v-if="activePage.id === 'syntax'" id="syntax" class="mdx-language-section">
       <header><small>09 · EDITABLE FEATURE TOUR</small><h2>文档能力必须在编辑中展示</h2><p>标题、引用、任务、表格、代码域和安全组件都应当在同一个可编辑案例里被验证。</p></header>
       <DlMdx v-model="richSource" mode="split" min-height="28rem" />
     </section>
@@ -465,6 +528,7 @@ const document = parseDlMdx('# 中文文档\n\n- [x] 同步解析')
 <style scoped>
 .mdx-language-page{display:grid;gap:34px;padding:52px 0 96px}.mdx-language-hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr);gap:46px;align-items:end;padding:54px;border:1px solid var(--dl-border);border-radius:30px;background:linear-gradient(135deg,color-mix(in srgb,var(--dl-accent-surface) 78%,transparent),var(--dl-surface));box-shadow:var(--dl-shadow-lg)}.mdx-language-hero h1{max-width:760px;margin:18px 0 16px;font-size:clamp(2.8rem,7vw,6.2rem);line-height:.93;letter-spacing:-.065em}.mdx-language-hero p{max-width:760px;margin:0;color:var(--dl-text-muted);font-size:1.04rem;line-height:1.85}.mdx-language-hero dl{display:grid;gap:10px;margin:0}.mdx-language-hero dl div{display:flex;justify-content:space-between;padding:15px 17px;border:1px solid var(--dl-border);border-radius:14px;background:var(--dl-night-soft)}.mdx-language-hero dt{color:var(--dl-text-faint);font:700 .64rem/1 ui-monospace,monospace;letter-spacing:.12em}.mdx-language-hero dd{margin:0;color:var(--dl-accent-text);font-weight:800}
 .mdx-documentation-layout{display:grid;grid-template-columns:224px minmax(0,1fr);gap:30px;align-items:start}.mdx-documentation-content{display:grid;min-width:0;gap:26px}.mdx-documentation-sidebar{position:sticky;top:104px;display:grid;gap:18px;max-height:calc(100vh - 124px);padding:18px 14px;overflow:auto;border:1px solid var(--dl-border);border-radius:20px;background:color-mix(in srgb,var(--dl-surface-strong) 92%,transparent);box-shadow:var(--dl-shadow-sm);backdrop-filter:blur(18px)}.mdx-documentation-brand{display:flex;align-items:center;gap:10px;padding:4px 6px 15px;border-bottom:1px solid var(--dl-border)}.mdx-documentation-brand>span:first-child{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;color:var(--dl-accent-text);background:var(--dl-accent-surface);font:850 .68rem/1 ui-monospace,monospace}.mdx-documentation-brand>span:last-child{display:grid;gap:3px}.mdx-documentation-brand b{font-size:.82rem}.mdx-documentation-brand small{color:var(--dl-text-faint);font-size:.64rem}.mdx-documentation-sidebar nav{display:grid;gap:18px}.mdx-documentation-sidebar nav section{display:grid;gap:3px}.mdx-documentation-sidebar h2{margin:0 7px 5px;color:var(--dl-text-faint);font:800 .58rem/1.3 ui-monospace,monospace;letter-spacing:.11em;text-transform:uppercase}.mdx-documentation-sidebar nav a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 9px;border-radius:10px;color:var(--dl-text-muted);font-size:.75rem;font-weight:700;transition:background .15s ease,color .15s ease}.mdx-documentation-sidebar nav a small{opacity:0;color:var(--dl-accent-text);transform:translateX(-4px);transition:opacity .15s ease,transform .15s ease}.mdx-documentation-sidebar nav a:hover,.mdx-documentation-sidebar nav a.active{color:var(--dl-text);background:var(--dl-accent-surface)}.mdx-documentation-sidebar nav a:hover small,.mdx-documentation-sidebar nav a.active small{opacity:1;transform:none}
+.mdx-documentation-menu{overflow:hidden;border:1px solid transparent;border-radius:13px;transition:border-color .16s ease,background .16s ease}.mdx-documentation-menu[open]{border-color:var(--dl-border);background:var(--dl-night-soft)}.mdx-documentation-menu summary{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 9px;cursor:pointer;list-style:none}.mdx-documentation-menu summary::-webkit-details-marker{display:none}.mdx-documentation-menu summary>span:nth-child(2){display:grid;gap:3px;min-width:0}.mdx-documentation-menu summary b{font-size:.75rem}.mdx-documentation-menu summary small{overflow:hidden;color:var(--dl-text-faint);font-size:.6rem;font-weight:600;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}.mdx-documentation-menu summary i{color:var(--dl-text-faint);font-style:normal;transition:transform .16s ease,color .16s ease}.mdx-documentation-menu[open] summary i{color:var(--dl-accent-text);transform:rotate(180deg)}.mdx-documentation-menu-index{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;color:var(--dl-text-faint);background:color-mix(in srgb,var(--dl-surface-strong) 80%,transparent);font:800 .58rem/1 ui-monospace,monospace}.mdx-documentation-menu[open] .mdx-documentation-menu-index{color:var(--dl-accent-text);background:var(--dl-accent-surface)}.mdx-documentation-submenu{display:grid;gap:2px;padding:0 6px 7px 43px}.mdx-documentation-submenu a{position:relative;padding:8px 8px}.mdx-documentation-submenu a::before{position:absolute;top:50%;left:-10px;width:8px;height:1px;background:var(--dl-border);content:''}.mdx-documentation-submenu a.active::before{background:var(--dl-accent)}.mdx-documentation-reference{display:grid;gap:3px;padding-top:4px;border-top:1px solid var(--dl-border)}.mdx-documentation-reference h2{margin-top:10px}.mdx-documentation-breadcrumb{display:flex;align-items:center;gap:8px;min-width:0;color:var(--dl-text-faint);font-size:.68rem}.mdx-documentation-breadcrumb a{color:var(--dl-accent-text);font-weight:800}.mdx-documentation-breadcrumb b{font-weight:700}.mdx-documentation-breadcrumb strong{overflow:hidden;color:var(--dl-text-muted);font-weight:700;text-overflow:ellipsis;white-space:nowrap}
 .mdx-documentation-heading{padding:34px 38px;border-left:3px solid var(--dl-accent);border-radius:0 22px 22px 0;background:linear-gradient(110deg,var(--dl-accent-surface),color-mix(in srgb,var(--dl-surface) 88%,transparent))}.mdx-documentation-heading>small{color:var(--dl-accent-text);font:800 .66rem/1 ui-monospace,monospace;letter-spacing:.12em}.mdx-documentation-heading h1{margin:13px 0 10px;font-size:clamp(2rem,4.5vw,4rem);line-height:1;letter-spacing:-.05em}.mdx-documentation-heading p{max-width:820px;margin:0;color:var(--dl-text-muted);line-height:1.8}.mdx-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mdx-overview-grid a,.mdx-reading-paths a{display:grid;gap:9px;padding:18px;border:1px solid var(--dl-border);border-radius:15px;background:var(--dl-night-soft);transition:border-color .16s ease,transform .16s ease}.mdx-overview-grid a:hover,.mdx-reading-paths a:hover{border-color:var(--dl-border-focus);transform:translateY(-2px)}.mdx-overview-grid b,.mdx-reading-paths b{font-size:.86rem}.mdx-overview-grid span,.mdx-reading-paths p{margin:0;color:var(--dl-text-muted);font-size:.75rem;line-height:1.65}.mdx-overview-grid small,.mdx-reading-paths span{color:var(--dl-accent-text);font:750 .62rem/1.4 ui-monospace,monospace;letter-spacing:.05em}.mdx-reading-paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.mdx-reading-paths a{min-height:150px}.mdx-page-pagination{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:2px}.mdx-page-pagination a{display:grid;gap:6px;padding:17px 19px;border:1px solid var(--dl-border);border-radius:15px;background:var(--dl-night-soft)}.mdx-page-pagination a:last-child{text-align:right}.mdx-page-pagination a:hover{border-color:var(--dl-border-focus)}.mdx-page-pagination small{color:var(--dl-text-faint);font-size:.66rem}.mdx-page-pagination b{color:var(--dl-accent-text);font-size:.82rem}
 .mdx-language-nav{position:sticky;z-index:8;top:8px;display:flex;flex-wrap:wrap;gap:4px;width:max-content;max-width:100%;margin-inline:auto;padding:6px;border:1px solid var(--dl-border);border-radius:15px;background:color-mix(in srgb,var(--dl-surface-strong) 90%,transparent);box-shadow:var(--dl-shadow-md);backdrop-filter:blur(18px)}.mdx-language-nav a{padding:8px 13px;border-radius:10px;color:var(--dl-text-muted);font-size:.78rem;font-weight:700}.mdx-language-nav a:hover{color:var(--dl-accent-text);background:var(--dl-accent-surface)}
 .mdx-language-section{scroll-margin-top:100px;display:grid;gap:18px;padding:30px;border:1px solid var(--dl-border);border-radius:24px;background:color-mix(in srgb,var(--dl-surface) 91%,transparent);box-shadow:var(--dl-shadow-sm)}.mdx-language-section>header{max-width:920px}.mdx-language-section>header small{color:var(--dl-accent-text);font:800 .65rem/1 ui-monospace,monospace;letter-spacing:.12em}.mdx-language-section h2{margin:10px 0 8px;font-size:clamp(1.55rem,3vw,2.6rem);letter-spacing:-.035em}.mdx-language-section header p,.mdx-language-prose>p{margin:0;color:var(--dl-text-muted);line-height:1.75}.mdx-action-log,.mdx-diagnostic-head{display:flex;justify-content:space-between;padding:11px 14px;border:1px solid var(--dl-border);border-radius:12px;color:var(--dl-text-muted);background:var(--dl-night-soft);font:700 .72rem/1.4 ui-monospace,monospace}
