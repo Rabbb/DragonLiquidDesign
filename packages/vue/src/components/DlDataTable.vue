@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TRow extends Record<string, unknown> = Record<string, unknown>">
-import { computed, h, nextTick, ref, watch } from 'vue'
+import { computed, h, nextTick, ref, watch, type VNode } from 'vue'
 import { VxeColgroup, VxeColumn, VxeTable } from 'vxe-table'
 import 'vxe-table/lib/style.css'
 import type { VxeTableInstance, VxeTableProps } from 'vxe-table'
@@ -329,14 +329,56 @@ function columnSlots(column: DlDataTableColumn) {
   return result
 }
 
-function TableColumnNode(nodeProps: { column: DlDataTableColumn }) {
-  const column = nodeProps.column
-  if (column.children?.length) {
-    return h(VxeColgroup as any, columnProps(column) as any, {
-      default: () => column.children!.map(child => h(TableColumnNode, { key: child.id ?? `${child.role ?? 'cell'}:${child.property ?? child.label ?? ''}`, column: child })),
-    })
-  }
-  return h(VxeColumn as any, columnProps(column) as any, columnSlots(column))
+const columnNodeKey = (column: DlDataTableColumn): string =>
+  column.id ?? `${column.role ?? 'cell'}:${column.property ?? column.label ?? ''}`
+
+// VXETable 只从 VxeTable 默认插槽的直接子节点收集列配置与单元格插槽，
+// 列节点必须是不经过任何包装组件的 VxeColumn / VxeColgroup vnode。
+function buildColumnNodes(list: DlDataTableColumn[]): VNode[] {
+  return list.map((column) => {
+    const key = columnNodeKey(column)
+    if (column.children?.length) {
+      return h(VxeColgroup as any, { key, ...columnProps(column) } as any, {
+        default: () => buildColumnNodes(column.children!),
+      })
+    }
+    return h(VxeColumn as any, { key, ...columnProps(column) } as any, columnSlots(column))
+  })
+}
+
+const tableSlot = (name: string): TableSlot | undefined => slots[name]
+
+function TableBody(): VNode {
+  return h(VxeTable as any, {
+    ref: tableRef,
+    ...tableProps.value,
+    onCheckboxChange: emitCheckedRows,
+    onCheckboxAll: emitCheckedRows,
+    onCurrentRowChange: emitCurrentRow,
+    onRadioChange: emitChosenRow,
+    onToggleRowExpand: emitExpandedRows,
+    onToggleTreeExpand: emitExpandedRows,
+    onRowClick: emitRowActivate,
+    onCellClick: emitCellActivate,
+    onSortChange: emitSort,
+    onFilterChange: (payload: unknown) => emit('filterChange', payload),
+    onEditActivated: (payload: unknown) => emit('editBegin', payload),
+    onEditClosed: (payload: unknown) => emit('editEnd', payload),
+    onValidError: (payload: unknown) => emit('validationError', payload),
+    onMenuClick: (payload: unknown) => emit('contextAction', payload),
+    onRowDragend: (payload: unknown) => emit('rowDragEnd', payload),
+    onColumnDragend: (payload: unknown) => emit('columnDragEnd', payload),
+    onScroll: (payload: unknown) => emit('scroll', payload),
+  } as any, {
+    default: () => buildColumnNodes(props.columns),
+    empty: (scope: Record<string, any>) => tableSlot('empty') ? tableSlot('empty')!(scope) : props.emptyMessage,
+    loading: tableSlot('loading'),
+    'row-drag-icon': tableSlot('row-drag-icon'),
+    'column-drag-icon': tableSlot('column-drag-icon'),
+    'header-tooltip': tableSlot('header-tooltip'),
+    tooltip: tableSlot('tooltip'),
+    'footer-tooltip': tableSlot('footer-tooltip'),
+  })
 }
 
 async function syncCheckedRows() {
@@ -522,36 +564,7 @@ defineExpose({
 
 <template>
   <div data-dl data-slot="data-table" class="dl-data-table" :aria-busy="loading">
-    <VxeTable
-      ref="tableRef"
-      v-bind="tableProps"
-      @checkbox-change="emitCheckedRows"
-      @checkbox-all="emitCheckedRows"
-      @current-row-change="emitCurrentRow"
-      @radio-change="emitChosenRow"
-      @toggle-row-expand="emitExpandedRows"
-      @toggle-tree-expand="emitExpandedRows"
-      @row-click="emitRowActivate"
-      @cell-click="emitCellActivate"
-      @sort-change="emitSort"
-      @filter-change="emit('filterChange', $event)"
-      @edit-activated="emit('editBegin', $event)"
-      @edit-closed="emit('editEnd', $event)"
-      @valid-error="emit('validationError', $event)"
-      @menu-click="emit('contextAction', $event)"
-      @row-dragend="emit('rowDragEnd', $event)"
-      @column-dragend="emit('columnDragEnd', $event)"
-      @scroll="emit('scroll', $event)"
-    >
-      <TableColumnNode v-for="column in columns" :key="column.id ?? `${column.role ?? 'cell'}:${column.property ?? column.label ?? ''}`" :column="column" />
-      <template #empty="scope"><slot name="empty" v-bind="scope">{{ emptyMessage }}</slot></template>
-      <template v-if="$slots.loading" #loading="scope"><slot name="loading" v-bind="scope" /></template>
-      <template v-if="$slots['row-drag-icon']" #row-drag-icon="scope"><slot name="row-drag-icon" v-bind="scope" /></template>
-      <template v-if="$slots['column-drag-icon']" #column-drag-icon="scope"><slot name="column-drag-icon" v-bind="scope" /></template>
-      <template v-if="$slots['header-tooltip']" #header-tooltip="scope"><slot name="header-tooltip" v-bind="scope" /></template>
-      <template v-if="$slots.tooltip" #tooltip="scope"><slot name="tooltip" v-bind="scope" /></template>
-      <template v-if="$slots['footer-tooltip']" #footer-tooltip="scope"><slot name="footer-tooltip" v-bind="scope" /></template>
-    </VxeTable>
+    <TableBody />
   </div>
 </template>
 
