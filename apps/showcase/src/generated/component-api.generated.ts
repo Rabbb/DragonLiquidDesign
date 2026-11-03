@@ -107,6 +107,24 @@ export default {
         "defaultValue": "'取消'"
       },
       {
+        "prop": "loading",
+        "description": "请求处理中，禁用确认和取消，并阻止 Escape 关闭。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "confirmDisabled",
+        "description": "仅禁用确认操作，取消仍可使用。",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "prop": "closeOnConfirm",
+        "description": "确认后是否自动关闭；异步请求设为 false，由宿主在成功后关闭。",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
         "prop": "tone",
         "description": "设置语义色调。",
         "type": "'warning' | 'danger'",

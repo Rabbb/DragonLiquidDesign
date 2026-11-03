@@ -12,6 +12,31 @@ import { vueSfc } from './exampleCode'
 
 const props = defineProps<{ scenario: string; componentDefinition: ComponentDefinition }>()
 const alertOpen = ref(false)
+const asyncAlertOpen = ref(false)
+const alertLoading = ref(false)
+const alertError = ref('')
+let alertAttempts = 0
+
+function openAsyncAlert() {
+  alertAttempts = 0
+  alertError.value = ''
+  asyncAlertOpen.value = true
+}
+
+async function confirmAsyncRemoval() {
+  if (alertLoading.value) return
+  alertLoading.value = true
+  alertError.value = ''
+  try {
+    await new Promise(resolve => window.setTimeout(resolve, 600))
+    if (alertAttempts++ === 0) {
+      alertError.value = '模拟请求失败，记录仍然保留，请再次确认重试。'
+      return
+    }
+    asyncAlertOpen.value = false
+    lastAction.value = '异步移除成功'
+  } finally { alertLoading.value = false }
+}
 const page = ref(4)
 const step = ref(2)
 const toastOpen = ref(false)
@@ -177,6 +202,49 @@ output { color: #a9b9b0; }` }),
 }
 
 const scenarioCodeById: Record<string, Record<string, string>> = {
+  'alert-dialog': {
+    'async-confirm': vueSfc({ imports: ['DlAlertDialog', 'DlButton'], script: `import { ref } from 'vue'
+
+const open = ref(false)
+const loading = ref(false)
+const error = ref('')
+const result = ref('尚未执行操作')
+let attempts = 0
+
+function openDialog() {
+  attempts = 0
+  error.value = ''
+  open.value = true
+}
+
+async function confirmRemoval() {
+  if (loading.value) return
+  loading.value = true
+  error.value = ''
+  try {
+    await new Promise(resolve => window.setTimeout(resolve, 600))
+    if (attempts++ === 0) {
+      error.value = '模拟请求失败，记录仍然保留，请再次确认重试。'
+      return
+    }
+    open.value = false
+    result.value = '异步移除成功'
+  } finally { loading.value = false }
+}`, template: `  <section class="example">
+    <DlButton variant="danger" @click="openDialog">测试异步移除</DlButton>
+    <DlAlertDialog
+      v-model:open="open"
+      title="移除收藏记录？"
+      description="首次请求模拟失败，重试成功后关闭。"
+      :loading="loading"
+      :close-on-confirm="false"
+      @confirm="confirmRemoval"
+    >
+      <p v-if="error" role="alert" class="text-red-400">{{ error }}</p>
+    </DlAlertDialog>
+    <output aria-live="polite">{{ result }}</output>
+  </section>`, style: `.example { display: grid; justify-items: start; gap: 14px; }` }),
+  },
   'hover-card': {
     basic: vueSfc({ imports: ['DlHoverCard'], template: `  <DlHoverCard :open-delay="220" align="start">
     <template #trigger><a class="preview-link" href="/anime/1">悬停预览《来自深渊》</a></template>
@@ -315,7 +383,15 @@ function selectAction(value: string) { lastAction.value = value }
 <template>
   <DocExampleShell v-bind="content">
     <div class="advanced-general-demo">
-      <template v-if="componentDefinition.id === 'alert-dialog'"><DlButton variant="danger" @click="alertOpen = true">移除收藏记录</DlButton><DlAlertDialog v-model:open="alertOpen" title="移除收藏记录？" description="观看进度和个人评分也会一起移除，此操作无法撤销。" @confirm="lastAction = '已确认移除'" /></template>
+      <template v-if="componentDefinition.id === 'alert-dialog'">
+        <template v-if="scenario === 'async-confirm'">
+          <DlButton variant="danger" @click="openAsyncAlert">测试异步移除</DlButton>
+          <DlAlertDialog v-model:open="asyncAlertOpen" title="移除收藏记录？" description="首次请求模拟失败，重试成功后关闭。" :loading="alertLoading" :close-on-confirm="false" @confirm="confirmAsyncRemoval">
+            <p v-if="alertError" role="alert" class="text-red-400">{{ alertError }}</p>
+          </DlAlertDialog>
+        </template>
+        <template v-else><DlButton variant="danger" @click="alertOpen = true">移除收藏记录</DlButton><DlAlertDialog v-model:open="alertOpen" title="移除收藏记录？" description="观看进度和个人评分也会一起移除，此操作无法撤销。" @confirm="lastAction = '已确认移除'" /></template>
+      </template>
       <DlAspectRatio v-else-if="componentDefinition.id === 'aspect-ratio'" :ratio="16 / 9"><div class="ratio-art"><b>16 : 9</b><span>媒体封面安全区域</span></div></DlAspectRatio>
       <DlContextMenu v-else-if="componentDefinition.id === 'context-menu'" :items="menuItems" label="作品操作" @select="selectAction"><div class="context-target">在这里单击右键<br><small>{{ lastAction }}</small></div></DlContextMenu>
       <DlDropdownMenu v-else-if="componentDefinition.id === 'dropdown-menu'" :items="menuItems" label="作品操作" @select="selectAction"><template #trigger><DlButton variant="secondary">打开操作菜单 ▾</DlButton></template></DlDropdownMenu>

@@ -528,6 +528,10 @@ const scenarioBlueprints: Record<Exclude<ComponentCategoryId, 'foundation'>, Sce
 }
 
 const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> = {
+  'alert-dialog': [
+    { id: 'basic', label: '基础确认', summary: '明确确认与安全取消' },
+    { id: 'async-confirm', label: '异步确认', summary: '加载防重、失败反馈与重试' },
+  ],
   'data-table': [
     { id: 'basic', label: '基础表格', summary: '列模型、主题和溢出处理' },
     { id: 'selection', label: '批量选择', summary: '受控选中项与批量工作流' },
@@ -580,6 +584,11 @@ const componentScenarioOverrides: Partial<Record<string, ScenarioDefinition[]>> 
 }
 
 const readyById = new Map(readyComponents.map(component => [component.id, component]))
+const migratedVersions: Partial<Record<string, string>> = {
+  'data-table': '0.6.0-alpha.44',
+  'toolbar-menu': '0.6.0-alpha.44',
+  'tree-menu': '0.6.0-alpha.50',
+}
 const stableReadyIds = new Set([
   'combobox', 'editable', 'listbox', 'number-field', 'label', 'pin-input', 'tags-input', 'toggle', 'toggle-group',
   'alert-dialog', 'aspect-ratio', 'context-menu', 'dropdown-menu', 'hover-card', 'menubar', 'navigation-menu',
@@ -607,6 +616,17 @@ function fromRekaSeed(seed: RekaSeed): ComponentDefinition {
       maturity: seed.maturity ?? 'stable',
       sourceUrl: sourceUrl(seed.id),
       scenarios: singleExampleIds.has(seed.id) ? [ready.scenarios[0]] : ready.scenarios,
+    }
+  }
+
+  const migratedVersion = migratedVersions[seed.id]
+  if (migratedVersion) {
+    return {
+      ...seed,
+      since: migratedVersion,
+      implementation: 'ready',
+      maturity: 'custom',
+      scenarios: (componentScenarioOverrides[seed.id] ?? scenarioBlueprints[seed.category]).map(scenario => ({ ...scenario })),
     }
   }
 

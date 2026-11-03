@@ -80,6 +80,7 @@ for (const mode of componentGroupingModes) {
 }
 
 for (const component of componentCatalog) {
+  report(component.implementation === 'ready', `${component.id} 尚未实现，不应进入可用组件目录。`)
   report(Boolean(component.name.trim()), `${component.id} 缺少名称。`)
   report(component.summary.trim().length >= 12, `${component.id} 的目录描述过短或缺失。`)
   report(component.scenarios.length > 0, `${component.id} 至少需要一个真实案例。`)

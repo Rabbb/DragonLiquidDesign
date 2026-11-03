@@ -65,7 +65,7 @@ createApp(App).use(theme).mount('#app')
 
 ## 组件实例、运行时属性与事件
 
-包入口导出的 89 个组件都带有统一的 `DlComponentRef`。声明式 props 和 `v-model` 仍然是常规数据流；需要桌面应用式控制时，可通过模板 `ref` 建立响应式实例覆盖：
+包入口导出的 102 个目录组件都带有统一的 `DlComponentRef`。声明式 props 和 `v-model` 仍然是常规数据流；需要桌面应用式控制时，可通过模板 `ref` 建立响应式实例覆盖：
 
 ```vue
 <script setup lang="ts">
@@ -224,10 +224,11 @@ await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' 
 
 `0.6.0-alpha.35` 新增 userscript 引擎：`buildDlMdxUserscript()`、`parseDlMdxUserscript()`、`validateDlMdxUserscript()` 与 `dlMdxUserscriptMatchesUrl()` 可构建、导入、检查和匹配 Tampermonkey / Violentmonkey 脚本。所有操作都只处理源码，绝不在组件库上下文执行用户 JavaScript；跨站注入交给浏览器扩展，账号与共享目录仍由宿主后端提供。
 
-当前公共组件共 89 个：
+当前目录组件共 102 个，应用焦点导航 `DlFocusNavigator` 另行导出：
 
 - 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
+- `0.6.0-alpha.77` 为 AlertDialog 增加 `loading`、`confirmDisabled`、`closeOnConfirm` 和默认内容插槽。默认同步确认继续自动关闭；异步请求应使用 `closeOnConfirm=false`，由宿主在成功后关闭，并在失败时显示错误供重试。loading 期间阻止重复确认、取消与 Escape 关闭。
 - `0.6.0-alpha.75` 为 TimePicker 的 TIME WHEEL 面板增加直接时间输入，并把鼠标滚轮事件量化为一次一格；指针拖动继续按真实位移滚动，不受滚轮节流影响。
 - `0.6.0-alpha.34` 将 MarkdownX 提升为项目引擎：新增受限虚拟文件系统、原子事务、项目清单、自动路由、跨文件构建诊断，以及 Memory、LocalStorage、HTTP 存储适配器和可操作的线上项目工作台。
 - `0.6.0-alpha.33` 新增 MarkdownX 类型提示、诊断、格式化、安全声明式事件，以及 MDX 主文档配合 Script/Style 附加文档的编辑工作区。

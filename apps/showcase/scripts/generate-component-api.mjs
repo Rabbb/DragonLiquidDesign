@@ -255,6 +255,11 @@ const descriptions = {
 }
 
 const componentDescriptions = {
+  'alert-dialog': {
+    loading: '请求处理中，禁用确认和取消，并阻止 Escape 关闭。',
+    confirmDisabled: '仅禁用确认操作，取消仍可使用。',
+    closeOnConfirm: '确认后是否自动关闭；异步请求设为 false，由宿主在成功后关闭。',
+  },
   'data-table': {
     rows: '表格当前数据行；替换数组时保留由稳定行键控制的选择和展开状态。',
     columns: '使用 DlDataTableColumn 描述的语义列树，支持分组列与字段专用插槽。',
