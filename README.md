@@ -22,6 +22,7 @@ npm run build
 npm run build:showcase
 npm test
 npm run publish:local
+npm run publish:registry
 ```
 
 本机 IIS 组件展厅部署在 `O:\DragonLiquidDesign.deploy`，访问地址：
@@ -30,8 +31,12 @@ npm run publish:local
 http://localhost:8030/
 ```
 
-本地 npm 包由独立 IIS 站点 `DragonLiquidPackages` 提供，发布目录为
-`O:\DragonLiquidPackages.deploy`，访问地址为 `http://localhost:8031/`。
+局域网 npm Registry 地址为 `http://192.168.2.101:4873/`，运行目录为 `O:\NpmRegistry`。
+普通安装无需登录；发布使用 `dragon-publisher` 账号。`npm run publish:registry` 会先执行类型检查、测试和构建，再发布到本地 Registry。
+服务运行与账号说明见 `O:\NpmRegistry\README.md`。
+
+`npm run publish:local` 生成 `registry/` 中的离线压缩包。已有 IIS 下载站点 `DragonLiquidPackages` 位于
+`O:\DragonLiquidPackages.deploy`，地址为 `http://localhost:8031/`。
 
 展厅首页用于介绍设计系统；点击顶部“组件”进入文档工作台。组件文档使用
 `/components/{component}/{scenario}` 深链；额外场景按 `0..n` 声明，左侧只在确有场景时
@@ -44,12 +49,26 @@ http://localhost:8030/
 
 MarkdownX 文档使用 `/mdx/{page}` 深链和固定侧栏分页展示概览、项目引擎、宿主与附件、`DlMdx` API、编辑语法、语言服务、Rust/WASM 内核、共享脚本与安全边界；`/mdx` 默认进入概览。MDX 接口表直接从源码生成，附件页说明 `referenceMode: 'document-save'` 下“上传暂存、保存建引用、定时回收”的宿主契约。
 
-消费方通过固定 tarball 引用本地构建产物，避免依赖源码目录或 TodoMoe：
+消费项目的 `.npmrc` 配置组件包作用域：
+
+```ini
+@dragon-liquid:registry=http://192.168.2.101:4873/
+```
+
+安装固定版本：
+
+```powershell
+npm install @dragon-liquid/vue@0.6.0-alpha.78 --save-exact
+```
+
+对应依赖配置：
 
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.77.tgz"
+    "@dragon-liquid/vue": "0.6.0-alpha.78"
   }
 }
 ```
+
+发布标签为 `alpha`。后续修改需要提升包版本再发布，已发布版本不可覆盖。

@@ -65,7 +65,7 @@
   "license": "UNLICENSED",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/",
+    "registry": "http://192.168.2.101:4873/",
     "tag": "alpha"
   }
 }

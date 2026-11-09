@@ -17,7 +17,8 @@
     "typecheck": "npm run typecheck --workspace @dragon-liquid/vue",
     "test:rust": "cargo test --manifest-path crates/dl-mdx-core/Cargo.toml",
     "test": "npm run build:mdx-rust && npm run test:rust && npm run test --workspace @dragon-liquid/vue",
-    "publish:local": "npm run build && npm pack --workspace @dragon-liquid/vue --pack-destination registry"
+    "publish:local": "npm run build && npm pack --workspace @dragon-liquid/vue --pack-destination registry",
+    "publish:registry": "npm publish --workspace @dragon-liquid/vue --registry=http://192.168.2.101:4873/ --tag alpha"
   },
   "engines": {
     "node": ">=22.0.0",

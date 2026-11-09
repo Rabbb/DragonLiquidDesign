@@ -129,20 +129,22 @@ O:\DragonLiquidDesign
 
 ## 5. 本地 npm 发布
 
-当前机器没有正在监听的 npm 私有 registry，只有 npm 公共镜像配置；因此本阶段采用 npm 官方支持的本地 tarball 包仓库：
+局域网 npm Registry 使用 `http://192.168.2.101:4873/`，运行目录为 `O:\NpmRegistry`。
+仓库 `.npmrc` 将 `@dragon-liquid` 作用域指向该地址，组件包的 `publishConfig` 使用相同地址及 `alpha` 标签。
 
-1. 在 `packages/vue` 执行构建和测试。
-2. 使用 `npm pack --pack-destination O:\DragonLiquidDesign\registry` 生成版本化 `.tgz`。
-3. 消费工程通过 `file:O:/DragonLiquidDesign/registry/dragon-liquid-vue-0.6.0-alpha.77.tgz` 安装，引用的是发布产物而非源码。
-4. 修改组件后必须提升包版本、重新打包并在消费方重新安装。
+发布步骤：
 
-若以后部署 Verdaccio，可保持包名和版本不变，执行：
+1. 修改组件后提升包版本，已发布版本不可覆盖。
+2. 使用 `dragon-publisher` 账号登录本地 Registry。
+3. 在仓库根目录执行发布命令，类型检查、测试和构建由 `prepublishOnly` 完成。
 
 ```powershell
-npm publish --registry http://<registry-host>:4873
+npm login --registry=http://192.168.2.101:4873/ --auth-type=legacy
+npm run publish:registry
 ```
 
-然后把消费方依赖从 `file:` 切换为普通 semver 即可。
+消费项目配置相同作用域地址，并通过 `npm install @dragon-liquid/vue@0.6.0-alpha.78 --save-exact` 安装固定版本。
+`npm run publish:local` 仍用于生成 `registry/` 中的离线压缩包，展厅继续使用固定压缩包执行集成验证。
 
 ## 6. 动漫站集成约定
 
