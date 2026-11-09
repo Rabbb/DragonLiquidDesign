@@ -93,8 +93,8 @@ describe('MarkdownX component registry', () => {
   })
 
   it('ships unique official definitions for public and MDX-native components', () => {
-    expect(dlMdxOfficialComponents).toHaveLength(102)
-    expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(102)
+    expect(dlMdxOfficialComponents).toHaveLength(104)
+    expect(new Set(dlMdxOfficialComponents.map(item => item.name)).size).toBe(dlMdxOfficialComponents.length)
     expect(dlMdxOfficialComponents.filter(item => item.maturity === 'alpha').length).toBeGreaterThan(10)
     expect(dlMdxOfficialComponents.every(item => item.component || item.render)).toBe(true)
   })
@@ -146,7 +146,7 @@ describe('MarkdownX component registry', () => {
       props: { modelValue: source, mode: 'preview', debounce: 0, taskInteractive: false },
     })
 
-    expect(wrapper.findAll('.dl-mdx__component-block')).toHaveLength(102)
+    expect(wrapper.findAll('.dl-mdx__component-block')).toHaveLength(dlMdxOfficialComponents.length)
     expect(wrapper.findAll('.dl-mdx__unknown-component')).toHaveLength(0)
   })
 })

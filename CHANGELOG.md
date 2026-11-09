@@ -6,6 +6,7 @@
 
 - `DlDropdownMenu`、`DlSelect` 新增 `v-model:hoverValue` 和 `hover` 事件，值为可操作项的字符串标识或 `null`。悬停和键盘焦点不改变已选值；移出、失焦、关闭、选项移除/禁用、页面隐藏及卸载时统一清空。
 - 主题管理器增加 `previewTheme` 和 `setPreviewTheme(name | null)`，临时预览不写入持久偏好；确认选择后保存主题，清空预览恢复已选主题或系统模式。
+- 补齐已发布包中的 MarkdownX 接口测试、正文导航和宿主图片加载能力及其文档。
 
 ## 0.6.0-alpha.77
 

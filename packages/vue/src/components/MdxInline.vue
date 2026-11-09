@@ -2,6 +2,7 @@
 import type { DlMdxInlineToken, DlMdxLinkPolicy } from './dl-mdx.types'
 import type { DlMdxSecurityPolicy } from './dl-mdx.security'
 import { safeDlMdxUrl } from './dl-mdx.parser'
+import MdxImage from './MdxImage.vue'
 
 const props = defineProps<{
   tokens: DlMdxInlineToken[]
@@ -45,7 +46,7 @@ function isExternal(href: string) { return /^https?:\/\//i.test(href) }
       <span v-else class="dl-mdx__unsafe-link" title="该链接已被安全策略阻止"><MdxInline :tokens="token.children" :link-policy="linkPolicy" :security-policy="securityPolicy" /></span>
     </template>
     <template v-else-if="token.type === 'image'">
-      <img v-if="imageSrc(token)" :src="imageSrc(token)" :alt="token.alt" :title="token.title" class="dl-mdx__image" loading="lazy" decoding="async">
+      <MdxImage v-if="imageSrc(token)" :src="imageSrc(token)" :alt="token.alt" :title="token.title" class="dl-mdx__image" loading="lazy" decoding="async" />
       <span v-else class="dl-mdx__blocked-image" role="img" :aria-label="`图片已被阻止：${token.alt}`">图片已被阻止 · {{ token.alt || '无替代文字' }}</span>
     </template>
   </template>

@@ -17,6 +17,7 @@ import {
 } from './dl-mdx.registry'
 import { safeDlMdxUrl } from './dl-mdx.parser'
 import { useDlMdxSecurityPolicy } from './dl-mdx.security'
+import MdxImage from './MdxImage.vue'
 
 export interface DlMdxTemplateContext {
   readonly env?: Readonly<Record<string, unknown>>
@@ -177,6 +178,7 @@ function templateRenderer(program: DlMdxTemplateProgram, registry: DlMdxRegistry
     const slots: Record<string, () => VNodeChild> = {}
     if (defaults.length) slots.default = () => renderNodes(defaults, scope)
     for (const [name, children] of named) slots[name] = () => renderNodes(children, scope)
+    if (node.name === 'img') return h(MdxImage, safeNativeProps(node.name, props))
     if (isDlMdxTemplateNativeElement(node.name)) return h(node.name, safeNativeProps(node.name, props), renderNodes(defaults, scope))
     const definition = registry?.resolve(node.name)
     if (!definition) return null

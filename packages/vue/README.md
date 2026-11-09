@@ -1,5 +1,39 @@
 # @dragon-liquid/vue
 
+## API 调用测试
+
+`DlApiTester` 支持 HTTP 方法、查询参数、请求头、独立 Bearer Token、JSON、文本、URL 编码表单和文件表单。点击“发送请求”才会调用接口，显示 HTTP 状态、耗时、响应头和正文；支持取消、超时及复制 Bash cURL。浏览器请求受目标接口 CORS 限制，不携带站点 Cookie，不跟随重定向，正文最多显示 1 MiB。
+
+```md
++++component:ApiTester
+title = "查询接口"
+url = "https://api.example.com/items"
+method = "GET"
+query = "page=1"
++++end
+```
+
+Token 输入仅保留在控件内存中，复制 cURL 默认遮蔽认证请求头。宿主可安装 `createDlApiTesterPolicy({ enabled: () => false })` 禁止执行，文档属性不能覆盖该策略。受保护的 Markdown 图片可通过 `createDlMdxImageLoader((url, signal) => fetchImage(url, signal))` 加载，返回 Blob 或图片地址；Blob 地址在控件卸载时释放。
+
+## 文档导航窗格
+
+`DlNavigationPane` 自动读取正文标题并跟踪当前章节。桌面空间足够时显示右侧浮动目录；窄屏或分栏空间不足时显示右下角菜单按钮。没有标题时不显示，打印时隐藏。
+
+在 DlMdx 正文中使用官方组件块，无需注册脚本：
+
+```md
++++component:NavigationPane
+title = "本页目录"
+minLevel = 2
++++end
+
+## 接口说明
+
+正文内容。
+```
+
+也可在 Vue 页面使用 `<DlNavigationPane target-id="document-content" />`。`targetId` 指定包含标题的正文容器，省略时读取组件所在的 DlMdx 文档；嵌入正文时自动为浮动目录预留宽度。`items` 可指定条目，`minLevel` / `maxLevel` 限定标题层级，`breakpoint` 指定桌面断点，`topOffset` 为固定顶栏预留高度，`width` 设置目录宽度。同一正文重复放入导航组件时只显示一份。
+
 ## Portal 浮层层级
 
 组件库使用 `data-dl-layer` 和主题变量统一管理 Portal 浮层，不依赖组件在业务 DOM 中的嵌套关系：
@@ -224,9 +258,9 @@ await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' 
 
 `0.6.0-alpha.35` 新增 userscript 引擎：`buildDlMdxUserscript()`、`parseDlMdxUserscript()`、`validateDlMdxUserscript()` 与 `dlMdxUserscriptMatchesUrl()` 可构建、导入、检查和匹配 Tampermonkey / Violentmonkey 脚本。所有操作都只处理源码，绝不在组件库上下文执行用户 JavaScript；跨站注入交给浏览器扩展，账号与共享目录仍由宿主后端提供。
 
-当前目录组件共 102 个，应用焦点导航 `DlFocusNavigator` 另行导出：
+当前目录组件共 104 个，应用焦点导航 `DlFocusNavigator` 另行导出：
 
-- 67 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
+- 68 个稳定或自研组件覆盖基础、表单、内容、导航、菜单、浮层和反馈；22 种原生 input type 均由独立的 `DlInputXxx` 控件固定封装，不公开 `type` 属性。
 - 22 个先行组件覆盖 Autocomplete、Rating、Color、Dates、Drawer、Tree 与 Mdx；它们可正常导入，但保留 Alpha API 语义。
 - `0.6.0-alpha.77` 为 AlertDialog 增加 `loading`、`confirmDisabled`、`closeOnConfirm` 和默认内容插槽。默认同步确认继续自动关闭；异步请求应使用 `closeOnConfirm=false`，由宿主在成功后关闭，并在失败时显示错误供重试。loading 期间阻止重复确认、取消与 Escape 关闭。
 - `0.6.0-alpha.75` 为 TimePicker 的 TIME WHEEL 面板增加直接时间输入，并把鼠标滚轮事件量化为一次一格；指针拖动继续按真实位移滚动，不受滚轮节流影响。

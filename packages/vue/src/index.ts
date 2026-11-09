@@ -26,7 +26,7 @@ export { formatColorValue, normalizeColorInput, readableColorInk, resolveColorSw
 export type { DlColorFormat, DlColorSwatchOption, DlColorSwatchSource } from './components/color-controls'
 
 export {
-  DlAccordion, DlAlertDialog, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlBreadcrumbs, DlButton,
+  DlAccordion, DlAlertDialog, DlApiTester, DlAspectRatio, DlAutocomplete, DlAvatar, DlBadge, DlBreadcrumbs, DlButton,
   DlCalendar, DlCard, DlCheckbox, DlChoicePortal, DlCluster, DlCollapsible, DlColorArea, DlColorField, DlColorPicker, DlColorSlider,
   DlColorSwatch, DlColorSwatchPicker, DlCombobox, DlContainer, DlContextMenu, DlDataTable, DlDateField, DlDatePicker,
   DlDateRangeField, DlDateRangePicker, DlDialog, DlDrawer, DlDropdownMenu, DlEditable,
@@ -36,7 +36,7 @@ export {
   DlInputRadio, DlInputRange, DlInputReset, DlInputSearch, DlInputSubmit, DlInputTel, DlInputText,
   DlInputUrl, DlInputWeek,
   DlLabel, DlListbox, DlMarkdownX, DlMdx, DlMenubar,
-  DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNumberField, DlPagination, DlPageFrame, DlPathPicker, DlPinInput,
+  DlMonthPicker, DlMonthRangePicker, DlMultiChoice, DlNavigationMenu, DlNavigationPane, DlNumberField, DlPagination, DlPageFrame, DlPathPicker, DlPinInput,
   DlPopover, DlProgress, DlRadioGroup, DlRangeCalendar, DlRating, DlScrollArea, DlSegmented, DlSelect,
   DlSeparator, DlSiteHeader, DlSiteNavigation, DlSiteShell, DlSlider, DlSplitButton, DlSplitter, DlStack, DlStepper, DlSwitch, DlTabs, DlTagsInput, DlTextarea,
   DlTimeField, DlTimePicker, DlTimeRangeField, DlToast, DlToggle, DlToggleGroup, DlToolbar, DlToolbarMenu, DlTooltip,
@@ -44,6 +44,10 @@ export {
 } from './managed-components'
 
 export { createDlManagedComponent, getDlComponentBehavior, getDlComponentBehaviors } from './component-behavior'
+export { createDlMdxImageLoader, dlMdxImageLoaderKey } from './components/dl-mdx.images'
+export type { DlMdxImageLoader } from './components/dl-mdx.images'
+export { createDlApiTesterPolicy, dlApiTesterPolicyKey, prepareDlApiRequest, createDlApiCurl, executeDlApiRequest } from './components/api-tester'
+export type { DlApiTesterPolicy, DlApiBodyMode, DlApiRequestInput, DlApiPreparedRequest, DlApiResponse } from './components/api-tester'
 export type {
   DlCancelableEvent,
   DlComponentBehaviorContext,

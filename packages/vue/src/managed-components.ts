@@ -61,6 +61,8 @@ import RawDlMonthPicker from './components/DlMonthPicker.vue'
 import RawDlMonthRangePicker from './components/DlMonthRangePicker.vue'
 import RawDlMultiChoice from './components/DlMultiChoice.vue'
 import RawDlNavigationMenu from './components/DlNavigationMenu.vue'
+import RawDlNavigationPane from './components/DlNavigationPane.vue'
+import RawDlApiTester from './components/DlApiTester.vue'
 import RawDlNumberField from './components/DlNumberField.vue'
 import RawDlPagination from './components/DlPagination.vue'
 import RawDlPageFrame from './components/DlPageFrame.vue'
@@ -465,6 +467,8 @@ export const DlMultiChoice = managed(RawDlMultiChoice, 'DlMultiChoice', {
   ],
 })
 export const DlNavigationMenu = managed(RawDlNavigationMenu, 'DlNavigationMenu')
+export const DlNavigationPane = managed(RawDlNavigationPane, 'DlNavigationPane')
+export const DlApiTester = managed(RawDlApiTester, 'DlApiTester')
 export const DlNumberField = managed(RawDlNumberField, 'DlNumberField', {
   domEvents: fieldEvents,
   methods: numberMethods,

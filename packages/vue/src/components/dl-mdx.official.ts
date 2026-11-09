@@ -62,6 +62,8 @@ import DlMonthPicker from './DlMonthPicker.vue'
 import DlMonthRangePicker from './DlMonthRangePicker.vue'
 import DlMultiChoice from './DlMultiChoice.vue'
 import DlNavigationMenu from './DlNavigationMenu.vue'
+import DlNavigationPane from './DlNavigationPane.vue'
+import DlApiTester from './DlApiTester.vue'
 import DlNumberField from './DlNumberField.vue'
 import DlPagination from './DlPagination.vue'
 import DlPageFrame from './DlPageFrame.vue'
@@ -151,6 +153,33 @@ export const dlMdxOfficialComponents: DlMdxComponentDefinition[] = [
   official('PageFrame', DlPageFrame, 'layout', 'custom', { defaultProps: { layout: 'article', gap: '36px' }, defaultContent: '页面主内容', description: '覆盖文章、侧栏、辅助栏与三栏页面结构。' }),
   official('Breadcrumbs', DlBreadcrumbs, 'layout', 'custom', { defaultProps: { items: [{ label: 'Home', href: '/' }, { label: 'Guide', current: true }] }, description: '展示当前位置与上级页面路径。' }),
   official('SiteNavigation', DlSiteNavigation, 'layout', 'custom', { defaultProps: { mode: 'sidebar', groups: [{ id: 'guide', label: 'Guide', items: [{ id: 'start', label: 'Start', href: '/start' }] }] }, description: '支持顶部、侧边、标签与图标栏导航。' }),
+  official('ApiTester', DlApiTester, 'general', 'custom', {
+    defaultProps: { method: 'GET', url: '', bodyMode: 'none' },
+    description: '浏览器直接调用 API，编辑参数、请求头和正文，查看响应或复制 cURL。',
+    propSchema: {
+      url: { type: 'string', description: '接口的 HTTP 或 HTTPS 地址。' },
+      method: { type: 'string', enum: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'], description: 'HTTP 请求方法。' },
+      query: { type: 'string', description: '查询参数，每行 key=value。' },
+      headers: { type: 'string', description: '请求头，每行 Name: value。' },
+      bodyMode: { type: 'string', enum: ['none', 'json', 'text', 'urlencoded', 'multipart'], description: '请求正文格式。' },
+      body: { type: 'string', description: '正文或每行 key=value 的表单字段。' },
+      timeout: { type: 'number', minimum: 1000, maximum: 120000, description: '请求超时毫秒数。' },
+    },
+    eventSchema: { response: { description: '请求完成并返回响应。' }, error: { description: '请求取消、超时或失败。' } },
+  }),
+  official('NavigationPane', DlNavigationPane, 'layout', 'custom', {
+    defaultProps: { title: '本页目录' }, description: '自动收集 Markdown 标题，宽屏显示右侧浮动目录，窄屏收为菜单按钮。',
+    propSchema: {
+      title: { type: 'string', description: '目录标题。' },
+      targetId: { type: 'string', description: '正文元素 ID；省略时使用所在 Markdown 文档。' },
+      minLevel: { type: 'number', minimum: 1, maximum: 6, description: '最小标题级别。' },
+      maxLevel: { type: 'number', minimum: 1, maximum: 6, description: '最大标题级别。' },
+      breakpoint: { type: 'number', minimum: 320, description: '低于该视口宽度时显示菜单。' },
+      topOffset: { type: 'number', minimum: 0, description: '顶部工具栏的避让距离。' },
+      width: { type: 'number', minimum: 160, maximum: 320, description: '桌面目录宽度。' },
+    },
+    eventSchema: { select: { description: '选择目录项。' } },
+  }),
   official('SiteHeader', DlSiteHeader, 'layout', 'custom', { defaultProps: { siteName: 'Dragon Liquid Site', caption: 'Built with DL', mark: 'DL' }, description: '网站品牌、导航与操作区域。' }),
   official('SiteShell', DlSiteShell, 'layout', 'custom', { defaultProps: { siteName: 'Dragon Liquid Site', navigationMode: 'hybrid', navigation: [{ id: 'main', label: 'Main', items: [{ id: 'home', label: 'Home', href: '/' }] }] }, defaultContent: '网站母版页内容插槽', description: '统一网站头部、导航、内容插槽、侧栏和页脚的母版页。' }),
 

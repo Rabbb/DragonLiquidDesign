@@ -43,6 +43,7 @@ import DlDialog from './DlDialog.vue'
 import DlSplitter from './DlSplitter.vue'
 import MdxEditor, { type DlMdxEditorDocumentLanguage } from './MdxEditor.vue'
 import MdxPreview from './MdxPreview.vue'
+import MdxImage from './MdxImage.vue'
 import MdxRuntimeJsonTree from './MdxRuntimeJsonTree.vue'
 
 type ComponentLibraryEntry = {
@@ -851,7 +852,7 @@ function toggleTask(line: number) {
         <p v-if="attachmentManagerError" class="dl-mdx__attachment-error">{{ attachmentManagerError }}</p>
         <div v-if="managedAttachments.length" class="dl-mdx__attachment-grid">
           <article v-for="attachment in managedAttachments" :key="attachmentIdentity(attachment)">
-            <img v-if="attachmentPreviewUrl(attachment)" :src="attachmentPreviewUrl(attachment)" :alt="attachmentName(attachment)" loading="lazy">
+            <MdxImage v-if="attachmentPreviewUrl(attachment)" :src="attachmentPreviewUrl(attachment)" :alt="attachmentName(attachment)" loading="lazy" />
             <div v-else class="dl-mdx__attachment-placeholder">IMG</div>
             <span><b :title="attachmentName(attachment)">{{ attachmentName(attachment) }}</b><small>{{ attachmentSize(attachment.byteLength) }} · {{ attachment.referenceCount ?? 1 }} 个引用</small></span>
             <footer>
