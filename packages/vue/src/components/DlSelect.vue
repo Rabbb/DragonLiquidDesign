@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import {
   SelectContent,
   SelectItem,
@@ -13,11 +13,13 @@ import {
 } from 'reka-ui'
 import { tv } from 'tailwind-variants'
 import { useDlSelectLayer } from '../composables/useDlLayer'
+import { useDlHoverValue } from '../composables/useDlHoverValue'
 import type { DlSize } from '../types'
 import type { DlSelectOption } from './select.types'
 
 const props = withDefaults(defineProps<{
   open?: boolean
+  hoverValue?: string | null
   modelValue?: string
   options: DlSelectOption[]
   placeholder?: string
@@ -37,6 +39,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   'update:open': [value: boolean]
   'update:modelValue': [value: string]
+  'update:hoverValue': [value: string | null]
+  hover: [value: string | null]
 }>()
 
 const trigger = tv({
@@ -51,6 +55,13 @@ const trigger = tv({
 })
 const triggerClasses = computed(() => trigger({ size: props.size }))
 const contentZIndex = useDlSelectLayer(() => props.zIndex)
+const visible = ref(props.open ?? false)
+watch(() => props.open, value => { if (value !== undefined) visible.value = value })
+const hover = useDlHoverValue({ value: () => props.hoverValue, open: () => (props.open ?? visible.value) && !props.disabled,
+  choices: () => props.options.filter(option => !option.disabled).map(option => option.value),
+  update: value => { emit('update:hoverValue', value); emit('hover', value) } })
+function openChanged(value: boolean) { visible.value = value; if (!value) hover.clear(); emit('update:open', value) }
+function select(value: unknown) { if (typeof value === 'string' && value) emit('update:modelValue', value); hover.clear() }
 </script>
 
 <template>
@@ -59,8 +70,8 @@ const contentZIndex = useDlSelectLayer(() => props.zIndex)
     :model-value="modelValue"
     :disabled="disabled"
     :name="name"
-    @update:open="emit('update:open', $event)"
-    @update:model-value="value => value && emit('update:modelValue', value as string)"
+    @update:open="openChanged"
+    @update:model-value="select"
   >
     <SelectTrigger data-dl data-slot="select-trigger" :class="triggerClasses">
       <SelectValue :placeholder="placeholder" />
@@ -82,6 +93,10 @@ const contentZIndex = useDlSelectLayer(() => props.zIndex)
             :key="option.value"
             :value="option.value"
             :disabled="option.disabled"
+            @pointermove="hover.pointer($event, option.value)"
+            @pointerleave="hover.leave(option.value)"
+            @focus="hover.set(option.value)"
+            @blur="hover.leave(option.value)"
             class="relative flex min-h-10 cursor-default select-none items-center rounded-xl py-2 pl-9 pr-3 text-sm outline-none transition data-[disabled]:pointer-events-none data-[disabled]:opacity-40 data-[highlighted]:bg-[var(--dl-surface-hover)] data-[highlighted]:text-[var(--dl-accent-text)] data-[state=checked]:bg-[var(--dl-accent-surface)]"
           >
             <SelectItemIndicator class="absolute left-3 text-[var(--dl-accent)]">◆</SelectItemIndicator>

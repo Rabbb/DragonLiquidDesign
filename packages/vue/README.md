@@ -276,3 +276,9 @@ await project.save(createDlMdxHttpStorageAdapter({ baseUrl: '/api/mdx/projects' 
 - `0.4.0-alpha.3` 继续迁移 Drawer 与线性 Progress 的样式，同时保留 Reka UI 的抽屉手势、焦点和进度语义。
 - `0.4.0-alpha.2` 从 TodoMoe 只读提取 Toast、Modal/Dialog、Tooltip 与近源 Popover 的玻璃面、语义色、能量线和反馈动效，并继续由 Reka UI 管理交互。
 - 日期对象 `CalendarDate`、`Time` 及相关类型从包入口统一导出。
+
+## 选项悬停与主题预览
+
+`DlDropdownMenu` 和 `DlSelect` 支持 `v-model:hoverValue="hoverValue"`（模板也可写作 `v-model:hover-value`）及 `@hover`，参数为 `string | null`。它表示可操作选项的悬停/键盘焦点，与 `modelValue` 和 `select` 独立。离开选项、失焦、关闭、禁用/移除选项、窗口失焦、页面隐藏和组件卸载时归零，无须宿主拼接多个退出事件。触屏仍通过点击确认选择。
+
+主题选择器可监听 `hoverValue` 调用 `theme.setPreviewTheme(value)`，点击时调用 `theme.setTheme(value)`。`setPreviewTheme(null)` 恢复当前正式偏好；预览不写 `localStorage`，不改变 `themeOverride` 或系统模式。`activeTheme` 表示屏幕正在显示的主题，`previewTheme` 单独暴露临时值。

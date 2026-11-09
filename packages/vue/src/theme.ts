@@ -46,11 +46,13 @@ export interface DlThemeManager {
   lightTheme: Readonly<Ref<string>>
   darkTheme: Readonly<Ref<string>>
   themeOverride: Readonly<Ref<string | undefined>>
+  previewTheme: Readonly<Ref<string | undefined>>
   activeTheme: ComputedRef<string>
   activeThemeDefinition: ComputedRef<DlThemeDefinition>
   themes: ComputedRef<DlThemeDefinition[]>
   setMode: (mode: DlThemeMode) => void
   setTheme: (name: string) => void
+  setPreviewTheme: (name?: string | null) => void
   clearThemeOverride: () => void
   setModeThemes: (themes: DlThemeModeThemes) => void
   registerTheme: (theme: DlThemeDefinition) => DlThemeManager
@@ -377,6 +379,7 @@ export function createDlTheme(options: DlThemeOptions = {}): DlThemeManager {
   const currentLightTheme = ref(options.lightTheme ?? 'white')
   const currentDarkTheme = ref(options.darkTheme ?? 'black')
   const currentOverride = ref<string>()
+  const currentPreview = ref<string>()
   const revision = ref(0)
   const storageKey = options.storageKey === undefined ? false : options.storageKey
   let mediaQuery: MediaQueryList | undefined
@@ -408,7 +411,7 @@ export function createDlTheme(options: DlThemeOptions = {}): DlThemeManager {
   }
 
   const resolvedMode = computed<DlResolvedThemeMode>(() => initialMode.value === 'system' ? currentSystemMode.value : initialMode.value)
-  const activeTheme = computed(() => currentOverride.value ?? (resolvedMode.value === 'light' ? currentLightTheme.value : currentDarkTheme.value))
+  const activeTheme = computed(() => currentPreview.value ?? currentOverride.value ?? (resolvedMode.value === 'light' ? currentLightTheme.value : currentDarkTheme.value))
   const activeThemeDefinition = computed(() => getTheme(activeTheme.value) ?? getTheme(resolvedMode.value === 'light' ? 'white' : 'black')!)
   const themes = computed(() => {
     revision.value
@@ -511,10 +514,12 @@ export function createDlTheme(options: DlThemeOptions = {}): DlThemeManager {
     lightTheme: readonly(currentLightTheme),
     darkTheme: readonly(currentDarkTheme),
     themeOverride: readonly(currentOverride),
+    previewTheme: readonly(currentPreview),
     activeTheme,
     activeThemeDefinition,
     themes,
     setMode(mode) {
+      currentPreview.value = undefined
       initialMode.value = mode
       currentOverride.value = undefined
       persist()
@@ -522,11 +527,18 @@ export function createDlTheme(options: DlThemeOptions = {}): DlThemeManager {
     },
     setTheme(name) {
       assertTheme(name)
+      currentPreview.value = undefined
       currentOverride.value = name
       persist()
       apply()
     },
+    setPreviewTheme(name) {
+      if (name != null) assertTheme(name)
+      currentPreview.value = name ?? undefined
+      apply()
+    },
     clearThemeOverride() {
+      currentPreview.value = undefined
       currentOverride.value = undefined
       persist()
       apply()
@@ -548,7 +560,7 @@ export function createDlTheme(options: DlThemeOptions = {}): DlThemeManager {
       if (theme.base) assertTheme(theme.base)
       registry.set(theme.name, cloneTheme(theme))
       revision.value += 1
-      if (currentOverride.value === theme.name) apply()
+      if (activeTheme.value === theme.name) apply()
       return manager
     },
     unregisterTheme(name) {
@@ -557,6 +569,7 @@ export function createDlTheme(options: DlThemeOptions = {}): DlThemeManager {
       if (!removed) return false
       revision.value += 1
       if (currentOverride.value === name) currentOverride.value = undefined
+      if (currentPreview.value === name) currentPreview.value = undefined
       if (currentLightTheme.value === name) currentLightTheme.value = 'white'
       if (currentDarkTheme.value === name) currentDarkTheme.value = 'black'
       persist()
@@ -565,6 +578,7 @@ export function createDlTheme(options: DlThemeOptions = {}): DlThemeManager {
     },
     apply,
     destroy() {
+      if (currentPreview.value) { currentPreview.value = undefined; apply() }
       mediaQuery?.removeEventListener?.('change', handleSystemModeChange)
       mediaQuery = undefined
       started = false

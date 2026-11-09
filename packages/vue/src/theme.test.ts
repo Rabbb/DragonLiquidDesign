@@ -52,6 +52,24 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('createDlTheme', () => {
+  it('previews without persisting and restores the committed or system palette', () => {
+    const system = mockSystemTheme(false)
+    const theme = createDlTheme({storageKey:'theme-preview-test'})
+    const cleanup = installTheme(theme)
+    theme.setTheme('warm')
+    const saved = localStorage.getItem('theme-preview-test')
+    theme.setPreviewTheme('forest')
+    expect(theme.activeTheme.value).toBe('forest')
+    expect(theme.themeOverride.value).toBe('warm')
+    expect(localStorage.getItem('theme-preview-test')).toBe(saved)
+    theme.setPreviewTheme(null)
+    expect(theme.activeTheme.value).toBe('warm')
+    theme.setPreviewTheme('black'); theme.setTheme('midnight'); theme.setPreviewTheme(null)
+    expect(theme.activeTheme.value).toBe('midnight')
+    theme.setMode('system'); theme.setPreviewTheme('warm'); system.setDark(true); theme.setPreviewTheme(null)
+    expect(theme.activeTheme.value).toBe('black')
+    cleanup()
+  })
   it('ships the core palettes and editor-inspired workbench themes as selectable presets', () => {
     expect(dlThemePresets.map(theme => theme.name)).toEqual([
       'white',
