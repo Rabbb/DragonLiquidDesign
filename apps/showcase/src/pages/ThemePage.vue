@@ -222,6 +222,10 @@ function previewClass(item: DlThemeDefinition) {
 .theme-preview--forest::before { background: rgba(226,255,239,.2); }
 .theme-preview--forest i { background: #244f39; }
 .theme-preview--forest i:nth-child(2) { background: linear-gradient(180deg, #f4d35e, #73d8a4); }
+.theme-preview--dragon-liquid { background: linear-gradient(135deg, #1a472a, #0d2818, #2d5a3d); }
+.theme-preview--dragon-liquid::before { background: rgba(248,250,252,.26); }
+.theme-preview--dragon-liquid i { background: #315843; }
+.theme-preview--dragon-liquid i:nth-child(2) { background: linear-gradient(135deg, #ff8c00, #ffa500, #ffd700); }
 .theme-preview--one-dark { background: #21252b; }
 .theme-preview--one-dark::before { background: #5c6370; }
 .theme-preview--one-dark i { background: #353b47; }

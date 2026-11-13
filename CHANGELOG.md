@@ -1,5 +1,12 @@
 # Dragon Liquid Design 版本记录
 
+## 0.6.0-alpha.79
+
+日期：2026-11-13。
+
+- 新增 Dragon Liquid 深色预设，迁移 TodoMoe 旧版的深绿背景、橙金按钮、玻璃面板与绿蓝紫进度条。主题 ID 为 `dragon-liquid`，可与 Dragon Forest 独立选择。
+- 支持通过 `--dl-page-background` 和 `--dl-sidebar-background` 将主题的渐变背景用于应用外壳，分别可回退到现有页面和侧栏背景。
+
 ## 0.6.0-alpha.78
 
 日期：2026-11-09。

@@ -58,7 +58,7 @@ MarkdownX 文档使用 `/mdx/{page}` 深链和固定侧栏分页展示概览、�
 安装固定版本：
 
 ```powershell
-npm install @dragon-liquid/vue@0.6.0-alpha.78 --save-exact
+npm install @dragon-liquid/vue@0.6.0-alpha.79 --save-exact
 ```
 
 对应依赖配置：
@@ -66,7 +66,7 @@ npm install @dragon-liquid/vue@0.6.0-alpha.78 --save-exact
 ```json
 {
   "dependencies": {
-    "@dragon-liquid/vue": "0.6.0-alpha.78"
+    "@dragon-liquid/vue": "0.6.0-alpha.79"
   }
 }
 ```

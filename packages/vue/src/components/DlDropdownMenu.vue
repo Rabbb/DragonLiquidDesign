@@ -30,7 +30,7 @@ function select(value: string) { emit('select', value); hover.clear() }
   <DropdownMenuRoot :open="open" :modal="modal" @update:open="openChanged">
     <DropdownMenuTrigger as-child data-guide-component="dropdown-menu"><slot name="trigger" /></DropdownMenuTrigger>
     <DropdownMenuPortal>
-      <DropdownMenuContent data-dl data-slot="dropdown-menu" data-dl-layer="popover" :side="side" :align="align" :side-offset="8" :style="{ zIndex: layer }" class="min-w-52 rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] [background:var(--dl-panel)] p-1.5 text-sm text-[var(--dl-text)] shadow-[0_24px_70px_rgba(0,0,0,.44)] outline-none backdrop-blur-2xl">
+      <DropdownMenuContent data-dl data-slot="dropdown-menu" data-dl-layer="popover" :side="side" :align="align" :side-offset="8" :style="{ zIndex: layer }" class="min-w-52 rounded-[var(--dl-radius-md)] border border-[var(--dl-border-strong)] [background:var(--dl-panel-background,var(--dl-panel))] p-1.5 text-sm text-[var(--dl-text)] shadow-[0_24px_70px_rgba(0,0,0,.44)] outline-none backdrop-blur-2xl">
         <DropdownMenuLabel v-if="label" class="px-3 py-2 text-xs font-bold uppercase tracking-wider text-[var(--dl-text-faint)]">{{ label }}</DropdownMenuLabel>
         <template v-for="item in items" :key="item.value">
           <DropdownMenuSeparator v-if="item.separator" class="my-1 h-px bg-[var(--dl-border)]" />

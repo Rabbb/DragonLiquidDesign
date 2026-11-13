@@ -143,7 +143,7 @@ npm login --registry=http://192.168.2.101:4873/ --auth-type=legacy
 npm run publish:registry
 ```
 
-消费项目配置相同作用域地址，并通过 `npm install @dragon-liquid/vue@0.6.0-alpha.78 --save-exact` 安装固定版本。
+消费项目配置相同作用域地址，并通过 `npm install @dragon-liquid/vue@0.6.0-alpha.79 --save-exact` 安装固定版本。
 `npm run publish:local` 仍用于生成 `registry/` 中的离线压缩包，展厅继续使用固定压缩包执行集成验证。
 
 ## 6. 动漫站集成约定
@@ -222,7 +222,7 @@ Dragon Liquid 的组件只在两个以上业务场景中具有复用价值时扩
 ## 9. 组件展厅与 IIS 部署
 
 `apps/showcase` 是独立 Vite 静态站点，用于浏览和手动验证组件状态。它必须通过
-`file:../../registry/dragon-liquid-vue-0.6.0-alpha.77.tgz` 消费发布包，不能直接引用
+`file:../../registry/dragon-liquid-vue-0.6.0-alpha.79.tgz` 消费发布包，不能直接引用
 `packages/vue/src`，这样展厅同时承担发布包集成测试的职责。
 
 构建命令：
@@ -286,5 +286,5 @@ npm run build:showcase
 IIS 包站点的版本化下载地址示例（需先完成独立部署）：
 
 ```text
-http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.77.tgz
+http://localhost:8031/packages/dragon-liquid-vue-0.6.0-alpha.79.tgz
 ```

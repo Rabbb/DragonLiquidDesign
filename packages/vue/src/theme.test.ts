@@ -52,6 +52,28 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('createDlTheme', () => {
+  it('restores Dragon Liquid from storage and removes its gradient tokens when switching to Forest', () => {
+    mockSystemTheme(false)
+    const storageKey = 'legacy-palette-test'
+    const theme = createDlTheme({ storageKey })
+    const cleanup = installTheme(theme)
+    const root = document.documentElement
+    theme.setTheme('dragon-liquid')
+    expect(root.dataset.dlTheme).toBe('dragon-liquid')
+    expect(root.style.getPropertyValue('--dl-page-background')).toContain('#1a472a')
+    expect(root.style.getPropertyValue('--dl-button-primary-bg')).toContain('#ff8c00')
+    expect(root.style.getPropertyValue('--dl-progress-success-background')).toContain('#9370db')
+    expect(createDlTheme({ storageKey }).activeTheme.value).toBe('dragon-liquid')
+    theme.setTheme('forest')
+    expect(root.dataset.dlTheme).toBe('forest')
+    expect(root.style.getPropertyValue('--dl-page-background')).toBe('')
+    expect(root.style.getPropertyValue('--dl-progress-success-background')).toBe('')
+    expect(root.style.getPropertyValue('--dl-button-primary-bg')).toContain('#73d8a4')
+    theme.clearThemeOverride()
+    expect(root.dataset.dlTheme).toBe('white')
+    cleanup()
+  })
+
   it('previews without persisting and restores the committed or system palette', () => {
     const system = mockSystemTheme(false)
     const theme = createDlTheme({storageKey:'theme-preview-test'})
@@ -77,6 +99,7 @@ describe('createDlTheme', () => {
       'warm',
       'midnight',
       'forest',
+      'dragon-liquid',
       'one-dark',
       'violet-nocturne',
       'mocha-mauve',

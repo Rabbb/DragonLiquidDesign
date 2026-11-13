@@ -68,11 +68,11 @@ const progressStyles = tv({
 .dl-progress--sm { --dl-progress-height: 8px; }
 .dl-progress--lg { --dl-progress-height: 14px; }
 .dl-progress-tone-accent { --dl-progress-fill: linear-gradient(90deg, var(--dragon-yellow), var(--dragon-orange-light)); --dl-progress-shadow: 0 0 18px rgba(255, 223, 128, 0.22); }
-.dl-progress-tone-success { --dl-progress-fill: linear-gradient(90deg, var(--dragon-green-light), var(--dragon-cyan)); --dl-progress-shadow: 0 0 18px rgba(113, 209, 173, 0.22); }
+.dl-progress-tone-success { --dl-progress-fill: var(--dl-progress-success-background, linear-gradient(90deg, var(--dragon-green-light), var(--dragon-cyan))); --dl-progress-shadow: var(--dl-progress-success-shadow, 0 0 18px rgba(113, 209, 173, 0.22)); }
 .dl-progress-tone-warning { --dl-progress-fill: linear-gradient(90deg, var(--dragon-orange-light), var(--dragon-yellow)); --dl-progress-shadow: 0 0 18px rgba(255, 179, 71, 0.22); }
 .dl-progress-tone-danger { --dl-progress-fill: linear-gradient(90deg, #ff8f8f, var(--dragon-red)); --dl-progress-shadow: 0 0 18px rgba(255, 123, 123, 0.22); }
 .dl-progress-tone-muted { --dl-progress-fill: linear-gradient(90deg, rgba(148, 163, 184, 0.88), rgba(100, 116, 139, 0.92)); --dl-progress-shadow: 0 0 14px rgba(148, 163, 184, 0.12); }
-.dl-progress-status-success { --dl-progress-fill: linear-gradient(90deg, var(--dragon-green-light), var(--dragon-cyan)); --dl-progress-shadow: 0 0 18px rgba(113, 209, 173, 0.22); }
+.dl-progress-status-success { --dl-progress-fill: var(--dl-progress-success-background, linear-gradient(90deg, var(--dragon-green-light), var(--dragon-cyan))); --dl-progress-shadow: var(--dl-progress-success-shadow, 0 0 18px rgba(113, 209, 173, 0.22)); }
 .dl-progress-status-warning { --dl-progress-fill: linear-gradient(90deg, var(--dragon-orange-light), var(--dragon-yellow)); --dl-progress-shadow: 0 0 18px rgba(255, 179, 71, 0.22); }
 .dl-progress-status-danger { --dl-progress-fill: linear-gradient(90deg, #ff8f8f, var(--dragon-red)); --dl-progress-shadow: 0 0 18px rgba(255, 123, 123, 0.22); }
 .dl-progress__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -80,7 +80,7 @@ const progressStyles = tv({
 .dl-progress__label { font-size: 0.92rem; font-weight: 700; }
 .dl-progress__helper { color: var(--dl-text-muted); font-size: 0.78rem; line-height: 1.45; }
 .dl-progress__info { color: var(--dl-text); font-size: 0.86rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.dl-progress__track { position: relative; width: 100%; min-height: var(--dl-progress-height); overflow: hidden; border: 1px solid var(--dl-border); border-radius: 999px; background: #e9edf1; box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06); }
+.dl-progress__track { position: relative; width: 100%; min-height: var(--dl-progress-height); overflow: hidden; border: 1px solid var(--dl-border); border-radius: 999px; background: var(--dl-progress-track-background, #e9edf1); box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06); }
 .dl-progress__indicator { position: absolute; inset: 0; border-radius: inherit; background: var(--dl-progress-fill); box-shadow: var(--dl-progress-shadow); transition: transform 280ms ease; }
 .dl-progress__indicator::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent); opacity: 0.6; }
 [data-indeterminate] { width: 45%; animation: dl-progress-indeterminate 1.2s ease-in-out infinite; }

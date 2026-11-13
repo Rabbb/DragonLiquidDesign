@@ -2634,7 +2634,7 @@ body {
   background:
     radial-gradient(circle at 72% 13%, var(--dl-accent-surface), transparent 24rem),
     radial-gradient(circle at 10% 36%, rgba(94, 126, 151, 0.06), transparent 28rem),
-    linear-gradient(180deg, var(--dl-night) 0%, var(--dl-night-soft) 48%, var(--dl-night) 100%);
+    var(--dl-page-background, linear-gradient(180deg, var(--dl-night) 0%, var(--dl-night-soft) 48%, var(--dl-night) 100%));
 }
 
 :root[data-dl-color-mode='dark'] .ambient-a { background: #42677d; }
@@ -2748,7 +2748,7 @@ body {
     radial-gradient(circle at 72% 13%, rgba(75, 211, 151, 0.12), transparent 25rem),
     radial-gradient(circle at 48% 0%, rgba(244, 211, 94, 0.08), transparent 24rem),
     radial-gradient(circle at 88% 42%, rgba(108, 126, 232, 0.09), transparent 28rem),
-    linear-gradient(180deg, var(--dl-night) 0%, var(--dl-night-soft) 48%, var(--dl-night) 100%);
+    var(--dl-page-background, linear-gradient(180deg, var(--dl-night) 0%, var(--dl-night-soft) 48%, var(--dl-night) 100%));
 }
 
 @media (max-width: 1460px) {

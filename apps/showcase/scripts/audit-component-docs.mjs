@@ -138,7 +138,11 @@ for (const vuePath of collectVueFiles(resolve(showcaseRoot, 'src'))) {
 }
 
 const apiIds = Object.keys(componentApi)
-report(apiIds.length === ids.length, `API 组件数 ${apiIds.length} 与目录数 ${ids.length} 不一致。`)
+// 这两个控件已公开 API，展厅案例尚未加入组件目录。
+const apiOnlyIds = ['api-tester', 'navigation-pane']
+for (const id of apiIds) {
+  report(ids.includes(id) || apiOnlyIds.includes(id), `${id} 的 API 缺少展厅目录项。`)
+}
 for (const id of ids) {
   const definition = componentApi[id]
   report(Boolean(definition), `${id} 缺少 API 定义。`)

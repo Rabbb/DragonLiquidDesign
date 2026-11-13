@@ -605,7 +605,7 @@ onBeforeUnmount(() => {
 
 .dl-dialog {
   --dl-dialog-width: 640px;
-  --dl-dialog-background: var(--dl-panel);
+  --dl-dialog-background: var(--dl-panel-background, var(--dl-panel));
   --dl-dialog-inset-highlight: rgba(255, 255, 255, 0.9);
   --dl-dialog-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.65), transparent 24%);
   --dl-dialog-sheen-opacity: 0.6;

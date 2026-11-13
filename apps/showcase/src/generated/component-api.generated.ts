@@ -139,6 +139,65 @@ export default {
     ],
     "relatedTypes": []
   },
+  "api-tester": {
+    "props": [
+      {
+        "prop": "title",
+        "description": "控件或浮层显示的标题。",
+        "type": "string",
+        "defaultValue": "'API 调用测试'"
+      },
+      {
+        "prop": "url",
+        "description": "设置 url 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "method",
+        "description": "设置 method 属性。",
+        "type": "string",
+        "defaultValue": "'GET'"
+      },
+      {
+        "prop": "query",
+        "description": "设置 query 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "headers",
+        "description": "设置 headers 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "bodyMode",
+        "description": "设置 bodyMode 属性。",
+        "type": "DlApiBodyMode",
+        "defaultValue": "'none'"
+      },
+      {
+        "prop": "body",
+        "description": "设置 body 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "timeout",
+        "description": "设置 timeout 属性。",
+        "type": "number",
+        "defaultValue": "30000"
+      },
+      {
+        "prop": "disabled",
+        "description": "是否禁用控件及其交互。",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "relatedTypes": []
+  },
   "aspect-ratio": {
     "props": [
       {
@@ -3875,6 +3934,12 @@ export default {
         "prop": "open",
         "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
         "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "hoverValue",
+        "description": "设置 hoverValue 属性。",
+        "type": "string | null",
         "defaultValue": "undefined"
       },
       {
@@ -7912,6 +7977,59 @@ export default {
       }
     ]
   },
+  "navigation-pane": {
+    "props": [
+      {
+        "prop": "title",
+        "description": "控件或浮层显示的标题。",
+        "type": "string",
+        "defaultValue": "'本页目录'"
+      },
+      {
+        "prop": "targetId",
+        "description": "设置 targetId 属性。",
+        "type": "string",
+        "defaultValue": "''"
+      },
+      {
+        "prop": "items",
+        "description": "用于渲染控件内容的结构化项目列表。",
+        "type": "DlMdxOutlineItem[]",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "minLevel",
+        "description": "设置 minLevel 属性。",
+        "type": "number",
+        "defaultValue": "1"
+      },
+      {
+        "prop": "maxLevel",
+        "description": "设置 maxLevel 属性。",
+        "type": "number",
+        "defaultValue": "6"
+      },
+      {
+        "prop": "breakpoint",
+        "description": "设置 breakpoint 属性。",
+        "type": "number",
+        "defaultValue": "1100"
+      },
+      {
+        "prop": "topOffset",
+        "description": "设置 topOffset 属性。",
+        "type": "number",
+        "defaultValue": "68"
+      },
+      {
+        "prop": "width",
+        "description": "窗口或区域的宽度。",
+        "type": "number",
+        "defaultValue": "196"
+      }
+    ],
+    "relatedTypes": []
+  },
   "number-field": {
     "props": [
       {
@@ -9013,6 +9131,12 @@ export default {
         "prop": "open",
         "description": "浮层或内容区域是否打开；使用 v-model:open 双向绑定。",
         "type": "boolean",
+        "defaultValue": "undefined"
+      },
+      {
+        "prop": "hoverValue",
+        "description": "设置 hoverValue 属性。",
+        "type": "string | null",
         "defaultValue": "undefined"
       },
       {
